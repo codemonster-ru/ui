@@ -104,9 +104,19 @@ async function readAccessibility(page, caseId, roles) {
   const exposed = {};
 
   for (const [role, selector] of Object.entries(roles)) {
+    // M28: `followed(<source>, <attribute>) <rest>` reads inside the element a
+    // case element's reference names - a menu teleported out of the case.
+    const followed = /^followed\(([^,]+),\s*([a-z-]+)\)\s*(.*)$/.exec(selector);
+    const target = followed
+      ? await page.evaluate(
+          `document.querySelector(${JSON.stringify(`[data-parity-case="${caseId}"] ${followed[1]}`)})?.getAttribute(${JSON.stringify(followed[2])}) ?? ''`,
+        )
+      : null;
     const { nodeId } = await page.send('DOM.querySelector', {
       nodeId: root.nodeId,
-      selector: `[data-parity-case="${caseId}"] ${selector}`,
+      selector: followed
+        ? `[id=${JSON.stringify(target)}] ${followed[3]}`.trim()
+        : `[data-parity-case="${caseId}"] ${selector}`,
     });
     if (!nodeId) continue;
 
@@ -156,6 +166,10 @@ async function readAccessibility(page, caseId, roles) {
           // what makes the tree an independent proof of the selection beside
           // dom.aria - unlike aria-current (M23), which Chrome does not expose.
           'selected',
+          // `hasPopup` joined in M28: the dropdown trigger is a generic element
+          // Chrome exposes with no name and no expanded state, and the popup
+          // type it derives from aria-haspopup is its one announced semantic.
+          'hasPopup',
         ].includes(property.name)
       ) {
         states[property.name] = String(property.value?.value ?? '');
@@ -457,8 +471,15 @@ async function captureTarget(
       // every scenario case of the page at once, and a stage they did not
       // opt into must not move them.
       if (catalog.profile.liveParity) {
+        // M28: a case is its root and the targets its declared references
+        // name outside it, so both leave. A teleported menu left behind is
+        // still next in document order and still takes outside clicks.
         await page.evaluate(
-          `document.querySelectorAll('[data-parity-case]:not([data-parity-case="${parityCase.id}"])').forEach((node) => node.remove())`,
+          `document.querySelectorAll('[data-parity-case]:not([data-parity-case="${parityCase.id}"])').forEach((node) => {
+            for (const rule of ${JSON.stringify(catalog.profile.followedReferences ?? [])})
+              for (const source of node.querySelectorAll(rule.source)) document.getElementById(source.getAttribute(rule.attribute))?.remove();
+            node.remove();
+          })`,
         );
       }
       const context = { target: label, theme, caseId: parityCase.id };
@@ -491,6 +512,7 @@ async function captureTarget(
         if (ownsControls) {
           assertOwnership(parityCase, result, `after ${parityCase.id} `, {
             consumerInteractive: parityCase.interaction.consumerInteractive,
+            consumerInteractiveRoles: parityCase.interaction.consumerInteractiveRoles,
           });
         }
         const after = await page.evaluate(extractCasesExpression(catalog.profile.measuredRoles, catalog.profile.followedReferences));

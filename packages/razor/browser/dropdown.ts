@@ -137,7 +137,23 @@ interface LiveMenu {
 
 function setTransition(menu: LiveMenu, base: string[], transition: string[]): void {
   menu.transition = transition;
-  menu.element.className = [...base, ...transition].join(' ');
+  write(menu.element, 'className', [...base, ...transition].join(' '));
+}
+
+/**
+ * Writes a property only when it changes, as Vue's patch does. A rewrite of
+ * the same value is not free: it invalidates the element's style and repaints
+ * it, and a menu repainted where the reference's is not rasterises its
+ * rounded corners on a different history.
+ */
+function write(element: HTMLElement, property: 'className', value: string): void;
+function write(element: HTMLElement, property: 'left' | 'top', value: string): void;
+function write(element: HTMLElement, property: 'className' | 'left' | 'top', value: string): void {
+  if (property === 'className') {
+    if (element.className !== value) element.className = value;
+  } else if (element.style[property] !== value) {
+    element.style[property] = value;
+  }
 }
 
 // ------------------------------------------------------------------ enhance
@@ -235,11 +251,11 @@ function enhanceRoot(root: HTMLElement, enhanceContent: (node: ParentNode) => vo
     const offsetInMenu = resolveDropdownArrowOffset(arrowData);
 
     setTransition(menu, menuClasses(), menu.transition);
-    menu.element.style.left = `${x}px`;
-    menu.element.style.top = `${y}px`;
-    menu.arrow.className = resolveDropdownArrowClasses(currentPlacement).join(' ');
-    menu.arrow.style.left = `${offsetInMenu.x}px`;
-    menu.arrow.style.top = `${offsetInMenu.y}px`;
+    write(menu.element, 'left', `${x}px`);
+    write(menu.element, 'top', `${y}px`);
+    write(menu.arrow, 'className', resolveDropdownArrowClasses(currentPlacement).join(' '));
+    write(menu.arrow, 'left', `${offsetInMenu.x}px`);
+    write(menu.arrow, 'top', `${offsetInMenu.y}px`);
   }
 
   async function update(): Promise<void> {

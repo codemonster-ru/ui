@@ -63,3 +63,23 @@ body {
   font-size: var(--vf-font-size-sm);
   color: var(--vf-color-text-secondary);
 }
+
+/* VfDropdown's menu is fixed-position and, when open, lies below its trigger
+   outside the trigger's box. floater.js flips a menu that does not fit the
+   viewport, so an initially open case lower down the page would render flipped
+   for no reason but its place in the catalog. Two cases per row keep every
+   initially open case - the catalog lists them first - inside the first
+   viewport, and the minimum height keeps each open menu inside its own case
+   box, where the initial screenshot sees it and the next case does not.
+
+   Page chrome, applied identically to all three targets, so it can produce no
+   difference between them. The menu's geometry still comes from floater.js
+   and dropdown.css and is still what the comparison measures. */
+.parity-cases:has(> .parity-case > .vf-dropdown) {
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.parity-case:has(> .vf-dropdown) {
+  min-height: 200px;
+}

@@ -95,6 +95,9 @@ $breadcrumbsComponent = $registry->resolve('vf-breadcrumbs');
 // control and knows nothing about vf-menu-item, and each has its own catalog.
 $menuComponent = $registry->resolve('vf-menu');
 $menuItemComponent = $registry->resolve('vf-menu-item');
+// The M28 component. Resolved on its own account; its menu content is built
+// from the real vf-menu and vf-menu-item above, never from this component.
+$dropdownComponent = $registry->resolve('vf-dropdown');
 
 if (
     $input === null || $iconButton === null || $fieldComponent === null
@@ -146,6 +149,11 @@ if ($linkComponent === null) {
 
 if ($breadcrumbsComponent === null) {
     fwrite(STDERR, "The VueForge vf-breadcrumbs component is not registered.\n");
+    exit(1);
+}
+
+if ($dropdownComponent === null) {
+    fwrite(STDERR, "The VueForge vf-dropdown component is not registered.\n");
     exit(1);
 }
 
@@ -1181,12 +1189,81 @@ $renderMenuItem = static function (array $case) use ($menuItemComponent): string
     return $menuItemComponent->render(new ComponentRenderContext($props, []))->value();
 };
 
+/**
+ * VfDropdown's default slot, from the neutral menu vocabulary: a consumer
+ * input first, raw consumer buttons carrying role=menuitem and the
+ * `.vf-dropdown__item` family, a real vf-menu of real vf-menu-items, a plain
+ * paragraph - in the order the Vue fixture builds them.
+ */
+$dropdownMenu = static function (array $menu) use ($menuComponent, $menuItemComponent, $escape): string {
+    $markup = '';
+
+    if (isset($menu['control'])) {
+        $markup .= '<input class="parity-menu-control" aria-label="' . $escape((string) $menu['control']['text']) . '">';
+    }
+    foreach ($menu['items'] ?? [] as $item) {
+        $class = 'vf-dropdown__item' . (($item['active'] ?? false) ? ' vf-dropdown__item--active' : '');
+        $markup .= '<button type="button" role="menuitem" class="' . $class . '">' . $escape((string) $item['label']) . '</button>';
+    }
+    if (isset($menu['menuItems'])) {
+        $items = '';
+        foreach ($menu['menuItems'] as $item) {
+            $items .= $menuItemComponent->render(new ComponentRenderContext($item, []))->value();
+        }
+        $markup .= $menuComponent->render(new ComponentRenderContext([], [
+            'default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString($items),
+        ]))->value();
+    }
+    if (isset($menu['note'])) {
+        $markup .= '<p class="parity-menu-note">' . $escape((string) $menu['note']) . '</p>';
+    }
+
+    return $markup;
+};
+
+/**
+ * VfDropdown, for the dropdown catalog.
+ *
+ * The camelCase props of the catalog are the component's own alternative
+ * spellings, so they go through as they are; attrs fall through to the root.
+ * A `group` renders each member as its own instance with the case's content;
+ * an `after` control is a real consumer button after the roots.
+ */
+$renderDropdown = static function (array $case) use ($dropdownComponent, $dropdownMenu, $escape): string {
+    $content = $case['content'] ?? [];
+    $trigger = $content['trigger'] ?? null;
+    $slots = [];
+
+    if (isset($trigger['control'])) {
+        $html = '<button type="button" class="parity-trigger-control">' . $escape((string) $trigger['control']['text']) . '</button>';
+        $slots['trigger'] = static fn (): RenderedHtml => RenderedHtml::fromTrustedString($html);
+    } elseif (isset($trigger['text'])) {
+        $html = '<span>' . $escape((string) $trigger['text']) . '</span>';
+        $slots['trigger'] = static fn (): RenderedHtml => RenderedHtml::fromTrustedString($html);
+    }
+    $menu = $dropdownMenu($content['menu'] ?? []);
+    $slots['default'] = static fn (): RenderedHtml => RenderedHtml::fromTrustedString($menu);
+
+    $members = isset($case['group']) && is_array($case['group']) ? $case['group'] : [$case['props'] ?? []];
+    $markup = '';
+    foreach ($members as $props) {
+        $markup .= $dropdownComponent->render(new ComponentRenderContext($props + ($case['attrs'] ?? []), $slots))->value();
+    }
+    if (isset($content['after']['control'])) {
+        $markup .= '<button type="button" class="parity-after-control">' . $escape((string) $content['after']['control']['text']) . '</button>';
+    }
+
+    return $markup;
+};
+
 $sections = '';
 
 foreach ($catalog['cases'] as $case) {
     $caseId = (string) $case['id'];
 
-    if ($component === 'breadcrumbs') {
+    if ($component === 'dropdown') {
+        $body = $renderDropdown($case);
+    } elseif ($component === 'breadcrumbs') {
         $body = $renderBreadcrumbs($case);
     } elseif ($component === 'menu') {
         $body = $renderMenu($case);
@@ -1285,8 +1362,84 @@ $html = <<<HTML
     if (!caseId) return;
     (window.__parityTabsEvents[caseId] ??= []).push({ value: event.detail.value });
   });
+  // The neutral dropdown logs, kept exactly as the Vue fixture keeps them: one
+  // open-change entry per notification with the instance's index in the
+  // case, one entry per keydown with whether it was prevented, and every
+  // enter and leave a menu completes after the first real pointer or key
+  // input, with its duration from the menu's own class changes.
+  window.__parityDropdownEvents = {};
+  window.__parityDropdownKeys = [];
+  window.__parityDropdownTransitions = {};
+  document.addEventListener('vf-dropdown:open-change', (event) => {
+    const caseRoot = event.target.closest('[data-parity-case]');
+    if (!caseRoot) return;
+    const instance = [...caseRoot.querySelectorAll('.vf-dropdown')].indexOf(event.target);
+    (window.__parityDropdownEvents[caseRoot.getAttribute('data-parity-case')] ??= []).push({ instance, open: event.detail.open });
+  });
+  let observing = false;
+  for (const type of ['pointerdown', 'keydown']) document.addEventListener(type, () => (observing = true), true);
+  // Filled on window, after every product handler, and only then is an
+  // unconsumed navigation key's or Escape's browser default swallowed - see
+  // the Vue fixture for the headless Chrome defect this avoids.
+  const entries = new WeakMap();
+  const swallowed = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown', 'Escape']);
+  document.addEventListener('keydown', (event) => {
+    const entry = { key: event.key, prevented: false };
+    window.__parityDropdownKeys.push(entry);
+    entries.set(event, entry);
+  }, true);
+  window.addEventListener('keydown', (event) => {
+    const entry = entries.get(event);
+    if (entry) entry.prevented = event.defaultPrevented;
+    if (!event.defaultPrevented && swallowed.has(event.key)) event.preventDefault();
+  });
+  const running = new Map();
+  const phase = (element) => !element.isConnected
+    ? 'removed'
+    : [...element.classList].some((name) => name.startsWith('vf-floating-transition-leave'))
+      ? 'leave'
+      : [...element.classList].some((name) => name.startsWith('vf-floating-transition-enter')) ? 'enter' : 'none';
+  new MutationObserver((records) => {
+    if (!observing) return;
+    const now = performance.now();
+    for (const record of records) {
+      const nodes = record.type === 'childList' ? [...record.addedNodes, ...record.removedNodes] : [record.target];
+      for (const node of nodes) {
+        if (!(node instanceof HTMLElement) || !node.classList.contains('vf-dropdown__menu')) continue;
+        const state = phase(node);
+        const current = running.get(node);
+        if (current && (current.kind === 'enter' ? state !== 'enter' : state === 'removed')) {
+          current.ms = Math.round(now - current.start);
+          running.delete(node);
+        }
+        if (!running.has(node) && (state === 'enter' || state === 'leave')) {
+          const entry = { kind: state, start: now, ms: null };
+          (window.__parityDropdownTransitions[node.id] ??= []).push(entry);
+          running.set(node, entry);
+        }
+      }
+    }
+  }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
   const theme = new URLSearchParams(window.location.search).get('theme') ?? 'light';
   document.documentElement.setAttribute('data-vf-theme', theme);
+  // A dropdown page is ready once every overlay that entered at bootstrap has
+  // finished, as the Vue fixture waits for its appear transitions. Bounded;
+  // every other catalog is ready at once, as before.
+  if (document.querySelector('.vf-dropdown')) {
+    const deadline = performance.now() + 2000;
+    while (document.querySelector('[class*="vf-floating-transition-"]') && performance.now() < deadline) {
+      await new Promise((tick) => setTimeout(tick, 20));
+    }
+    // One resize before ready, as the Vue fixture dispatches it.
+    window.dispatchEvent(new Event('resize'));
+    await new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(done))));
+    // And one full repaint, so every open menu is rasterised afresh at its
+    // settled position - see the dropdown snapshot in extract.mjs.
+    document.body.style.opacity = '0.999';
+    await new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)));
+    document.body.removeAttribute('style');
+    await new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)));
+  }
   document.documentElement.setAttribute('data-parity-ready', 'true');
 </script>
 </body>

@@ -33,6 +33,7 @@ import VfLink from '@parity/core/components/link/VfLink.vue';
 import VfBreadcrumbs from '@parity/core/components/breadcrumbs/VfBreadcrumbs.vue';
 import VfMenu from '@parity/core/components/menu/VfMenu.vue';
 import VfMenuItem from '@parity/core/components/menu/VfMenuItem.vue';
+import VfDropdown from '@parity/core/components/dropdown/VfDropdown.vue';
 import { VueIconify } from '@codemonster-ru/vueforge-icons';
 import '@parity/core/styles/components.css';
 import cases from '@parity/cases.json';
@@ -194,6 +195,10 @@ interface ParityCase {
     before?: { control?: { text: string } };
     /** VfMenu's default slot, named rather than spelled as markup so both fixtures build the same nodes. */
     children?: MenuChildren;
+    /** VfDropdown's default slot. See DropdownMenu. */
+    menu?: DropdownMenu;
+    /** A consumer control rendered after VfDropdown's root: the target of an outside click. */
+    after?: { control?: { text: string } };
   };
   /** VfAccordion siblings rendered side by side, each with its own props. */
   group?: Record<string, unknown>[];
@@ -565,7 +570,6 @@ function renderBreadcrumbs(parityCase: ParityCase): VNode[] {
   return children;
 }
 
-
 /**
  * The consumer content a VfMenu case declares.
  *
@@ -613,6 +617,205 @@ function renderMenu(parityCase: ParityCase): VNode[] {
   }
 
   return children;
+}
+
+/**
+ * VfDropdown's default slot, as the shared catalog spells it.
+ *
+ * `items` are raw consumer buttons carrying role=menuitem and the dropdown's
+ * own `.vf-dropdown__item` class family, `active` adding its modifier;
+ * `menuItems` is a real VfMenu of real VfMenuItems; `note` is a plain
+ * paragraph - a non-item child to click; `control` is a real consumer input
+ * placed first, so focus can sit inside the menu on no item.
+ */
+interface DropdownMenu {
+  control?: { text: string };
+  items?: { label: string; active?: boolean }[];
+  menuItems?: { label: string; disabled?: boolean; href?: string; tone?: string }[];
+  note?: string;
+}
+
+/**
+ * The reactive props each VfDropdown instance is rendered with. A controlled
+ * case (`open` in its props) is rendered the way a v-model consumer renders
+ * it, with update:open written back; an uncontrolled one is left alone.
+ */
+const dropdownProps = reactive<Record<string, Record<string, unknown>>>({});
+
+/**
+ * The neutral logs the harness reads after a dropdown scenario, kept the same
+ * way by the Razor fixture page:
+ *
+ *   - one entry per openChange, with the instance's index in the case, from
+ *     the moment the page is ready - so the reference's setup-time emit for a
+ *     disabled dropdown given defaultOpen, which has no server counterpart,
+ *     is pinned by the characterization suite rather than compared here;
+ *   - one entry per keydown reaching the document, with whether it ended up
+ *     prevented;
+ *   - every enter and leave a menu completes after the first real pointer or
+ *     key input, with its duration from the menu's own class changes.
+ */
+declare global {
+  interface Window {
+    __parityDropdownEvents?: Record<string, { instance: number; open: boolean }[]>;
+    __parityDropdownKeys?: { key: string; prevented: boolean }[];
+    __parityDropdownTransitions?: Record<string, { kind: string; start: number; ms: number | null }[]>;
+  }
+}
+
+function renderDropdownMenu(menu: DropdownMenu | undefined): VNode[] {
+  const nodes: VNode[] = [];
+  if (menu?.control) nodes.push(h('input', { class: 'parity-menu-control', 'aria-label': menu.control.text }));
+  for (const item of menu?.items ?? []) {
+    nodes.push(
+      h(
+        'button',
+        { type: 'button', role: 'menuitem', class: ['vf-dropdown__item', item.active && 'vf-dropdown__item--active'] },
+        item.label,
+      ),
+    );
+  }
+  if (menu?.menuItems) {
+    nodes.push(h(VfMenu, null, { default: () => menu.menuItems!.map((item) => h(VfMenuItem, item as never)) }));
+  }
+  if (menu?.note !== undefined) nodes.push(h('p', { class: 'parity-menu-note' }, menu.note));
+  return nodes;
+}
+
+function renderDropdownInstance(
+  caseId: string,
+  key: string,
+  instance: number,
+  props: Record<string, unknown>,
+  attrs: Record<string, unknown>,
+  content: NonNullable<ParityCase['content']>,
+): VNode {
+  dropdownProps[key] ??= reactive({ ...props, ...attrs });
+  const live = dropdownProps[key];
+  const trigger = content.trigger as AccordionSlot | undefined;
+  const slots: Record<string, () => VNode[]> = { default: () => renderDropdownMenu(content.menu) };
+
+  if (trigger?.control) {
+    slots.trigger = () => [h('button', { type: 'button', class: 'parity-trigger-control' }, trigger.control!.text)];
+  } else if (trigger?.text !== undefined) {
+    slots.trigger = () => [h('span', trigger.text)];
+  }
+
+  return h(
+    VfDropdown,
+    {
+      ...live,
+      key,
+      onOpenChange: (open: boolean) => {
+        if (document.documentElement.getAttribute('data-parity-ready') !== 'true') return;
+        (window.__parityDropdownEvents![caseId] ??= []).push({ instance, open });
+      },
+      ...('open' in live ? { 'onUpdate:open': (open: boolean) => (live.open = open) } : {}),
+    },
+    slots,
+  );
+}
+
+/**
+ * VfDropdown, for the dropdown catalog.
+ *
+ * Its own function. A `group` renders each member as its own instance with
+ * the case's content, and the case-level props are ignored for a group, as
+ * the catalog says. An `after` control is a real consumer button placed after
+ * the roots, inside the case. Nothing here renders a control that is not the
+ * consumer's declared one.
+ */
+function renderDropdown(parityCase: ParityCase): VNode[] {
+  const content = parityCase.content ?? {};
+  const nodes: VNode[] = Array.isArray(parityCase.group)
+    ? parityCase.group.map((member, index) =>
+        renderDropdownInstance(parityCase.id, `${parityCase.id}/${index}`, index, member, parityCase.attrs, content),
+      )
+    : [renderDropdownInstance(parityCase.id, parityCase.id, 0, parityCase.props, parityCase.attrs, content)];
+
+  if (content.after?.control) {
+    nodes.push(h('button', { type: 'button', class: 'parity-after-control' }, content.after.control.text));
+  }
+
+  return nodes;
+}
+
+/**
+ * The dropdown's page-level harness logs. Installed before the application
+ * mounts; the transition observer records nothing until the first real input.
+ */
+function installDropdownLogs(): void {
+  window.__parityDropdownEvents = {};
+  window.__parityDropdownKeys = [];
+  window.__parityDropdownTransitions = {};
+  let observing = false;
+  for (const type of ['pointerdown', 'keydown']) {
+    document.addEventListener(type, () => (observing = true), true);
+  }
+  // The per-key record is filled on window, in the bubble phase, after every
+  // product handler - the document's escape stack included - has run. Only
+  // then, and only for a navigation key or Escape the product left alone, is
+  // the browser's default swallowed: headless Chrome answers an unconsumed
+  // one by hiding the tab, with no animation frame again on any later page
+  // (reproduced with ArrowUp on a closed trigger, which the reference leaves
+  // unhandled). Tab, Enter and Space keep their defaults - focus moves and
+  // native activation are behaviour the scenarios measure.
+  const entries = new WeakMap<Event, { key: string; prevented: boolean }>();
+  const swallowed = new Set([
+    'ArrowUp',
+    'ArrowDown',
+    'ArrowLeft',
+    'ArrowRight',
+    'Home',
+    'End',
+    'PageUp',
+    'PageDown',
+    'Escape',
+  ]);
+  document.addEventListener(
+    'keydown',
+    (event) => {
+      const entry = { key: event.key, prevented: false };
+      window.__parityDropdownKeys!.push(entry);
+      entries.set(event, entry);
+    },
+    true,
+  );
+  window.addEventListener('keydown', (event) => {
+    const entry = entries.get(event);
+    if (entry) entry.prevented = event.defaultPrevented;
+    if (!event.defaultPrevented && swallowed.has(event.key)) event.preventDefault();
+  });
+  const running = new Map<Element, { kind: string; start: number; ms: number | null }>();
+  const phase = (element: Element) =>
+    !element.isConnected
+      ? 'removed'
+      : [...element.classList].some((name) => name.startsWith('vf-floating-transition-leave'))
+        ? 'leave'
+        : [...element.classList].some((name) => name.startsWith('vf-floating-transition-enter'))
+          ? 'enter'
+          : 'none';
+  new MutationObserver((records) => {
+    if (!observing) return;
+    const now = performance.now();
+    for (const record of records) {
+      const nodes = record.type === 'childList' ? [...record.addedNodes, ...record.removedNodes] : [record.target];
+      for (const node of nodes) {
+        if (!(node instanceof HTMLElement) || !node.classList.contains('vf-dropdown__menu')) continue;
+        const state = phase(node);
+        const current = running.get(node);
+        if (current && (current.kind === 'enter' ? state !== 'enter' : state === 'removed')) {
+          current.ms = Math.round(now - current.start);
+          running.delete(node);
+        }
+        if (!running.has(node) && (state === 'enter' || state === 'leave')) {
+          const entry = { kind: state, start: now, ms: null };
+          (window.__parityDropdownTransitions![node.id] ??= []).push(entry);
+          running.set(node, entry);
+        }
+      }
+    }
+  }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
 }
 
 /**
@@ -1128,6 +1331,10 @@ function renderCase(parityCase: ParityCase): VNode {
     return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, renderMenuItem(parityCase));
   }
 
+  if (catalog.component === 'dropdown') {
+    return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, renderDropdown(parityCase));
+  }
+
   if (catalog.component === 'icon-button') {
     return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, [renderIconButton(parityCase)]);
   }
@@ -1218,5 +1425,33 @@ window.__parityTransition = async (caseId, to) => {
 const theme = new URLSearchParams(window.location.search).get('theme') ?? 'light';
 document.documentElement.setAttribute('data-vf-theme', theme);
 
+if (catalog.component === 'dropdown') installDropdownLogs();
+
 createApp(Cases).mount('#parity-root');
-document.documentElement.setAttribute('data-parity-ready', 'true');
+
+// A dropdown page is ready once every overlay that entered on mount - the
+// initially open menus' appear transition - has finished, so the initial
+// extraction measures a settled menu rather than one frame of its enter.
+// Bounded; every other catalog is ready at once, as before.
+if (catalog.component === 'dropdown') {
+  void (async () => {
+    const deadline = performance.now() + 2000;
+    while (document.querySelector('[class*="vf-floating-transition-"]') && performance.now() < deadline) {
+      await new Promise((tick) => setTimeout(tick, 20));
+    }
+    // One resize, answered by autoUpdate on the next frame, so every open
+    // menu stands at its settled position before anything is captured: the
+    // screenshot's beyond-viewport resize would otherwise race that update.
+    window.dispatchEvent(new Event('resize'));
+    await new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(done))));
+    // And one full repaint, so every open menu is rasterised afresh at its
+    // settled position - see the dropdown snapshot in extract.mjs.
+    document.body.style.opacity = '0.999';
+    await new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)));
+    document.body.removeAttribute('style');
+    await new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)));
+    document.documentElement.setAttribute('data-parity-ready', 'true');
+  })();
+} else {
+  document.documentElement.setAttribute('data-parity-ready', 'true');
+}

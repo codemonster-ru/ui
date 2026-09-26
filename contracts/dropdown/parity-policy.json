@@ -1,0 +1,217 @@
+{
+  "$comment": "Parity policy for the shared VfDropdown cases. Plain data: no DSL, no waiver engine. The first policy for an overlay: a component whose menu is created on open, teleported out of the case, positioned by floater.js and animated in and out. It names the live dimensions beside the initial ones and starts empty. What the Razor adapter cannot represent - a consumer that refuses the emitted value, the scoped slot props, a teleport target given as an element, the setup-time emit of a disabled dropdown given defaultOpen - is not a catalog case and not an approval: it is recorded below with where it is covered instead.",
+  "classifications": {
+    "exact": "Must match literally across every target. Structure, canonical classes, native attributes, the menu's inline position and the arrow's, visible text, accessible names and states, live state, ownership, relationships, focus, the event log and the transitions.",
+    "semantic": "Framework mechanics may differ; the observable meaning must not. How content is composed, how state is stored, how a renderer marks its own output, which literal a generated id has, how an adapter anchors its teleported content.",
+    "framework-specific": "Historical behaviour of one adapter that the other is not required to reproduce. Narrow, named, and covered by its own test."
+  },
+  "notCompared": {
+    "$comment": "Recorded so a reviewer can see what is deliberately outside the comparison, without leaving dead dimensions that look like live protection. Nothing here is a waiver: the extractor never produces these differences in the first place.",
+    "attributeOrder": "Attributes are extracted into a sorted map, so serialisation order cannot produce a difference.",
+    "rendererMarkers": "Vue scope attributes (data-v-*), the Razor ownership marker, the Razor adapter's configuration (data-vf-razor-dropdown-*) and the inert <template data-vf-razor-dropdown=\"menu\"> holding a closed menu's content are dropped by scripts/parity/extract.mjs. What the template holds is compared the moment the controller renders it into a menu.",
+    "teleportAnchors": "Vue's Teleport marks its place in <body> with empty text nodes and a v-if comment; the Razor controller appends one empty text node per instance at bootstrap. Neither is an element and the extractor describes elements. What the anchors decide - that menus sit in <body> in instance order, whatever order they open in - is compared through document-order id tokens and by the characterization suite and the Razor browser gate.",
+    "generatedIdLiterals": "Vue's useId writes vf-dropdown-*-v-N and the Razor server writes vf-dropdown-*-r-N; the extractor rewrites every id to its document position, the followed menu's after the root's, and every aria-controls / aria-labelledby through the same map, so the graph is compared and the literal is not. A closed dropdown's aria-controls is compared as #dangling, which a target that resolved it, or dropped it, differs from.",
+    "eventTransport": "Vue emits update:open and then openChange; the Razor controller dispatches one bubbling vf-dropdown:open-change with { open }. What is compared is the neutral log each fixture keeps from the moment the page is ready, one entry per notification with the instance's index, as interaction.events - repeats included. The Vue pair's order and count are pinned by the characterization suite.",
+    "styleSerialisation": "Both adapters write the menu's and the arrow's inline position through the CSSOM at run time, and the Razor server writes an open menu's unpositioned seed as attribute text. The extractor parses both through the browser and compares the declarations: `top: 84.8589px` written by two scripts compares equal and a rounded or recomputed one does not."
+  },
+  "outsideTheCatalog": {
+    "$comment": "Behaviour that is part of the contract and deliberately not represented as a parity case, each with where it is covered instead.",
+    "controlledWithoutConsumer": "A controlled Vue dropdown whose consumer never writes update:open back stays as it was while both events are emitted. The Razor adapter has no consumer protocol - its controller opens and closes directly. The catalog carries dropdown/open-one-of-two, where the Vue fixture writes the value back as v-model does; the refusal is pinned by VfDropdown.characterization.spec.ts.",
+    "scopedSlotProps": "The trigger slot's open/toggle/disabled and the default slot's close/open are Vue-only: a server-rendered slot is static markup. Pinned by the characterization suite; the Razor slots are documented as static.",
+    "teleportToElement": "teleportTo given as an HTMLElement is Vue-only; a selector is covered by the Razor browser gate (teleport-to=\"#razor-overlay-root\") and the characterization suite; teleportTo: null is spelled teleport-to=\"false\" by the Razor adapter's null convention.",
+    "setupTimeEmit": "A disabled Vue dropdown given defaultOpen or open emits update:open(false) and openChange(false) during setup. There is no server counterpart and no listener a host could have attached before bootstrap; the fixtures log from readiness on, and the emit is pinned by the characterization suite.",
+    "focusScopeBranch": "Inside an active modal focus trap the open menu joins the trap's scope. No migrated component owns a trap yet; the branch is pinned by the characterization suite and is outside the Razor controller until a trap exists.",
+    "scrollAndResize": "autoUpdate re-positions an open menu on window scroll and resize. The call - autoUpdate on the trigger alone - is pinned by the characterization suite; the resulting geometry was measured equal on Vue and Razor in Chrome 154 (51.0711px after a 400px scroll, 391.071px after a resize) and is exercised by the Razor browser gate. The step vocabulary has no timed wait, and a scroll during the enter transition measures an interpolated transform.",
+    "tabOutOfTheDocument": "Tab from the last focusable element leaves the document, and headless Chrome then delivers junk keydowns to every later scenario on the page. The catalog's Tab scenarios stay inside the document.",
+    "nodeIdentityAcrossOpens": "Every open creates a new menu node on every target. Pinned by the characterization suite and the Razor browser gate; the catalog's reopen scenario compares the transitions it produces."
+  },
+  "dimensions": {
+    "dom.structure": {
+      "classification": "exact",
+      "description": "An unexpected element, a missing trigger, a menu rendered while closed, a menu left in the product DOM after its leave, a menu inside the root where it should be teleported or outside it where it should be in place, an arrow that is not the menu's first child. The followed menu is described as its own top-level entry after the root's children. Never approvable."
+    },
+    "dom.canonicalClasses": {
+      "classification": "exact",
+      "description": "vf-* classes on every element: the root, the trigger, the menu's variant and --top modifiers, the arrow's --top/--bottom modifier, the .vf-dropdown__item family and its active modifier on consumer items, the VfMenuItem classes. A menu caught mid-transition would carry vf-floating-transition-* here, which is why every page is ready only after its overlays settle and every snapshot waits for them. Consumer classes included."
+    },
+    "dom.nativeAttributes": {
+      "classification": "exact",
+      "description": "tabindex on the trigger (0, or -1 while disabled), the menu's and the arrow's inline position - declarations compared through the browser's parser, unrounded, so the position floater.js computed from the same inputs on every target - aria-haspopup, native disabled and href on consumer items, and every native attribute a consumer forwards onto the root. aria-haspopup joined the compared attribute set in M28 - the attribute-coverage gate's fourteenth finding, reproduced as a false PASS on a real capture before it was added."
+    },
+    "dom.text": {
+      "classification": "exact",
+      "description": "Visible text content of every element: the trigger slot, each item's label."
+    },
+    "dom.aria": {
+      "classification": "exact",
+      "description": "aria-expanded on every trigger (true, or false - never absent), aria-disabled only as \"true\", aria-haspopup, role=menu on the menu (and on a nested vf-menu), role=menuitem on consumer items, aria-hidden on the arrow, aria-disabled on a disabled VfMenuItem, and every consumer ARIA attribute on the root."
+    },
+    "dom.productData": {
+      "classification": "exact",
+      "description": "data-* attributes that carry product semantics: a consumer data-testid on the root. The dropdown writes none of its own."
+    },
+    "dom.relationships": {
+      "classification": "semantic",
+      "description": "The id graph, compared through document-position tokens with the followed menu numbered after the root: every trigger's id and aria-controls, the menu's id and its aria-labelledby resolving to its own trigger. A closed dropdown's aria-controls is #dangling by design; a resolved one, a dropped one, one naming another instance's menu or a menu labelled by another instance's trigger differs."
+    },
+    "dom.actionPresence": {
+      "classification": "exact",
+      "description": "Whether each button is operable: a disabled VfMenuItem button is inoperable on every target."
+    },
+    "dom.wrapperPresence": {
+      "classification": "exact",
+      "description": "Present so the comparator has a classification for it. A dropdown has no wrapper either adapter may add."
+    },
+    "dom.inertAction": {
+      "classification": "exact",
+      "description": "Present for the same reason. A dropdown renders no inert action."
+    },
+    "style.geometry": {
+      "classification": "exact",
+      "description": "width, height, padding, border width and radius, font size and line height of the root, the trigger, a consumer trigger control and an in-place menu."
+    },
+    "style.colour": {
+      "classification": "exact",
+      "description": "colour, background colour and border colour of the same elements."
+    },
+    "visual": {
+      "classification": "exact",
+      "description": "Clipped screenshot of the case root in its initial state, per theme; every initially open menu lies inside its case box."
+    },
+    "visual.postInteraction": {
+      "classification": "exact",
+      "description": "Clipped screenshot after the interaction, per theme, covering the case root and every menu it owns wherever it is."
+    },
+    "a11y.role": {
+      "classification": "exact",
+      "description": "Computed role of the trigger (generic - the reference gives it none), a consumer trigger control, the menu, its first item and a disabled item, read where the menu is through the trigger's aria-controls; the arrow's absence from the tree."
+    },
+    "a11y.name": {
+      "classification": "exact",
+      "description": "Accessible name of the trigger (empty on a generic element), of the menu (its trigger's text, through aria-labelledby) and of each read item."
+    },
+    "a11y.states": {
+      "classification": "exact",
+      "description": "focusable, disabled and hasPopup as exposed to assistive tech, before and after an interaction. Chrome 154 exposes hasPopup=menu on the trigger and does not expose expanded on a generic element, so aria-expanded is compared as dom.aria and interaction.state only; hasPopup joined the read states in M28."
+    },
+    "ownership.controls": {
+      "classification": "exact",
+      "description": "The component-owned controls measured in the case - every trigger wrapper with its tag, role (none), aria-expanded, aria-haspopup, aria-disabled, tabindex and name - beside the consumer-owned count over the case and its open menus, the explicit-role total and the totals they must add up to. Never approvable: this is the M28 evidence that the trigger is the component's only control, the menu a structural node, and every item the consumer's."
+    },
+    "interaction.state": {
+      "classification": "exact",
+      "description": "The live state after a scenario, per instance: aria-expanded, whether a menu exists, where it is, its classes and arrow, its items, its geometry relative to its trigger, the transitions the fixture saw complete with their duration bucket, the settled flag, whether each keydown was prevented. Never approvable."
+    },
+    "interaction.events": {
+      "classification": "exact",
+      "description": "The neutral log of open-change notifications the fixture recorded from readiness on, with the instance and the value. A missing, duplicated or reordered notification fails here, and so does a repeated open that stopped notifying. Never approvable."
+    },
+    "interaction.convergence": {
+      "classification": "exact",
+      "description": "Whether a closing gesture's DOM equals the target's own render of the closed case of the same content. A leave that left a menu behind, a stale aria-expanded or a resolved reference fails here. Open end states are compared three ways instead: an inline position in viewport coordinates cannot equal one measured elsewhere on the page. Never approvable."
+    },
+    "interaction.focus": {
+      "classification": "exact",
+      "description": "Where focus is after the scenario - a trigger, a consumer control inside one, an item (by label), another control in a menu, the body, outside the case - and which instance owns it."
+    },
+    "interaction.relationships": {
+      "classification": "exact",
+      "description": "Whether each trigger's aria-controls reaches a menu labelled by that trigger, measured on the live DOM wherever the menu is."
+    },
+    "interaction.value": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. A dropdown has no value."
+    },
+    "interaction.selection": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. A dropdown carries no caret."
+    },
+    "interaction.wrapperPresence": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. A dropdown renders no wrapper that could appear on one side only."
+    }
+  },
+  "historicalQuirks": [
+    {
+      "id": "arrowup-does-not-open",
+      "description": "ArrowUp, Home and End on a closed trigger do nothing and are not prevented; only ArrowDown, Enter and Space open.",
+      "classification": "exact",
+      "reason": "Reproduced on both adapters and compared as dropdown/interaction-arrowup-closed and dropdown/interaction-home-end-closed.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/dropdown/cases.json#dropdown/interaction-arrowup-closed"
+    },
+    {
+      "id": "disabled-items-are-walked",
+      "description": "The walk does not skip disabled items. A disabled button cannot take focus and blocks the walk where it stands; a disabled VfMenuItem link keeps tabindex=-1 and is walked onto.",
+      "classification": "exact",
+      "reason": "Compared as dropdown/interaction-disabled-blocks and dropdown/interaction-disabled-link-walked.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/dropdown/cases.json#dropdown/interaction-disabled-blocks"
+    },
+    {
+      "id": "walk-starts-from-minus-one",
+      "description": "From focus inside the menu on no item, ArrowUp lands on the second to last item.",
+      "classification": "exact",
+      "reason": "Compared as dropdown/interaction-menu-control-arrowup.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/dropdown/cases.json#dropdown/interaction-menu-control-arrowup"
+    },
+    {
+      "id": "reopen-notifies-again",
+      "description": "An opening key on an open dropdown emits update:open and openChange again, and a keyboard open whose first item cannot take focus leaves focus on the trigger.",
+      "classification": "exact",
+      "reason": "Compared as dropdown/interaction-reemit and dropdown/interaction-first-disabled.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/dropdown/cases.json#dropdown/interaction-reemit"
+    },
+    {
+      "id": "tab-does-not-close",
+      "description": "Tab is not handled: focus moves and the menu stays open.",
+      "classification": "exact",
+      "reason": "Compared as dropdown/interaction-tab-in-menu and dropdown/interaction-tab-from-trigger.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/dropdown/cases.json#dropdown/interaction-tab-in-menu"
+    },
+    {
+      "id": "any-inside-click-closes",
+      "description": "A click anywhere inside the menu closes it when closeOnSelect is on - an item, the arrow, the padding - except where Chrome dispatches no click at all, on a disabled button.",
+      "classification": "exact",
+      "reason": "Compared as dropdown/interaction-click-item, dropdown/interaction-click-arrow and dropdown/interaction-click-disabled-item.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/dropdown/cases.json#dropdown/interaction-click-arrow"
+    },
+    {
+      "id": "outside-click-steals-focus",
+      "description": "An outside click closes the menu and focuses the trigger, taking focus from whatever was clicked; each open dropdown does so in turn, so the last in document order keeps it.",
+      "classification": "exact",
+      "reason": "Compared as dropdown/interaction-outside-click and dropdown/interaction-outside-closes-both.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/dropdown/cases.json#dropdown/interaction-outside-click"
+    },
+    {
+      "id": "no-mutual-exclusion",
+      "description": "Two keyboard opens leave two dropdowns open. A pointer open closes an open neighbour only as an outside click, and the neighbour focuses its own trigger.",
+      "classification": "exact",
+      "reason": "Compared as dropdown/interaction-two-keyboard-open and dropdown/interaction-pointer-switch.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/dropdown/cases.json#dropdown/interaction-two-keyboard-open"
+    },
+    {
+      "id": "escape-is-a-lifo-stack",
+      "description": "Escape closes only the most recently opened dropdown, one per press.",
+      "classification": "exact",
+      "reason": "Compared as dropdown/interaction-escape-lifo and dropdown/interaction-escape-lifo-twice.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/dropdown/cases.json#dropdown/interaction-escape-lifo"
+    },
+    {
+      "id": "closed-reference-dangles",
+      "description": "A closed dropdown's aria-controls names the id of a menu that does not exist.",
+      "classification": "exact",
+      "reason": "Compared as dropdown/default and dropdown/open-one-of-two.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/dropdown/cases.json#dropdown/default"
+    }
+  ],
+  "approvedDivergences": []
+}

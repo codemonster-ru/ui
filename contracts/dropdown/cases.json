@@ -1,0 +1,3174 @@
+{
+  "$comment": "Shared VfDropdown cases, rendered by the Vue adapter at the reference commit, by the current Vue adapter, and by the real Razor adapter with its browser controller. The first catalog whose product DOM is partly outside the case: every menu is found through its trigger's aria-controls - the one declared edge the extractor follows - and compared where it is. Initially open cases come first and the page lays cases two per row, so every one of them fits the first viewport and none is flipped by where it happens to sit; the first case is closed, so no menu sits over the slot every isolated scenario is measured in. Open end states are compared three ways and not converged: a menu's inline position is in viewport coordinates, and the isolated scenario sits elsewhere than its initial counterpart. Closed end states converge on the closed case of the same content.",
+  "component": "dropdown",
+  "propVocabulary": {
+    "open": "boolean | undefined. Controlled open state. The Vue fixture writes update:open back, as v-model does; the Razor adapter reads it as the initial state and toggles on its own.",
+    "defaultOpen": "boolean, default false. The initial uncontrolled state.",
+    "placement": "'bottom-start' | 'bottom-end', default 'bottom-start'. floater.js flips within the pair of the same side.",
+    "teleportTo": "Not in the catalog: every case teleports to <body> or renders in place. A named destination is exercised by the Razor browser gate and the characterization suite.",
+    "disableTeleport": "boolean, default false. Renders the menu in place, after the trigger, inside the root.",
+    "closeOnSelect": "boolean, default true. Whether a click inside the menu closes it.",
+    "variant": "'default' | 'pills', default 'default'. The menu's modifier.",
+    "disabled": "boolean, default false. aria-disabled=\"true\", tabindex=-1, never open."
+  },
+  "contentVocabulary": {
+    "trigger": "The trigger slot: `text` is a plain span; `control` is a real consumer button inside the trigger wrapper. Static on every target: the slot's open/toggle/disabled props are Vue-only and pinned by the characterization suite.",
+    "menu": "The default slot: `items` are raw consumer buttons carrying role=menuitem and the .vf-dropdown__item family (`active` adds its modifier); `menuItems` is a real VfMenu of real VfMenuItems (label, disabled, href, tone); `control` is a real consumer input placed first; `note` a plain paragraph. The slot's close/open props are Vue-only.",
+    "after": "A consumer control rendered after the dropdown roots, inside the case: `control` is a real consumer button, the target of an outside click."
+  },
+  "groupVocabulary": "A list of sibling dropdowns rendered side by side in one case, each with its own props; the case-level props are ignored, the content applies to each.",
+  "ownershipVocabulary": {
+    "componentInteractive": "The exact number of controls the component itself renders: one trigger wrapper (div, tabindex, no role) per instance. The menu is a structural overlay node, not a control.",
+    "consumerInteractive": "The exact number of consumer focusable elements in the case and in its open menus: a trigger control, an after control, and every item or input in an open menu.",
+    "consumerInteractiveRoles": "The exact number of consumer elements carrying an explicit interactive role: the role=menuitem items of every open menu. Zero while closed."
+  },
+  "interactionVocabulary": {
+    "$comment": "A case with an `interaction` is driven with real pointer and key events, alone on the page with its followed targets, then re-measured: snapshot, DOM (with the followed menu) and accessibility tree. The snapshot waits, bounded, for every enter or leave to finish.",
+    "steps": "clickButton (a real pointer click at the element's centre; `selector` is .vf-dropdown__trigger, .parity-trigger-control or .parity-after-control, `index` picks a match; with `through`, the search is inside the element the named case element's aria-controls reaches - the teleported menu), focusButton (likewise), pressKey with ArrowDown, ArrowUp, Home, End, Enter, Space, Tab or Escape, wait (`ms`), scrollWindow (`y`). Tab never leaves the document, and every fixture swallows the browser default of a navigation key or Escape the product left unhandled - after recording that it did: headless Chrome answers an unconsumed one by hiding the tab, with no animation frame again on any later page.",
+    "expect": "Claims about the snapshot fields of the same name, or `a11y:<role>.<state>` about the tree read after the gesture. `transitions` lists every enter and leave completed since the first input, with its duration bucketed from the menu's own class changes: short under 300 ms, normal under 480 ms.",
+    "matches": "The closed case of the same content whose fresh render the gesture has to land on."
+  },
+  "cases": [
+    {
+      "id": "dropdown/default",
+      "title": "Closed: the trigger wrapper alone, its aria-controls naming a menu that does not exist",
+      "$why": "The closed half of the relationship contract: aria-controls dangles by design on every target, and no menu is anywhere in the document.",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "visual": true
+    },
+    {
+      "id": "dropdown/open",
+      "title": "defaultOpen: the menu teleported to <body>, positioned below the trigger, the two wired both ways",
+      "$why": "The open half: aria-controls resolves to a role=menu outside the case, labelled by the trigger. The consumer's three role=menuitem buttons are consumer controls with consumer roles.",
+      "props": {
+        "defaultOpen": true
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 3,
+      "consumerInteractiveRoles": 3,
+      "visual": true
+    },
+    {
+      "id": "dropdown/open-pills",
+      "title": "The pills variant, one item carrying the dropdown's own active modifier",
+      "props": {
+        "defaultOpen": true,
+        "variant": "pills"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate",
+              "active": true
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 3,
+      "consumerInteractiveRoles": 3,
+      "visual": true
+    },
+    {
+      "id": "dropdown/open-bottom-end",
+      "title": "bottom-end: the menu aligned to the trigger's right edge",
+      "props": {
+        "defaultOpen": true,
+        "placement": "bottom-end"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 3,
+      "consumerInteractiveRoles": 3,
+      "visual": true
+    },
+    {
+      "id": "dropdown/open-menu-items",
+      "title": "A real VfMenu of VfMenuItems: a disabled button, a disabled link and a danger item",
+      "$why": "The composition the historical spec used. The nested vf-menu carries its own role=menu; the disabled link keeps tabindex=-1 and stays focusable, the disabled button does not.",
+      "props": {
+        "defaultOpen": true
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "menuItems": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate",
+              "disabled": true
+            },
+            {
+              "label": "Archive",
+              "href": "#archive",
+              "disabled": true
+            },
+            {
+              "label": "Delete",
+              "tone": "danger"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 4,
+      "consumerInteractiveRoles": 4,
+      "visual": true
+    },
+    {
+      "id": "dropdown/open-in-place",
+      "title": "disableTeleport: the menu rendered in place, after the trigger, inside the case",
+      "$why": "The destination half: an in-place menu is a child of the root, so the relationship resolves inside the case and nothing is followed out of it.",
+      "props": {
+        "defaultOpen": true,
+        "disableTeleport": true
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 3,
+      "consumerInteractiveRoles": 3,
+      "visual": true
+    },
+    {
+      "id": "dropdown/open-two",
+      "title": "Two open dropdowns in one case: four generated ids, two independent pairs",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "group": [
+        {
+          "defaultOpen": true
+        },
+        {
+          "defaultOpen": true
+        }
+      ],
+      "componentInteractive": 2,
+      "consumerInteractive": 6,
+      "consumerInteractiveRoles": 6,
+      "visual": true
+    },
+    {
+      "id": "dropdown/open-one-of-two",
+      "title": "One open (controlled) beside one closed: one resolved and one dangling reference",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "group": [
+        {
+          "open": true
+        },
+        {}
+      ],
+      "componentInteractive": 2,
+      "consumerInteractive": 3,
+      "consumerInteractiveRoles": 3,
+      "visual": true
+    },
+    {
+      "id": "dropdown/trigger-control",
+      "title": "A consumer button inside the trigger wrapper: two tab stops, one of them the consumer's",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "control": {
+            "text": "Actions"
+          }
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "visual": true
+    },
+    {
+      "id": "dropdown/disabled",
+      "title": "disabled: aria-disabled=\"true\", tabindex=-1, aria-expanded=\"false\"",
+      "props": {
+        "disabled": true
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "visual": true
+    },
+    {
+      "id": "dropdown/disabled-default-open",
+      "title": "disabled wins over defaultOpen: closed, no menu",
+      "$why": "The reference also emits update:open(false) and openChange(false) at setup here; that setup-time emit has no server counterpart and is pinned by the characterization suite, outside the compared event log.",
+      "props": {
+        "disabled": true,
+        "defaultOpen": true
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "dropdown/closed-two",
+      "title": "Two closed dropdowns and a consumer control after them",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        },
+        "after": {
+          "control": {
+            "text": "Elsewhere"
+          }
+        }
+      },
+      "group": [{}, {}],
+      "componentInteractive": 2,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "dropdown/attrs",
+      "title": "Consumer attrs land on the root: id, class, data-testid, aria-label, style",
+      "props": {},
+      "attrs": {
+        "id": "consumer-dropdown",
+        "class": "consumer-dropdown",
+        "data-testid": "row-actions",
+        "aria-label": "Row actions",
+        "style": "margin-left: 8px;"
+      },
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "visual": true
+    },
+    {
+      "id": "dropdown/empty-trigger",
+      "title": "No trigger slot: an empty trigger wrapper, still a tab stop",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "dropdown/with-outside",
+      "title": "A consumer control after the dropdown: the target of an outside click",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        },
+        "after": {
+          "control": {
+            "text": "Elsewhere"
+          }
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "dropdown/keep-open",
+      "title": "closeOnSelect=false, closed",
+      "props": {
+        "closeOnSelect": false
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "dropdown/menu-control",
+      "title": "A consumer input before the items: focus can sit inside the menu on no item",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "control": {
+            "text": "Search"
+          },
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "dropdown/menu-items",
+      "title": "A VfMenu of VfMenuItems, closed",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "menuItems": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate",
+              "disabled": true
+            },
+            {
+              "label": "Archive",
+              "href": "#archive",
+              "disabled": true
+            },
+            {
+              "label": "Delete",
+              "tone": "danger"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "dropdown/first-disabled",
+      "title": "The first VfMenuItem is disabled, closed",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "menuItems": [
+            {
+              "label": "Off",
+              "disabled": true
+            },
+            {
+              "label": "On"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "dropdown/in-place",
+      "title": "disableTeleport, closed",
+      "props": {
+        "disableTeleport": true
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "dropdown/bottom-end",
+      "title": "bottom-end, closed",
+      "props": {
+        "placement": "bottom-end"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "dropdown/low",
+      "title": "A dropdown low in the viewport, closed: the consumer's own margin puts the trigger near the bottom",
+      "props": {},
+      "attrs": {
+        "style": "margin-top: 760px;"
+      },
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "dropdown/interaction-click-open",
+      "title": "A pointer click opens the menu in <body>; focus stays on the trigger",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-dropdown__trigger"
+          }
+        ],
+        "consumerInteractive": 3,
+        "consumerInteractiveRoles": 3,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "trigger",
+          "focusInstance": 0,
+          "events": [
+            {
+              "instance": 0,
+              "open": true
+            }
+          ],
+          "menuStates": [
+            {
+              "location": "body",
+              "classes": ["vf-dropdown__menu", "vf-dropdown__menu--default"],
+              "role": "menu",
+              "arrowClasses": ["vf-dropdown__arrow", "vf-dropdown__arrow--bottom"],
+              "items": ["Edit", "Duplicate", "Archive"]
+            }
+          ],
+          "menuRelationships": [
+            {
+              "controls": "menu",
+              "labelledBy": "own-trigger"
+            }
+          ],
+          "settled": true,
+          "transitions": [["enter:normal"]],
+          "keydownPrevented": [],
+          "a11y:trigger.hasPopup": "menu"
+        }
+      }
+    },
+    {
+      "id": "dropdown/interaction-click-close",
+      "title": "A second click closes it: focus on the trigger, the menu removed after its leave",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-dropdown__trigger"
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-dropdown__trigger"
+          }
+        ],
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["false"],
+          "focusRole": "trigger",
+          "events": [
+            {
+              "instance": 0,
+              "open": true
+            },
+            {
+              "instance": 0,
+              "open": false
+            }
+          ],
+          "menuStates": [null],
+          "menuRelationships": [
+            {
+              "controls": "dangling",
+              "labelledBy": null
+            }
+          ],
+          "settled": true,
+          "transitions": [["enter:short", "leave:normal"]]
+        },
+        "matches": "dropdown/default"
+      }
+    },
+    {
+      "id": "dropdown/interaction-arrowdown-open",
+      "title": "ArrowDown on the trigger opens it, is prevented, and focuses the first item",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-dropdown__trigger",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          }
+        ],
+        "consumerInteractive": 3,
+        "consumerInteractiveRoles": 3,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "item",
+          "focusItem": "Edit",
+          "keydownPrevented": ["ArrowDown:true"],
+          "events": [
+            {
+              "instance": 0,
+              "open": true
+            }
+          ],
+          "menuStates": [
+            {
+              "location": "body",
+              "classes": ["vf-dropdown__menu", "vf-dropdown__menu--default"],
+              "role": "menu",
+              "arrowClasses": ["vf-dropdown__arrow", "vf-dropdown__arrow--bottom"],
+              "items": ["Edit", "Duplicate", "Archive"]
+            }
+          ],
+          "menuRelationships": [
+            {
+              "controls": "menu",
+              "labelledBy": "own-trigger"
+            }
+          ],
+          "transitions": [["enter:normal"]]
+        }
+      }
+    },
+    {
+      "id": "dropdown/interaction-enter-open",
+      "title": "Enter on the trigger opens it, is prevented, and focuses the first item",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-dropdown__trigger",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "Enter"
+          }
+        ],
+        "consumerInteractive": 3,
+        "consumerInteractiveRoles": 3,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "item",
+          "focusItem": "Edit",
+          "keydownPrevented": ["Enter:true"],
+          "events": [
+            {
+              "instance": 0,
+              "open": true
+            }
+          ],
+          "menuStates": [
+            {
+              "location": "body",
+              "classes": ["vf-dropdown__menu", "vf-dropdown__menu--default"],
+              "role": "menu",
+              "arrowClasses": ["vf-dropdown__arrow", "vf-dropdown__arrow--bottom"],
+              "items": ["Edit", "Duplicate", "Archive"]
+            }
+          ],
+          "menuRelationships": [
+            {
+              "controls": "menu",
+              "labelledBy": "own-trigger"
+            }
+          ],
+          "transitions": [["enter:normal"]]
+        }
+      }
+    },
+    {
+      "id": "dropdown/interaction-space-open",
+      "title": "Space on the trigger opens it, is prevented, and focuses the first item",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-dropdown__trigger",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": " "
+          }
+        ],
+        "consumerInteractive": 3,
+        "consumerInteractiveRoles": 3,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "item",
+          "focusItem": "Edit",
+          "keydownPrevented": [" :true"],
+          "events": [
+            {
+              "instance": 0,
+              "open": true
+            }
+          ],
+          "menuStates": [
+            {
+              "location": "body",
+              "classes": ["vf-dropdown__menu", "vf-dropdown__menu--default"],
+              "role": "menu",
+              "arrowClasses": ["vf-dropdown__arrow", "vf-dropdown__arrow--bottom"],
+              "items": ["Edit", "Duplicate", "Archive"]
+            }
+          ],
+          "menuRelationships": [
+            {
+              "controls": "menu",
+              "labelledBy": "own-trigger"
+            }
+          ],
+          "transitions": [["enter:normal"]]
+        }
+      }
+    },
+    {
+      "id": "dropdown/interaction-arrowup-closed",
+      "title": "ArrowUp on a closed trigger opens nothing and is not prevented",
+      "$why": "The reference's trigger handles ArrowDown, Enter and Space only. A port that opened on ArrowUp, as the ARIA menu-button pattern suggests, would differ here.",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-dropdown__trigger",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowUp"
+          }
+        ],
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["false"],
+          "focusRole": "trigger",
+          "keydownPrevented": ["ArrowUp:false"],
+          "events": [],
+          "transitions": [[]]
+        },
+        "matches": "dropdown/default"
+      }
+    },
+    {
+      "id": "dropdown/interaction-home-end-closed",
+      "title": "Home and End on a closed trigger open nothing and are not prevented",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-dropdown__trigger",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "Home"
+          },
+          {
+            "action": "pressKey",
+            "key": "End"
+          }
+        ],
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["false"],
+          "focusRole": "trigger",
+          "keydownPrevented": ["Home:false", "End:false"],
+          "events": []
+        },
+        "matches": "dropdown/default"
+      }
+    },
+    {
+      "id": "dropdown/interaction-arrow-walk",
+      "title": "ArrowDown walks the items and wraps from the last to the first",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-dropdown__trigger",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          }
+        ],
+        "consumerInteractive": 3,
+        "consumerInteractiveRoles": 3,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "item",
+          "focusItem": "Edit",
+          "keydownPrevented": ["ArrowDown:true", "ArrowDown:true", "ArrowDown:true", "ArrowDown:true"],
+          "events": [
+            {
+              "instance": 0,
+              "open": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "dropdown/interaction-arrowup-wrap",
+      "title": "ArrowUp from the first item wraps to the last",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-dropdown__trigger",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowUp"
+          }
+        ],
+        "consumerInteractive": 3,
+        "consumerInteractiveRoles": 3,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "item",
+          "focusItem": "Archive",
+          "keydownPrevented": ["ArrowDown:true", "ArrowUp:true"]
+        }
+      }
+    },
+    {
+      "id": "dropdown/interaction-end",
+      "title": "End focuses the last item",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-dropdown__trigger",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "pressKey",
+            "key": "End"
+          }
+        ],
+        "consumerInteractive": 3,
+        "consumerInteractiveRoles": 3,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "item",
+          "focusItem": "Archive",
+          "keydownPrevented": ["ArrowDown:true", "End:true"]
+        }
+      }
+    },
+    {
+      "id": "dropdown/interaction-home",
+      "title": "End then Home returns to the first item",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-dropdown__trigger",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "pressKey",
+            "key": "End"
+          },
+          {
+            "action": "pressKey",
+            "key": "Home"
+          }
+        ],
+        "consumerInteractive": 3,
+        "consumerInteractiveRoles": 3,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "item",
+          "focusItem": "Edit",
+          "keydownPrevented": ["ArrowDown:true", "End:true", "Home:true"]
+        }
+      }
+    },
+    {
+      "id": "dropdown/interaction-disabled-blocks",
+      "title": "A disabled VfMenuItem button cannot take focus, so ArrowDown stays where it is",
+      "$why": "The walk does not skip disabled items. Focusing the disabled button is a no-op, the index is computed again from the same item, and the walk never gets past it.",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "menuItems": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate",
+              "disabled": true
+            },
+            {
+              "label": "Archive",
+              "href": "#archive",
+              "disabled": true
+            },
+            {
+              "label": "Delete",
+              "tone": "danger"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-dropdown__trigger",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          }
+        ],
+        "consumerInteractive": 4,
+        "consumerInteractiveRoles": 4,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "item",
+          "focusItem": "Edit",
+          "keydownPrevented": ["ArrowDown:true", "ArrowDown:true", "ArrowDown:true"],
+          "menuStates": [
+            {
+              "location": "body",
+              "classes": ["vf-dropdown__menu", "vf-dropdown__menu--default"],
+              "role": "menu",
+              "arrowClasses": ["vf-dropdown__arrow", "vf-dropdown__arrow--bottom"],
+              "items": ["Edit", "Duplicate", "Archive", "Delete"]
+            }
+          ],
+          "a11y:disabledItem.disabled": "true",
+          "a11y:firstItem.focusable": "true"
+        }
+      }
+    },
+    {
+      "id": "dropdown/interaction-disabled-link-walked",
+      "title": "A disabled VfMenuItem link keeps tabindex=-1 and is walked onto",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "menuItems": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate",
+              "disabled": true
+            },
+            {
+              "label": "Archive",
+              "href": "#archive",
+              "disabled": true
+            },
+            {
+              "label": "Delete",
+              "tone": "danger"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-dropdown__trigger",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "pressKey",
+            "key": "End"
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowUp"
+          }
+        ],
+        "consumerInteractive": 4,
+        "consumerInteractiveRoles": 4,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "item",
+          "focusItem": "Archive",
+          "keydownPrevented": ["ArrowDown:true", "End:true", "ArrowUp:true"]
+        }
+      }
+    },
+    {
+      "id": "dropdown/interaction-first-disabled",
+      "title": "The first item disabled: keyboard open leaves focus on the trigger, and ArrowDown there re-opens and notifies again",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "menuItems": [
+            {
+              "label": "Off",
+              "disabled": true
+            },
+            {
+              "label": "On"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-dropdown__trigger",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          }
+        ],
+        "consumerInteractive": 2,
+        "consumerInteractiveRoles": 2,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "trigger",
+          "keydownPrevented": ["ArrowDown:true", "ArrowDown:true"],
+          "events": [
+            {
+              "instance": 0,
+              "open": true
+            },
+            {
+              "instance": 0,
+              "open": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "dropdown/interaction-reemit",
+      "title": "An opening key on an open dropdown notifies again and refocuses the first item",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-dropdown__trigger",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "focusButton",
+            "selector": ".vf-dropdown__trigger",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          }
+        ],
+        "consumerInteractive": 3,
+        "consumerInteractiveRoles": 3,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "item",
+          "focusItem": "Edit",
+          "events": [
+            {
+              "instance": 0,
+              "open": true
+            },
+            {
+              "instance": 0,
+              "open": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "dropdown/interaction-tab-in-menu",
+      "title": "Tab inside the menu moves to the next item and does not close it",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-dropdown__trigger",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "pressKey",
+            "key": "Tab"
+          }
+        ],
+        "consumerInteractive": 3,
+        "consumerInteractiveRoles": 3,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "item",
+          "focusItem": "Duplicate",
+          "keydownPrevented": ["ArrowDown:true", "Tab:false"],
+          "events": [
+            {
+              "instance": 0,
+              "open": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "dropdown/interaction-tab-from-trigger",
+      "title": "Tab from the trigger of an open dropdown enters the teleported menu, next in document order",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-dropdown__trigger"
+          },
+          {
+            "action": "pressKey",
+            "key": "Tab"
+          }
+        ],
+        "consumerInteractive": 3,
+        "consumerInteractiveRoles": 3,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "item",
+          "focusItem": "Edit",
+          "keydownPrevented": ["Tab:false"]
+        }
+      }
+    },
+    {
+      "id": "dropdown/interaction-menu-control-arrowup",
+      "title": "ArrowUp from a control inside the menu, on no item, lands on the second to last item",
+      "$why": "The index arithmetic starts from -1: (-1 - 1 + 3) % 3 is 1, the second of three.",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "control": {
+            "text": "Search"
+          },
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-dropdown__trigger",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "focusButton",
+            "selector": ".parity-menu-control",
+            "index": 0,
+            "through": {
+              "selector": ".vf-dropdown__trigger",
+              "index": 0,
+              "attribute": "aria-controls"
+            }
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowUp"
+          }
+        ],
+        "consumerInteractive": 4,
+        "consumerInteractiveRoles": 3,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "item",
+          "focusItem": "Duplicate",
+          "keydownPrevented": ["ArrowDown:true", "ArrowUp:true"]
+        }
+      }
+    },
+    {
+      "id": "dropdown/interaction-click-item",
+      "title": "A click on an item closes the menu and focuses the trigger",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-dropdown__trigger"
+          },
+          {
+            "action": "clickButton",
+            "selector": "[role=\"menuitem\"]",
+            "index": 0,
+            "through": {
+              "selector": ".vf-dropdown__trigger",
+              "index": 0,
+              "attribute": "aria-controls"
+            }
+          }
+        ],
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["false"],
+          "focusRole": "trigger",
+          "events": [
+            {
+              "instance": 0,
+              "open": true
+            },
+            {
+              "instance": 0,
+              "open": false
+            }
+          ],
+          "menuStates": [null],
+          "transitions": [["enter:short", "leave:normal"]]
+        },
+        "matches": "dropdown/default"
+      }
+    },
+    {
+      "id": "dropdown/interaction-click-arrow",
+      "title": "A click on the menu itself - the arrow, which passes the pointer through - closes it too",
+      "$why": "The reference closes on any click inside the panel, not only on an item.",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-dropdown__trigger"
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-dropdown__arrow",
+            "index": 0,
+            "through": {
+              "selector": ".vf-dropdown__trigger",
+              "index": 0,
+              "attribute": "aria-controls"
+            }
+          }
+        ],
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["false"],
+          "focusRole": "trigger",
+          "events": [
+            {
+              "instance": 0,
+              "open": true
+            },
+            {
+              "instance": 0,
+              "open": false
+            }
+          ]
+        },
+        "matches": "dropdown/default"
+      }
+    },
+    {
+      "id": "dropdown/interaction-click-disabled-item",
+      "title": "A click on a disabled item's label reaches nothing: the menu stays open and focus falls to <body>",
+      "$why": "Chrome dispatches no click for a disabled button or its content, so the panel's click handler never runs; the press still takes focus away.",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "menuItems": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate",
+              "disabled": true
+            },
+            {
+              "label": "Archive",
+              "href": "#archive",
+              "disabled": true
+            },
+            {
+              "label": "Delete",
+              "tone": "danger"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-dropdown__trigger"
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-menu__item[disabled] .vf-menu__item-label",
+            "index": 0,
+            "through": {
+              "selector": ".vf-dropdown__trigger",
+              "index": 0,
+              "attribute": "aria-controls"
+            }
+          }
+        ],
+        "consumerInteractive": 4,
+        "consumerInteractiveRoles": 4,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "body",
+          "events": [
+            {
+              "instance": 0,
+              "open": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "dropdown/interaction-keep-open",
+      "title": "closeOnSelect=false: an item click keeps the menu open and focuses the item",
+      "props": {
+        "closeOnSelect": false
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-dropdown__trigger"
+          },
+          {
+            "action": "clickButton",
+            "selector": "[role=\"menuitem\"]",
+            "index": 1,
+            "through": {
+              "selector": ".vf-dropdown__trigger",
+              "index": 0,
+              "attribute": "aria-controls"
+            }
+          }
+        ],
+        "consumerInteractive": 3,
+        "consumerInteractiveRoles": 3,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "item",
+          "focusItem": "Duplicate",
+          "events": [
+            {
+              "instance": 0,
+              "open": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "dropdown/interaction-outside-click",
+      "title": "An outside click closes the menu and moves focus to the trigger, away from what was clicked",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        },
+        "after": {
+          "control": {
+            "text": "Elsewhere"
+          }
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-dropdown__trigger"
+          },
+          {
+            "action": "clickButton",
+            "selector": ".parity-after-control"
+          }
+        ],
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["false"],
+          "focusRole": "trigger",
+          "events": [
+            {
+              "instance": 0,
+              "open": true
+            },
+            {
+              "instance": 0,
+              "open": false
+            }
+          ]
+        },
+        "matches": "dropdown/with-outside"
+      }
+    },
+    {
+      "id": "dropdown/interaction-escape",
+      "title": "Escape closes the menu, is prevented and focuses the trigger",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-dropdown__trigger",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "pressKey",
+            "key": "Escape"
+          }
+        ],
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["false"],
+          "focusRole": "trigger",
+          "keydownPrevented": ["ArrowDown:true", "Escape:true"],
+          "events": [
+            {
+              "instance": 0,
+              "open": true
+            },
+            {
+              "instance": 0,
+              "open": false
+            }
+          ],
+          "transitions": [["enter:short", "leave:normal"]]
+        },
+        "matches": "dropdown/default"
+      }
+    },
+    {
+      "id": "dropdown/interaction-two-keyboard-open",
+      "title": "Two keyboard opens leave both dropdowns open: there is no mutual exclusion",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        },
+        "after": {
+          "control": {
+            "text": "Elsewhere"
+          }
+        }
+      },
+      "group": [{}, {}],
+      "componentInteractive": 2,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-dropdown__trigger",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "wait",
+            "ms": 450
+          },
+          {
+            "action": "focusButton",
+            "selector": ".vf-dropdown__trigger",
+            "index": 1
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          }
+        ],
+        "consumerInteractive": 7,
+        "consumerInteractiveRoles": 6,
+        "expect": {
+          "expandedStates": ["true", "true"],
+          "focusRole": "item",
+          "focusInstance": 1,
+          "focusItem": "Edit",
+          "events": [
+            {
+              "instance": 0,
+              "open": true
+            },
+            {
+              "instance": 1,
+              "open": true
+            }
+          ],
+          "menuRelationships": [
+            {
+              "controls": "menu",
+              "labelledBy": "own-trigger"
+            },
+            {
+              "controls": "menu",
+              "labelledBy": "own-trigger"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "dropdown/interaction-escape-lifo",
+      "title": "One Escape closes only the most recently opened of two",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        },
+        "after": {
+          "control": {
+            "text": "Elsewhere"
+          }
+        }
+      },
+      "group": [{}, {}],
+      "componentInteractive": 2,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-dropdown__trigger",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "wait",
+            "ms": 450
+          },
+          {
+            "action": "focusButton",
+            "selector": ".vf-dropdown__trigger",
+            "index": 1
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "pressKey",
+            "key": "Escape"
+          }
+        ],
+        "consumerInteractive": 4,
+        "consumerInteractiveRoles": 3,
+        "expect": {
+          "expandedStates": ["true", "false"],
+          "focusRole": "trigger",
+          "focusInstance": 1,
+          "events": [
+            {
+              "instance": 0,
+              "open": true
+            },
+            {
+              "instance": 1,
+              "open": true
+            },
+            {
+              "instance": 1,
+              "open": false
+            }
+          ],
+          "menuRelationships": [
+            {
+              "controls": "menu",
+              "labelledBy": "own-trigger"
+            },
+            {
+              "controls": "dangling",
+              "labelledBy": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "dropdown/interaction-escape-lifo-twice",
+      "title": "A second Escape closes the other: last opened, first closed",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        },
+        "after": {
+          "control": {
+            "text": "Elsewhere"
+          }
+        }
+      },
+      "group": [{}, {}],
+      "componentInteractive": 2,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-dropdown__trigger",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "wait",
+            "ms": 450
+          },
+          {
+            "action": "focusButton",
+            "selector": ".vf-dropdown__trigger",
+            "index": 1
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "pressKey",
+            "key": "Escape"
+          },
+          {
+            "action": "pressKey",
+            "key": "Escape"
+          }
+        ],
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["false", "false"],
+          "focusRole": "trigger",
+          "focusInstance": 0,
+          "events": [
+            {
+              "instance": 0,
+              "open": true
+            },
+            {
+              "instance": 1,
+              "open": true
+            },
+            {
+              "instance": 1,
+              "open": false
+            },
+            {
+              "instance": 0,
+              "open": false
+            }
+          ]
+        },
+        "matches": "dropdown/closed-two"
+      }
+    },
+    {
+      "id": "dropdown/interaction-pointer-switch",
+      "title": "A pointer open closes an open neighbour as an outside click, and the neighbour focuses its own trigger",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        },
+        "after": {
+          "control": {
+            "text": "Elsewhere"
+          }
+        }
+      },
+      "group": [{}, {}],
+      "componentInteractive": 2,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-dropdown__trigger",
+            "index": 0
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-dropdown__trigger",
+            "index": 1
+          }
+        ],
+        "consumerInteractive": 4,
+        "consumerInteractiveRoles": 3,
+        "expect": {
+          "expandedStates": ["false", "true"],
+          "focusRole": "trigger",
+          "focusInstance": 0,
+          "events": [
+            {
+              "instance": 0,
+              "open": true
+            },
+            {
+              "instance": 1,
+              "open": true
+            },
+            {
+              "instance": 0,
+              "open": false
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "dropdown/interaction-outside-closes-both",
+      "title": "An outside click closes both; the later instance focuses its trigger last",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        },
+        "after": {
+          "control": {
+            "text": "Elsewhere"
+          }
+        }
+      },
+      "group": [{}, {}],
+      "componentInteractive": 2,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-dropdown__trigger",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "wait",
+            "ms": 450
+          },
+          {
+            "action": "focusButton",
+            "selector": ".vf-dropdown__trigger",
+            "index": 1
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "clickButton",
+            "selector": ".parity-after-control"
+          }
+        ],
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["false", "false"],
+          "focusRole": "trigger",
+          "focusInstance": 1,
+          "events": [
+            {
+              "instance": 0,
+              "open": true
+            },
+            {
+              "instance": 1,
+              "open": true
+            },
+            {
+              "instance": 0,
+              "open": false
+            },
+            {
+              "instance": 1,
+              "open": false
+            }
+          ]
+        },
+        "matches": "dropdown/closed-two"
+      }
+    },
+    {
+      "id": "dropdown/interaction-in-place-open",
+      "title": "disableTeleport: a click opens the menu inside the root",
+      "props": {
+        "disableTeleport": true
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-dropdown__trigger"
+          }
+        ],
+        "consumerInteractive": 3,
+        "consumerInteractiveRoles": 3,
+        "expect": {
+          "expandedStates": ["true"],
+          "menuStates": [
+            {
+              "location": "in-place",
+              "classes": ["vf-dropdown__menu", "vf-dropdown__menu--default"],
+              "role": "menu",
+              "arrowClasses": ["vf-dropdown__arrow", "vf-dropdown__arrow--bottom"],
+              "items": ["Edit", "Duplicate", "Archive"]
+            }
+          ],
+          "menuRelationships": [
+            {
+              "controls": "menu",
+              "labelledBy": "own-trigger"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "dropdown/interaction-reopen",
+      "title": "Open, close, open: a new menu each time, the cut leave removed at once",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-dropdown__trigger"
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-dropdown__trigger"
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-dropdown__trigger"
+          }
+        ],
+        "consumerInteractive": 3,
+        "consumerInteractiveRoles": 3,
+        "expect": {
+          "expandedStates": ["true"],
+          "events": [
+            {
+              "instance": 0,
+              "open": true
+            },
+            {
+              "instance": 0,
+              "open": false
+            },
+            {
+              "instance": 0,
+              "open": true
+            }
+          ],
+          "transitions": [["enter:short", "leave:short", "enter:normal"]]
+        }
+      }
+    },
+    {
+      "id": "dropdown/interaction-disabled-click",
+      "title": "A disabled trigger takes focus from a pointer and opens nothing",
+      "props": {
+        "disabled": true
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-dropdown__trigger"
+          }
+        ],
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["false"],
+          "focusRole": "trigger",
+          "events": []
+        },
+        "matches": "dropdown/disabled"
+      }
+    },
+    {
+      "id": "dropdown/interaction-disabled-keys",
+      "title": "A disabled trigger ignores ArrowDown and does not prevent it",
+      "props": {
+        "disabled": true
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-dropdown__trigger",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          }
+        ],
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["false"],
+          "keydownPrevented": ["ArrowDown:false"],
+          "events": []
+        },
+        "matches": "dropdown/disabled"
+      }
+    },
+    {
+      "id": "dropdown/interaction-trigger-control-enter",
+      "title": "Enter on a consumer button inside the trigger opens the menu once, with no native click after it",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "control": {
+            "text": "Actions"
+          }
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".parity-trigger-control"
+          },
+          {
+            "action": "pressKey",
+            "key": "Enter"
+          }
+        ],
+        "consumerInteractive": 4,
+        "consumerInteractiveRoles": 3,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "item",
+          "focusItem": "Edit",
+          "keydownPrevented": ["Enter:true"],
+          "events": [
+            {
+              "instance": 0,
+              "open": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "dropdown/interaction-trigger-control-click",
+      "title": "A click on a consumer button inside the trigger opens it and leaves focus on that button",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "control": {
+            "text": "Actions"
+          }
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".parity-trigger-control"
+          }
+        ],
+        "consumerInteractive": 4,
+        "consumerInteractiveRoles": 3,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "trigger-control",
+          "events": [
+            {
+              "instance": 0,
+              "open": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "dropdown/interaction-bottom-end-open",
+      "title": "bottom-end: a click opens the menu aligned to the trigger's right edge",
+      "props": {
+        "placement": "bottom-end"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-dropdown__trigger"
+          }
+        ],
+        "consumerInteractive": 3,
+        "consumerInteractiveRoles": 3,
+        "expect": {
+          "expandedStates": ["true"],
+          "menuStates": [
+            {
+              "location": "body",
+              "classes": ["vf-dropdown__menu", "vf-dropdown__menu--default"],
+              "role": "menu",
+              "arrowClasses": ["vf-dropdown__arrow", "vf-dropdown__arrow--bottom"],
+              "items": ["Edit", "Duplicate", "Archive"]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "dropdown/interaction-flip-top",
+      "title": "Near the bottom of the viewport the menu flips above the trigger: --top on the menu and the arrow",
+      "$why": "floater.js flips within the start pair only: bottom-start does not fit, so top-start is chosen, and the reference marks both the menu and the arrow.",
+      "props": {},
+      "attrs": {
+        "style": "margin-top: 760px;"
+      },
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-dropdown__trigger",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          }
+        ],
+        "consumerInteractive": 3,
+        "consumerInteractiveRoles": 3,
+        "expect": {
+          "expandedStates": ["true"],
+          "menuStates": [
+            {
+              "location": "body",
+              "classes": ["vf-dropdown__menu", "vf-dropdown__menu--default", "vf-dropdown__menu--top"],
+              "role": "menu",
+              "arrowClasses": ["vf-dropdown__arrow", "vf-dropdown__arrow--top"],
+              "items": ["Edit", "Duplicate", "Archive"]
+            }
+          ],
+          "focusItem": "Edit"
+        }
+      }
+    },
+    {
+      "id": "dropdown/interaction-scroll-follow",
+      "title": "Scrolling the window moves the open menu with its trigger: autoUpdate recomputes it",
+      "$why": "The menu is fixed-position: without the recomputation autoUpdate runs on scroll, it would stay where it was while its trigger moved. The recomputed position is also the settled one, measured without the enter transition's scale.",
+      "props": {},
+      "attrs": {
+        "style": "margin-bottom: 1400px;"
+      },
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate"
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-dropdown__trigger"
+          },
+          {
+            "action": "wait",
+            "ms": 450
+          },
+          {
+            "action": "scrollWindow",
+            "y": 16
+          }
+        ],
+        "consumerInteractive": 3,
+        "consumerInteractiveRoles": 3,
+        "expect": {
+          "expandedStates": ["true"],
+          "menuStates": [
+            {
+              "location": "body",
+              "classes": ["vf-dropdown__menu", "vf-dropdown__menu--default"],
+              "role": "menu",
+              "arrowClasses": ["vf-dropdown__arrow", "vf-dropdown__arrow--bottom"],
+              "items": ["Edit", "Duplicate", "Archive"]
+            }
+          ],
+          "events": [
+            {
+              "instance": 0,
+              "open": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "dropdown/interaction-pills-open",
+      "title": "The pills variant opens with its modifier and the active item",
+      "props": {
+        "variant": "pills"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Actions"
+        },
+        "menu": {
+          "items": [
+            {
+              "label": "Edit"
+            },
+            {
+              "label": "Duplicate",
+              "active": true
+            },
+            {
+              "label": "Archive"
+            }
+          ]
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-dropdown__trigger"
+          }
+        ],
+        "consumerInteractive": 3,
+        "consumerInteractiveRoles": 3,
+        "expect": {
+          "expandedStates": ["true"],
+          "menuStates": [
+            {
+              "location": "body",
+              "classes": ["vf-dropdown__menu", "vf-dropdown__menu--pills"],
+              "role": "menu",
+              "arrowClasses": ["vf-dropdown__arrow", "vf-dropdown__arrow--bottom"],
+              "items": ["Edit", "Duplicate", "Archive"]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

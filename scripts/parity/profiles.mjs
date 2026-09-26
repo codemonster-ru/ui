@@ -1253,6 +1253,69 @@ export const profiles = {
       link: { selector: '.vf-menu__item:not([type])', tag: 'a', ariaRole: 'menuitem' },
     },
   },
+  // The M28 component, and the first whose product DOM is partly outside its
+  // case: the menu is teleported to <body> and found through the trigger's
+  // aria-controls, which is the one declared reference the extractor follows
+  // (followedReferences, M28.0) and the one the snapshot, the steps
+  // (`through`) and the accessibility roles (`followed(...)`) resolve through
+  // too. The component owns one control per instance - the trigger wrapper, a
+  // div with tabindex and no role - and nothing else: the menu is a
+  // structural overlay node, and every item in it is the consumer's,
+  // counted against the case's consumer budget and, for its explicit
+  // role=menuitem, against its declared consumer roles.
+  dropdown: {
+    id: 'dropdown',
+    label: 'VfDropdown',
+    component: 'dropdown',
+    casesPath: 'contracts/dropdown/cases.json',
+    policyPath: 'contracts/dropdown/parity-policy.json',
+    artifactDirectory: 'parity-dropdown',
+    reportName: 'dropdown-parity-report.json',
+    measuredRoles: {
+      root: '.vf-dropdown',
+      trigger: '.vf-dropdown__trigger',
+      triggerControl: '.parity-trigger-control',
+      inPlaceMenu: '.vf-dropdown__menu',
+    },
+    // The trigger is a generic element Chrome names nothing and exposes as
+    // focusable with a menu popup - not expanded: aria-expanded is DOM-only
+    // on a generic role. The menu and its items are read where they are,
+    // through the trigger's aria-controls; the menu is named by its trigger.
+    accessibilityRoles: {
+      trigger: '.vf-dropdown__trigger',
+      triggerControl: '.parity-trigger-control',
+      menu: 'followed(.vf-dropdown__trigger, aria-controls)',
+      firstItem: 'followed(.vf-dropdown__trigger, aria-controls) [role="menuitem"]',
+      disabledItem:
+        'followed(.vf-dropdown__trigger, aria-controls) [role="menuitem"]:is([disabled], [aria-disabled="true"])',
+      arrow: 'followed(.vf-dropdown__trigger, aria-controls) .vf-dropdown__arrow',
+    },
+    semanticAttributes: [
+      'class',
+      'style',
+      'id',
+      'role',
+      'type',
+      'disabled',
+      'href',
+      'tabindex',
+      'aria-controls',
+      'aria-labelledby',
+      'aria-expanded',
+      'aria-haspopup',
+      'aria-disabled',
+      'aria-hidden',
+      'aria-label',
+      'data-testid',
+    ],
+    snapshot: 'dropdown',
+    activationSelector: '.vf-dropdown__trigger',
+    controlOwnership: {
+      trigger: { selector: '.vf-dropdown__trigger', tag: 'div' },
+    },
+    followedReferences: [{ source: '.vf-dropdown__trigger', attribute: 'aria-controls' }],
+    liveParity: true,
+  },
 };
 
 export function loadProfile(id) {

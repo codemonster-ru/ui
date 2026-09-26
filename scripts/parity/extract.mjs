@@ -137,6 +137,11 @@ export const COMPARED_ATTRIBUTES = [
   'href',
   'target',
   'rel',
+  // VfDropdown (M28): the trigger's announced popup type, and Chrome exposes
+  // it. Caught by the attribute-coverage gate, and reproduced as a false PASS
+  // on a real capture: a Razor trigger announcing aria-haspopup="true"
+  // compared equal to the reference's "menu" on every DOM dimension.
+  'aria-haspopup',
   // VfBreadcrumbs. Found missing by the attribute-coverage gate in M26 - the
   // thirteenth attribute it has caught nobody compared - and reproduced as a
   // false PASS on real captures before being added: the separator glyph is a
@@ -650,7 +655,13 @@ export async function driveInteraction(page, caseId, steps, activationSelector =
     } else if (step.action === 'clickButton') {
       // `index` picks a member of a group or a nested pair, as it does for the
       // checkable controls; every earlier button case wanted the first match.
-      await pointerClick(page, selector, step.selector ?? '.vf-icon-button', step.index ?? 0);
+      // `through` (M28) searches inside the element a case element's declared
+      // reference names - a menu teleported out of the case root.
+      await pointerClick(page, selector, step.selector ?? '.vf-icon-button', step.index ?? 0, step.through);
+    } else if (step.action === 'scrollWindow') {
+      await page.evaluate(`window.scrollBy(0, ${Number(step.y)})`);
+    } else if (step.action === 'wait') {
+      await page.evaluate(`new Promise((done) => setTimeout(done, ${Number(step.ms)}))`);
     } else if (step.action === 'pressKey') {
       await pressKey(page, step.key);
     } else if (step.action === 'focusButton') {
@@ -658,7 +669,7 @@ export async function driveInteraction(page, caseId, steps, activationSelector =
       // stepper (M23) owns several buttons and its keyboard scenarios start
       // from a named one.
       await page.evaluate(`(() => {
-        const button = document.querySelector(${JSON.stringify(selector)}).querySelectorAll(${JSON.stringify(step.selector ?? '.vf-icon-button')})[${step.index ?? 0}];
+        const button = ${scopeExpression(selector, step.through)}.querySelectorAll(${JSON.stringify(step.selector ?? '.vf-icon-button')})[${step.index ?? 0}];
         if (!button) throw new Error('missing interaction button');
         button.focus();
       })()`);
@@ -683,11 +694,17 @@ export async function driveInteraction(page, caseId, steps, activationSelector =
  * would happily "click" a control that is covered, zero-sized or disabled, and
  * report success where a user would get nothing.
  */
-async function pointerClick(page, caseSelector, targetSelector, index = 0) {
+/** The case root, or the element `through.attribute` of a case element names. */
+const scopeExpression = (caseSelector, through) =>
+  through
+    ? `document.getElementById(document.querySelector(${JSON.stringify(caseSelector)}).querySelectorAll(${JSON.stringify(through.selector)})[${through.index ?? 0}].getAttribute(${JSON.stringify(through.attribute)}))`
+    : `document.querySelector(${JSON.stringify(caseSelector)})`;
+
+async function pointerClick(page, caseSelector, targetSelector, index = 0, through = undefined) {
   const point = await page.evaluate(`(() => {
     // index picks a member of a group; every other caller wants the first
     // match, which is what a plain querySelector already gave them.
-    const action = document.querySelector(${JSON.stringify(caseSelector)})
+    const action = ${scopeExpression(caseSelector, through)}
       .querySelectorAll(${JSON.stringify(targetSelector)})[${index}];
     if (!action) throw new Error('missing interaction action');
     action.scrollIntoView({ block: 'center' });
@@ -752,6 +769,7 @@ const KEY_CODES = {
   Enter: { code: 'Enter', virtualKeyCode: 13, text: '\r' },
   ' ': { code: 'Space', virtualKeyCode: 32, text: ' ' },
   Tab: { code: 'Tab', virtualKeyCode: 9, text: undefined },
+  Escape: { code: 'Escape', virtualKeyCode: 27, text: undefined },
   // The navigation keys, added for VfStepper (M23): the first component
   // whose keyboard contract is movement between owned controls rather than
   // activation of one. None produces a character.
@@ -1342,16 +1360,21 @@ const OWNERSHIP_CHECKS = [
     // declares one - zero for every profile that declares none, which is the
     // pre-M24 rule unchanged. An undeclared role anywhere in the case, on an
     // owned control or a consumer's, still fails here.
-    problem: ({ snapshot, controls, declared, id }) =>
+    problem: ({ snapshot, controls, declared, id, consumerRoles }) =>
       snapshot.interactiveRoleTotal !==
-      controls.filter((control) => declared[control.role]?.ariaRole !== undefined).length
+      controls.filter((control) => declared[control.role]?.ariaRole !== undefined).length + consumerRoles
         ? `case ${id} measured ${snapshot.interactiveRoleTotal} element(s) carrying an explicit interactive role. ` +
           'A component whose controls are native elements needs none beyond the roles its profile declares.'
         : null,
   },
 ];
 
-export function controlOwnershipViolations(parityCase, snapshot, profile, { consumerInteractive } = {}) {
+export function controlOwnershipViolations(
+  parityCase,
+  snapshot,
+  profile,
+  { consumerInteractive, consumerInteractiveRoles } = {},
+) {
   const declared = profile?.controlOwnership;
   const roles = declared && typeof declared === 'object' ? Object.entries(declared) : [];
   const id = parityCase.id;
@@ -1390,6 +1413,9 @@ export function controlOwnershipViolations(parityCase, snapshot, profile, { cons
     controls: snapshot.componentControls,
     expected: parityCase.componentInteractive,
     consumerBudget: consumerInteractive ?? parityCase.consumerInteractive ?? 0,
+    // M28: how many of the consumer's controls the case says carry an explicit
+    // interactive role. Zero unless declared.
+    consumerRoles: consumerInteractiveRoles ?? parityCase.consumerInteractiveRoles ?? 0,
   };
 
   return OWNERSHIP_CHECKS.map((check) => check.problem(context)).filter(Boolean);
@@ -2078,6 +2104,206 @@ function menuItemInteractionExpression(caseId, controlOwnership = {}) {
 }
 
 /**
+ * What a VfDropdown case reports, before and after an interaction.
+ *
+ * Component-specific and named so, like the others. The first snapshot for a
+ * component whose product DOM is partly outside its case: every dropdown's
+ * menu is found through its trigger's aria-controls - the same declared edge
+ * the extractor follows - and measured wherever it is, in <body>, in place or
+ * in another element. What it records falls into five groups:
+ *
+ *   - ownership: the trigger wrappers the profile says the component owns,
+ *     with their identity and state, and every focusable element in the case
+ *     *and in its menus* that is not one of them - the consumer's controls,
+ *     menu items included. `interactiveRoleTotal` counts explicit interactive
+ *     roles in the same scope, so the menu items a consumer marks role=menuitem
+ *     are counted against the case's declared consumer roles;
+ *   - state, per instance and in halves a port can move separately:
+ *     aria-expanded, whether a menu exists, where it is, its classes, its
+ *     arrow's classes, its item labels, and the geometry of the menu relative
+ *     to its trigger - the semantic form of the inline position the DOM
+ *     comparison compares exactly;
+ *   - relationships, resolved on the live DOM: whether each trigger's
+ *     aria-controls reaches a menu labelled by that same trigger;
+ *   - transitions: the snapshot waits, bounded, until no menu of the case
+ *     carries a vf-floating-transition class, and records whether it got there
+ *     (`settled`) and every enter and leave the fixture's observer saw complete
+ *     since the first user input, each with its duration bucketed from the
+ *     menu's own class changes;
+ *   - the scenario's own record: focus, the neutral open-change log and the
+ *     per-key record of what was prevented, both kept by the fixture.
+ */
+function dropdownInteractionExpression(caseId, controlOwnership = {}) {
+  return `(async () => {
+    const root = document.querySelector('[data-parity-case="${caseId}"]');
+    if (!root) throw new Error('missing case ${caseId}');
+
+    const OWNED = ${JSON.stringify(controlOwnership)};
+    const FOCUSABLE = 'a[href], button, input, select, textarea, [tabindex], [contenteditable=""], [contenteditable="true"]';
+    const INTERACTIVE_ROLES = new Set([
+      'button', 'link', 'checkbox', 'radio', 'switch', 'textbox', 'combobox',
+      'listbox', 'menuitem', 'option', 'slider', 'spinbutton', 'tab',
+    ]);
+    const vfClasses = (element) => [...element.classList].filter((name) => name.startsWith('vf-')).sort();
+    const nameOf = (element) => (element.textContent ?? '').replace(/\\s+/g, ' ').trim();
+
+    const dropdowns = [...root.querySelectorAll('.vf-dropdown')];
+    const triggerOf = (dropdown) => dropdown.querySelector(':scope > .vf-dropdown__trigger');
+    const menuOf = (dropdown) => {
+      const id = triggerOf(dropdown)?.getAttribute('aria-controls');
+      return id ? document.getElementById(id) : null;
+    };
+    const transitionOf = (menu) => [...menu.classList].filter((name) => name.startsWith('vf-floating-transition-')).join(' ');
+
+    const deadline = performance.now() + 2000;
+    const unsettled = () => dropdowns.some((dropdown) => { const menu = menuOf(dropdown); return menu !== null && transitionOf(menu) !== ''; });
+    while (unsettled() && performance.now() < deadline) {
+      await new Promise((tick) => setTimeout(tick, 20));
+    }
+    const settled = !unsettled();
+
+    const menus = dropdowns.map(menuOf);
+    const scope = [root, ...menus.filter((menu) => menu !== null && !root.contains(menu))];
+    const inScope = (selector) => scope.flatMap((node) => [...node.querySelectorAll(selector)]);
+    const focusable = inScope(FOCUSABLE);
+    const owned = [];
+    for (const [role, rule] of Object.entries(OWNED)) {
+      for (const element of root.querySelectorAll(rule.selector)) {
+        owned.push({
+          element,
+          record: {
+            role,
+            tag: element.tagName.toLowerCase(),
+            ariaRole: element.getAttribute('role'),
+            expanded: element.getAttribute('aria-expanded'),
+            hasPopup: element.getAttribute('aria-haspopup'),
+            ariaDisabled: element.getAttribute('aria-disabled'),
+            tabindex: element.getAttribute('tabindex'),
+            focusable: focusable.includes(element),
+            name: nameOf(element),
+          },
+        });
+      }
+    }
+    const ownedElements = owned.map((entry) => entry.element);
+    const consumer = focusable.filter((element) => !ownedElements.includes(element));
+
+    const round = (value) => Math.round(value * 1000) / 1000;
+    const location = (dropdown, menu) =>
+      menu.parentElement === document.body ? 'body' : dropdown.contains(menu) ? 'in-place' : root.contains(menu) ? 'in-case' : 'elsewhere';
+    const menuStates = dropdowns.map((dropdown, index) => {
+      const menu = menus[index];
+      if (!menu) return null;
+      const arrow = menu.firstElementChild;
+      return {
+        location: location(dropdown, menu),
+        classes: vfClasses(menu),
+        role: menu.getAttribute('role'),
+        arrowClasses: arrow && arrow.classList.contains('vf-dropdown__arrow') ? vfClasses(arrow) : null,
+        items: [...menu.querySelectorAll('[role="menuitem"]')].map(nameOf),
+      };
+    });
+    const geometry = () => dropdowns.map((dropdown, index) => {
+      const menu = menus[index];
+      if (!menu) return null;
+      const trigger = triggerOf(dropdown).getBoundingClientRect();
+      const box = menu.getBoundingClientRect();
+      return {
+        side: box.top >= trigger.bottom ? 'below' : box.bottom <= trigger.top ? 'above' : 'overlapping',
+        left: round(box.left - trigger.left),
+        right: round(box.right - trigger.right),
+        gap: round(box.top >= trigger.bottom ? box.top - trigger.bottom : trigger.top - box.bottom),
+      };
+    });
+    // The position floater.js computed when the menu entered - while the
+    // enter-from frame's scale still applied - and then the position after
+    // one resize, which autoUpdate answers on the next frame with the settled
+    // box. The pair is the resize wiring measured, and doing it here makes
+    // every later capture of this page - the DOM, the screenshot, whose
+    // beyond-viewport resize would otherwise race the same update - see a
+    // position that no longer moves.
+    const menuGeometry = geometry();
+    window.dispatchEvent(new Event('resize'));
+    await new Promise((done) => {
+      requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(done)));
+      setTimeout(done, 500);
+    });
+    const menuGeometryAfterResize = geometry();
+    // Then one full repaint, so the moved menus are rasterised afresh. Without
+    // it the rounded corners of a composited menu keep whichever raster its
+    // layer happened to get - two variants, one in about eight runs,
+    // reproduced between reference and current. <body> is no case's DOM, and
+    // its inline style is restored before anything is captured.
+    const bodyStyle = document.body.getAttribute('style');
+    document.body.style.opacity = '0.999';
+    await new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)));
+    if (bodyStyle === null) document.body.removeAttribute('style');
+    else document.body.setAttribute('style', bodyStyle);
+    await new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)));
+    const relationships = dropdowns.map((dropdown, index) => {
+      const trigger = triggerOf(dropdown);
+      const controls = trigger.getAttribute('aria-controls');
+      const menu = menus[index];
+      return {
+        controls: !controls ? 'none' : !menu ? 'dangling' : menu.getAttribute('role') === 'menu' ? 'menu' : 'other',
+        labelledBy: !menu ? null : menu.getAttribute('aria-labelledby') === trigger.id ? 'own-trigger' : 'other',
+      };
+    });
+
+    const active = document.activeElement;
+    const owner = dropdowns.findIndex((dropdown, index) => dropdown.contains(active) || (menus[index] !== null && menus[index].contains(active)));
+    const focusRole = active === document.body
+      ? 'body'
+      : owner < 0
+        ? root.contains(active) ? 'other-inside-case' : 'outside-case'
+        : active === triggerOf(dropdowns[owner])
+          ? 'trigger'
+          : triggerOf(dropdowns[owner]).contains(active)
+            ? 'trigger-control'
+            : active.getAttribute('role') === 'menuitem' ? 'item' : 'menu-control';
+
+    const bucket = (ms) => ms < 300 ? 'short' : ms < 480 ? 'normal' : 'long';
+    const transitions = menus.map((menu, index) => {
+      const id = triggerOf(dropdowns[index]).getAttribute('aria-controls');
+      return (window.__parityDropdownTransitions?.[id] ?? []).map((entry) => entry.kind + ':' + (entry.ms === null ? 'unfinished' : bucket(entry.ms)));
+    });
+
+    const caseRect = root.getBoundingClientRect();
+    const boxes = [caseRect, ...menus.filter(Boolean).map((menu) => menu.getBoundingClientRect())];
+    const left = Math.min(...boxes.map((box) => box.left));
+    const top = Math.min(...boxes.map((box) => box.top));
+
+    return {
+      // The screenshot covers the case and every menu it owns, wherever it is.
+      clip: {
+        x: Math.round(left + window.scrollX),
+        y: Math.round(top + window.scrollY),
+        width: Math.round(Math.max(...boxes.map((box) => box.right)) - left),
+        height: Math.round(Math.max(...boxes.map((box) => box.bottom)) - top),
+      },
+      ownershipPosture: 'component',
+      componentControls: owned.map((entry) => entry.record),
+      consumerControlCount: consumer.length,
+      focusableTotal: focusable.length,
+      interactiveRoleTotal: inScope('*').filter((element) => INTERACTIVE_ROLES.has(element.getAttribute('role') ?? '')).length,
+      instanceCount: dropdowns.length,
+      expandedStates: dropdowns.map((dropdown) => triggerOf(dropdown).getAttribute('aria-expanded')),
+      menuStates,
+      menuGeometry,
+      menuGeometryAfterResize,
+      menuRelationships: relationships,
+      settled,
+      transitions,
+      focusRole,
+      focusInstance: owner < 0 ? null : owner,
+      focusItem: focusRole === 'item' ? nameOf(active) : null,
+      events: window.__parityDropdownEvents?.[${JSON.stringify(caseId)}] ?? [],
+      keydownPrevented: (window.__parityDropdownKeys ?? []).map((entry) => entry.key + ':' + entry.prevented),
+    };
+  })()`;
+}
+
+/**
  * What a VfBreadcrumbs case reports.
  *
  * Component-specific and named so, like the link's. The second ownership
@@ -2215,6 +2441,10 @@ export function interactionExpression(caseId, snapshot = 'input', controlOwnersh
 
   if (snapshot === 'menu-item') {
     return menuItemInteractionExpression(caseId, controlOwnership);
+  }
+
+  if (snapshot === 'dropdown') {
+    return dropdownInteractionExpression(caseId, controlOwnership);
   }
 
   if (snapshot === 'checkable') {

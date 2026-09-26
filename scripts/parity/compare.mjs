@@ -750,6 +750,20 @@ const INTERACTION_FIELDS = {
   glyphTag: { dimension: 'interaction.state' },
   glyphClasses: { dimension: 'interaction.state', format: 'classList' },
   glyphAriaHidden: { dimension: 'interaction.state' },
+  // The VfDropdown snapshot (M28): per-instance state beside the ownership
+  // fields above - aria-expanded (expandedStates, shared with the accordion),
+  // the menu's existence, place, classes, arrow and items, its geometry
+  // relative to its trigger, and the transitions the fixture saw complete.
+  // The relationships are their own dimension, resolved on the live DOM
+  // wherever the menu is. `events`, `focusRole`, `focusInstance`,
+  // `keydownPrevented` and `settled` are the fields above, shared.
+  instanceCount: { dimension: 'interaction.state' },
+  menuStates: { dimension: 'interaction.state', format: 'json' },
+  menuGeometry: { dimension: 'interaction.state', format: 'json' },
+  menuGeometryAfterResize: { dimension: 'interaction.state', format: 'json' },
+  menuRelationships: { dimension: 'interaction.relationships', format: 'json' },
+  transitions: { dimension: 'interaction.state', format: 'json' },
+  focusItem: { dimension: 'interaction.focus' },
 };
 
 /**
