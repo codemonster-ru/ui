@@ -158,3 +158,18 @@ export type {
   VfTabsScrollerMeasurement,
   VfTabsScrollerState,
 } from './tabs/state.js';
+// VfDropdown. Values in, values out: the floating runtime, the escape stack,
+// focus and the listeners stay in each adapter.
+export {
+  DROPDOWN_OFFSET,
+  DROPDOWN_STRATEGY,
+  DROPDOWN_TRIGGER_OPEN_KEYS,
+  resolveDropdownArrowClasses,
+  resolveDropdownArrowOffset,
+  resolveDropdownFlipPlacements,
+  resolveDropdownMenuClasses,
+  resolveDropdownMenuNavigation,
+  resolveDropdownOpen,
+  resolveDropdownTeleport,
+  resolveDropdownTriggerState,
+} from './dropdown/state.js';

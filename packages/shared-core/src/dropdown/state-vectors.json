@@ -1,0 +1,157 @@
+{
+  "$comment": "Shared input/expected vectors for VfDropdown. The TypeScript rules in dropdown/state.ts run every section; the PHP mirror in packages/razor/src/Support/DropdownState.php runs the sections a server can decide (listed in $serverRules) and deliberately has no method for the others - the menu walk, the arrow offset, the flip pair and the opening keys are browser decisions a server never makes. The contract of the reference at fd793696, quirks included: a disabled dropdown is never open whatever its disclosure says; aria-disabled is \"true\" or absent, never \"false\"; the variant is written through unvalidated; --top follows the computed placement; only bottom-end selects the end flip pair; the arrow offset is 0 on an axis missing either number; teleportTo false or null renders in place and anything that is not a string means body; the walk starts from -1, so ArrowUp from no item lands on the second to last. `null` in `teleportTo` is JSON null; an absent key is `undefined`. There is deliberately no vector for a focus move, a listener, the escape stack or a position: the rule set holds no state and runs no floating code.",
+  "$serverRules": [
+    "resolveDropdownArrowClasses",
+    "resolveDropdownMenuClasses",
+    "resolveDropdownOpen",
+    "resolveDropdownTeleport",
+    "resolveDropdownTriggerState"
+  ],
+  "constants": {
+    "DROPDOWN_OFFSET": 10,
+    "DROPDOWN_STRATEGY": "fixed",
+    "DROPDOWN_TRIGGER_OPEN_KEYS": ["ArrowDown", "Enter", " "]
+  },
+  "resolveDropdownOpen": [
+    { "disabled": false, "open": false, "expected": false },
+    { "disabled": false, "open": true, "expected": true },
+    {
+      "$why": "A disabled dropdown is closed whatever the disclosure holds.",
+      "disabled": true,
+      "open": true,
+      "expected": false
+    },
+    { "disabled": true, "open": false, "expected": false }
+  ],
+  "resolveDropdownTriggerState": [
+    {
+      "disabled": false,
+      "open": false,
+      "expected": { "ariaExpanded": "false", "tabindex": "0" }
+    },
+    {
+      "disabled": false,
+      "open": true,
+      "expected": { "ariaExpanded": "true", "tabindex": "0" }
+    },
+    {
+      "$why": "aria-disabled only ever \"true\"; aria-expanded follows the open predicate, so a disabled open disclosure announces false.",
+      "disabled": true,
+      "open": true,
+      "expected": { "ariaDisabled": "true", "ariaExpanded": "false", "tabindex": "-1" }
+    },
+    {
+      "disabled": true,
+      "open": false,
+      "expected": { "ariaDisabled": "true", "ariaExpanded": "false", "tabindex": "-1" }
+    }
+  ],
+  "resolveDropdownMenuClasses": [
+    {
+      "variant": "default",
+      "placement": "bottom-start",
+      "expected": ["vf-dropdown__menu", "vf-dropdown__menu--default"]
+    },
+    { "variant": "pills", "placement": "bottom-end", "expected": ["vf-dropdown__menu", "vf-dropdown__menu--pills"] },
+    {
+      "$why": "The computed placement decides --top, whatever was requested.",
+      "variant": "default",
+      "placement": "top-start",
+      "expected": ["vf-dropdown__menu", "vf-dropdown__menu--default", "vf-dropdown__menu--top"]
+    },
+    {
+      "variant": "pills",
+      "placement": "top-end",
+      "expected": ["vf-dropdown__menu", "vf-dropdown__menu--pills", "vf-dropdown__menu--top"]
+    },
+    {
+      "$why": "The variant is not validated: an unknown one becomes a modifier no stylesheet selects.",
+      "variant": "bogus",
+      "placement": "bottom-start",
+      "expected": ["vf-dropdown__menu", "vf-dropdown__menu--bogus"]
+    }
+  ],
+  "resolveDropdownArrowClasses": [
+    { "placement": "bottom-start", "expected": ["vf-dropdown__arrow", "vf-dropdown__arrow--bottom"] },
+    { "placement": "bottom-end", "expected": ["vf-dropdown__arrow", "vf-dropdown__arrow--bottom"] },
+    { "placement": "top-start", "expected": ["vf-dropdown__arrow", "vf-dropdown__arrow--top"] },
+    { "placement": "top-end", "expected": ["vf-dropdown__arrow", "vf-dropdown__arrow--top"] },
+    {
+      "$why": "Anything not starting with top is bottom.",
+      "placement": "left",
+      "expected": ["vf-dropdown__arrow", "vf-dropdown__arrow--bottom"]
+    }
+  ],
+  "resolveDropdownFlipPlacements": [
+    { "placement": "bottom-start", "expected": ["bottom-start", "top-start"] },
+    { "placement": "bottom-end", "expected": ["bottom-end", "top-end"] },
+    {
+      "$why": "Only bottom-end selects the end pair.",
+      "placement": "top-end",
+      "expected": ["bottom-start", "top-start"]
+    }
+  ],
+  "resolveDropdownArrowOffset": [
+    { "data": { "x": 38.5, "y": 15.5, "baseX": 10, "baseY": 20 }, "expected": { "x": 28.5, "y": -4.5 } },
+    {
+      "$why": "A missing base zeroes that axis only.",
+      "data": { "x": 38, "y": 15, "baseY": 20 },
+      "expected": { "x": 0, "y": -5 }
+    },
+    { "$why": "No arrow data at all.", "data": null, "expected": { "x": 0, "y": 0 } },
+    { "data": {}, "expected": { "x": 0, "y": 0 } }
+  ],
+  "resolveDropdownTeleport": [
+    {
+      "$why": "Absent teleportTo means body.",
+      "disableTeleport": false,
+      "expected": { "disabled": false, "target": "body" }
+    },
+    {
+      "teleportTo": "#overlay-root",
+      "disableTeleport": false,
+      "expected": { "disabled": false, "target": "#overlay-root" }
+    },
+    { "teleportTo": false, "disableTeleport": false, "expected": { "disabled": true, "target": "body" } },
+    {
+      "$why": "Explicit null renders in place in Vue. Razor reads a null attribute as not given (its adapter convention) and spells this `false`, so the PHP mirror skips this one vector.",
+      "$vueOnly": true,
+      "teleportTo": null,
+      "disableTeleport": false,
+      "expected": { "disabled": true, "target": "body" }
+    },
+    {
+      "$why": "disableTeleport wins over a selector, which is still resolved.",
+      "teleportTo": "#overlay-root",
+      "disableTeleport": true,
+      "expected": { "disabled": true, "target": "#overlay-root" }
+    },
+    { "disableTeleport": true, "expected": { "disabled": true, "target": "body" } }
+  ],
+  "resolveDropdownMenuNavigation": [
+    { "key": "ArrowDown", "currentIndex": 0, "count": 3, "expected": 1 },
+    { "key": "ArrowDown", "currentIndex": 2, "count": 3, "expected": 0 },
+    { "key": "ArrowUp", "currentIndex": 1, "count": 3, "expected": 0 },
+    { "key": "ArrowUp", "currentIndex": 0, "count": 3, "expected": 2 },
+    {
+      "$why": "From no item ArrowDown lands on the first.",
+      "key": "ArrowDown",
+      "currentIndex": -1,
+      "count": 3,
+      "expected": 0
+    },
+    {
+      "$why": "From no item ArrowUp lands on the second to last: (-1 - 1 + 3) % 3.",
+      "key": "ArrowUp",
+      "currentIndex": -1,
+      "count": 3,
+      "expected": 1
+    },
+    { "key": "Home", "currentIndex": 2, "count": 3, "expected": 0 },
+    { "key": "End", "currentIndex": 0, "count": 3, "expected": 2 },
+    { "$why": "Keys the menu leaves to the browser.", "key": "Tab", "currentIndex": 0, "count": 3 },
+    { "key": "Enter", "currentIndex": 0, "count": 3 },
+    { "key": "Escape", "currentIndex": 0, "count": 3 },
+    { "key": "ArrowLeft", "currentIndex": 0, "count": 3 }
+  ]
+}

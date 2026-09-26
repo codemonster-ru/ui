@@ -1,6 +1,19 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue';
 import { arrow, flip, offset, shift, type MiddlewareType, type PlacementType } from '@codemonster-ru/floater.js';
+import {
+  DROPDOWN_OFFSET,
+  DROPDOWN_STRATEGY,
+  DROPDOWN_TRIGGER_OPEN_KEYS,
+  resolveDropdownArrowClasses,
+  resolveDropdownArrowOffset,
+  resolveDropdownFlipPlacements,
+  resolveDropdownMenuClasses,
+  resolveDropdownMenuNavigation,
+  resolveDropdownOpen,
+  resolveDropdownTeleport,
+  resolveDropdownTriggerState,
+} from '@codemonster-ru/vueforge-shared-core';
 import { useClickOutside, useDisclosure, useEscapeKey, useFloating, useId } from '@/composables';
 import { useFocusScopeBranch } from '@/composables/useFocusTrap';
 import { vfMotionDurationsMs } from '@/theme/motion';
@@ -42,20 +55,14 @@ const transitionDuration = {
   enter: vfMotionDurationsMs.normal,
   leave: vfMotionDurationsMs.normal,
 } as const;
-const teleportDisabled = computed(
-  () => props.disableTeleport || props.teleportTo === false || props.teleportTo === null,
+// The element case is this adapter's own: no other adapter can pass one.
+const teleport = computed(() =>
+  resolveDropdownTeleport(
+    props.teleportTo,
+    props.disableTeleport,
+    (value): value is HTMLElement => typeof HTMLElement !== 'undefined' && value instanceof HTMLElement,
+  ),
 );
-const teleportTarget = computed(() => {
-  if (typeof props.teleportTo === 'string') {
-    return props.teleportTo;
-  }
-
-  if (typeof HTMLElement !== 'undefined' && props.teleportTo instanceof HTMLElement) {
-    return props.teleportTo;
-  }
-
-  return 'body';
-});
 
 const disclosure = useDisclosure({
   defaultOpen: props.defaultOpen,
@@ -67,38 +74,27 @@ const disclosure = useDisclosure({
 });
 
 const disclosureOpen = disclosure.isOpen;
-const isOpen = computed(() => !props.disabled && disclosureOpen.value);
+const isOpen = computed(() => resolveDropdownOpen(props.disabled, disclosureOpen.value));
+const triggerState = computed(() => resolveDropdownTriggerState(props.disabled, disclosureOpen.value));
 
 useFocusScopeBranch(menuRef, isOpen);
 
-const menuClasses = computed(() => [
-  'vf-dropdown__menu',
-  `vf-dropdown__menu--${props.variant}`,
-  floatingPlacement.value.startsWith('top') && 'vf-dropdown__menu--top',
-]);
+const menuClasses = computed(() => resolveDropdownMenuClasses(props.variant, floatingPlacement.value));
 
-const arrowData = computed(() => {
-  const data = middlewareData.value.arrow as { x?: number; y?: number; baseX?: number; baseY?: number } | undefined;
-
-  return {
-    x: data?.x !== undefined && data?.baseX !== undefined ? data.x - data.baseX : 0,
-    y: data?.y !== undefined && data?.baseY !== undefined ? data.y - data.baseY : 0,
-  };
-});
+const arrowData = computed(() =>
+  resolveDropdownArrowOffset(
+    middlewareData.value.arrow as { x?: number; y?: number; baseX?: number; baseY?: number } | undefined,
+  ),
+);
 
 const arrowStyles = computed(() => ({
   left: `${arrowData.value.x}px`,
   top: `${arrowData.value.y}px`,
 }));
 
-const arrowClasses = computed(() => [
-  'vf-dropdown__arrow',
-  floatingPlacement.value.startsWith('top') ? 'vf-dropdown__arrow--top' : 'vf-dropdown__arrow--bottom',
-]);
+const arrowClasses = computed(() => resolveDropdownArrowClasses(floatingPlacement.value));
 
-const allowedPlacements = computed<PlacementType[]>(() =>
-  props.placement === 'bottom-end' ? ['bottom-end', 'top-end'] : ['bottom-start', 'top-start'],
-);
+const allowedPlacements = computed(() => resolveDropdownFlipPlacements(props.placement) as PlacementType[]);
 
 const {
   placement: floatingPlacement,
@@ -110,13 +106,13 @@ const {
   middleware: computed(
     () =>
       [
-        offset(10),
+        offset(DROPDOWN_OFFSET),
         flip({ placements: allowedPlacements.value }),
         shift(),
         ...(arrowRef.value ? [arrow(arrowRef.value)] : []),
       ] as MiddlewareType[],
   ),
-  strategy: 'fixed',
+  strategy: DROPDOWN_STRATEGY,
 });
 
 function getItems() {
@@ -163,7 +159,7 @@ function onTriggerKeydown(event: KeyboardEvent) {
     return;
   }
 
-  if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') {
+  if (DROPDOWN_TRIGGER_OPEN_KEYS.includes(event.key)) {
     event.preventDefault();
     openMenu({ focusFirstItem: true });
   }
@@ -172,29 +168,14 @@ function onTriggerKeydown(event: KeyboardEvent) {
 function onMenuKeydown(event: KeyboardEvent) {
   const items = getItems();
   const currentIndex = items.findIndex((item) => item === document.activeElement);
+  const target = resolveDropdownMenuNavigation(event.key, currentIndex, items.length);
 
-  if (event.key === 'ArrowDown') {
-    event.preventDefault();
-    items[(currentIndex + 1 + items.length) % items.length]?.focus();
+  if (target === undefined) {
     return;
   }
 
-  if (event.key === 'ArrowUp') {
-    event.preventDefault();
-    items[(currentIndex - 1 + items.length) % items.length]?.focus();
-    return;
-  }
-
-  if (event.key === 'Home') {
-    event.preventDefault();
-    items[0]?.focus();
-    return;
-  }
-
-  if (event.key === 'End') {
-    event.preventDefault();
-    items[items.length - 1]?.focus();
-  }
+  event.preventDefault();
+  items[target]?.focus();
 }
 
 function handleItemClick() {
@@ -248,17 +229,17 @@ useEscapeKey(
       ref="triggerRef"
       class="vf-dropdown__trigger"
       :aria-controls="menuId"
-      :aria-disabled="props.disabled || undefined"
-      :aria-expanded="isOpen"
+      :aria-disabled="triggerState.ariaDisabled"
+      :aria-expanded="triggerState.ariaExpanded"
       aria-haspopup="menu"
-      :tabindex="props.disabled ? -1 : 0"
+      :tabindex="triggerState.tabindex"
       @click="toggleMenu"
       @keydown="onTriggerKeydown"
     >
       <slot name="trigger" :open="isOpen" :toggle="toggleMenu" :disabled="props.disabled" />
     </div>
 
-    <Teleport :to="teleportTarget" :disabled="teleportDisabled">
+    <Teleport :to="teleport.target" :disabled="teleport.disabled">
       <Transition name="vf-floating-transition" appear :duration="transitionDuration">
         <div
           v-if="isOpen"

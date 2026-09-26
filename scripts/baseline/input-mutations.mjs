@@ -84,6 +84,18 @@ export const horizontalScrollerSourcePath = 'packages/core/src/components/intern
 /** The shared rules VfTabs, its Razor controller and the PHP adapter derive from. */
 export const tabsRulePath = 'packages/shared-core/src/tabs/state.ts';
 const tabsSuite = 'src/components/tabs/VfTabs.characterization.spec.ts';
+export const dropdownSourcePath = 'packages/core/src/components/dropdown/VfDropdown.vue';
+/**
+ * The escape stack and the floating composable VfDropdown runs on. Neither is
+ * migrated nor dropdown-specific - the dialog, drawer, popover, select and
+ * tooltip share them - so a mutation here is attributed to the dropdown suite
+ * alone because no other consumer of them has a characterization suite yet.
+ */
+export const escapeKeyComposablePath = 'packages/core/src/composables/useEscapeKey.ts';
+export const floatingComposablePath = 'packages/core/src/composables/useFloating.ts';
+/** The shared rules VfDropdown, its Razor controller and the PHP adapter derive from. */
+export const dropdownRulePath = 'packages/shared-core/src/dropdown/state.ts';
+const dropdownSuite = 'src/components/dropdown/VfDropdown.characterization.spec.ts';
 /** The shared rules VfAccordion, its Razor controller and the PHP adapter derive from. */
 export const accordionRulePath = 'packages/shared-core/src/accordion/state.ts';
 /**
@@ -4670,7 +4682,10 @@ export const menuMutations = [
     suite: menuSuite,
     description: 'the menu root is a ul rather than a div',
     edits: [
-      { find: '<div class="vf-menu" role="menu" v-bind="attrs">', replace: '<ul class="vf-menu" role="menu" v-bind="attrs">' },
+      {
+        find: '<div class="vf-menu" role="menu" v-bind="attrs">',
+        replace: '<ul class="vf-menu" role="menu" v-bind="attrs">',
+      },
       { find: '</div>', replace: '</ul>' },
     ],
   },
@@ -4868,7 +4883,7 @@ export const menuMutations = [
     description: 'the icon name is rewritten on its way to the icon component',
     all: true,
     find: ':icon="props.icon"',
-    replace: ':icon="String(props.icon).replace(\'pencil\', \'trash\')"',
+    replace: ":icon=\"String(props.icon).replace('pencil', 'trash')\"",
   },
   {
     id: 'menu-item-active-modifier-removed',
@@ -4903,7 +4918,8 @@ export const menuMutations = [
     id: 'menu-item-disabled-modifier-added',
     file: menuItemSourcePath,
     suite: menuItemSuite,
-    description: 'a disabled item gains a --disabled modifier, which no stylesheet selects and the reference never wrote',
+    description:
+      'a disabled item gains a --disabled modifier, which no stylesheet selects and the reference never wrote',
     all: true,
     find: ':class="classes"',
     replace: ':class="[classes, props.disabled && \'vf-menu__item--disabled\']"',
@@ -4925,6 +4941,563 @@ export const menuMutations = [
     all: true,
     find: '<span class="vf-menu__item-label">{{ props.label }}</span>',
     replace: '<span class="vf-menu__item-label"><slot>{{ props.label }}</slot></span>',
+  },
+];
+
+export const dropdownMutations = [
+  // Trigger keyboard: the opening predicate and its three historical keys.
+  {
+    id: 'dropdown-arrowup-opens',
+    file: dropdownRulePath,
+    suite: dropdownSuite,
+    description: 'ArrowUp on a closed trigger opens the menu, as a conventional dropdown would',
+    find: "export const DROPDOWN_TRIGGER_OPEN_KEYS: readonly string[] = ['ArrowDown', 'Enter', ' '];",
+    replace: "export const DROPDOWN_TRIGGER_OPEN_KEYS: readonly string[] = ['ArrowDown', 'ArrowUp', 'Enter', ' '];",
+  },
+
+  {
+    id: 'dropdown-home-opens',
+    file: dropdownRulePath,
+    suite: dropdownSuite,
+    description: 'Home on a closed trigger opens the menu',
+    find: "export const DROPDOWN_TRIGGER_OPEN_KEYS: readonly string[] = ['ArrowDown', 'Enter', ' '];",
+    replace: "export const DROPDOWN_TRIGGER_OPEN_KEYS: readonly string[] = ['ArrowDown', 'Home', 'Enter', ' '];",
+  },
+
+  {
+    id: 'dropdown-enter-does-not-open',
+    file: dropdownRulePath,
+    suite: dropdownSuite,
+    description: 'Enter on the trigger no longer opens the menu',
+    find: "export const DROPDOWN_TRIGGER_OPEN_KEYS: readonly string[] = ['ArrowDown', 'Enter', ' '];",
+    replace: "export const DROPDOWN_TRIGGER_OPEN_KEYS: readonly string[] = ['ArrowDown', ' '];",
+  },
+
+  {
+    id: 'dropdown-space-does-not-open',
+    file: dropdownRulePath,
+    suite: dropdownSuite,
+    description: 'Space on the trigger no longer opens the menu',
+    find: "export const DROPDOWN_TRIGGER_OPEN_KEYS: readonly string[] = ['ArrowDown', 'Enter', ' '];",
+    replace: "export const DROPDOWN_TRIGGER_OPEN_KEYS: readonly string[] = ['ArrowDown', 'Enter'];",
+  },
+
+  {
+    id: 'dropdown-trigger-key-not-prevented',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'an opening key on the trigger is handled without preventDefault',
+    find: '    event.preventDefault();\n    openMenu({ focusFirstItem: true });',
+    replace: '    openMenu({ focusFirstItem: true });',
+  },
+  {
+    id: 'dropdown-keyboard-open-keeps-focus',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'a keyboard open leaves focus on the trigger instead of the first item',
+    find: 'openMenu({ focusFirstItem: true });',
+    replace: 'openMenu();',
+  },
+  {
+    id: 'dropdown-click-open-focuses-item',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'a pointer open moves focus to the first item as a keyboard open does',
+    find: '  openMenu();\n}',
+    replace: '  openMenu({ focusFirstItem: true });\n}',
+  },
+  {
+    id: 'dropdown-reopen-not-reemitted',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'an opening key on an already open dropdown no longer re-emits update:open and openChange',
+    find: '  disclosure.open();\n',
+    replace: '  if (!isOpen.value) disclosure.open();\n',
+  },
+  {
+    id: 'dropdown-emit-order-swapped',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'openChange is emitted before update:open',
+    find: "    emit('update:open', value);\n    emit('openChange', value);",
+    replace: "    emit('openChange', value);\n    emit('update:open', value);",
+  },
+  // Menu keyboard: the walk, its wrap, its -1 start and its disabled items.
+  {
+    id: 'dropdown-disabled-items-skipped',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'the walk skips disabled items instead of stopping on them',
+    find: `querySelectorAll<HTMLElement>('[role="menuitem"]')`,
+    replace: `querySelectorAll<HTMLElement>('[role="menuitem"]:not([disabled]):not([aria-disabled="true"])')`,
+  },
+  {
+    id: 'dropdown-items-any-role',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'the walk counts every menu item role, menuitemcheckbox included',
+    find: `querySelectorAll<HTMLElement>('[role="menuitem"]')`,
+    replace: `querySelectorAll<HTMLElement>('[role^="menuitem"]')`,
+  },
+  {
+    id: 'dropdown-arrowdown-no-wrap',
+    file: dropdownRulePath,
+    suite: dropdownSuite,
+    description: 'ArrowDown stops on the last item instead of wrapping to the first',
+    find: "  if (key === 'ArrowDown') return (currentIndex + 1 + count) % count;",
+    replace: "  if (key === 'ArrowDown') return Math.min(currentIndex + 1, count - 1);",
+  },
+
+  {
+    id: 'dropdown-arrowup-no-wrap',
+    file: dropdownRulePath,
+    suite: dropdownSuite,
+    description: 'ArrowUp stops on the first item instead of wrapping to the last',
+    find: "  if (key === 'ArrowUp') return (currentIndex - 1 + count) % count;",
+    replace: "  if (key === 'ArrowUp') return Math.max(currentIndex - 1, 0);",
+  },
+
+  {
+    id: 'dropdown-arrowup-from-nowhere-goes-last',
+    file: dropdownRulePath,
+    suite: dropdownSuite,
+    description: 'ArrowUp from focus on no item goes to the last item, which is what the -1 arithmetic does not do',
+    find: "  if (key === 'ArrowUp') return (currentIndex - 1 + count) % count;",
+    replace: "  if (key === 'ArrowUp') return currentIndex < 0 ? count - 1 : (currentIndex - 1 + count) % count;",
+  },
+
+  {
+    id: 'dropdown-home-end-swapped',
+    file: dropdownRulePath,
+    suite: dropdownSuite,
+    description: 'Home focuses the last item and End the first',
+    edits: [
+      { find: "  if (key === 'Home') return 0;", replace: "  if (key === 'Home') return count - 1;" },
+      { find: "  if (key === 'End') return count - 1;", replace: "  if (key === 'End') return 0;" },
+    ],
+  },
+
+  {
+    id: 'dropdown-menu-keys-not-prevented',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'the arrow keys walk the menu without preventDefault',
+    find: '  event.preventDefault();\n  items[target]?.focus();',
+    replace: '  items[target]?.focus();',
+  },
+
+  {
+    id: 'dropdown-tab-closes',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'Tab inside the menu closes it',
+    find: '  const target = resolveDropdownMenuNavigation(event.key, currentIndex, items.length);',
+    replace:
+      "  if (event.key === 'Tab') {\n    disclosure.close();\n    return;\n  }\n\n  const target = resolveDropdownMenuNavigation(event.key, currentIndex, items.length);",
+  },
+  // Pointer: inside click, closeOnSelect, outside click and focus return.
+  {
+    id: 'dropdown-inside-click-only-items',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'only a click on a menu item closes the menu, not one on the arrow or the padding',
+    edits: [
+      {
+        find: 'function handleItemClick() {\n  if (props.closeOnSelect) {',
+        replace:
+          'function handleItemClick(event: MouseEvent) {\n  if (props.closeOnSelect && (event.target as HTMLElement).closest(\'[role="menuitem"]\')) {',
+      },
+    ],
+  },
+  {
+    id: 'dropdown-close-on-select-ignored',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'closeOnSelect=false still closes on an inside click',
+    find: '  if (props.closeOnSelect) {',
+    replace: '  if (true) {',
+  },
+  {
+    id: 'dropdown-outside-pointerdown',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'the outside listener is pointerdown, the composable default, rather than click',
+    find: "    event: 'click',",
+    replace: "    event: 'pointerdown',",
+  },
+  {
+    id: 'dropdown-outside-click-ignored',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'an outside click no longer closes the menu',
+    find: '    if (isOpen.value) {\n      closeMenu();\n    }\n  },\n  {\n    enabled: isOpen,\n    event',
+    replace: '    void isOpen.value;\n  },\n  {\n    enabled: isOpen,\n    event',
+  },
+  {
+    id: 'dropdown-outside-click-keeps-focus',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'an outside click closes without moving focus back to the trigger',
+    find: '    if (isOpen.value) {\n      closeMenu();\n    }\n  },\n  {\n    enabled: isOpen,\n    event',
+    replace: '    if (isOpen.value) {\n      disclosure.close();\n    }\n  },\n  {\n    enabled: isOpen,\n    event',
+  },
+  {
+    id: 'dropdown-close-keeps-focus',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'closing never returns focus to the trigger',
+    find: '  disclosure.close();\n  triggerRef.value?.focus();',
+    replace: '  disclosure.close();',
+  },
+  {
+    id: 'dropdown-mutual-exclusion',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'opening one dropdown closes every other, a global exclusion the reference does not have',
+    find: '  disclosure.open();\n',
+    replace:
+      '  (window as unknown as { __vfDropdownClose?: () => void }).__vfDropdownClose?.();\n  (window as unknown as { __vfDropdownClose?: () => void }).__vfDropdownClose = () => disclosure.close();\n  disclosure.open();\n',
+  },
+  // Escape and the shared stack.
+  {
+    id: 'dropdown-escape-ignored',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'Escape no longer closes the menu',
+    find: '    event.preventDefault();\n    closeMenu();\n  },',
+    replace: '    event.preventDefault();\n  },',
+  },
+  {
+    id: 'dropdown-escape-not-prevented',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'Escape closes the menu without preventDefault',
+    find: '    event.preventDefault();\n    closeMenu();\n  },',
+    replace: '    closeMenu();\n  },',
+  },
+  {
+    id: 'dropdown-escape-closes-while-closed',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'the escape handler stays registered while closed and prevents every Escape',
+    find: '  {\n    enabled: isOpen,\n  },\n);',
+    replace: '  {\n    enabled: true,\n  },\n);',
+  },
+  {
+    id: 'dropdown-escape-stack-fifo',
+    file: escapeKeyComposablePath,
+    suite: dropdownSuite,
+    description: 'the escape stack closes the first registered entry rather than the last',
+    find: '    entries[entries.length - 1]?.handler(event);',
+    replace: '    entries[0]?.handler(event);',
+  },
+  {
+    id: 'dropdown-escape-closes-all',
+    file: escapeKeyComposablePath,
+    suite: dropdownSuite,
+    description: 'one Escape runs every registered entry instead of the top one',
+    find: '    entries[entries.length - 1]?.handler(event);',
+    replace: '    [...entries].reverse().forEach((entry) => entry.handler(event));',
+  },
+  {
+    id: 'dropdown-escape-keyup',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'Escape is handled on keyup',
+    find: '  {\n    enabled: isOpen,\n  },\n);',
+    replace: "  {\n    enabled: isOpen,\n    event: 'keyup',\n  },\n);",
+  },
+  // Trigger and menu ARIA, and the generated relationship.
+  {
+    id: 'dropdown-expanded-omitted-when-closed',
+    file: dropdownRulePath,
+    suite: dropdownSuite,
+    description: 'aria-expanded is omitted while closed instead of written as false',
+    find: "    ariaExpanded: resolveDropdownOpen(disabled, open) ? 'true' : 'false',",
+    replace: "    ariaExpanded: resolveDropdownOpen(disabled, open) ? 'true' : undefined,",
+  },
+
+  {
+    id: 'dropdown-haspopup-true',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'aria-haspopup is written as true rather than menu',
+    find: 'aria-haspopup="menu"',
+    replace: 'aria-haspopup="true"',
+  },
+  {
+    id: 'dropdown-controls-only-while-open',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'aria-controls is written only while the menu exists, so the closed reference no longer dangles',
+    find: ':aria-controls="menuId"',
+    replace: ':aria-controls="isOpen ? menuId : undefined"',
+  },
+  {
+    id: 'dropdown-controls-cross-wired',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'the trigger controls its own id instead of the menu',
+    find: ':aria-controls="menuId"',
+    replace: ':aria-controls="triggerId"',
+  },
+  {
+    id: 'dropdown-labelledby-removed',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'the menu is not labelled by its trigger',
+    find: '          :aria-labelledby="triggerId"\n',
+    replace: '',
+  },
+  {
+    id: 'dropdown-trigger-role-button',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'the trigger wrapper gains role=button',
+    find: '      aria-haspopup="menu"\n',
+    replace: '      aria-haspopup="menu"\n      role="button"\n',
+  },
+  {
+    id: 'dropdown-menu-role-listbox',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'the menu is a listbox',
+    find: '          role="menu"',
+    replace: '          role="listbox"',
+  },
+  {
+    id: 'dropdown-disabled-tabbable',
+    file: dropdownRulePath,
+    suite: dropdownSuite,
+    description: 'a disabled trigger stays in the tab order',
+    find: "    tabindex: disabled ? '-1' : '0',",
+    replace: "    tabindex: '0',",
+  },
+
+  {
+    id: 'dropdown-aria-disabled-false',
+    file: dropdownRulePath,
+    suite: dropdownSuite,
+    description: 'an enabled trigger writes aria-disabled="false"',
+    find: "    ariaDisabled: disabled ? 'true' : undefined,",
+    replace: "    ariaDisabled: disabled ? 'true' : 'false',",
+  },
+
+  {
+    id: 'dropdown-disabled-renders-open',
+    file: dropdownRulePath,
+    suite: dropdownSuite,
+    description: 'a disabled dropdown renders its menu when open',
+    find: '  return !disabled && open;',
+    replace: '  return open;',
+  },
+
+  {
+    id: 'dropdown-disabled-not-closed-at-setup',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'an initially open disabled dropdown is not closed at setup, so nothing is emitted',
+    find: '  { immediate: true },',
+    replace: '  {},',
+  },
+  // Teleport destination.
+  {
+    id: 'dropdown-teleport-selector-ignored',
+    file: dropdownRulePath,
+    suite: dropdownSuite,
+    description: 'a selector teleportTo is ignored and the menu goes to body',
+    find: "  if (typeof teleportTo === 'string') return { disabled, target: teleportTo };\n",
+    replace: '',
+  },
+
+  {
+    id: 'dropdown-never-teleports',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'the menu is rendered in place, inside the component root',
+    find: ':disabled="teleport.disabled"',
+    replace: ':disabled="true"',
+  },
+
+  {
+    id: 'dropdown-null-teleports',
+    file: dropdownRulePath,
+    suite: dropdownSuite,
+    description: 'teleportTo=null no longer renders in place',
+    find: ' || teleportTo === null',
+    replace: '',
+  },
+
+  // Floating inputs and outputs.
+  {
+    id: 'dropdown-strategy-absolute',
+    file: dropdownRulePath,
+    suite: dropdownSuite,
+    description: 'the menu is positioned with the absolute strategy',
+    find: "export const DROPDOWN_STRATEGY = 'fixed';",
+    replace: "export const DROPDOWN_STRATEGY = 'absolute';",
+  },
+
+  {
+    id: 'dropdown-offset-changed',
+    file: dropdownRulePath,
+    suite: dropdownSuite,
+    description: 'the gap between trigger and menu is 8 instead of 10',
+    find: 'export const DROPDOWN_OFFSET = 10;',
+    replace: 'export const DROPDOWN_OFFSET = 8;',
+  },
+
+  {
+    id: 'dropdown-flip-unrestricted',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'flip may choose any placement rather than the two of the same side',
+    find: 'flip({ placements: allowedPlacements.value }),',
+    replace: 'flip(),',
+  },
+  {
+    id: 'dropdown-shift-removed',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'the shift middleware is dropped',
+    find: '        shift(),\n',
+    replace: '',
+  },
+  {
+    id: 'dropdown-arrow-middleware-removed',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'the arrow middleware is dropped',
+    find: '        ...(arrowRef.value ? [arrow(arrowRef.value)] : []),\n',
+    replace: '',
+  },
+  {
+    id: 'dropdown-end-pair-swapped',
+    file: dropdownRulePath,
+    suite: dropdownSuite,
+    description: 'bottom-end flips within the start pair',
+    find: "  return placement === 'bottom-end' ? ['bottom-end', 'top-end'] : ['bottom-start', 'top-start'];",
+    replace: "  return placement === 'bottom-start' ? ['bottom-end', 'top-end'] : ['bottom-start', 'top-start'];",
+  },
+
+  {
+    id: 'dropdown-top-modifier-removed',
+    file: dropdownRulePath,
+    suite: dropdownSuite,
+    description: 'a top placement no longer adds --top to the menu',
+    find: "  if (placement.startsWith('top')) classes.push('vf-dropdown__menu--top');\n",
+    replace: '',
+  },
+
+  {
+    id: 'dropdown-arrow-always-bottom',
+    file: dropdownRulePath,
+    suite: dropdownSuite,
+    description: 'the arrow keeps its bottom modifier on a top placement',
+    find: "placement.startsWith('top') ? 'vf-dropdown__arrow--top' : 'vf-dropdown__arrow--bottom'",
+    replace: "'vf-dropdown__arrow--bottom'",
+  },
+
+  {
+    id: 'dropdown-arrow-offset-absolute',
+    file: dropdownRulePath,
+    suite: dropdownSuite,
+    description: 'the arrow offset is written in viewport coordinates rather than relative to the menu',
+    find: '    x: data?.x !== undefined && data?.baseX !== undefined ? data.x - data.baseX : 0,',
+    replace: '    x: data?.x !== undefined && data?.baseX !== undefined ? data.x : 0,',
+  },
+
+  {
+    id: 'dropdown-autoupdate-observes-menu',
+    file: floatingComposablePath,
+    suite: dropdownSuite,
+    description: 'autoUpdate also observes the floating element',
+    find: '      cleanupAutoUpdate.value = autoUpdate(referenceRef.value, () => {',
+    replace: '      cleanupAutoUpdate.value = autoUpdate(referenceRef.value, floatingRef.value, () => {',
+  },
+  // Classes, attrs and markup.
+  {
+    id: 'dropdown-variant-ignored',
+    file: dropdownRulePath,
+    suite: dropdownSuite,
+    description: 'the variant modifier is always default',
+    find: '`vf-dropdown__menu--${variant}`',
+    replace: "'vf-dropdown__menu--default'",
+  },
+
+  {
+    id: 'dropdown-arrow-not-hidden',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'the arrow span is not aria-hidden',
+    find: ':style="arrowStyles" aria-hidden="true" />',
+    replace: ':style="arrowStyles" />',
+  },
+  {
+    id: 'dropdown-arrow-after-content',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'the arrow is rendered after the default slot',
+    find: '          <span ref="arrowRef" :class="arrowClasses" :style="arrowStyles" aria-hidden="true" />\n          <slot :close="closeMenu" :open="isOpen" />',
+    replace:
+      '          <slot :close="closeMenu" :open="isOpen" />\n          <span ref="arrowRef" :class="arrowClasses" :style="arrowStyles" aria-hidden="true" />',
+  },
+  {
+    id: 'dropdown-attrs-on-trigger',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'consumer attrs land on the trigger instead of the root',
+    edits: [
+      {
+        find: 'const props = withDefaults(',
+        replace: 'defineOptions({ inheritAttrs: false });\n\nconst props = withDefaults(',
+      },
+      {
+        find: '      class="vf-dropdown__trigger"\n',
+        replace: '      class="vf-dropdown__trigger"\n      v-bind="$attrs"\n',
+      },
+    ],
+  },
+  {
+    id: 'dropdown-focus-branch-removed',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'the teleported menu no longer joins an active modal focus scope',
+    find: 'useFocusScopeBranch(menuRef, isOpen);\n',
+    replace: '',
+  },
+  // Transition.
+  {
+    id: 'dropdown-transition-renamed',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'the transition classes are vf-fade-* rather than vf-floating-transition-*',
+    find: 'name="vf-floating-transition"',
+    replace: 'name="vf-fade"',
+  },
+  {
+    id: 'dropdown-transition-no-appear',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'an initially open dropdown renders without the enter transition',
+    find: 'name="vf-floating-transition" appear',
+    replace: 'name="vf-floating-transition"',
+  },
+  {
+    id: 'dropdown-leave-removed-early',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'the leaving menu is removed after the fast duration rather than the normal one',
+    find: '  leave: vfMotionDurationsMs.normal,',
+    replace: '  leave: vfMotionDurationsMs.fast,',
+  },
+  {
+    id: 'dropdown-enter-duration-short',
+    file: dropdownSourcePath,
+    suite: dropdownSuite,
+    description: 'the enter transition ends after the fast duration',
+    find: '  enter: vfMotionDurationsMs.normal,',
+    replace: '  enter: vfMotionDurationsMs.fast,',
   },
 ];
 
@@ -4954,4 +5527,5 @@ export const componentMutations = [
   ...linkMutations,
   ...breadcrumbsMutations,
   ...menuMutations,
+  ...dropdownMutations,
 ];
