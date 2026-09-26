@@ -123,6 +123,8 @@ export const requiredEntries = [
   'src/Components/MenuComponent.php',
   'src/Components/MenuItemComponent.php',
   'src/Support/MenuItemState.php',
+  'src/Components/DropdownComponent.php',
+  'src/Support/DropdownState.php',
   'resources/icons/icon-registry.json',
   'dist/vueforge-razor.css',
   'dist/vueforge-razor.js',

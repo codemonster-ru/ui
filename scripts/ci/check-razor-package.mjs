@@ -12,7 +12,6 @@ import {
   developmentOnlyEntries,
   listStagedFiles,
   requiredEntries,
-
   stageRazorPackage,
 } from '../release/build-razor-package.mjs';
 
@@ -77,7 +76,10 @@ check(
   'the package requires no Vue adapter',
   !Object.keys(manifest.require ?? {}).some((name) => /vueforge-(core|layouts)/.test(name)),
 );
-check('the package declares no path repository', !Array.isArray(manifest.repositories) || manifest.repositories.length === 0);
+check(
+  'the package declares no path repository',
+  !Array.isArray(manifest.repositories) || manifest.repositories.length === 0,
+);
 
 // Provenance identifies the artifact, never the machine that built it.
 const stagedProvenance = JSON.parse(readFileSync(resolve(target, 'dist/package-provenance.json'), 'utf8'));
@@ -127,6 +129,52 @@ check('the packaged stylesheet carries the neutral foundation', css.includes('co
 const js = readFileSync(resolve(target, 'dist/vueforge-razor.js'), 'utf8');
 check('the packaged controller claims only Razor roots', js.includes('data-vf-razor'));
 check('the packaged controller needs no unpublished import', !js.includes('vueforge-shared-core'));
+
+// M28: the dropdown controller and the one third-party library it runs on.
+// floater.js 1.0.11 is bundled into this file - never fetched, never left as
+// an import a Composer host would have to resolve - and its MIT notice
+// travels with it as the artifact's banner, verbatim from the package.
+const floaterLicense = readFileSync(
+  resolve(repositoryRoot, 'node_modules/@codemonster-ru/floater.js/LICENSE.md'),
+  'utf8',
+);
+check(
+  'the packaged controller carries the dropdown enhancement exactly once',
+  js.includes('data-vf-razor-dropdown-enhanced') && js.split('function enhanceVueForgeDropdowns(').length === 2,
+);
+check(
+  'the packaged controller bundles floater.js 1.0.11 and names it in its banner',
+  js.startsWith('/*!\n * vueforge-razor.js bundles @codemonster-ru/floater.js 1.0.11 (MIT).') &&
+    js.includes('// node_modules/@codemonster-ru/floater.js/dist/index.mjs') &&
+    js.includes('[floater.js] flip middleware expects params.placements'),
+);
+check(
+  "the packaged controller carries floater.js's MIT notice verbatim",
+  floaterLicense
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .every((line) => js.includes(` * ${line}`)),
+);
+check(
+  'the packaged controller imports nothing and fetches nothing at run time',
+  !/^\s*import[\s{*]/m.test(js) &&
+    !/\bimport\(/.test(js) &&
+    !/from\s*["']/.test(js) &&
+    !/https?:\/\/(unpkg|cdn\.jsdelivr|esm\.sh|cdnjs|skypack)/.test(js),
+);
+const assetManifest = JSON.parse(readFileSync(resolve(target, 'dist/assets-manifest.json'), 'utf8'));
+check(
+  'the asset manifest records the bundled third-party dependency with its exact version and licence',
+  JSON.stringify(assetManifest.browser.thirdParty) ===
+    JSON.stringify([{ name: '@codemonster-ru/floater.js', version: '1.0.11', license: 'MIT' }]),
+  JSON.stringify(assetManifest.browser.thirdParty),
+);
+check(
+  'the packaged stylesheet carries the dropdown rules exactly once',
+  (css.match(/^\.vf-dropdown__menu \{$/gm) ?? []).length === 1 &&
+    css.includes('.vf-floating-transition-enter-from.vf-dropdown__menu'),
+);
 
 process.stdout.write(`${passed.length} package assertion(s) passed.\n`);
 

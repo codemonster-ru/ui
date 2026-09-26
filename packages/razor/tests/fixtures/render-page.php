@@ -270,6 +270,61 @@ foreach ($tabsCases as $name => $markup) {
     $sections .= '<section class="case case--tabs" data-case="' . $name . '"><h2>' . $name . '</h2>' . $markup . '</section>';
 }
 
+// ----------------------------------------------------------------- dropdown
+
+// The M28 sections. Real vf-dropdown renders in the states the browser suite
+// drives: closed and initially open, in place, into a named overlay root,
+// two siblings for the escape stack and the outside click, disabled,
+// closeOnSelect off, a menu of vf-menu-item with a disabled item and a real
+// vf-input inside it (content the controller must enhance each time it
+// renders a menu), and a copy with the ownership marker stripped.
+$dropdown = $registry->resolve('vf-dropdown');
+$menuComponent = $registry->resolve('vf-menu');
+$menuItemComponent = $registry->resolve('vf-menu-item');
+if ($dropdown === null || $menuComponent === null || $menuItemComponent === null) {
+    fwrite(STDERR, "vf-dropdown, vf-menu and vf-menu-item must be registered.\n");
+    exit(1);
+}
+$dropdownItems = '<button type="button" role="menuitem" class="vf-dropdown__item">Alpha</button>'
+    . '<button type="button" role="menuitem" class="vf-dropdown__item">Beta</button>'
+    . '<button type="button" role="menuitem" class="vf-dropdown__item">Gamma</button>';
+$renderDropdown = static function (array $props, string $trigger, string $content = '') use ($dropdown, $dropdownItems): string {
+    return $dropdown->render(new ComponentRenderContext($props, [
+        'trigger' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString($trigger),
+        'default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString($content !== '' ? $content : $dropdownItems),
+    ]))->value();
+};
+$dropdownMenu = $menuComponent->render(new ComponentRenderContext([], [
+    'default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString(
+        $menuItemComponent->render(new ComponentRenderContext(['label' => 'Edit'], []))->value()
+        . $menuItemComponent->render(new ComponentRenderContext(['label' => 'Duplicate', 'disabled' => true], []))->value()
+        . $menuItemComponent->render(new ComponentRenderContext(['label' => 'Delete', 'tone' => 'danger'], []))->value(),
+    ),
+]))->value();
+$dropdownInput = $input->render(new ComponentRenderContext(['name' => 'menu-search', 'value' => 'find', 'clearable' => true, 'aria-label' => 'Search'], []))->value();
+$dropdownCases = [
+    'dropdown-default' => $renderDropdown(['aria-label' => 'Default'], '<span>Actions</span>'),
+    // Inert until the browser suite inserts it: an open dropdown closes on
+    // any click outside it and focuses its own trigger - the reference's
+    // behaviour - which would take focus from every other suite on the page.
+    'dropdown-open' => '<template id="dropdown-open-source">'
+        . $renderDropdown(['aria-label' => 'Open', 'default-open' => true], '<span>Open</span>')
+        . '</template>',
+    'dropdown-inline' => $renderDropdown(['aria-label' => 'Inline', 'disable-teleport' => true], '<span>Inline</span>'),
+    'dropdown-target' => $renderDropdown(['aria-label' => 'Target', 'teleport-to' => '#razor-overlay-root'], '<span>Target</span>'),
+    'dropdown-siblings' => $renderDropdown(['aria-label' => 'First'], '<span>First</span>')
+        . $renderDropdown(['aria-label' => 'Second'], '<span>Second</span>')
+        . '<button type="button" class="dropdown-outside">Outside</button>',
+    'dropdown-disabled' => $renderDropdown(['aria-label' => 'Disabled', 'disabled' => true, 'default-open' => true], '<span>Disabled</span>'),
+    'dropdown-keep' => $renderDropdown(['aria-label' => 'Keep', 'close-on-select' => false], '<span>Keep</span>'),
+    'dropdown-menu' => $renderDropdown(['aria-label' => 'Menu', 'placement' => 'bottom-end', 'variant' => 'pills'], '<button type="button" class="dropdown-trigger-control">Menu</button>', $dropdownMenu . $dropdownInput),
+    // The same markup with the marker stripped: not Razor-owned, must not mount.
+    'dropdown-unowned' => str_replace(' data-vf-razor="dropdown"', '', $renderDropdown(['aria-label' => 'Unowned'], '<span>Unowned</span>')),
+];
+foreach ($dropdownCases as $name => $markup) {
+    $sections .= '<section class="case case--dropdown" data-case="' . $name . '"><h2>' . $name . '</h2>' . $markup . '</section>';
+}
+
 $withVue = ($argv[2] ?? '') === '--with-vue';
 $vueSection = $withVue
     ? '<section class="case" data-case="vue"><h2>vue</h2><div id="vue-input"></div></section>'
@@ -291,6 +346,7 @@ $html = <<<HTML
 body { margin: 0; padding: 24px; background: var(--vf-color-background-canvas); font-family: var(--vf-font-family-base); }
 .case { margin-bottom: 20px; max-width: 420px; }
 .case--tabs { width: 360px; }
+.case--dropdown { width: 360px; }
 .case h2 { font-size: 12px; margin: 0 0 6px; color: var(--vf-color-text-secondary); font-weight: 400; }
 </style>
 </head>
@@ -300,6 +356,7 @@ body { margin: 0; padding: 24px; background: var(--vf-color-background-canvas); 
 {$vueSection}
 <button type="submit" id="submit">Submit</button>
 </form>
+<div id="razor-overlay-root"></div>
 {$controllerScript}
 </body>
 </html>

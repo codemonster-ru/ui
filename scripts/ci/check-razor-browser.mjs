@@ -332,6 +332,69 @@ renderFixture('fixture-enhanced.html', null);
 renderFixture('fixture-no-js.html', '--no-js');
 renderFixture('fixture-mixed.html', '--with-vue');
 
+/**
+ * Installs a per-root log of the dropdown's open-change events, keyed by the
+ * root's accessible name, and a per-key record of whether a keydown reaching
+ * the document was prevented.
+ */
+const installDropdownLog = `(() => {
+  window.__dropdownEvents = {};
+  window.__dropdownKeys = [];
+  for (const root of document.querySelectorAll('[data-case] .vf-dropdown')) {
+    const name = root.getAttribute('aria-label');
+    window.__dropdownEvents[name] = [];
+    root.addEventListener('vf-dropdown:open-change', (event) => {
+      window.__dropdownEvents[name].push({ open: event.detail.open, bubbles: event.bubbles });
+    });
+  }
+  document.addEventListener('keydown', (event) => {
+    const entry = { key: event.key, prevented: false };
+    window.__dropdownKeys.push(entry);
+    setTimeout(() => { entry.prevented = event.defaultPrevented; }, 0);
+  }, true);
+  return Object.keys(window.__dropdownEvents).length;
+})()`;
+
+/** One dropdown as the suite reads it, by the root's accessible name. */
+const readDropdown = (label) => `(() => {
+  const root = document.querySelector('.vf-dropdown[aria-label="${label}"]');
+  const trigger = root.querySelector(':scope > .vf-dropdown__trigger');
+  const menu = document.getElementById(trigger.getAttribute('aria-controls'));
+  const active = document.activeElement;
+  const where = !menu ? null : menu.parentElement === document.body ? 'body' : menu.parentElement === root ? 'inline' : menu.parentElement.id || menu.parentElement.className;
+  return {
+    enhanced: root.hasAttribute('data-vf-razor-dropdown-enhanced'),
+    expanded: trigger.getAttribute('aria-expanded'),
+    menu: Boolean(menu),
+    where,
+    menuClasses: menu ? [...menu.classList] : null,
+    labelledByTrigger: menu ? menu.getAttribute('aria-labelledby') === trigger.id : null,
+    role: menu?.getAttribute('role') ?? null,
+    arrowFirst: menu ? menu.firstElementChild?.classList.contains('vf-dropdown__arrow') : null,
+    positioned: menu ? menu.style.left !== '0px' || menu.style.top !== '0px' : null,
+    templates: root.querySelectorAll(':scope > template[data-vf-razor-dropdown="menu"]').length,
+    focus: active === trigger ? 'trigger' : menu && menu.contains(active) ? 'item:' + active.textContent.trim() : active === document.body ? 'body' : root.contains(active) ? 'inside' : 'elsewhere',
+    events: window.__dropdownEvents?.[${JSON.stringify(label)}] ?? null,
+  };
+})()`;
+
+/** A real pointer click on the element the expression returns, after the page settles. */
+async function clickElement(page, expression) {
+  const point = await page.evaluate(`(() => {
+    const element = ${expression};
+    if (!element) throw new Error('missing click target');
+    const rect = element.getBoundingClientRect();
+    return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+  })()`);
+  await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...point });
+  await page.send('Input.dispatchMouseEvent', { type: 'mousePressed', ...point, button: 'left', clickCount: 1 });
+  await page.send('Input.dispatchMouseEvent', { type: 'mouseReleased', ...point, button: 'left', clickCount: 1 });
+}
+
+const dropdownTrigger = (label) =>
+  `document.querySelector('.vf-dropdown[aria-label="${label}"] > .vf-dropdown__trigger')`;
+const dropdownMenu = (label) => `document.getElementById(${dropdownTrigger(label)}.getAttribute('aria-controls'))`;
+
 const server = await serve(distDirectory);
 const chrome = await launchChrome();
 
@@ -1955,6 +2018,391 @@ try {
       page.diagnostics.pageErrors.join('; '),
     );
   });
+
+  // ----------------------------------------------------------------- dropdown
+  await withPage(chrome, server.origin, 'fixture-enhanced.html', async (page) => {
+    await page.waitFor(`Boolean(document.querySelector('[data-vf-razor-dropdown-enhanced]'))`);
+    // The server's open render, inserted and enhanced through the packaged
+    // module's own export - the path a host takes for markup it adds later.
+    await page.evaluate(`(async () => {
+      const section = document.querySelector('[data-case="dropdown-open"]');
+      section.append(document.getElementById('dropdown-open-source').content.cloneNode(true));
+      (await import('./vueforge-razor.js')).enhanceVueForgeDropdowns(section);
+    })()`);
+    const logged = await page.evaluate(installDropdownLog);
+    check('the fixture has the dropdown roots', logged === 10, `logged ${logged}`);
+
+    const ownership = await page.evaluate(`(() => ({
+      owned: document.querySelectorAll('[data-vf-razor="dropdown"]').length,
+      enhanced: document.querySelectorAll('[data-vf-razor="dropdown"][data-vf-razor-dropdown-enhanced]').length,
+      unowned: document.querySelectorAll('[data-case="dropdown-unowned"] .vf-dropdown[data-vf-razor-dropdown-enhanced]').length,
+      scripts: [...document.querySelectorAll('[data-case^="dropdown"] script, [data-case^="dropdown"] [onclick], [data-case^="dropdown"] [onkeydown]')].length,
+    }))()`);
+    check(
+      'every Razor dropdown is enhanced and the unowned copy is not',
+      ownership.owned === 9 && ownership.enhanced === 9 && ownership.unowned === 0 && ownership.scripts === 0,
+      JSON.stringify(ownership),
+    );
+
+    // The server's open menu, taken over at bootstrap: moved to body,
+    // positioned, and announced by no event.
+    await delay(400);
+    const open = await page.evaluate(readDropdown('Open'));
+    check(
+      'an initially open menu is teleported to body and positioned at bootstrap, without an event',
+      open.expanded === 'true' &&
+        open.where === 'body' &&
+        open.positioned === true &&
+        open.labelledByTrigger &&
+        open.role === 'menu' &&
+        open.arrowFirst &&
+        open.events.length === 0 &&
+        open.templates === 0,
+      JSON.stringify(open),
+    );
+    // The top of the escape stack is the only open dropdown; Escape closes it
+    // before anything else is clicked.
+    await page.evaluate(`document.getElementById('submit').focus()`);
+    await page.send('Input.dispatchKeyEvent', {
+      type: 'rawKeyDown',
+      key: 'Escape',
+      code: 'Escape',
+      windowsVirtualKeyCode: 27,
+      nativeVirtualKeyCode: 27,
+    });
+    await page.send('Input.dispatchKeyEvent', {
+      type: 'keyUp',
+      key: 'Escape',
+      code: 'Escape',
+      windowsVirtualKeyCode: 27,
+      nativeVirtualKeyCode: 27,
+    });
+    await delay(450);
+    const openClosed = await page.evaluate(readDropdown('Open'));
+    check(
+      'Escape closes the server-opened dropdown, focuses its trigger and removes its menu',
+      openClosed.expanded === 'false' &&
+        openClosed.menu === false &&
+        openClosed.focus === 'trigger' &&
+        JSON.stringify(openClosed.events) === '[{"open":false,"bubbles":true}]',
+      JSON.stringify(openClosed),
+    );
+    const disabled = await page.evaluate(readDropdown('Disabled'));
+    check(
+      'a disabled dropdown given default-open is closed, with no menu anywhere',
+      disabled.expanded === 'false' && disabled.menu === false && disabled.templates === 1,
+      JSON.stringify(disabled),
+    );
+
+    // A closed dropdown: the reference dangles, and nothing is in the page.
+    const closed = await page.evaluate(readDropdown('Default'));
+    check(
+      'a closed dropdown has a dangling aria-controls and its content only in the inert template',
+      closed.expanded === 'false' && closed.menu === false && closed.templates === 1,
+      JSON.stringify(closed),
+    );
+
+    // Pointer open: the menu goes to body, focus stays on the trigger, one event.
+    await clickAt(page, '[data-case="dropdown-default"] .vf-dropdown__trigger');
+    await delay(50);
+    const entering = await page.evaluate(`[...${dropdownMenu('Default')}.classList]`);
+    await delay(400);
+    const clicked = await page.evaluate(readDropdown('Default'));
+    check(
+      'a click opens a fresh menu in body, labelled by its trigger, and focus stays on the trigger',
+      clicked.expanded === 'true' &&
+        clicked.where === 'body' &&
+        clicked.labelledByTrigger &&
+        clicked.positioned &&
+        clicked.focus === 'trigger' &&
+        JSON.stringify(clicked.events) === '[{"open":true,"bubbles":true}]',
+      JSON.stringify(clicked),
+    );
+    check(
+      'the menu enters with the vf-floating-transition classes and settles without them',
+      entering.includes('vf-floating-transition-enter-active') &&
+        JSON.stringify(clicked.menuClasses) === '["vf-dropdown__menu","vf-dropdown__menu--default"]',
+      JSON.stringify({ entering, settled: clicked.menuClasses }),
+    );
+
+    // An inside click on the arrow - not an item - closes and focuses the trigger.
+    await clickElement(page, `${dropdownMenu('Default')}.querySelector('.vf-dropdown__arrow')`);
+    await delay(60);
+    const leaving = await page.evaluate(
+      `(() => { const m = ${dropdownMenu('Default')}; return m ? [...m.classList] : null; })()`,
+    );
+    await delay(450);
+    const afterInside = await page.evaluate(readDropdown('Default'));
+    check(
+      'a click anywhere inside the menu closes it, focuses the trigger and removes the menu after its leave',
+      afterInside.expanded === 'false' &&
+        afterInside.menu === false &&
+        afterInside.focus === 'trigger' &&
+        Array.isArray(leaving) &&
+        leaving.includes('vf-floating-transition-leave-active') &&
+        afterInside.events.length === 2 &&
+        afterInside.events[1].open === false,
+      JSON.stringify({ leaving, afterInside }),
+    );
+
+    // Keyboard: ArrowUp does not open; ArrowDown opens and focuses the first
+    // item; the walk wraps; Tab leaves it open.
+    await page.evaluate(`window.__dropdownKeys.length = 0; ${dropdownTrigger('Keep')}.focus()`);
+    await pressKey(page, 'ArrowUp');
+    await delay(100);
+    const arrowUp = await page.evaluate(readDropdown('Keep'));
+    check(
+      'ArrowUp on a closed trigger does not open it',
+      arrowUp.expanded === 'false' && arrowUp.events.length === 0,
+      JSON.stringify(arrowUp),
+    );
+    await pressKey(page, 'ArrowDown');
+    await delay(400);
+    const arrowDown = await page.evaluate(readDropdown('Keep'));
+    check(
+      'ArrowDown opens and focuses the first item',
+      arrowDown.expanded === 'true' && arrowDown.focus === 'item:Alpha',
+      JSON.stringify(arrowDown),
+    );
+    await pressKey(page, 'ArrowUp');
+    const wrapped = await page.evaluate(readDropdown('Keep'));
+    await pressKey(page, 'Home');
+    const home = await page.evaluate(readDropdown('Keep'));
+    await pressKey(page, 'Tab');
+    await delay(100);
+    const tabbed = await page.evaluate(readDropdown('Keep'));
+    const keys = await page.evaluate(`window.__dropdownKeys.map((entry) => entry.key + ':' + entry.prevented)`);
+    check(
+      'ArrowUp wraps to the last item, Home returns to the first, Tab leaves the menu open',
+      wrapped.focus === 'item:Gamma' &&
+        home.focus === 'item:Alpha' &&
+        tabbed.expanded === 'true' &&
+        tabbed.focus === 'item:Beta',
+      JSON.stringify({ wrapped: wrapped.focus, home: home.focus, tabbed }),
+    );
+    check(
+      'the trigger prevents only the keys it handles, the menu only the walk',
+      JSON.stringify(keys) === '["ArrowUp:false","ArrowDown:true","ArrowUp:true","Home:true","Tab:false"]',
+      JSON.stringify(keys),
+    );
+    // closeOnSelect off: an item click keeps it open.
+    await clickElement(page, `${dropdownMenu('Keep')}.querySelectorAll('[role="menuitem"]')[1]`);
+    await delay(100);
+    const kept = await page.evaluate(readDropdown('Keep'));
+    check(
+      'closeOnSelect off keeps the menu open on an item click',
+      kept.expanded === 'true' && kept.menu === true,
+      JSON.stringify(kept),
+    );
+
+    // Escape: the shared LIFO stack across siblings, then an outside click.
+    await page.evaluate(`${dropdownTrigger('First')}.focus()`);
+    await pressKey(page, 'ArrowDown');
+    await delay(100);
+    await page.evaluate(`${dropdownTrigger('Second')}.focus()`);
+    await pressKey(page, 'ArrowDown');
+    await delay(400);
+    const bothOpen = [await page.evaluate(readDropdown('First')), await page.evaluate(readDropdown('Second'))];
+    check(
+      'two keyboard opens leave both siblings open: there is no mutual exclusion',
+      bothOpen.every((state) => state.expanded === 'true' && state.where === 'body'),
+      JSON.stringify(bothOpen),
+    );
+    const bodyOrder = await page.evaluate(
+      `[...document.body.children].filter((node) => node.classList.contains('vf-dropdown__menu')).map((node) => document.querySelector('[aria-controls="' + node.id + '"]').closest('.vf-dropdown').getAttribute('aria-label'))`,
+    );
+    check(
+      'teleported menus sit in body in document order, whatever order they opened in',
+      JSON.stringify(bodyOrder) === '["First","Second","Keep"]',
+      JSON.stringify(bodyOrder),
+    );
+    await page.evaluate(`document.getElementById('submit').focus()`);
+    await page.send('Input.dispatchKeyEvent', {
+      type: 'rawKeyDown',
+      key: 'Escape',
+      code: 'Escape',
+      windowsVirtualKeyCode: 27,
+      nativeVirtualKeyCode: 27,
+    });
+    await page.send('Input.dispatchKeyEvent', {
+      type: 'keyUp',
+      key: 'Escape',
+      code: 'Escape',
+      windowsVirtualKeyCode: 27,
+      nativeVirtualKeyCode: 27,
+    });
+    await delay(100);
+    const afterEscape = [
+      await page.evaluate(readDropdown('First')),
+      await page.evaluate(readDropdown('Second')),
+      await page.evaluate(readDropdown('Keep')),
+    ];
+    check(
+      'one Escape closes only the most recently opened dropdown and focuses its trigger',
+      afterEscape[0].expanded === 'true' &&
+        afterEscape[1].expanded === 'false' &&
+        afterEscape[1].focus === 'trigger' &&
+        afterEscape[2].expanded === 'true',
+      JSON.stringify(afterEscape),
+    );
+    await clickAt(page, '[data-case="dropdown-siblings"] .dropdown-outside');
+    await delay(450);
+    const afterOutside = [await page.evaluate(readDropdown('First')), await page.evaluate(readDropdown('Keep'))];
+    check(
+      'an outside click closes every open dropdown, each focusing its own trigger in document order, so the last one keeps it',
+      afterOutside.every((state) => state.expanded === 'false' && state.menu === false) &&
+        afterOutside[0].focus === 'elsewhere' &&
+        afterOutside[1].focus === 'trigger',
+      JSON.stringify(afterOutside),
+    );
+
+    // Pointer switch: the neighbour closes as an outside click and focuses its own trigger.
+    await clickAt(page, '[data-case="dropdown-siblings"] .vf-dropdown[aria-label="First"] > .vf-dropdown__trigger');
+    await delay(100);
+    await clickAt(page, '[data-case="dropdown-siblings"] .vf-dropdown[aria-label="Second"] > .vf-dropdown__trigger');
+    await delay(450);
+    const switched = [await page.evaluate(readDropdown('First')), await page.evaluate(readDropdown('Second'))];
+    check(
+      'a pointer open closes an open neighbour, which then focuses its own trigger',
+      switched[0].expanded === 'false' && switched[1].expanded === 'true' && switched[0].focus === 'trigger',
+      JSON.stringify(switched),
+    );
+
+    // In place, and into a named overlay root.
+    // In place, and into a named overlay root. Each is closed again before
+    // the next click: an open menu is fixed over whatever lies below it.
+    await clickAt(page, '[data-case="dropdown-target"] .vf-dropdown__trigger');
+    await delay(400);
+    const target = await page.evaluate(readDropdown('Target'));
+    check(
+      'teleport-to renders the menu into the named element',
+      target.where === 'razor-overlay-root',
+      JSON.stringify(target),
+    );
+    await clickAt(page, '[data-case="dropdown-target"] .vf-dropdown__trigger');
+    await delay(450);
+    await clickAt(page, '[data-case="dropdown-inline"] .vf-dropdown__trigger');
+    await delay(400);
+    const inlineOpen = await page.evaluate(readDropdown('Inline'));
+    const inlineChildren = await page.evaluate(
+      `[...document.querySelector('.vf-dropdown[aria-label="Inline"]').children].map((child) => child.tagName.toLowerCase() + '.' + child.className)`,
+    );
+    check(
+      'disable-teleport renders the menu inside its own root, right after the trigger',
+      inlineOpen.where === 'inline' &&
+        inlineOpen.expanded === 'true' &&
+        JSON.stringify(inlineChildren) ===
+          '["div.vf-dropdown__trigger","div.vf-dropdown__menu vf-dropdown__menu--default","template."]',
+      JSON.stringify({ inlineOpen, inlineChildren }),
+    );
+    await clickAt(page, '[data-case="dropdown-inline"] .vf-dropdown__trigger');
+    await delay(450);
+
+    // Disabled: nothing opens and nothing is prevented.
+    await clickAt(page, '[data-case="dropdown-disabled"] .vf-dropdown__trigger');
+    await page.evaluate(`${dropdownTrigger('Disabled')}.focus()`);
+    await pressKey(page, 'ArrowDown');
+    await delay(200);
+    const disabledAfter = await page.evaluate(readDropdown('Disabled'));
+    check(
+      'a disabled dropdown ignores click and keys',
+      disabledAfter.expanded === 'false' && disabledAfter.menu === false && disabledAfter.events.length === 0,
+      JSON.stringify(disabledAfter),
+    );
+
+    // A menu of vf-menu-item with a disabled button: Enter on a consumer
+    // control inside the trigger opens it, the walk stops at the disabled
+    // item, and the vf-input inside the menu is enhanced every time.
+    await page.evaluate(`document.querySelector('.dropdown-trigger-control').focus()`);
+    await pressKey(page, 'Enter');
+    await delay(400);
+    await pressKey(page, 'ArrowDown');
+    await delay(50);
+    const menuState = await page.evaluate(readDropdown('Menu'));
+    const nested = await page.evaluate(
+      `(() => { const m = ${dropdownMenu('Menu')}; const input = m.querySelector('[data-vf-razor="input"]'); return { input: Boolean(input), enhanced: input?.hasAttribute('data-vf-razor-enhanced') ?? null, top: m.classList.contains('vf-dropdown__menu--top'), pills: m.classList.contains('vf-dropdown__menu--pills') }; })()`,
+    );
+    check(
+      'Enter on a consumer control in the trigger opens the menu and the walk stops at a disabled item',
+      menuState.expanded === 'true' && menuState.focus === 'item:Edit',
+      JSON.stringify(menuState),
+    );
+    check(
+      'Razor content inside a rendered menu is enhanced',
+      nested.input && nested.enhanced === true && nested.pills,
+      JSON.stringify(nested),
+    );
+    check(
+      'the enhanced dropdown page produced no script errors',
+      page.diagnostics.pageErrors.length === 0,
+      page.diagnostics.pageErrors.join('; '),
+    );
+  });
+
+  // ------------------------------------------------------- dropdown, no-js
+  await withPage(chrome, server.origin, 'fixture-no-js.html', async (page) => {
+    const noJs = await page.evaluate(`(() => {
+      const trigger = document.querySelector('.vf-dropdown[aria-label="Default"] > .vf-dropdown__trigger');
+      trigger.click();
+      const section = document.querySelector('[data-case="dropdown-open"]');
+      section.append(document.getElementById('dropdown-open-source').content.cloneNode(true));
+      const openRoot = document.querySelector('.vf-dropdown[aria-label="Open"]');
+      const openMenu = openRoot.querySelector(':scope > .vf-dropdown__menu');
+      return {
+        enhanced: document.querySelectorAll('[data-vf-razor-dropdown-enhanced]').length,
+        expandedAfterClick: trigger.getAttribute('aria-expanded'),
+        menusInBody: document.querySelectorAll('body > .vf-dropdown__menu').length,
+        closedMenu: Boolean(document.getElementById(trigger.getAttribute('aria-controls'))),
+        templateContentInert: document.querySelectorAll('[data-case="dropdown-default"] [role="menuitem"]').length,
+        openInPlace: Boolean(openMenu),
+        openStyle: openMenu?.getAttribute('style') ?? null,
+        openExpanded: openRoot.querySelector(':scope > .vf-dropdown__trigger').getAttribute('aria-expanded'),
+      };
+    })()`);
+    check('no dropdown controller runs without its script', noJs.enhanced === 0, JSON.stringify(noJs));
+    check(
+      'without javascript a closed dropdown stays closed and its menu content is unreachable',
+      noJs.expandedAfterClick === 'false' &&
+        noJs.closedMenu === false &&
+        noJs.templateContentInert === 0 &&
+        noJs.menusInBody === 0,
+      JSON.stringify(noJs),
+    );
+    check(
+      'without javascript an open dropdown shows its menu in place, unpositioned',
+      noJs.openInPlace && noJs.openStyle === 'left:0px;top:0px;' && noJs.openExpanded === 'true',
+      JSON.stringify(noJs),
+    );
+  });
+
+  // ------------------------------------------------ dropdown, double bootstrap
+  await withPage(chrome, server.origin, 'fixture-enhanced.html', async (page) => {
+    await page.waitFor(`Boolean(document.querySelector('[data-vf-razor-dropdown-enhanced]'))`);
+    await page.evaluate(installDropdownLog);
+    const anchorsBefore = await page.evaluate(
+      `[...document.body.childNodes].filter((node) => node.nodeType === Node.TEXT_NODE && node.textContent === '').length`,
+    );
+    await page.evaluate(`import('./vueforge-razor.js?bootstrap=dropdown').then(() => true)`);
+    await delay(250);
+    const anchorsAfter = await page.evaluate(
+      `[...document.body.childNodes].filter((node) => node.nodeType === Node.TEXT_NODE && node.textContent === '').length`,
+    );
+    await clickAt(page, '[data-case="dropdown-default"] .vf-dropdown__trigger');
+    await delay(400);
+    const twice = await page.evaluate(readDropdown('Default'));
+    const menus = await page.evaluate(`document.querySelectorAll('body > .vf-dropdown__menu').length`);
+    check(
+      'after a second bootstrap one click is one open: one menu, one event, no second anchor',
+      twice.expanded === 'true' && twice.events.length === 1 && anchorsAfter === anchorsBefore,
+      JSON.stringify({ twice, anchorsBefore, anchorsAfter }),
+    );
+    check('a second bootstrap renders no second menu', menus === 1, `menus ${menus}`);
+    check(
+      'the double-bootstrapped dropdown page produced no script errors',
+      page.diagnostics.pageErrors.length === 0,
+      page.diagnostics.pageErrors.join('; '),
+    );
+  });
 } finally {
   await chrome.close();
   await server.close();
@@ -1971,5 +2419,5 @@ if (failures.length > 0) {
 }
 
 process.stdout.write(
-  '[razor-browser] OK: enhanced interactions, no-JS fallback, mixed Vue/Razor ownership and the accordion, stepper and tabs controllers.\n',
+  '[razor-browser] OK: enhanced interactions, no-JS fallback, mixed Vue/Razor ownership and the accordion, stepper, tabs and dropdown controllers.\n',
 );

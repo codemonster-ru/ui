@@ -25,6 +25,7 @@ import { enhanceVueForgeCheckables } from './checkable.js';
 import { enhanceVueForgeAccordions } from './accordion.js';
 import { enhanceVueForgeSteppers } from './stepper.js';
 import { enhanceVueForgeTabs } from './tabs.js';
+import { enhanceVueForgeDropdowns } from './dropdown.js';
 
 const ROOT_SELECTOR = '[data-vf-razor="input"]';
 const ENHANCED_ATTRIBUTE = 'data-vf-razor-enhanced';
@@ -268,11 +269,15 @@ function enhanceAll(root: ParentNode = document): void {
   // The tabs are handed this same function for the same reason: whatever the
   // server rendered into a panel's template mounts when that panel is shown.
   enhanceVueForgeTabs(root, enhanceAll);
+  // The dropdown is handed this same function so that whatever the server
+  // rendered into its menu mounts each time a fresh menu is rendered.
+  enhanceVueForgeDropdowns(root, enhanceAll);
 }
 
 export {
   enhanceVueForgeAccordions,
   enhanceVueForgeCheckables,
+  enhanceVueForgeDropdowns,
   enhanceVueForgeFields,
   enhanceVueForgeSteppers,
   enhanceVueForgeTabs,
