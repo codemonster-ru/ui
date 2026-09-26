@@ -7213,3 +7213,302 @@ Razor. Нормализация id к константе, удаление су�
 тот же, что у этого репозитория (`Copyright (c) 2024-present Kirill Kolesnikov`),
 а сам пакет Razor распространяется под MIT. Нерешённого требования нет,
 блокировки нет. Общий `FloatingRuntime` не создаётся.
+
+## Приложение АВ. Результаты M28
+
+Первый мигрированный компонент с поведением **за пределами своего корня**:
+VfDropdown владеет обёрткой-триггером, создаёт `role="menu"`, телепортирует его
+в `<body>`, позиционирует через floater.js, анимирует появление и удаление,
+слушает документ (клик снаружи) и участвует в модульном стеке Escape. Всё это
+перенесено в Razor: сервер без JS и контроллер браузера, в артефакт которого
+впервые упакован сторонний код — floater.js 1.0.11.
+
+Стартовый HEAD `912249516d93`. Коммиты вехи: `9395783e`, `8d05528d`,
+`f37b2398`, `9d03f142`, `1a9b11ef`, `06e36402`, `375a6b46` и этот. Одобрений —
+**0**. Генерическая дельта — **+33 строки кода**, в полосе «26–50, объяснить
+каждый блок»; разбор с воспроизведениями — в АВ.13.
+
+### АВ.1. Исторический контракт
+
+Снят по `fd793696` до правок: SSR и смонтированный DOM в jsdom с записью
+вызовов floater.js (`vi.mock`), затем Chrome.
+
+**API.** Пропсы: `open` (v-model), `defaultOpen`, `disabled`, `placement:
+'bottom-start' | 'bottom-end'`, `closeOnSelect` (по умолчанию `true`),
+`variant: 'default' | 'pills'`, `teleportTo` (селектор, элемент или `false`,
+по умолчанию `body`). Эмиты: `update:open` и затем `openChange` — всегда парой.
+Слоты: `trigger` и `default`, оба со scope-пропсами (`open`, `toggle`, `close`).
+Корня с `role` нет; триггер — `div.vf-dropdown__trigger` с `tabindex="0"`,
+`aria-haspopup="menu"`, `aria-expanded` и `aria-controls`, который **в закрытом
+состоянии висит**: id меню назначен, самого меню нет.
+
+**Открытое состояние.** Меню — `div.vf-dropdown__menu` с `role="menu"`,
+`aria-labelledby` на триггер, модификатором варианта и первым ребёнком
+`span.vf-dropdown__arrow` (`aria-hidden`). Телепорт в `<body>` в порядке
+экземпляров (якоря Teleport), `Transition name="vf-floating-transition"` с
+`appear` и явной длительностью 320 мс. floater.js: `strategy: 'fixed'`,
+`offset(10)`, `flip` на пару `bottom-* ↔ top-*`, `shift()`, `arrow(el)`;
+`autoUpdate(trigger, …)` пока меню открыто.
+
+**Клавиатура на триггере.** Открывают `ArrowDown`, `Enter`, `Space` —
+`preventDefault`, фокус на первый пункт. На открытом меню: `ArrowDown`/`ArrowUp`
+по кругу, `Home`/`End`, `Escape` закрывает и возвращает фокус на триггер.
+
+### АВ.2. Исторические причуды
+
+Десять причуд записаны в `contracts/dropdown/parity-policy.json` как
+`historicalQuirks`, все с классификацией `exact`, все сравниваются живым
+паритетом и ни одна Razor не «чинит»:
+
+| причуда | суть |
+| --- | --- |
+| `arrowup-does-not-open` | ArrowUp, Home, End на закрытом триггере ничего не делают и не предотвращаются |
+| `disabled-items-are-walked` | обход не пропускает disabled: кнопка не берёт фокус и **блокирует** обход, disabled-ссылка с `tabindex=-1` проходится |
+| `walk-starts-from-minus-one` | из фокуса в меню не на пункте ArrowUp попадает на предпоследний пункт |
+| `reopen-notifies-again` | открывающая клавиша на открытом меню снова эмитит пару; первый пункт без фокуса оставляет фокус на триггере |
+| `tab-does-not-close` | Tab внутри меню его не закрывает; Tab с триггера входит в телепортированное меню |
+| `any-inside-click-closes` | **любой** клик внутри меню при `closeOnSelect` закрывает его — в том числе по стрелке и по disabled-пункту |
+| `outside-click-steals-focus` | клик снаружи закрывает меню, фокус уходит туда, куда кликнули |
+| `no-mutual-exclusion` | два экземпляра, открытые клавиатурой, открыты одновременно |
+| `escape-is-a-lifo-stack` | один Escape закрывает только последнего открытого |
+| `closed-reference-dangles` | закрытый `aria-controls` висит |
+
+### АВ.3. Характеризация и мутации
+
+`VfDropdown.characterization.spec.ts` — **111 тестов**, все проходили на
+нетронутом компоненте до переключения на shared-core. Два приложения Vue
+дают одинаковые `useId`, поэтому многоэкземплярные тесты монтируют пару в одно
+приложение; переход — через заглушку `Transition` без наследования attrs, а
+таймеры удаления проверяются по окну, а не по точке.
+
+Мутаций характеризации — **63**, все обнаружены набором с атрибуцией. 24 из них
+нацелены на `shared-core/src/dropdown/state.ts` после выноса правил. Одна
+(`escape-stack-not-reordered`) удалена как эквивалентная — стек без
+переупорядочивания наблюдаемо тот же; две пропущенные на первом прогоне
+(ветка focus-scope, длительность enter) закрыты усилением тестов, а не
+ослаблением мутаций.
+
+### АВ.4. shared-core, PHP и CSS
+
+`packages/shared-core/src/dropdown/state.ts`: `DROPDOWN_OFFSET`,
+`DROPDOWN_STRATEGY`, `DROPDOWN_TRIGGER_OPEN_KEYS`, `resolveDropdownOpen`,
+`resolveDropdownTriggerState`, `resolveDropdownMenuClasses`,
+`resolveDropdownArrowClasses`, `resolveDropdownFlipPlacements`,
+`resolveDropdownArrowOffset`, `resolveDropdownTeleport`,
+`resolveDropdownMenuNavigation` (с причудой −1). `state-vectors.json` гоняется
+TypeScript (47 тестов) и PHP (`DropdownStateVectorsTest`, 6 тестов по пяти
+серверным правилам); `$vueOnly` помечает правила, у которых нет PHP-половины,
+потому что их исполняет браузер. `DropdownState.php` зеркалит только серверные
+правила. VfDropdown.vue переключён на правила без изменения контракта.
+
+CSS перенесён в `packages/styles/src/components/dropdown.css` и импортирует
+`overlay-primitives.css`; вход `packages/core` оставлен форвардом.
+`baseline:css` — 53 совпадения; стиль попадает в `vueforge-razor.css` ровно
+один раз.
+
+### АВ.5. Каталог и покрытие
+
+`contracts/dropdown/cases.json` — **61 кейс**: 22 начальных, 39 сценариев,
+11 визуальных. `scripts/ci/dropdown-coverage.mjs` — правила эрозии с 20
+тестами атак A–R (`dropdown-coverage.test.mjs`): каждая причуда, закрытый
+висящий `aria-controls`, телепортированное и встроенное меню, два открытых
+экземпляра, flip и прокрутка, отложенное удаление, бюджеты владения,
+выдуманные пропсы/шаги/ожидания, сходимость для открытого состояния и
+«набивка» вместо удалённой причуды.
+
+Один сценарий исправлен уже на стадии мутаций: `interaction-disabled-blocks`
+делал три нажатия ArrowDown и **не различал** — обход с пропуском disabled
+возвращался бы тем же кругом на Edit. Теперь нажатий два.
+
+### АВ.6. Владение
+
+Профиль `dropdown` владеет одной обёрткой-триггером на экземпляр
+(`controlOwnership`); всё остальное фокусируемое — в корне и **в меню** — это
+элементы потребителя, включая пункты. Счёт идентичности, а не количества:
+`dropdown-ownership.test.mjs` (8 тестов) и мутация
+`dropdown-snapshot-trigger-identity` доказывают, что подмена триггера при
+сохранённом количестве ловится в `ownership.controls` (атака W). Кейсы
+объявляют `consumerInteractiveRoles` — сколько элементов потребителя несут
+явную интерактивную роль (`role="menuitem"`); без этой декларации эталон сам
+падал бы на правиле владения (см. АВ.13).
+
+### АВ.7. Связи id, телепорт, несколько экземпляров
+
+Механизм M28.0 (`followedReferences`) использован **как есть**: профиль
+объявляет ровно `.vf-dropdown__trigger → aria-controls`.
+`dropdown-followed.test.mjs` (атака V, V1–V5) закрепляет это объявление и
+показывает, что без него или при неверном объявлении возвращаются ложный FAIL
+на литерале `#outside-case:` и маскированный ложный PASS для неверного меню.
+
+- закрытое: `aria-controls` сравнивается как `#dangling`;
+- открытое: `aria-controls` → меню и `aria-labelledby` меню → триггер
+  сравниваются по позиционным токенам и отдельно в
+  `interaction.relationships` на живом DOM;
+- два экземпляра (`open-two`, `interaction-two-keyboard-open`,
+  `interaction-escape-lifo`): две пары связей в одном кейсе;
+- перекрёстная проводка, дубликаты id триггеров, перенос id меню, висящая
+  ссылка при открытом меню — браузерные мутации, пойманы в
+  `dom.relationships` и `interaction.relationships`.
+
+Литеральное равенство id Vue (`-v-N`) и Razor (`-r-N`) **не требуется** и не
+сравнивается. Место меню (`body` / `in-place` / `in-case` / `elsewhere`)
+записывается снимком; мутации «меню осталось в корне», «не туда
+телепортировано», «встроенное вынесено» пойманы.
+
+### АВ.8. Floating и переход
+
+Снимок меряет геометрию меню **относительно триггера** (сторона, левый/правый
+край, зазор) до и после синтетического resize, на который отвечает
+`autoUpdate`, и сравнивает инлайн-позицию меню и стрелки как декларации CSSOM.
+Сценарии flip (`interaction-flip-top`) и прокрутки
+(`interaction-scroll-follow`) доказывают `flip` и `autoUpdate`. Мутации
+«floating выключен», «autoUpdate не подключён», «неверная сторона» пойманы в
+`dom.nativeAttributes` и `interaction.state`.
+
+Переходы: фикстуры записывают каждый завершившийся enter и leave с момента
+первого ввода, длительность раскладывается в корзины `short` < 300 мс ≤
+`normal` < 480 мс ≤ `long`. Удаление раньше времени и удаление никогда —
+пойманы (атаки S, T). Снимок ждёт, пока ни одно меню не несёт класса
+`vf-floating-transition-*`, и записывает, дождался ли (`settled`).
+
+Недетерминированность растра скруглённых углов композитного слоя (два
+варианта, примерно один из восьми прогонов) устранена принудительной
+перерисовкой (`opacity` на `<body>`, восстанавливается до захвата):
+до — 11 расхождений на 90 прогонов, после — 0 на 90.
+
+### АВ.9. Razor без JS
+
+`DropdownComponent` рендерит корень, триггер со всеми ARIA и:
+
+- закрытым — содержимое меню в инертном `<template
+  data-vf-razor-dropdown="menu">`, `aria-controls` висит, как в эталоне;
+- открытым (`default-open`/`open`) — меню на месте с `role="menu"`,
+  `aria-labelledby`, стрелкой и затравкой `style="left:0px;top:0px;"`.
+
+Конфигурация контроллера — атрибуты `data-vf-razor-dropdown-*`, извлекатель их
+отбрасывает как метаданные адаптера. Инлайн-скриптов нет. 16 PHP-тестов
+компонента; `razor:test` — 951 тест.
+
+### АВ.10. Razor в браузере и floater.js
+
+`packages/razor/browser/dropdown.ts` — контроллер на экземпляр,
+идемпотентный: повторный bootstrap ничего не удваивает. Модульный стек Escape,
+слушатель клика снаружи на экземпляр, телепорт с якорями в порядке
+экземпляров (текстовые узлы при bootstrap), enter-классы до вставки, открытое
+с сервера меню заменяется свежим, запись атрибутов только при изменении.
+Событие — одно всплывающее `vf-dropdown:open-change` с `{ open }`.
+
+floater.js **1.0.11**, закреплён точно в корневом `package.json`;
+`build-assets.mjs` сверяет закрепление с установленной версией, собирает
+esbuild'ом в `vueforge-razor.js` и ставит баннер `/*!` с дословным текстом
+MIT `LICENSE.md`; `assets-manifest.json` объявляет `browser.thirdParty`.
+Потребителю Composer не нужны Node, npm или Vite: гейт упакованного
+потребителя проверяет баннер, лицензию, маркер `[floater.js]`, отсутствие
+`import`/`require`, манифест и один экземпляр CSS. Общий `FloatingRuntime` не
+создан.
+
+`razor:browser` — 215 утверждений, включая открытие, клавиатуру, клик
+внутри/снаружи, Escape LIFO и переходы dropdown.
+
+### АВ.11. Живой трёхсторонний паритет и AX
+
+Профиль `dropdown`: 366 сравнений, 66 начальных и 234 пост-скриншота,
+**0 одобрений**, 0 расхождений — три прогона подряд.
+
+Мутации паритета (`dropdown-mutations.mjs`): **12 захвата, 37 браузерных,
+9 политики** — все пойманы намеченным измерением, 9 политических отклонены.
+Атаки A–W:
+
+| атака | мутация / тест | измерение |
+| --- | --- | --- |
+| A неверный `aria-controls` | `browser-dropdown-controls-dangling` | dom.relationships, interaction.relationships |
+| B неверный `aria-labelledby` | `browser-dropdown-labelledby-wrong` | dom.relationships, a11y.name |
+| C перекрёстная проводка | `browser-dropdown-cross-wired` | dom.relationships, interaction.relationships |
+| D меню в корне | `browser-dropdown-menu-kept-in-root(-after-open)` | dom.structure, interaction.state |
+| E не туда телепортировано | `browser-dropdown-menu-wrong-destination` | interaction.state |
+| F ArrowUp открывает | `browser-dropdown-arrowup-opens` | interaction.state/events/convergence |
+| G disabled пропускается | `browser-dropdown-disabled-item-skipped` | interaction.focus |
+| H Tab закрывает | `browser-dropdown-tab-closes` | interaction.state/events |
+| I клик внутри не закрывает | `browser-dropdown-inside-click-ignored` | interaction.state/events/convergence |
+| J клик снаружи не закрывает | `browser-dropdown-outside-click-ignored` | interaction.state/events/focus |
+| K Escape не тот экземпляр | `browser-dropdown-escape-closes-first` | interaction.state/events |
+| L фокус триггера | `browser-dropdown-keyboard-open-keeps-trigger-focus` | interaction.focus |
+| M фокус пункта | `browser-dropdown-pointer-open-focuses-item` | interaction.focus |
+| N только current | `browser-dropdown-current-only-*` (изоляция проверена) | interaction.state, dom.aria |
+| O только Razor | все `browser-*` на странице Razor | — |
+| P current и Razor одинаково | `dropdown-current-and-razor-identically-lose-expanded` | dom.aria (от эталона) |
+| Q floating выключен | `browser-dropdown-floating-disabled` | dom.nativeAttributes, interaction.state |
+| R неверная сторона | `browser-dropdown-wrong-placement` | dom.nativeAttributes, interaction.state |
+| S удаление раньше | `browser-dropdown-removed-early` | interaction.state |
+| T удаления нет | `browser-dropdown-never-removed` | interaction.state, convergence |
+| U дубликаты id | `browser-dropdown-duplicate-trigger-ids` | dom.relationships |
+| V followedReferences | `dropdown-followed.test.mjs` V1–V5 | dom.relationships |
+| W идентичность при том же счёте | `dropdown-snapshot-trigger-identity`, `dropdown-ownership.test.mjs` | ownership.controls |
+
+**AX (Chrome).** Триггер — `generic` без имени, `focusable`,
+`hasPopup=menu`; `controls` только в открытом состоянии; **`aria-expanded` не
+экспонируется** (AX-слепо — доказывается в `dom.aria` и `interaction.state`).
+Меню — `menu` с именем от триггера; пункты — роль, имя, `disabled`, `focused`;
+стрелка игнорируется. `aria-haspopup="true"` Chrome тоже отображает в `menu`,
+поэтому различие `true`/`menu` AX-слепо и держится на `dom.aria` (АВ.13, блок 1).
+
+Ограничение среды: у headless Chrome 154 необработанная клавиша навигации
+(ArrowUp/Home/End/Escape) или Tab, уводящий фокус из документа, навсегда
+прячет вкладку (rAF перестаёт идти). Фикстуры гасят действие по умолчанию
+**после** обработчиков компонента и записывают, предотвратил ли его сам
+компонент (`keydownPrevented`) — это сравнивается.
+
+### АВ.12. Витрина и упаковка
+
+Vue `/dropdown` (`examples/playground/dropdown.html`) и Razor `/dropdown`
+(`dropdown-showcase.razor.php`) рендерят все кейсы каталога; Razor использует
+упакованный контроллер. Шесть прежних маршрутов не тронуты, кроме записи в
+реестре. `showcase:routes` — 1285 утверждений, включая живое открытие,
+Escape и клик снаружи на обеих платформах.
+
+Провайдер регистрирует `vf-dropdown`; `razor:distribution`: пакет — 90
+утверждений, упакованный потребитель — 204 (7 новых для dropdown, обе
+намеренные поломки ловятся), чистый экспорт — 18, граница ассетов — 32 ребра.
+
+### АВ.13. Генерическая стоимость
+
+Учитываются только строки кода (без комментариев и пустых), нетто, в
+генерических файлах; снимок `dropdownInteractionExpression`, поля
+компаратора, профиль, фикстуры, каталог, мутации и витрина — компонентные.
+
+| блок | файл | строк | зачем и воспроизведение |
+| --- | --- | --- | --- |
+| 1. `aria-haspopup` в `COMPARED_ATTRIBUTES` | extract | 1 | **ложный PASS**: обе мутации haspopup прошли незамеченными в `dom.aria`; AX слеп, Chrome отображает `true` в `menu` |
+| 2. `through` / `scopeExpression` для клика и фокуса | extract | 4 (+3 изменённых) | меню вне корня: без этого клик по пункту или стрелке невыразим, и атаки I и причуда «любой клик внутри» не проверяемы |
+| 3. шаги `scrollWindow` и `wait` | extract | 4 | прокрутка — единственный наблюдаемый триггер `autoUpdate` кроме resize; `wait` — окно удаления leave |
+| 4. `Escape` в `KEY_CODES` | extract | 1 | без кода клавиши CDP-событие Escape не доходит как клавиша |
+| 5. роли потребителя в правиле владения | extract | 3 (+4 переноса prettier) | **ложный FAIL** эталона: «case dropdown/open measured 3 element(s) carrying an explicit interactive role» — пункты потребителя с `role=menuitem` |
+| 6. ветка диспетчера `dropdown` | extract | 3 | как у каждого снимка |
+| 7. `followed(…)` в селекторах AX | run | 8 | **ложный FAIL**: «no live accessibility record exposes» — корень-ограниченный селектор не видит меню в `<body>` |
+| 8. `hasPopup` в полях AX | run | 1 | **ложный FAIL**: «the tree recorded null» — единственная экспонируемая семантика триггера не читалась |
+| 9. изоляция удаляет цели объявленных ссылок | run | 4 | **ложный FAIL**: `tab-from-trigger` на эталоне давал `focusRole: body` — меню удалённых кейсов оставались в документе и брали фокус/клики |
+| 10. проброс `consumerInteractiveRoles` | run | 1 | к блоку 5 |
+
+Итого **+33** (extract +19, run +14). Сжатие ради порога не делалось.
+Абстракций — **0**: `through` и `followed(…)` — формы чтения той же
+объявленной в M28.0 ссылки, а не новая модель.
+
+**Дельта M28: +33 строки. Накопленная от `9f5671ec`: +106 (+73 до M28 и +33).
+Новых архитектурных абстракций: 0. Новых генерических гейтов: 0.**
+
+### АВ.14. Остаточные риски
+
+- Прокрутка сравнивается одним сценарием на окне; прокрутка вложенных
+  контейнеров и `shift` у края вьюпорта не покрыты паритетом.
+- Ветка `useFocusScopeBranch` (меню, открытое внутри ловушки фокуса) закреплена
+  только характеризацией: в Razor ловушки фокуса нет.
+- Scoped-слоты Vue (`open`, `toggle`, `close`) в Razor статичны; Razor-триггер
+  не получает их аналога.
+- Эмит при начальном `defaultOpen` в setup — поведение Vue, в Razor события при
+  bootstrap нет; не сравнивается, закреплено характеризацией.
+- Живой паритет доказан только в Chrome 154 headless; дефект скрытой вкладки
+  обходится фикстурами, а не исправлен.
+- Витрина Razor ставит пакет через Composer; устаревший vendor-путь однажды дал
+  ложный провал маршрутов — лечится переустановкой, не гейтом.
+- Гейт Razor в браузере не проверяет отдельно, что каждое открытие создаёт
+  новый узел меню; это видно только через переходы и паритет.
