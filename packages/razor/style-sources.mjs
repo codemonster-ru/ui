@@ -194,4 +194,12 @@ export const styleSources = [
   // these, as they do in packages/core/src/styles/components.css. No selector
   // here overlaps another file's.
   'packages/styles/src/components/group-box.css',
+  // VfPopover, M30: the trigger wrapper and its focus ring, the fixed floating
+  // panel with its focus ring and forced-colors fallback, the
+  // vf-floating-transition enter-from/leave-to pair, and the rotated arrow with
+  // its two placement offsets. A standalone closure beside dropdown.css, not a
+  // variant of it: the two share tokens and no selector. Its first line imports
+  // overlay-primitives.css, already inlined above, so those tokens appear once.
+  // Listed last; no selector here overlaps another file's.
+  'packages/styles/src/components/popover.css',
 ];

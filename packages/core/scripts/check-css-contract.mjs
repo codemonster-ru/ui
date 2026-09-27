@@ -70,6 +70,8 @@ const explicitDeps = {
   'menu.css': ['./overlay-primitives.css'],
   // The dropdown entry forwards to packages/styles since M28, the same way.
   'dropdown.css': ['./overlay-primitives.css'],
+  // The popover entry forwards to packages/styles since M30, the same way.
+  'popover.css': ['./overlay-primitives.css'],
 };
 
 const globallyAllowed = new Set(['icon', 'icon-wrapper']);

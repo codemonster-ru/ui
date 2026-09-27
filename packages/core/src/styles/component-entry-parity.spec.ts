@@ -254,6 +254,27 @@ describe('component entry CSS parity', () => {
     expect(stripImports(source)).not.toContain('.vf-button {');
   });
 
+  it('forwards the popover entry to its canonical source in packages/styles, which reads the shared overlay tokens', () => {
+    // The M30 move, checked the way the dropdown's is. The popover is its own
+    // closure: nothing imports it, and it imports only the overlay tokens.
+    const canonical = resolveStyleEntrySource(resolve(entriesDir, 'popover.css'));
+    expect(canonical).toBe(resolve(stylesDir, '../../../styles/src/components/popover.css'));
+
+    const source = readFileSync(canonical, 'utf8');
+    const imports = [...source.matchAll(/^@import\s+'([^']+)';$/gm)].map((match) => match[1]);
+    expect(imports).toEqual(['./overlay-primitives.css']);
+    expect(resolveStyleEntrySource(resolve(dirname(canonical), imports[0]!))).toBe(
+      resolveStyleEntrySource(resolve(componentsDir, 'overlay-primitives.css')),
+    );
+    // The panel is fixed, which is the strategy floater.js is given, and its
+    // enter/leave pair is the transition name the component renders.
+    expect(source).toContain('.vf-popover__content {\n  position: fixed;');
+    expect(source).toContain('.vf-floating-transition-enter-from.vf-popover__content,');
+    expect(source).toContain('.vf-floating-transition-leave-to.vf-popover__content {');
+    expect(source).not.toContain('.vf-dropdown');
+    expect(stripImports(source)).not.toContain('--vf-overlay-border-width:');
+  });
+
   it('keeps the menu and the menu item in one closure with no descendant coupling', () => {
     // VfMenu and VfMenuItem are one milestone because they are one stylesheet,
     // not because either needs the other. No selector here joins them: every
