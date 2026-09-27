@@ -188,10 +188,7 @@ describe('component entry CSS parity', () => {
     // divergence is measured on real Chrome by the menuItem parity profile;
     // this is the same fact asserted where it is cheap to assert.
     const canonicalMenu = readFileSync(resolveStyleEntrySource(resolve(entriesDir, 'menu.css')), 'utf8');
-    const overlay = readFileSync(
-      resolveStyleEntrySource(resolve(componentsDir, 'overlay-primitives.css')),
-      'utf8',
-    );
+    const overlay = readFileSync(resolveStyleEntrySource(resolve(componentsDir, 'overlay-primitives.css')), 'utf8');
 
     expect(canonicalMenu).toContain('border: var(--vf-overlay-border-width) solid transparent;');
     expect(overlay).toContain('--vf-overlay-border-width: var(--vf-text-link-border-width);');
@@ -234,6 +231,27 @@ describe('component entry CSS parity', () => {
     for (const name of ['select.css', 'date-picker.css', 'data-table-column-chooser.css']) {
       expect(readFileSync(resolve(entriesDir, name), 'utf8'), name).toContain("@import './dropdown.css';");
     }
+  });
+
+  it('forwards the group box entry to its canonical source in packages/styles, which reads the button beside it', () => {
+    // The M29 move. The file is the historical stylesheet byte for byte: its
+    // one import names button.css as a sibling, and in packages/styles the
+    // sibling is the canonical button stylesheet, so the relative path did not
+    // have to change.
+    const canonical = resolveStyleEntrySource(resolve(entriesDir, 'group-box.css'));
+    expect(canonical).toBe(resolve(stylesDir, '../../../styles/src/components/group-box.css'));
+
+    const source = readFileSync(canonical, 'utf8');
+    const imports = [...source.matchAll(/^@import\s+'([^']+)';$/gm)].map((match) => match[1]);
+    expect(imports).toEqual(['./button.css']);
+    expect(resolveStyleEntrySource(resolve(dirname(canonical), imports[0]!))).toBe(
+      resolveStyleEntrySource(resolve(entriesDir, 'button.css')),
+    );
+    // The collapsed modifier rotates the icon, and the transition that animates
+    // it is the theme's normal duration - the only motion the component has.
+    expect(source).toContain('.vf-group-box--collapsed .vf-group-box__icon {\n  transform: rotate(-90deg);');
+    expect(source).toContain('transition: transform var(--vf-motion-duration-normal) var(--vf-motion-ease-standard);');
+    expect(stripImports(source)).not.toContain('.vf-button {');
   });
 
   it('keeps the menu and the menu item in one closure with no descendant coupling', () => {

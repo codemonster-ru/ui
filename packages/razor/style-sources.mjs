@@ -186,4 +186,12 @@ export const styleSources = [
   // needs - the border width, the enter shift and scale, both arrow offsets -
   // appear once. No selector here overlaps another file's.
   'packages/styles/src/components/dropdown.css',
+  // VfGroupBox, M29: the fieldset surface, the legend on its border, the title
+  // with its ellipsis, the collapsible legend and trigger offsets, the icon and
+  // its collapsed rotation, and the content padding. Its first line imports
+  // button.css - the trigger is a ghost VfButton - which the builder has
+  // already inlined above, so the button rules appear once and stay before
+  // these, as they do in packages/core/src/styles/components.css. No selector
+  // here overlaps another file's.
+  'packages/styles/src/components/group-box.css',
 ];
