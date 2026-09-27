@@ -12,6 +12,7 @@ import VfInput from '@codemonster-ru/vueforge-core/src/components/input/VfInput.
 import VfAccordion from '@codemonster-ru/vueforge-core/src/components/accordion/VfAccordion.vue';
 import VfStepper from '@codemonster-ru/vueforge-core/src/components/stepper/VfStepper.vue';
 import VfTabs from '@codemonster-ru/vueforge-core/src/components/tabs/VfTabs.vue';
+import VfGroupBox from '@codemonster-ru/vueforge-core/src/components/group-box/VfGroupBox.vue';
 
 // One app, three real components. The accordion joined in M22: its trigger is
 // a native button with the same classes the Razor controller mounts on - minus
@@ -20,7 +21,9 @@ import VfTabs from '@codemonster-ru/vueforge-core/src/components/tabs/VfTabs.vue
 // with the same item values the Razor fixtures use: the Razor controller must
 // neither mount it nor move its focus into a Vue trigger. The tabs joined in
 // M24, with the same values again: a Vue tabs' role=tab buttons carry the
-// same classes the Razor tabs controller mounts on.
+// same classes the Razor tabs controller mounts on. The group box joined in
+// M29: its fieldset and ghost trigger carry the same classes the Razor group
+// box controller mounts on, minus the ownership marker.
 createApp({
   data: () => ({ value: 'vue-value' }),
   render() {
@@ -54,6 +57,11 @@ createApp({
           ],
         },
         { panel: ({ activeValue }: { activeValue: string }) => h('p', `Vue panel ${activeValue}`) },
+      ),
+      h(
+        VfGroupBox,
+        { id: 'vue-group-box-root', title: 'Vue group box', collapsible: true },
+        { default: () => h('p', 'Vue group box content.') },
       ),
     ]);
   },

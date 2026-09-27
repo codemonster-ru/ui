@@ -26,6 +26,7 @@ import { enhanceVueForgeAccordions } from './accordion.js';
 import { enhanceVueForgeSteppers } from './stepper.js';
 import { enhanceVueForgeTabs } from './tabs.js';
 import { enhanceVueForgeDropdowns } from './dropdown.js';
+import { enhanceVueForgeGroupBoxes } from './group-box.js';
 
 const ROOT_SELECTOR = '[data-vf-razor="input"]';
 const ENHANCED_ATTRIBUTE = 'data-vf-razor-enhanced';
@@ -255,6 +256,12 @@ export function enhanceVueForgeInputs(root: ParentNode = document): void {
 
 /** Enhances every Razor-owned component, each owning only its own subtree. */
 function enhanceAll(root: ParentNode = document): void {
+  // Group boxes first: a group box reads its pristine content when it is
+  // enhanced, and an open group box's content must be read before any other
+  // controller has enhanced - and possibly rewritten - what is inside it. It
+  // is handed this same function so that whatever the server rendered inside
+  // its content mounts each time a fresh content element is rendered.
+  enhanceVueForgeGroupBoxes(root, enhanceAll);
   enhanceVueForgeInputs(root);
   // Textareas before fields: the field reads the control's current value when
   // it attaches, and the textarea's own marker should already be correct.
@@ -279,6 +286,7 @@ export {
   enhanceVueForgeCheckables,
   enhanceVueForgeDropdowns,
   enhanceVueForgeFields,
+  enhanceVueForgeGroupBoxes,
   enhanceVueForgeSteppers,
   enhanceVueForgeTabs,
   enhanceVueForgeTextareas,

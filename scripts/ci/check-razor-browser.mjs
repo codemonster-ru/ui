@@ -395,6 +395,47 @@ const dropdownTrigger = (label) =>
   `document.querySelector('.vf-dropdown[aria-label="${label}"] > .vf-dropdown__trigger')`;
 const dropdownMenu = (label) => `document.getElementById(${dropdownTrigger(label)}.getAttribute('aria-controls'))`;
 
+/** Installs a per-root log of the group box's collapsed-change events, keyed by the root's title text. */
+const installGroupBoxLog = `(() => {
+  window.__groupBoxEvents = {};
+  for (const root of document.querySelectorAll('[data-case] .vf-group-box')) {
+    const trigger = root.querySelector(':scope > legend > .vf-group-box__trigger');
+    if (!trigger) continue;
+    const name = trigger.textContent.trim();
+    window.__groupBoxEvents[name] = [];
+    root.addEventListener('vf-group-box:collapsed-change', (event) => {
+      if (event.target !== root) return;
+      window.__groupBoxEvents[name].push({ collapsed: event.detail.collapsed, bubbles: event.bubbles });
+    });
+  }
+  return Object.keys(window.__groupBoxEvents).length;
+})()`;
+
+/** One group box as the suite reads it, by its trigger text. */
+const readGroupBox = (title) => `(() => {
+  const trigger = [...document.querySelectorAll('.vf-group-box__trigger')].find((candidate) => candidate.textContent.trim() === ${JSON.stringify(title)});
+  const root = trigger.closest('.vf-group-box');
+  const content = root.querySelector(':scope > .vf-group-box__content');
+  return {
+    enhanced: root.hasAttribute('data-vf-razor-group-box-enhanced'),
+    expanded: trigger.getAttribute('aria-expanded'),
+    className: root.className,
+    contentPresent: content !== null,
+    contentId: content?.id ?? null,
+    controlsContent: content !== null && trigger.getAttribute('aria-controls') === content.id,
+    labelledByTrigger: content !== null && content.getAttribute('aria-labelledby') === trigger.id,
+    role: content?.getAttribute('role') ?? null,
+    afterLegend: content !== null && content.previousElementSibling?.tagName === 'LEGEND',
+    text: content ? content.textContent.replace(/\\s+/g, ' ').trim() : null,
+    hiddenCopies: root.querySelectorAll(':scope > .vf-group-box__content[hidden], :scope > [style*="display: none"]').length,
+    templatePresent: root.querySelector(':scope > template[data-vf-razor-group-box="content"]') !== null,
+    focused: document.activeElement === trigger,
+    disabled: trigger.disabled,
+    events: window.__groupBoxEvents?.[${JSON.stringify(title)}] ?? null,
+    triggerCount: root.querySelectorAll('.vf-group-box__trigger').length,
+  };
+})()`;
+
 const server = await serve(distDirectory);
 const chrome = await launchChrome();
 
@@ -959,6 +1000,441 @@ try {
       'the accordion page produced no script errors',
       page.diagnostics.pageErrors.length === 0,
       page.diagnostics.pageErrors.join('; '),
+    );
+  });
+
+  // ------------------------------------------------------------- group box
+  //
+  // The M29 suite. A controller that reproduces one behaviour - the trigger's
+  // click - and nothing else: no keydown handler, no timer, no global
+  // listener. Driven with real pointer and key events and read back off the
+  // live DOM: state, classes, relationships, v-if removal and fresh
+  // re-rendering, events, focus, and ownership of the roots it mounts on.
+  await withPage(chrome, server.origin, 'fixture-enhanced.html', async (page) => {
+    await page.waitFor(`Boolean(document.querySelector('[data-vf-razor-group-box-enhanced]'))`);
+    await delay(150);
+    const logged = await page.evaluate(installGroupBoxLog);
+    // Eleven owned collapsible roots outside a template, plus the unowned copy,
+    // which carries a trigger and no controller.
+    check(
+      'the group box event log covers every group box with a trigger on the page',
+      logged === 12,
+      `logged ${logged}`,
+    );
+
+    const mounted = await page.evaluate(`(() => ({
+      owned: document.querySelectorAll('[data-vf-razor="group-box"]').length,
+      collapsible: document.querySelectorAll('[data-vf-razor="group-box"] > legend > .vf-group-box__trigger').length,
+      enhanced: document.querySelectorAll('[data-vf-razor="group-box"][data-vf-razor-group-box-enhanced]').length,
+      staticEnhanced: document.querySelectorAll('[data-case="group-box-static"] [data-vf-razor-group-box-enhanced]').length,
+      staticRoots: document.querySelectorAll('[data-case="group-box-static"] [data-vf-razor="group-box"]').length,
+      unowned: document.querySelectorAll('[data-case="group-box-unowned"] .vf-group-box[data-vf-razor-group-box-enhanced]').length,
+      unownedRoots: document.querySelectorAll('[data-case="group-box-unowned"] .vf-group-box').length,
+    }))()`);
+    check(
+      'every Razor-owned collapsible group box is enhanced, nested included, and nothing else is claimed',
+      mounted.owned === 13 && mounted.collapsible === 11 && mounted.enhanced === 11,
+      JSON.stringify(mounted),
+    );
+    check(
+      'a static group box - titled, or collapsible without a title - is not claimed',
+      mounted.staticRoots === 2 && mounted.staticEnhanced === 0,
+      JSON.stringify(mounted),
+    );
+    check(
+      'a group box copy without the ownership marker is not mounted',
+      mounted.unowned === 0 && mounted.unownedRoots === 1,
+      JSON.stringify(mounted),
+    );
+
+    // -- click opens a fresh content element after the legend
+    const closedBefore = await page.evaluate(readGroupBox('Closed'));
+    check(
+      'a closed group box starts closed with its content deferred',
+      closedBefore.expanded === 'false' && !closedBefore.contentPresent && closedBefore.templatePresent,
+      JSON.stringify(closedBefore),
+    );
+    await clickAt(page, '[data-case="group-box-closed"] .vf-group-box__trigger');
+    const opened = await page.evaluate(readGroupBox('Closed'));
+    check(
+      'a click opens it synchronously: aria-expanded, the region after the legend, both relationships',
+      opened.expanded === 'true' &&
+        opened.contentPresent &&
+        opened.afterLegend &&
+        opened.controlsContent &&
+        opened.labelledByTrigger &&
+        opened.role === 'region' &&
+        opened.text === 'Closed content.',
+      JSON.stringify(opened),
+    );
+    check(
+      'opening drops the collapsed modifier and keeps the canonical class order',
+      opened.className === 'vf-group-box vf-group-box--titled vf-group-box--collapsible',
+      opened.className,
+    );
+    check('the click leaves focus on the trigger', opened.focused === true, JSON.stringify(opened));
+    check(
+      'the open is dispatched as one bubbling event with collapsed=false',
+      JSON.stringify(opened.events) === '[{"collapsed":false,"bubbles":true}]',
+      JSON.stringify(opened.events),
+    );
+
+    // -- v-if: typing, collapsing and reopening discards the typed value
+    const typedNode = await page.evaluate(`(() => {
+      const input = document.querySelector('[data-case="group-box-closed"] .group-box-typed');
+      input.value = 'typed before collapse';
+      window.__typedNode = input;
+      return input.value;
+    })()`);
+    await clickAt(page, '[data-case="group-box-closed"] .vf-group-box__trigger');
+    const collapsed = await page.evaluate(readGroupBox('Closed'));
+    check(
+      'a click closes it in the same task: the content is removed outright, nothing hidden is kept',
+      collapsed.expanded === 'false' &&
+        !collapsed.contentPresent &&
+        collapsed.hiddenCopies === 0 &&
+        collapsed.className === 'vf-group-box vf-group-box--titled vf-group-box--collapsible vf-group-box--collapsed',
+      JSON.stringify(collapsed),
+    );
+    await clickAt(page, '[data-case="group-box-closed"] .vf-group-box__trigger');
+    const reopened = await page.evaluate(`(() => {
+      const input = document.querySelector('[data-case="group-box-closed"] .group-box-typed');
+      return { sameNode: input === window.__typedNode, value: input.value, oldConnected: window.__typedNode.isConnected };
+    })()`);
+    check(
+      'reopening renders the content afresh: a new element, the typed value gone',
+      typedNode === 'typed before collapse' &&
+        reopened.sameNode === false &&
+        reopened.value === '' &&
+        reopened.oldConnected === false,
+      JSON.stringify(reopened),
+    );
+    const threeEvents = await page.evaluate(readGroupBox('Closed'));
+    check(
+      'open, close, open dispatched three events with the new collapsed values',
+      JSON.stringify(threeEvents.events.map((e) => e.collapsed)) === '[false,true,false]',
+      JSON.stringify(threeEvents.events),
+    );
+
+    // -- keyboard: native activation only, one click per key, nothing prevented
+    await page.evaluate(`(() => {
+      const trigger = document.querySelector('[data-case="group-box-open"] .vf-group-box__trigger');
+      window.__groupBoxClicks = 0;
+      window.__groupBoxKeys = [];
+      trigger.addEventListener('click', () => { window.__groupBoxClicks += 1; });
+      trigger.addEventListener('keydown', (event) => {
+        const entry = { key: event.key };
+        window.__groupBoxKeys.push(entry);
+        setTimeout(() => { entry.prevented = event.defaultPrevented; }, 0);
+      });
+      trigger.focus();
+    })()`);
+    await pressKey(page, 'Enter');
+    const afterEnter = await page.evaluate(readGroupBox('Open'));
+    check(
+      'Enter on the focused trigger closes it through the native click',
+      afterEnter.expanded === 'false' && !afterEnter.contentPresent,
+      JSON.stringify(afterEnter),
+    );
+    await pressKey(page, ' ');
+    await delay(50);
+    const afterSpace = await page.evaluate(readGroupBox('Open'));
+    const keyRecord = await page.evaluate(`({ clicks: window.__groupBoxClicks, keys: window.__groupBoxKeys })`);
+    check(
+      'Space on the focused trigger opens it again through the native click',
+      afterSpace.expanded === 'true' && afterSpace.contentPresent && afterSpace.text === 'Open content.',
+      JSON.stringify(afterSpace),
+    );
+    check(
+      'each key produced exactly one native click and neither keydown was prevented',
+      keyRecord.clicks === 2 &&
+        keyRecord.keys.length === 2 &&
+        keyRecord.keys.every((entry) => entry.prevented === false),
+      JSON.stringify(keyRecord),
+    );
+    check('the keyboard leaves focus on the trigger', afterSpace.focused === true);
+
+    // -- keys the reference ignores. Dispatched on the trigger rather than sent
+    // through the browser: an unhandled navigation key sent through CDP hides
+    // the headless tab (M28).
+    const ignoredKeys = await page.evaluate(`(() => {
+      const trigger = document.querySelector('[data-case="group-box-open"] .vf-group-box__trigger');
+      const before = trigger.getAttribute('aria-expanded');
+      const prevented = ['ArrowDown', 'ArrowUp', 'Home', 'End', 'Escape'].map((key) => {
+        const event = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true });
+        trigger.dispatchEvent(event);
+        return event.defaultPrevented;
+      });
+      return { before, after: trigger.getAttribute('aria-expanded'), prevented };
+    })()`);
+    check(
+      'arrow keys, Home, End and Escape change nothing and are not prevented',
+      ignoredKeys.before === ignoredKeys.after && ignoredKeys.prevented.every((value) => value === false),
+      JSON.stringify(ignoredKeys),
+    );
+
+    // -- disabled: no focus, no toggle on any route
+    await page.evaluate(`document.querySelector('[data-case="group-box-disabled"] .vf-group-box__trigger').focus()`);
+    await pressKey(page, 'Enter');
+    await pressKey(page, ' ');
+    await page.evaluate(`document.querySelector('[data-case="group-box-disabled"] .vf-group-box__trigger').click()`);
+    await page.evaluate(
+      `document.querySelector('[data-case="group-box-disabled"] .vf-group-box__trigger').dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))`,
+    );
+    const disabled = await page.evaluate(readGroupBox('Disabled'));
+    check(
+      'a disabled trigger takes no focus and toggles on no route',
+      disabled.disabled && !disabled.focused && disabled.expanded === 'false' && !disabled.contentPresent,
+      JSON.stringify(disabled),
+    );
+    check('a disabled trigger dispatches no event', disabled.events.length === 0, JSON.stringify(disabled.events));
+    const disabledFieldset = await page.evaluate(
+      `document.querySelector('[data-case="group-box-disabled"] fieldset').disabled`,
+    );
+    check('disabled never reaches the fieldset', disabledFieldset === false);
+
+    // -- siblings are independent
+    await clickAt(page, '[data-case="group-box-siblings"] .vf-group-box:first-of-type .vf-group-box__trigger');
+    const first = await page.evaluate(readGroupBox('First'));
+    const second = await page.evaluate(readGroupBox('Second'));
+    check(
+      'clicking one sibling closes that sibling only',
+      first.expanded === 'false' && !first.contentPresent && second.expanded === 'true' && second.contentPresent,
+      JSON.stringify({ first, second }),
+    );
+    check('the sibling that was not clicked dispatched nothing', second.events.length === 0);
+
+    // -- nesting: each root owns its own trigger and content
+    await clickAt(page, '[data-case="group-box-nested"] .vf-group-box .vf-group-box .vf-group-box__trigger');
+    const outer = await page.evaluate(readGroupBox('Outer'));
+    const inner = await page.evaluate(readGroupBox('Inner'));
+    check(
+      'clicking the inner trigger opens the inner group box only',
+      inner.expanded === 'true' && inner.contentPresent && outer.expanded === 'true',
+      JSON.stringify({ outer, inner }),
+    );
+    check(
+      "the inner event is logged on the inner root and not counted as the outer's",
+      inner.events.length === 1 && outer.events.length === 0,
+      JSON.stringify({ outerEvents: outer.events, innerEvents: inner.events }),
+    );
+    await clickAt(page, '[data-case="group-box-nested"] .vf-group-box__trigger');
+    const outerClosed = await page.evaluate(
+      `document.querySelectorAll('[data-case="group-box-nested"] .vf-group-box').length`,
+    );
+    check(
+      'closing the outer group box removes the inner one with its content',
+      outerClosed === 1,
+      `roots ${outerClosed}`,
+    );
+    await clickAt(page, '[data-case="group-box-nested"] .vf-group-box__trigger');
+    const innerAgain = await page.evaluate(`(() => {
+      const trigger = [...document.querySelectorAll('[data-case="group-box-nested"] .vf-group-box__trigger')].find((t) => t.textContent.trim() === 'Inner');
+      const root = trigger.closest('.vf-group-box');
+      return { expanded: trigger.getAttribute('aria-expanded'), enhanced: root.hasAttribute('data-vf-razor-group-box-enhanced') };
+    })()`);
+    check(
+      'reopening the outer group box renders the inner one afresh, in its server state, enhanced',
+      innerAgain.expanded === 'false' && innerAgain.enhanced === true,
+      JSON.stringify(innerAgain),
+    );
+    await clickAt(page, '[data-case="group-box-nested"] .vf-group-box .vf-group-box .vf-group-box__trigger');
+    const innerToggled = await page.evaluate(`(() => {
+      const trigger = [...document.querySelectorAll('[data-case="group-box-nested"] .vf-group-box__trigger')].find((t) => t.textContent.trim() === 'Inner');
+      return trigger.getAttribute('aria-expanded');
+    })()`);
+    check('the re-rendered inner group box toggles on its own click', innerToggled === 'true', innerToggled);
+
+    await clickAt(page, '[data-case="group-box-nested-deferred"] .vf-group-box__trigger');
+    const deferredInner = await page.evaluate(`(() => {
+      const trigger = [...document.querySelectorAll('[data-case="group-box-nested-deferred"] .vf-group-box__trigger')].find((t) => t.textContent.trim() === 'Deferred inner');
+      if (!trigger) return null;
+      const root = trigger.closest('.vf-group-box');
+      trigger.click();
+      return { enhanced: root.hasAttribute('data-vf-razor-group-box-enhanced'), expandedAfterClick: trigger.getAttribute('aria-expanded') };
+    })()`);
+    check(
+      'a group box rendered from a closed outer group box is enhanced when the outer one opens',
+      deferredInner?.enhanced === true && deferredInner.expandedAfterClick === 'false',
+      JSON.stringify(deferredInner),
+    );
+
+    // -- content rendered on open is itself enhanced
+    await clickAt(page, '[data-case="group-box-with-input"] .vf-group-box__trigger');
+    const insideInput = await page.evaluate(`(() => {
+      const root = document.querySelector('[data-case="group-box-with-input"] .vf-group-box__content [data-vf-razor="input"]');
+      if (!root) return null;
+      const clear = root.querySelector('[data-vf-razor-input="clear"]');
+      const control = document.getElementById('inside-group-box');
+      const before = { enhanced: root.hasAttribute('data-vf-razor-enhanced'), value: control.value };
+      clear?.click();
+      return { ...before, valueAfterClear: control.value };
+    })()`);
+    check(
+      'an input rendered inside the opened content is enhanced and its clear action works',
+      insideInput?.enhanced === true && insideInput.value === 'typed' && insideInput.valueAfterClear === '',
+      JSON.stringify(insideInput),
+    );
+
+    // -- the title "0" is a real, working disclosure
+    await clickAt(page, '[data-case="group-box-zero"] .vf-group-box__trigger');
+    const zero = await page.evaluate(readGroupBox('0'));
+    check(
+      'the title "0" renders a trigger that toggles',
+      zero.expanded === 'false' && !zero.contentPresent,
+      JSON.stringify(zero),
+    );
+
+    // -- a consumer class stays after the canonical classes across a toggle
+    await clickAt(page, '[data-case="group-box-consumer"] .vf-group-box__trigger');
+    const consumer = await page.evaluate(readGroupBox('Consumer'));
+    check(
+      'a consumer class keeps its place after the canonical classes when the modifier changes',
+      consumer.className ===
+        'vf-group-box vf-group-box--titled vf-group-box--collapsible vf-group-box--collapsed group-box-extra',
+      consumer.className,
+    );
+
+    // -- the trigger submits nothing
+    const submits = await page.evaluate(`(() => {
+      let count = 0;
+      document.querySelector('#fixture-form').addEventListener('submit', (event) => { count += 1; event.preventDefault(); });
+      document.querySelector('[data-case="group-box-open"] .vf-group-box__trigger').click();
+      document.querySelector('[data-case="group-box-open"] .vf-group-box__trigger').click();
+      return count;
+    })()`);
+    check('a trigger inside a form submits nothing', submits === 0, `submits ${submits}`);
+
+    check(
+      'the group box page produced no script errors',
+      page.diagnostics.pageErrors.length === 0,
+      page.diagnostics.pageErrors.join('; '),
+    );
+  });
+
+  // -------------------------------------- group box, listeners and bootstrap
+  await withPage(chrome, server.origin, 'fixture-enhanced.html', async (page) => {
+    await page.waitFor(`Boolean(document.querySelector('[data-vf-razor-group-box-enhanced]'))`);
+    await page.evaluate(installGroupBoxLog);
+    const record = await page.evaluate(`(async () => {
+      const module = await import('./vueforge-razor.js');
+      const added = [];
+      const documentAdd = document.addEventListener;
+      const windowAdd = window.addEventListener;
+      document.addEventListener = function (type, ...rest) { added.push('document:' + type); return documentAdd.call(this, type, ...rest); };
+      window.addEventListener = function (type, ...rest) { added.push('window:' + type); return windowAdd.call(this, type, ...rest); };
+      const timers = [];
+      const setTimeoutOriginal = window.setTimeout;
+      const rafOriginal = window.requestAnimationFrame;
+      window.setTimeout = function (...args) { timers.push('timeout'); return setTimeoutOriginal.apply(this, args); };
+      window.requestAnimationFrame = function (...args) { timers.push('raf'); return rafOriginal.apply(this, args); };
+
+      // A second bootstrap of every enhancer, then a fresh root inserted and
+      // enhanced on its own, then one click on each.
+      module.enhanceVueForgeGroupBoxes(document);
+      const host = document.querySelector('[data-case="group-box-unowned"]');
+      const fresh = host.querySelector('.vf-group-box').cloneNode(true);
+      fresh.setAttribute('data-vf-razor', 'group-box');
+      host.append(fresh);
+      module.enhanceVueForgeGroupBoxes(host);
+      module.enhanceVueForgeGroupBoxes(host);
+      fresh.querySelector('.vf-group-box__trigger').click();
+      document.querySelector('[data-case="group-box-open"] .vf-group-box__trigger').click();
+
+      document.addEventListener = documentAdd;
+      window.addEventListener = windowAdd;
+      window.setTimeout = setTimeoutOriginal;
+      window.requestAnimationFrame = rafOriginal;
+      return {
+        added,
+        timers,
+        freshExpanded: fresh.querySelector('.vf-group-box__trigger').getAttribute('aria-expanded'),
+        freshContent: fresh.querySelectorAll(':scope > .vf-group-box__content').length,
+      };
+    })()`);
+    const open = await page.evaluate(readGroupBox('Open'));
+    check(
+      'enhancing and toggling adds no document or window listener and starts no timer or animation frame',
+      record.added.length === 0 && record.timers.length === 0,
+      JSON.stringify(record),
+    );
+    check(
+      'after a second bootstrap one click is one toggle and one event',
+      open.expanded === 'false' && open.events.length === 1,
+      JSON.stringify(open),
+    );
+    check(
+      'a root inserted later and enhanced twice toggles once per click',
+      record.freshExpanded === 'false' && record.freshContent === 0,
+      JSON.stringify(record),
+    );
+    check(
+      'the double-bootstrapped group box page produced no script errors',
+      page.diagnostics.pageErrors.length === 0,
+      page.diagnostics.pageErrors.join('; '),
+    );
+  });
+
+  // -------------------------------------------------------- group box, no-js
+  await withPage(chrome, server.origin, 'fixture-no-js.html', async (page) => {
+    const noJs = await page.evaluate(`(() => {
+      const closed = document.querySelector('[data-case="group-box-closed"] .vf-group-box__trigger');
+      closed.click();
+      return {
+        enhanced: document.querySelectorAll('[data-vf-razor-group-box-enhanced]').length,
+        closedExpanded: closed.getAttribute('aria-expanded'),
+        closedContent: document.querySelectorAll('[data-case="group-box-closed"] .vf-group-box__content').length,
+        templateInert: document.querySelectorAll('[data-case="group-box-closed"] .group-box-typed').length,
+        openContent: document.querySelector('[data-case="group-box-open"] .vf-group-box__content')?.textContent.trim() ?? null,
+        staticContent: [...document.querySelectorAll('[data-case="group-box-static"] .vf-group-box__content')].map((node) => node.textContent.trim()),
+        triggerTypes: [...document.querySelectorAll('.vf-group-box__trigger')].map((node) => node.type),
+        substitutes: document.querySelectorAll('.vf-group-box details, .vf-group-box summary, .vf-group-box a[href]').length,
+      };
+    })()`);
+    check('no group box controller runs without its script', noJs.enhanced === 0, JSON.stringify(noJs));
+    check(
+      'without javascript a closed group box stays closed and its content is unreachable',
+      noJs.closedExpanded === 'false' && noJs.closedContent === 0 && noJs.templateInert === 0,
+      JSON.stringify(noJs),
+    );
+    check(
+      'without javascript open and static group boxes show their content',
+      noJs.openContent === 'Open content.' &&
+        JSON.stringify(noJs.staticContent) === '["Static content.","Untitled content."]',
+      JSON.stringify(noJs),
+    );
+    check(
+      'the triggers are type=button and nothing - details, summary, link - was substituted',
+      noJs.triggerTypes.every((type) => type === 'button') && noJs.substitutes === 0,
+      JSON.stringify(noJs),
+    );
+  });
+
+  // ------------------------------------------------ group box, ownership
+  await withPage(chrome, server.origin, 'fixture-mixed.html', async (page) => {
+    await page.waitFor(`Boolean(document.querySelector('#vue-group-box-root'))`);
+    await page.waitFor(`Boolean(document.querySelector('[data-vf-razor-group-box-enhanced]'))`);
+    await delay(150);
+    await page.evaluate(`(() => {
+      window.__vueGroupBoxRazorEvents = 0;
+      document.querySelector('#vue-group-box-root').addEventListener('vf-group-box:collapsed-change', () => { window.__vueGroupBoxRazorEvents += 1; });
+    })()`);
+    await clickAt(page, '#vue-group-box-root .vf-group-box__trigger');
+    await delay(100);
+    const vue = await page.evaluate(`(() => {
+      const root = document.querySelector('#vue-group-box-root');
+      return {
+        markedByRazor: root.hasAttribute('data-vf-razor-group-box-enhanced') || root.hasAttribute('data-vf-razor'),
+        expanded: root.querySelector('.vf-group-box__trigger').getAttribute('aria-expanded'),
+        content: root.querySelectorAll('.vf-group-box__content').length,
+        razorEvents: window.__vueGroupBoxRazorEvents,
+      };
+    })()`);
+    check('the Razor controller marks no Vue group box root', vue.markedByRazor === false, JSON.stringify(vue));
+    check(
+      'the Vue group box toggles through its own handler and receives no Razor event',
+      vue.expanded === 'false' && vue.content === 0 && vue.razorEvents === 0,
+      JSON.stringify(vue),
     );
   });
 
@@ -2419,5 +2895,5 @@ if (failures.length > 0) {
 }
 
 process.stdout.write(
-  '[razor-browser] OK: enhanced interactions, no-JS fallback, mixed Vue/Razor ownership and the accordion, stepper, tabs and dropdown controllers.\n',
+  '[razor-browser] OK: enhanced interactions, no-JS fallback, mixed Vue/Razor ownership and the accordion, stepper, tabs, dropdown and group box controllers.\n',
 );

@@ -30,6 +30,10 @@ export default defineConfig({
         replacement: fileURLToPath(new URL('packages/core/src/components/tabs/VfTabs.vue', repositoryRoot)),
       },
       {
+        find: '@codemonster-ru/vueforge-core/src/components/group-box/VfGroupBox.vue',
+        replacement: fileURLToPath(new URL('packages/core/src/components/group-box/VfGroupBox.vue', repositoryRoot)),
+      },
+      {
         find: '@codemonster-ru/vueforge-shared-core',
         replacement: fileURLToPath(new URL('packages/shared-core/src/index.ts', repositoryRoot)),
       },

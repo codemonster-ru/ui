@@ -325,6 +325,68 @@ foreach ($dropdownCases as $name => $markup) {
     $sections .= '<section class="case case--dropdown" data-case="' . $name . '"><h2>' . $name . '</h2>' . $markup . '</section>';
 }
 
+// ---------------------------------------------------------------- group box
+//
+// The M29 sections. Real vf-group-box renders in the states the browser suite
+// drives: closed with a consumer text box in its content (so a collapse can be
+// shown to discard what was typed), open, disabled and closed, two siblings,
+// an open outer group holding a closed inner one, a closed outer group holding
+// an open inner one, a closed group holding a Razor input (so the content the
+// controller renders on open is itself enhanced), the title "0", a consumer
+// class, the two static forms the controller must not claim, and a copy of the
+// markup *without* the ownership marker, which the controller must ignore.
+$groupBox = $registry->resolve('vf-group-box');
+if ($groupBox === null) {
+    fwrite(STDERR, "vf-group-box must be registered.\n");
+    exit(1);
+}
+$renderGroupBox = static function (array $props, array $slots = []) use ($groupBox): string {
+    $closures = [];
+    foreach ($slots as $name => $markup) {
+        $closures[$name] = static fn (): RenderedHtml => RenderedHtml::fromTrustedString($markup);
+    }
+
+    return $groupBox->render(new ComponentRenderContext($props, $closures))->value();
+};
+$groupBoxCases = [
+    'group-box-closed' => $renderGroupBox(
+        ['title' => 'Closed', 'collapsible' => true, 'default-collapsed' => true],
+        ['default' => '<p>Closed content.</p><input type="text" class="group-box-typed" aria-label="Typed">'],
+    ),
+    'group-box-open' => $renderGroupBox(['title' => 'Open', 'collapsible' => true], ['default' => '<p>Open content.</p>']),
+    'group-box-disabled' => $renderGroupBox(
+        ['title' => 'Disabled', 'collapsible' => true, 'collapsed' => true, 'disabled' => true],
+        ['default' => '<p>Never.</p>'],
+    ),
+    'group-box-siblings' => $renderGroupBox(['title' => 'First', 'collapsible' => true], ['default' => '<p>First content.</p>'])
+        . $renderGroupBox(['title' => 'Second', 'collapsible' => true], ['default' => '<p>Second content.</p>']),
+    'group-box-nested' => $renderGroupBox(
+        ['title' => 'Outer', 'collapsible' => true],
+        ['default' => '<p>Outer content.</p>' . $renderGroupBox(['title' => 'Inner', 'collapsible' => true, 'collapsed' => true], ['default' => '<p>Inner content.</p>'])],
+    ),
+    'group-box-nested-deferred' => $renderGroupBox(
+        ['title' => 'Deferred outer', 'collapsible' => true, 'collapsed' => true],
+        ['default' => $renderGroupBox(['title' => 'Deferred inner', 'collapsible' => true], ['default' => '<p>Deferred inner content.</p>'])],
+    ),
+    'group-box-with-input' => $renderGroupBox(
+        ['title' => 'Form', 'collapsible' => true, 'collapsed' => true],
+        ['default' => $render(['name' => 'inside-group', 'id' => 'inside-group-box', 'value' => 'typed', 'clearable' => true])],
+    ),
+    'group-box-zero' => $renderGroupBox(['title' => '0', 'collapsible' => true], ['default' => '<p>Zero content.</p>']),
+    'group-box-consumer' => $renderGroupBox(['title' => 'Consumer', 'collapsible' => true, 'class' => 'group-box-extra'], ['default' => '<p>Consumer content.</p>']),
+    'group-box-static' => $renderGroupBox(['title' => 'Static'], ['default' => '<p>Static content.</p>'])
+        . $renderGroupBox(['collapsible' => true, 'collapsed' => true], ['default' => '<p>Untitled content.</p>']),
+    // The same markup with the marker stripped: not Razor-owned, must not mount.
+    'group-box-unowned' => str_replace(
+        ' data-vf-razor="group-box"',
+        '',
+        $renderGroupBox(['title' => 'Unowned', 'collapsible' => true], ['default' => '<p>No.</p>']),
+    ),
+];
+foreach ($groupBoxCases as $name => $markup) {
+    $sections .= '<section class="case" data-case="' . $name . '"><h2>' . $name . '</h2>' . $markup . '</section>';
+}
+
 $withVue = ($argv[2] ?? '') === '--with-vue';
 $vueSection = $withVue
     ? '<section class="case" data-case="vue"><h2>vue</h2><div id="vue-input"></div></section>'
