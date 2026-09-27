@@ -110,6 +110,10 @@ export const groupBoxSourcePath = 'packages/core/src/components/group-box/VfGrou
 /** The shared rules VfGroupBox, its Razor controller and the PHP adapter derive from. */
 export const groupBoxRulePath = 'packages/shared-core/src/group-box/state.ts';
 const groupBoxSuite = 'src/components/group-box/VfGroupBox.characterization.spec.ts';
+export const popoverSourcePath = 'packages/core/src/components/popover/VfPopover.vue';
+/** The shared rules VfPopover, its Razor controller and the PHP adapter derive from. */
+export const popoverRulePath = 'packages/shared-core/src/popover/state.ts';
+const popoverSuite = 'src/components/popover/VfPopover.characterization.spec.ts';
 
 /**
  * The consumer suite a VfProgressSpinner defect is expected to reach.
@@ -5528,6 +5532,15 @@ export const menuMutations = [
   },
 ];
 
+/*
+ * Since M30 eleven of these also declare `alsoFails: [popoverSuite]`, by fact
+ * rather than in advance: the popover suite renders VfDropdown inside and
+ * beside a popover to pin the escape stack the two components share and the
+ * unmount of a nested dropdown. The three on useEscapeKey and useFloating are
+ * the shared runtime itself; the other eight break the dropdown the popover
+ * cases open, close with Escape or look up by aria-controls. The remaining 52
+ * do not reach the popover suite.
+ */
 export const dropdownMutations = [
   // Trigger keyboard: the opening predicate and its three historical keys.
   {
@@ -5729,6 +5742,7 @@ export const dropdownMutations = [
     id: 'dropdown-close-keeps-focus',
     file: dropdownSourcePath,
     suite: dropdownSuite,
+    alsoFails: [popoverSuite],
     description: 'closing never returns focus to the trigger',
     find: '  disclosure.close();\n  triggerRef.value?.focus();',
     replace: '  disclosure.close();',
@@ -5747,6 +5761,7 @@ export const dropdownMutations = [
     id: 'dropdown-escape-ignored',
     file: dropdownSourcePath,
     suite: dropdownSuite,
+    alsoFails: [popoverSuite],
     description: 'Escape no longer closes the menu',
     find: '    event.preventDefault();\n    closeMenu();\n  },',
     replace: '    event.preventDefault();\n  },',
@@ -5755,6 +5770,7 @@ export const dropdownMutations = [
     id: 'dropdown-escape-not-prevented',
     file: dropdownSourcePath,
     suite: dropdownSuite,
+    alsoFails: [popoverSuite],
     description: 'Escape closes the menu without preventDefault',
     find: '    event.preventDefault();\n    closeMenu();\n  },',
     replace: '    closeMenu();\n  },',
@@ -5763,6 +5779,7 @@ export const dropdownMutations = [
     id: 'dropdown-escape-closes-while-closed',
     file: dropdownSourcePath,
     suite: dropdownSuite,
+    alsoFails: [popoverSuite],
     description: 'the escape handler stays registered while closed and prevents every Escape',
     find: '  {\n    enabled: isOpen,\n  },\n);',
     replace: '  {\n    enabled: true,\n  },\n);',
@@ -5771,6 +5788,7 @@ export const dropdownMutations = [
     id: 'dropdown-escape-stack-fifo',
     file: escapeKeyComposablePath,
     suite: dropdownSuite,
+    alsoFails: [popoverSuite],
     description: 'the escape stack closes the first registered entry rather than the last',
     find: '    entries[entries.length - 1]?.handler(event);',
     replace: '    entries[0]?.handler(event);',
@@ -5779,6 +5797,7 @@ export const dropdownMutations = [
     id: 'dropdown-escape-closes-all',
     file: escapeKeyComposablePath,
     suite: dropdownSuite,
+    alsoFails: [popoverSuite],
     description: 'one Escape runs every registered entry instead of the top one',
     find: '    entries[entries.length - 1]?.handler(event);',
     replace: '    [...entries].reverse().forEach((entry) => entry.handler(event));',
@@ -5787,6 +5806,7 @@ export const dropdownMutations = [
     id: 'dropdown-escape-keyup',
     file: dropdownSourcePath,
     suite: dropdownSuite,
+    alsoFails: [popoverSuite],
     description: 'Escape is handled on keyup',
     find: '  {\n    enabled: isOpen,\n  },\n);',
     replace: "  {\n    enabled: isOpen,\n    event: 'keyup',\n  },\n);",
@@ -5821,6 +5841,7 @@ export const dropdownMutations = [
     id: 'dropdown-controls-cross-wired',
     file: dropdownSourcePath,
     suite: dropdownSuite,
+    alsoFails: [popoverSuite],
     description: 'the trigger controls its own id instead of the menu',
     find: ':aria-controls="menuId"',
     replace: ':aria-controls="triggerId"',
@@ -5898,6 +5919,7 @@ export const dropdownMutations = [
     id: 'dropdown-never-teleports',
     file: dropdownSourcePath,
     suite: dropdownSuite,
+    alsoFails: [popoverSuite],
     description: 'the menu is rendered in place, inside the component root',
     find: ':disabled="teleport.disabled"',
     replace: ':disabled="true"',
@@ -5995,6 +6017,7 @@ export const dropdownMutations = [
     id: 'dropdown-autoupdate-observes-menu',
     file: floatingComposablePath,
     suite: dropdownSuite,
+    alsoFails: [popoverSuite],
     description: 'autoUpdate also observes the floating element',
     find: '      cleanupAutoUpdate.value = autoUpdate(referenceRef.value, () => {',
     replace: '      cleanupAutoUpdate.value = autoUpdate(referenceRef.value, floatingRef.value, () => {',
@@ -6030,6 +6053,7 @@ export const dropdownMutations = [
     id: 'dropdown-attrs-on-trigger',
     file: dropdownSourcePath,
     suite: dropdownSuite,
+    alsoFails: [popoverSuite],
     description: 'consumer attrs land on the trigger instead of the root',
     edits: [
       {
@@ -6085,6 +6109,515 @@ export const dropdownMutations = [
   },
 ];
 
+/**
+ * VfPopover (M30). Each mutation is a port that copied the dropdown, or a
+ * conventional popover, where the reference does something else - and each is
+ * attributed to the popover suite alone: VfPopover renders no other migrated
+ * component, and no other suite renders it.
+ */
+export const popoverMutations = [
+  // Trigger and panel markup.
+  {
+    id: 'popover-trigger-becomes-a-span',
+    file: popoverSourcePath,
+    suite: popoverSuite,
+    description: 'the trigger wrapper is a span instead of a div',
+    edits: [
+      { find: '    <div\n      :id="triggerId"', replace: '    <span\n      :id="triggerId"' },
+      {
+        find: '      <slot name="trigger" :open="isOpen" :toggle="togglePopover" />\n    </div>',
+        replace: '      <slot name="trigger" :open="isOpen" :toggle="togglePopover" />\n    </span>',
+      },
+    ],
+  },
+  {
+    id: 'popover-content-is-a-menu',
+    file: popoverSourcePath,
+    suite: popoverSuite,
+    description: 'the panel announces role=menu, as a dropdown copied port would',
+    find: '          role="dialog"',
+    replace: '          role="menu"',
+  },
+  {
+    id: 'popover-haspopup-menu',
+    file: popoverSourcePath,
+    suite: popoverSuite,
+    description: 'the trigger announces a menu popup instead of a dialog',
+    find: '      aria-haspopup="dialog"',
+    replace: '      aria-haspopup="menu"',
+  },
+  {
+    id: 'popover-content-not-focusable',
+    file: popoverSourcePath,
+    suite: popoverSuite,
+    description: 'the panel loses tabindex=-1, so it cannot take focus',
+    find: '          role="dialog"\n          tabindex="-1"',
+    replace: '          role="dialog"',
+  },
+  {
+    id: 'popover-content-modal',
+    file: popoverSourcePath,
+    suite: popoverSuite,
+    description: 'the panel claims aria-modal=true, which the non-modal reference never does',
+    find: '          role="dialog"\n',
+    replace: '          role="dialog"\n          aria-modal="true"\n',
+  },
+  {
+    id: 'popover-trigger-leaves-tab-order',
+    file: popoverSourcePath,
+    suite: popoverSuite,
+    description: 'the trigger has no tabindex',
+    find: '      aria-haspopup="dialog"\n      tabindex="0"',
+    replace: '      aria-haspopup="dialog"',
+  },
+  {
+    id: 'popover-arrow-removed',
+    file: popoverSourcePath,
+    suite: popoverSuite,
+    description: 'the panel has no arrow span',
+    find: '          <span ref="arrowRef" :class="arrowClasses" :style="arrowStyles" aria-hidden="true" />\n',
+    replace: '',
+  },
+  {
+    id: 'popover-close-not-in-default-slot',
+    file: popoverSourcePath,
+    suite: popoverSuite,
+    description: 'the default slot receives open but no close function',
+    find: '<slot :open="isOpen" :close="closePopover" />',
+    replace: '<slot :open="isOpen" />',
+  },
+  // Ids and relationships.
+  {
+    id: 'popover-controls-omitted',
+    file: popoverSourcePath,
+    suite: popoverSuite,
+    description: 'the trigger has no aria-controls',
+    find: '      :aria-controls="contentId"\n',
+    replace: '',
+  },
+  {
+    id: 'popover-controls-self',
+    file: popoverSourcePath,
+    suite: popoverSuite,
+    description: 'aria-controls names the trigger itself instead of the panel',
+    find: '      :aria-controls="contentId"',
+    replace: '      :aria-controls="triggerId"',
+  },
+  {
+    id: 'popover-labelledby-omitted',
+    file: popoverSourcePath,
+    suite: popoverSuite,
+    description: 'the panel is not labelled by the trigger',
+    find: '          :aria-labelledby="triggerId"\n',
+    replace: '',
+  },
+  {
+    id: 'popover-labelledby-self',
+    file: popoverSourcePath,
+    suite: popoverSuite,
+    description: 'the panel is labelled by its own id',
+    find: '          :aria-labelledby="triggerId"',
+    replace: '          :aria-labelledby="contentId"',
+  },
+  {
+    id: 'popover-trigger-id-first',
+    file: popoverSourcePath,
+    suite: popoverSuite,
+    description: 'the trigger id is generated before the content id',
+    find: "const contentId = useId({ prefix: 'vf-popover-content' });\nconst triggerId = useId({ prefix: 'vf-popover-trigger' });",
+    replace:
+      "const triggerId = useId({ prefix: 'vf-popover-trigger' });\nconst contentId = useId({ prefix: 'vf-popover-content' });",
+  },
+  {
+    id: 'popover-expanded-stale',
+    file: popoverRulePath,
+    suite: popoverSuite,
+    description: 'aria-expanded stays false after the popover opens',
+    find: "  return { ariaExpanded: open ? 'true' : 'false' };",
+    replace: "  return { ariaExpanded: 'false' };",
+  },
+  {
+    id: 'popover-expanded-omitted-when-closed',
+    file: popoverRulePath,
+    suite: popoverSuite,
+    description: 'aria-expanded is omitted while closed instead of written as false',
+    find: "  return { ariaExpanded: open ? 'true' : 'false' };",
+    replace: "  return { ariaExpanded: open ? 'true' : (undefined as unknown as 'false') };",
+  },
+  // Presence and teleport.
+  {
+    id: 'popover-content-kept-while-closed',
+    file: popoverSourcePath,
+    suite: popoverSuite,
+    description: 'the closed panel is hidden with v-show instead of unmounted',
+    find: '          v-if="isOpen"',
+    replace: '          v-show="isOpen"',
+  },
+  {
+    id: 'popover-content-never-rendered',
+    file: popoverSourcePath,
+    suite: popoverSuite,
+    description: 'the panel never renders, whatever the state says',
+    find: '          v-if="isOpen"',
+    replace: '          v-if="false"',
+  },
+  {
+    id: 'popover-teleport-always-disabled',
+    file: popoverRulePath,
+    suite: popoverSuite,
+    description: 'the panel is always rendered in place',
+    find: '  const disabled = disableTeleport || teleportTo === false || teleportTo === null;',
+    replace: '  const disabled = true;',
+  },
+  {
+    id: 'popover-teleport-never-disabled',
+    file: popoverRulePath,
+    suite: popoverSuite,
+    description: 'the panel is always teleported, whatever disableTeleport and teleportTo=false say',
+    find: '  const disabled = disableTeleport || teleportTo === false || teleportTo === null;',
+    replace: '  const disabled = false;',
+  },
+  {
+    id: 'popover-teleport-null-means-body',
+    file: popoverRulePath,
+    suite: popoverSuite,
+    description: 'an explicit teleportTo=null teleports to body instead of rendering in place',
+    find: '  const disabled = disableTeleport || teleportTo === false || teleportTo === null;',
+    replace: '  const disabled = disableTeleport || teleportTo === false;',
+  },
+  {
+    id: 'popover-teleport-wrong-destination',
+    file: popoverRulePath,
+    suite: popoverSuite,
+    description: 'the default destination is <html> instead of <body>',
+    find: "  return { disabled, target: 'body' };",
+    replace: "  return { disabled, target: 'html' };",
+  },
+  {
+    id: 'popover-teleport-selector-ignored',
+    file: popoverRulePath,
+    suite: popoverSuite,
+    description: 'a selector target is ignored and the panel goes to body',
+    find: "  if (typeof teleportTo === 'string') return { disabled, target: teleportTo };",
+    replace: '',
+  },
+  // Floating.
+  {
+    id: 'popover-wrong-offset',
+    file: popoverRulePath,
+    suite: popoverSuite,
+    description: 'the panel sits 8 px from the trigger instead of 10',
+    find: 'export const POPOVER_OFFSET = 10;',
+    replace: 'export const POPOVER_OFFSET = 8;',
+  },
+  {
+    id: 'popover-absolute-strategy',
+    file: popoverRulePath,
+    suite: popoverSuite,
+    description: 'floater.js positions with the absolute strategy',
+    find: "export const POPOVER_STRATEGY = 'fixed';",
+    replace: "export const POPOVER_STRATEGY = 'absolute';",
+  },
+  {
+    id: 'popover-wrong-placement',
+    file: popoverSourcePath,
+    suite: popoverSuite,
+    description: 'the requested placement is ignored: always bottom-end',
+    find: '  placement: computed(() => props.placement),',
+    replace: "  placement: computed(() => 'bottom-end' as const),",
+  },
+  {
+    id: 'popover-flip-removed',
+    file: popoverSourcePath,
+    suite: popoverSuite,
+    description: 'floater.js gets no flip middleware',
+    find: '        flip({ placements: allowedPlacements.value }),\n',
+    replace: '',
+  },
+  {
+    id: 'popover-flip-pair-inverted',
+    file: popoverRulePath,
+    suite: popoverSuite,
+    description: 'bottom-start selects the end flip pair and every other placement the start pair',
+    find: "  return placement === 'bottom-end' ? ['bottom-end', 'top-end'] : ['bottom-start', 'top-start'];",
+    replace: "  return placement === 'bottom-start' ? ['bottom-end', 'top-end'] : ['bottom-start', 'top-start'];",
+  },
+  {
+    id: 'popover-arrow-middleware-dropped',
+    file: popoverSourcePath,
+    suite: popoverSuite,
+    description: 'floater.js is not told about the arrow',
+    find: '        ...(arrowRef.value ? [arrow(arrowRef.value)] : []),\n',
+    replace: '',
+  },
+  {
+    id: 'popover-arrow-side-inverted',
+    file: popoverRulePath,
+    suite: popoverSuite,
+    description: 'the arrow modifier is top on a bottom placement and bottom on a top one',
+    find: "placement.startsWith('top') ? 'vf-popover__arrow--top' : 'vf-popover__arrow--bottom'",
+    replace: "placement.startsWith('top') ? 'vf-popover__arrow--bottom' : 'vf-popover__arrow--top'",
+  },
+  {
+    id: 'popover-arrow-offset-absolute',
+    file: popoverRulePath,
+    suite: popoverSuite,
+    description: 'the arrow offset is written in viewport coordinates rather than relative to the panel',
+    find: '    x: data?.x !== undefined && data?.baseX !== undefined ? data.x - data.baseX : 0,',
+    replace: '    x: data?.x !== undefined && data?.baseX !== undefined ? data.x : 0,',
+  },
+  {
+    id: 'popover-content-bottom-modifier',
+    file: popoverRulePath,
+    suite: popoverSuite,
+    description: 'a bottom placement adds a --bottom panel modifier, as the arrow has',
+    find: "  return placement.startsWith('top') ? ['vf-popover__content', 'vf-popover__content--top'] : ['vf-popover__content'];",
+    replace:
+      "  return placement.startsWith('top')\n    ? ['vf-popover__content', 'vf-popover__content--top']\n    : ['vf-popover__content', 'vf-popover__content--bottom'];",
+  },
+  // Transition.
+  {
+    id: 'popover-fast-transition',
+    file: popoverSourcePath,
+    suite: popoverSuite,
+    description: 'the panel enters and leaves at the fast motion duration',
+    find: '  enter: vfMotionDurationsMs.normal,\n  leave: vfMotionDurationsMs.normal,',
+    replace: '  enter: vfMotionDurationsMs.fast,\n  leave: vfMotionDurationsMs.fast,',
+  },
+  {
+    id: 'popover-dialog-transition-name',
+    file: popoverSourcePath,
+    suite: popoverSuite,
+    description: 'the panel runs the dialog transition instead of the floating one',
+    find: '<Transition name="vf-floating-transition" appear',
+    replace: '<Transition name="vf-dialog-transition" appear',
+  },
+  {
+    id: 'popover-no-appear',
+    file: popoverSourcePath,
+    suite: popoverSuite,
+    description: 'an initially open panel is not animated in',
+    find: '<Transition name="vf-floating-transition" appear',
+    replace: '<Transition name="vf-floating-transition"',
+  },
+  // Keyboard.
+  {
+    id: 'popover-enter-only-opens',
+    file: popoverRulePath,
+    suite: popoverSuite,
+    description: 'Enter opens like ArrowDown instead of toggling an open popover closed',
+    find: "  if (key === 'Enter' || key === ' ') return 'toggle';\n  if (key === 'ArrowDown') return 'open';",
+    replace: "  if (key === ' ') return 'toggle';\n  if (key === 'ArrowDown' || key === 'Enter') return 'open';",
+  },
+  {
+    id: 'popover-space-ignored',
+    file: popoverRulePath,
+    suite: popoverSuite,
+    description: 'Space is left to the browser',
+    find: "  if (key === 'Enter' || key === ' ') return 'toggle';",
+    replace: "  if (key === 'Enter') return 'toggle';",
+  },
+  {
+    id: 'popover-arrowdown-toggles',
+    file: popoverRulePath,
+    suite: popoverSuite,
+    description: 'ArrowDown toggles like Enter, closing an open popover',
+    find: "  if (key === 'ArrowDown') return 'open';",
+    replace: "  if (key === 'ArrowDown') return 'toggle';",
+  },
+  {
+    id: 'popover-arrowup-opens',
+    file: popoverRulePath,
+    suite: popoverSuite,
+    description: 'ArrowUp opens, as a conventional popup button would',
+    find: "  if (key === 'ArrowDown') return 'open';",
+    replace: "  if (key === 'ArrowDown' || key === 'ArrowUp') return 'open';",
+  },
+  {
+    id: 'popover-toggle-not-prevented',
+    file: popoverSourcePath,
+    suite: popoverSuite,
+    description: 'Enter and Space are handled without preventDefault',
+    find: "  if (action === 'toggle') {\n    event.preventDefault();",
+    replace: "  if (action === 'toggle') {",
+  },
+  {
+    id: 'popover-reopen-is-silent',
+    file: popoverSourcePath,
+    suite: popoverSuite,
+    description: 'ArrowDown on an open popover emits nothing',
+    find: 'function openPopover() {\n  disclosure.open();',
+    replace: 'function openPopover() {\n  if (!isOpen.value) disclosure.open();',
+  },
+  // Pointer and dismissal.
+  {
+    id: 'popover-inside-click-closes',
+    file: popoverSourcePath,
+    suite: popoverSuite,
+    description: 'a click inside the panel counts as outside, so it closes',
+    find: '  [triggerRef, contentRef],',
+    replace: '  [triggerRef],',
+  },
+  {
+    id: 'popover-outside-click-never-closes',
+    file: popoverRulePath,
+    suite: popoverSuite,
+    description: 'an outside click never closes the popover',
+    find: '  return open && closeOnOutsideClick;',
+    replace: '  return false && open && closeOnOutsideClick;',
+  },
+  {
+    id: 'popover-close-on-outside-click-ignored',
+    file: popoverRulePath,
+    suite: popoverSuite,
+    description: 'closeOnOutsideClick=false still closes on an outside click',
+    find: '  return open && closeOnOutsideClick;',
+    replace: '  return open;',
+  },
+  {
+    id: 'popover-outside-event-pointerdown',
+    file: popoverSourcePath,
+    suite: popoverSuite,
+    description: 'the outside event is pointerdown instead of click',
+    find: "    event: 'click',",
+    replace: "    event: 'pointerdown',",
+  },
+  {
+    id: 'popover-escape-never-closes',
+    file: popoverRulePath,
+    suite: popoverSuite,
+    description: 'Escape never closes the popover',
+    find: '  return open && closeOnEscape;',
+    replace: '  return false && open && closeOnEscape;',
+  },
+  {
+    id: 'popover-close-on-escape-ignored',
+    file: popoverRulePath,
+    suite: popoverSuite,
+    description: 'closeOnEscape=false still closes on Escape',
+    find: '  return open && closeOnEscape;',
+    replace: '  return open;',
+  },
+  {
+    id: 'popover-escape-not-prevented',
+    file: popoverSourcePath,
+    suite: popoverSuite,
+    description: 'a handled Escape is not prevented',
+    find: '    event.preventDefault();\n    closePopover();\n  },',
+    replace: '    closePopover();\n  },',
+  },
+  {
+    id: 'popover-escape-falls-through-a-kept-entry',
+    file: escapeKeyComposablePath,
+    suite: popoverSuite,
+    description:
+      'an Escape the top entry leaves unprevented goes on to the entries below, so a closeOnEscape=false popover no longer shields a dropdown beneath it',
+    find: '    entries[entries.length - 1]?.handler(event);',
+    replace:
+      '    for (const entry of [...entries].reverse()) {\n      entry.handler(event);\n      if (event.defaultPrevented) break;\n    }',
+  },
+  {
+    id: 'popover-escape-while-closed',
+    file: popoverSourcePath,
+    suite: popoverSuite,
+    description: 'the escape entry stays on the stack while closed',
+    find: '  {\n    enabled: isOpen,\n  },\n);',
+    replace: '  {\n    enabled: true,\n  },\n);',
+  },
+  // Focus.
+  {
+    id: 'popover-open-keeps-focus',
+    file: popoverSourcePath,
+    suite: popoverSuite,
+    description: 'opening leaves focus where it was, as a dropdown pointer open does',
+    find: '  disclosure.open();\n  void focusContent();',
+    replace: '  disclosure.open();',
+  },
+  {
+    id: 'popover-focus-first-focusable',
+    file: popoverSourcePath,
+    suite: popoverSuite,
+    description: 'without an autofocus target the first focusable element takes focus instead of the panel',
+    find: '  contentRef.value?.focus();\n}',
+    replace:
+      "  (contentRef.value?.querySelector<HTMLElement>('button, [href], input, select, textarea') ?? contentRef.value)?.focus();\n}",
+  },
+  {
+    id: 'popover-autofocus-attribute-only',
+    file: popoverRulePath,
+    suite: popoverSuite,
+    description: 'data-autofocus is not recognised',
+    find: "export const POPOVER_AUTOFOCUS_SELECTOR = '[autofocus], [data-autofocus]';",
+    replace: "export const POPOVER_AUTOFOCUS_SELECTOR = '[autofocus]';",
+  },
+  {
+    id: 'popover-autofocus-data-first',
+    file: popoverSourcePath,
+    suite: popoverSuite,
+    description: 'a data-autofocus element wins over an earlier autofocus one',
+    find: '  const autoFocusTarget = contentRef.value?.querySelector<HTMLElement>(POPOVER_AUTOFOCUS_SELECTOR);',
+    replace:
+      "  const autoFocusTarget =\n    contentRef.value?.querySelector<HTMLElement>('[data-autofocus]') ??\n    contentRef.value?.querySelector<HTMLElement>(POPOVER_AUTOFOCUS_SELECTOR);",
+  },
+  {
+    id: 'popover-close-keeps-focus',
+    file: popoverSourcePath,
+    suite: popoverSuite,
+    description: 'closing does not return focus to the trigger',
+    find: '  disclosure.close();\n  triggerRef.value?.focus();',
+    replace: '  disclosure.close();',
+  },
+  {
+    id: 'popover-focus-scope-branch-dropped',
+    file: popoverSourcePath,
+    suite: popoverSuite,
+    description: 'the teleported panel is not registered as a branch of an enclosing focus trap',
+    find: 'useFocusScopeBranch(contentRef, isOpen);\n',
+    replace: '',
+  },
+  // Events and state.
+  {
+    id: 'popover-open-change-missing',
+    file: popoverSourcePath,
+    suite: popoverSuite,
+    description: 'openChange is never emitted',
+    find: "    emit('openChange', value);\n",
+    replace: '',
+  },
+  {
+    id: 'popover-emits-reordered',
+    file: popoverSourcePath,
+    suite: popoverSuite,
+    description: 'openChange is emitted before update:open',
+    find: "    emit('update:open', value);\n    emit('openChange', value);",
+    replace: "    emit('openChange', value);\n    emit('update:open', value);",
+  },
+  {
+    id: 'popover-controlled-becomes-uncontrolled',
+    file: popoverSourcePath,
+    suite: popoverSuite,
+    description: 'the open prop is never handed to the disclosure, so the popover toggles on its own',
+    find: '  open: computed(() => props.open),',
+    replace: '  open: undefined,',
+  },
+  {
+    id: 'popover-default-open-ignored',
+    file: popoverSourcePath,
+    suite: popoverSuite,
+    description: 'defaultOpen does not open the popover initially',
+    find: '  defaultOpen: props.defaultOpen,',
+    replace: '  defaultOpen: false,',
+  },
+  {
+    id: 'popover-click-never-closes',
+    file: popoverSourcePath,
+    suite: popoverSuite,
+    description: 'a trigger click or toggle key on an open popover opens it again instead of closing it',
+    find: 'function togglePopover() {\n  if (isOpen.value) {',
+    replace: 'function togglePopover() {\n  if (false) {',
+  },
+];
+
 export const componentMutations = [
   ...inputMutations,
   ...iconButtonMutations,
@@ -6113,4 +6646,5 @@ export const componentMutations = [
   ...breadcrumbsMutations,
   ...menuMutations,
   ...dropdownMutations,
+  ...popoverMutations,
 ];

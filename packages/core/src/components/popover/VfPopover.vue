@@ -1,6 +1,20 @@
 <script setup lang="ts">
 import { computed, nextTick, ref } from 'vue';
 import { arrow, flip, offset, shift, type MiddlewareType, type PlacementType } from '@codemonster-ru/floater.js';
+import {
+  POPOVER_AUTOFOCUS_SELECTOR,
+  POPOVER_OFFSET,
+  POPOVER_STRATEGY,
+  resolvePopoverArrowClasses,
+  resolvePopoverArrowOffset,
+  resolvePopoverClosesOnEscape,
+  resolvePopoverClosesOnOutsideClick,
+  resolvePopoverContentClasses,
+  resolvePopoverFlipPlacements,
+  resolvePopoverTeleport,
+  resolvePopoverTriggerKey,
+  resolvePopoverTriggerState,
+} from '@codemonster-ru/vueforge-shared-core';
 import { useClickOutside, useDisclosure, useEscapeKey, useFloating, useId } from '@/composables';
 import { useFocusScopeBranch } from '@/composables/useFocusTrap';
 import { vfMotionDurationsMs } from '@/theme/motion';
@@ -40,20 +54,14 @@ const transitionDuration = {
   enter: vfMotionDurationsMs.normal,
   leave: vfMotionDurationsMs.normal,
 } as const;
-const teleportDisabled = computed(
-  () => props.disableTeleport || props.teleportTo === false || props.teleportTo === null,
+// The element case is this adapter's own: no other adapter can pass one.
+const teleport = computed(() =>
+  resolvePopoverTeleport(
+    props.teleportTo,
+    props.disableTeleport,
+    (value): value is HTMLElement => typeof HTMLElement !== 'undefined' && value instanceof HTMLElement,
+  ),
 );
-const teleportTarget = computed(() => {
-  if (typeof props.teleportTo === 'string') {
-    return props.teleportTo;
-  }
-
-  if (typeof HTMLElement !== 'undefined' && props.teleportTo instanceof HTMLElement) {
-    return props.teleportTo;
-  }
-
-  return 'body';
-});
 
 const disclosure = useDisclosure({
   defaultOpen: props.defaultOpen,
@@ -65,12 +73,11 @@ const disclosure = useDisclosure({
 });
 
 const isOpen = disclosure.isOpen;
+const triggerState = computed(() => resolvePopoverTriggerState(isOpen.value));
 
 useFocusScopeBranch(contentRef, isOpen);
 
-const allowedPlacements = computed<PlacementType[]>(() =>
-  props.placement === 'bottom-end' ? ['bottom-end', 'top-end'] : ['bottom-start', 'top-start'],
-);
+const allowedPlacements = computed(() => resolvePopoverFlipPlacements(props.placement) as PlacementType[]);
 
 const {
   placement: floatingPlacement,
@@ -82,43 +89,34 @@ const {
   middleware: computed(
     () =>
       [
-        offset(10),
+        offset(POPOVER_OFFSET),
         flip({ placements: allowedPlacements.value }),
         shift(),
         ...(arrowRef.value ? [arrow(arrowRef.value)] : []),
       ] as MiddlewareType[],
   ),
-  strategy: 'fixed',
+  strategy: POPOVER_STRATEGY,
 });
 
-const contentClasses = computed(() => [
-  'vf-popover__content',
-  floatingPlacement.value.startsWith('top') && 'vf-popover__content--top',
-]);
+const contentClasses = computed(() => resolvePopoverContentClasses(floatingPlacement.value));
 
-const arrowData = computed(() => {
-  const data = middlewareData.value.arrow as { x?: number; y?: number; baseX?: number; baseY?: number } | undefined;
-
-  return {
-    x: data?.x !== undefined && data?.baseX !== undefined ? data.x - data.baseX : 0,
-    y: data?.y !== undefined && data?.baseY !== undefined ? data.y - data.baseY : 0,
-  };
-});
+const arrowData = computed(() =>
+  resolvePopoverArrowOffset(
+    middlewareData.value.arrow as { x?: number; y?: number; baseX?: number; baseY?: number } | undefined,
+  ),
+);
 
 const arrowStyles = computed(() => ({
   left: `${arrowData.value.x}px`,
   top: `${arrowData.value.y}px`,
 }));
 
-const arrowClasses = computed(() => [
-  'vf-popover__arrow',
-  floatingPlacement.value.startsWith('top') ? 'vf-popover__arrow--top' : 'vf-popover__arrow--bottom',
-]);
+const arrowClasses = computed(() => resolvePopoverArrowClasses(floatingPlacement.value));
 
 async function focusContent() {
   await nextTick();
 
-  const autoFocusTarget = contentRef.value?.querySelector<HTMLElement>('[autofocus], [data-autofocus]');
+  const autoFocusTarget = contentRef.value?.querySelector<HTMLElement>(POPOVER_AUTOFOCUS_SELECTOR);
 
   if (autoFocusTarget) {
     autoFocusTarget.focus();
@@ -148,12 +146,14 @@ function togglePopover() {
 }
 
 function onTriggerKeydown(event: KeyboardEvent) {
-  if (event.key === 'Enter' || event.key === ' ') {
+  const action = resolvePopoverTriggerKey(event.key);
+
+  if (action === 'toggle') {
     event.preventDefault();
     togglePopover();
   }
 
-  if (event.key === 'ArrowDown') {
+  if (action === 'open') {
     event.preventDefault();
     openPopover();
   }
@@ -162,7 +162,7 @@ function onTriggerKeydown(event: KeyboardEvent) {
 useClickOutside(
   [triggerRef, contentRef],
   () => {
-    if (isOpen.value && props.closeOnOutsideClick) {
+    if (resolvePopoverClosesOnOutsideClick(isOpen.value, props.closeOnOutsideClick)) {
       closePopover();
     }
   },
@@ -174,7 +174,7 @@ useClickOutside(
 
 useEscapeKey(
   (event) => {
-    if (!isOpen.value || !props.closeOnEscape) {
+    if (!resolvePopoverClosesOnEscape(isOpen.value, props.closeOnEscape)) {
       return;
     }
 
@@ -194,7 +194,7 @@ useEscapeKey(
       ref="triggerRef"
       class="vf-popover__trigger"
       :aria-controls="contentId"
-      :aria-expanded="isOpen"
+      :aria-expanded="triggerState.ariaExpanded"
       aria-haspopup="dialog"
       tabindex="0"
       @click="togglePopover"
@@ -203,7 +203,7 @@ useEscapeKey(
       <slot name="trigger" :open="isOpen" :toggle="togglePopover" />
     </div>
 
-    <Teleport :to="teleportTarget" :disabled="teleportDisabled">
+    <Teleport :to="teleport.target" :disabled="teleport.disabled">
       <Transition name="vf-floating-transition" appear :duration="transitionDuration">
         <section
           v-if="isOpen"

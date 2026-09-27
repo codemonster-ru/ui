@@ -183,3 +183,20 @@ export {
   resolveGroupBoxOpen,
 } from './group-box/state.js';
 export type { GroupBoxFlags, GroupBoxFlagsInput } from './group-box/state.js';
+// VfPopover. Values in, values out: the floating runtime, the escape stack,
+// focus and the listeners stay in each adapter. Deliberately not the
+// dropdown's rules under another name - see popover/state.ts.
+export {
+  POPOVER_AUTOFOCUS_SELECTOR,
+  POPOVER_OFFSET,
+  POPOVER_STRATEGY,
+  resolvePopoverArrowClasses,
+  resolvePopoverArrowOffset,
+  resolvePopoverClosesOnEscape,
+  resolvePopoverClosesOnOutsideClick,
+  resolvePopoverContentClasses,
+  resolvePopoverFlipPlacements,
+  resolvePopoverTeleport,
+  resolvePopoverTriggerKey,
+  resolvePopoverTriggerState,
+} from './popover/state.js';

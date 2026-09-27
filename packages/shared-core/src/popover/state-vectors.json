@@ -1,0 +1,117 @@
+{
+  "$comment": "Shared input/expected vectors for VfPopover. The TypeScript rules in popover/state.ts run every section; the PHP mirror in packages/razor/src/Support/PopoverState.php runs the sections a server can decide (listed in $serverRules) and deliberately has no method for the others - the trigger key, the flip pair, the arrow offset and the two dismissal predicates are browser decisions a server never makes. The contract of the reference at fd793696, quirks included: Enter and Space toggle and ArrowDown opens; aria-expanded is always written; --top follows the computed placement and there is no --bottom panel modifier; only bottom-end selects the end flip pair; the arrow offset is 0 on an axis missing either number; teleportTo false or null renders in place and anything that is not a string means body; an open popover with closeOnEscape=false still takes an Escape without closing. `null` in `teleportTo` is JSON null; an absent key is `undefined`.",
+  "$serverRules": [
+    "resolvePopoverArrowClasses",
+    "resolvePopoverContentClasses",
+    "resolvePopoverTeleport",
+    "resolvePopoverTriggerState"
+  ],
+  "constants": {
+    "POPOVER_AUTOFOCUS_SELECTOR": "[autofocus], [data-autofocus]",
+    "POPOVER_OFFSET": 10,
+    "POPOVER_STRATEGY": "fixed"
+  },
+  "resolvePopoverTriggerKey": [
+    { "key": "Enter", "expected": "toggle" },
+    { "key": " ", "expected": "toggle" },
+    {
+      "$why": "ArrowDown opens, and opens again on an open popover; it never closes one.",
+      "key": "ArrowDown",
+      "expected": "open"
+    },
+    { "$why": "Keys the trigger leaves to the browser, unprevented.", "key": "ArrowUp" },
+    { "key": "Home" },
+    { "key": "End" },
+    { "key": "Tab" },
+    { "key": "Escape" },
+    { "key": "ArrowLeft" },
+    { "key": "ArrowRight" },
+    { "key": "Spacebar" }
+  ],
+  "resolvePopoverTriggerState": [
+    { "open": false, "expected": { "ariaExpanded": "false" } },
+    { "open": true, "expected": { "ariaExpanded": "true" } }
+  ],
+  "resolvePopoverContentClasses": [
+    { "placement": "bottom-start", "expected": ["vf-popover__content"] },
+    { "placement": "bottom-end", "expected": ["vf-popover__content"] },
+    {
+      "$why": "The computed placement decides --top, whatever was requested.",
+      "placement": "top-start",
+      "expected": ["vf-popover__content", "vf-popover__content--top"]
+    },
+    { "placement": "top-end", "expected": ["vf-popover__content", "vf-popover__content--top"] }
+  ],
+  "resolvePopoverArrowClasses": [
+    { "placement": "bottom-start", "expected": ["vf-popover__arrow", "vf-popover__arrow--bottom"] },
+    { "placement": "bottom-end", "expected": ["vf-popover__arrow", "vf-popover__arrow--bottom"] },
+    { "placement": "top-start", "expected": ["vf-popover__arrow", "vf-popover__arrow--top"] },
+    { "placement": "top-end", "expected": ["vf-popover__arrow", "vf-popover__arrow--top"] },
+    {
+      "$why": "Anything not starting with top is bottom.",
+      "placement": "left",
+      "expected": ["vf-popover__arrow", "vf-popover__arrow--bottom"]
+    }
+  ],
+  "resolvePopoverFlipPlacements": [
+    { "placement": "bottom-start", "expected": ["bottom-start", "top-start"] },
+    { "placement": "bottom-end", "expected": ["bottom-end", "top-end"] },
+    {
+      "$why": "Only bottom-end selects the end pair.",
+      "placement": "top-end",
+      "expected": ["bottom-start", "top-start"]
+    }
+  ],
+  "resolvePopoverArrowOffset": [
+    { "data": { "x": 38.5, "y": 15.5, "baseX": 10, "baseY": 20 }, "expected": { "x": 28.5, "y": -4.5 } },
+    {
+      "$why": "A missing base zeroes that axis only.",
+      "data": { "x": 38, "y": 15, "baseY": 20 },
+      "expected": { "x": 0, "y": -5 }
+    },
+    { "$why": "No arrow data at all.", "data": null, "expected": { "x": 0, "y": 0 } },
+    { "data": {}, "expected": { "x": 0, "y": 0 } }
+  ],
+  "resolvePopoverTeleport": [
+    {
+      "$why": "Absent teleportTo means body.",
+      "disableTeleport": false,
+      "expected": { "disabled": false, "target": "body" }
+    },
+    {
+      "teleportTo": "#overlay-root",
+      "disableTeleport": false,
+      "expected": { "disabled": false, "target": "#overlay-root" }
+    },
+    { "teleportTo": false, "disableTeleport": false, "expected": { "disabled": true, "target": "body" } },
+    {
+      "$why": "Explicit null renders in place in Vue. Razor reads a null attribute as not given (its adapter convention) and spells this `false`, so the PHP mirror skips this one vector.",
+      "$vueOnly": true,
+      "teleportTo": null,
+      "disableTeleport": false,
+      "expected": { "disabled": true, "target": "body" }
+    },
+    {
+      "$why": "disableTeleport wins over a selector, which is still resolved.",
+      "teleportTo": "#overlay-root",
+      "disableTeleport": true,
+      "expected": { "disabled": true, "target": "#overlay-root" }
+    },
+    { "disableTeleport": true, "expected": { "disabled": true, "target": "body" } }
+  ],
+  "resolvePopoverClosesOnEscape": [
+    { "open": true, "closeOnEscape": true, "expected": true },
+    {
+      "$why": "The entry is still on the stack: the Escape is taken and nothing closes.",
+      "open": true,
+      "closeOnEscape": false,
+      "expected": false
+    },
+    { "open": false, "closeOnEscape": true, "expected": false }
+  ],
+  "resolvePopoverClosesOnOutsideClick": [
+    { "open": true, "closeOnOutsideClick": true, "expected": true },
+    { "open": true, "closeOnOutsideClick": false, "expected": false },
+    { "open": false, "closeOnOutsideClick": true, "expected": false }
+  ]
+}
