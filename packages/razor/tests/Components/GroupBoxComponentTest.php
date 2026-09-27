@@ -329,6 +329,45 @@ final class GroupBoxComponentTest extends TestCase
         self::assertStringNotContainsString('aria-hidden', $markup);
     }
 
+    public function testATemplateSpellsTheToggleIconSlotInCamelCaseWithTheSameResult(): void
+    {
+        // The Razor engine refuses a dashed named-slot declaration, so a
+        // template writes <razor-slot name="toggleIcon">. The markup is the
+        // same as through the PHP API's toggle-icon.
+        $dashed = $this->render(['title' => 'Details', 'collapsible' => true], ['toggle-icon' => self::slot('<i>+</i>')]);
+        FieldIds::reset();
+        $camel = $this->render(['title' => 'Details', 'collapsible' => true], ['toggleIcon' => self::slot('<i>+</i>')]);
+
+        self::assertSame($dashed, $camel);
+        self::assertStringNotContainsString('vf-group-box__icon', $camel);
+    }
+
+    public function testTheToggleIconSlotRendersFromARealTemplate(): void
+    {
+        $engine = new \Codemonster\Razor\RazorEngine(
+            new \Codemonster\View\Locator\DefaultLocator([sys_get_temp_dir()]),
+            'razor.php',
+            sys_get_temp_dir() . '/vueforge-group-box-template-test-cache',
+            (static function (): ComponentRegistry {
+                $registry = new ComponentRegistry();
+                $registry->register(new VueForgeRazorProvider());
+                return $registry;
+            })(),
+        );
+        $name = 'vueforge-group-box-template-' . bin2hex(random_bytes(4));
+        $path = sys_get_temp_dir() . '/' . $name . '.razor.php';
+        file_put_contents($path, '<vf-group-box title="Details" :collapsible="true"><razor-slot name="toggleIcon"><i>+</i></razor-slot>Body</vf-group-box>');
+
+        try {
+            $markup = $engine->render($name, []);
+        } finally {
+            @unlink($path);
+        }
+
+        self::assertStringContainsString('type="button"><i>+</i><span class="vf-group-box__title">Details</span></button>', $markup);
+        self::assertStringNotContainsString('vf-group-box__icon', $markup);
+    }
+
     public function testTheToggleIconSlotNeverRendersWithoutATrigger(): void
     {
         self::assertStringNotContainsString('custom', $this->render(['title' => 'T'], ['toggle-icon' => self::slot('<i class="custom">+</i>')]));

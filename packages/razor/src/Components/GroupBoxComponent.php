@@ -58,7 +58,9 @@ use Codemonster\VueForge\Razor\Support\IconRenderer;
  *   - role=region and aria-labelledby only when collapsible;
  *   - `disabled` is consumed: the native attribute on the trigger and nothing
  *     on the fieldset, no aria-disabled, no modifier class;
- *   - the toggle-icon slot replaces the whole aria-hidden icon wrapper.
+ *   - the toggle-icon slot replaces the whole aria-hidden icon wrapper. A
+ *     template spells it `toggleIcon`, the only form the engine's named-slot
+ *     syntax accepts; see toggleIconSlot().
  *
  * Deliberately different, and documented as a platform divergence rather than
  * hidden (contracts/group-box/parity-policy.json, `platformDivergences`):
@@ -172,8 +174,9 @@ final class GroupBoxComponent implements ComponentInterface
         bool $disabled,
         string $titleSpan,
     ): string {
-        $icon = $context->hasSlot('toggle-icon')
-            ? $context->slot('toggle-icon')->value()
+        $iconSlot = self::toggleIconSlot($context);
+        $icon = $iconSlot !== null
+            ? $context->slot($iconSlot)->value()
             : '<span aria-hidden="true" class="vf-group-box__icon">'
                 . IconRenderer::render('chevron-down', self::ICON_SIZE)
                 . '</span>';
@@ -189,6 +192,27 @@ final class GroupBoxComponent implements ComponentInterface
             ],
             ['default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString($icon . $titleSpan)],
         ))->value();
+    }
+
+    /**
+     * The toggle-icon slot, by either spelling.
+     *
+     * The Vue slot is `toggle-icon`, and that is the name the PHP API takes.
+     * A Razor template cannot declare it: the engine's named-slot syntax
+     * accepts `[a-z][A-Za-z0-9]*` only, so `<razor-slot name="toggle-icon">`
+     * is refused as malformed. The template spelling is `toggleIcon`, the same
+     * way this adapter reads `default-collapsed` and `defaultCollapsed` as one
+     * prop. Found by the M29 showcase; the rendered markup is identical.
+     */
+    private static function toggleIconSlot(ComponentRenderContext $context): ?string
+    {
+        foreach (['toggle-icon', 'toggleIcon'] as $name) {
+            if ($context->hasSlot($name)) {
+                return $name;
+            }
+        }
+
+        return null;
     }
 
     /**
