@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { computed, useAttrs, useSlots } from 'vue';
 import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
+import {
+  resolveGroupBoxClasses,
+  resolveGroupBoxFlags,
+  resolveGroupBoxHasTitle,
+} from '@codemonster-ru/vueforge-shared-core';
 import VfButton from '@/components/button/VfButton.vue';
 import { useDisclosure, useId } from '@/composables';
 import { cx } from '@/utils/classes';
@@ -43,20 +48,32 @@ const disclosure = useDisclosure({
     emit('collapsedChange', collapsed);
   },
 });
-const hasTitle = computed(() => Boolean(props.title) || Boolean(slots.title));
-const isCollapsible = computed(() => props.collapsible && hasTitle.value);
-const isCollapsed = computed(() => isCollapsible.value && !disclosure.isOpen.value);
+// The state itself stays in useDisclosure, which the accordion, dialog, drawer
+// and popover share; only the decisions the Razor adapter also makes moved to
+// shared-core. Reading the slot is Vue's half and stays here.
+const hasTitle = computed(() => resolveGroupBoxHasTitle(props.title, Boolean(slots.title)));
+const flags = computed(() =>
+  resolveGroupBoxFlags({
+    hasTitle: hasTitle.value,
+    collapsible: props.collapsible,
+    open: disclosure.isOpen.value,
+    disabled: props.disabled,
+  }),
+);
+const isCollapsible = computed(() => flags.value.collapsible);
+const isCollapsed = computed(() => flags.value.collapsed);
 const classes = computed(() =>
   cx(
-    'vf-group-box',
-    hasTitle.value && 'vf-group-box--titled',
-    isCollapsible.value && 'vf-group-box--collapsible',
-    isCollapsed.value && 'vf-group-box--collapsed',
+    ...resolveGroupBoxClasses({
+      hasTitle: hasTitle.value,
+      collapsible: isCollapsible.value,
+      collapsed: isCollapsed.value,
+    }),
   ),
 );
 
 function toggle() {
-  if (isCollapsible.value && !props.disabled) {
+  if (flags.value.toggleable) {
     disclosure.toggle();
   }
 }

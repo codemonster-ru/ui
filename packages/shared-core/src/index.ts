@@ -173,3 +173,13 @@ export {
   resolveDropdownTeleport,
   resolveDropdownTriggerState,
 } from './dropdown/state.js';
+// VfGroupBox. What the props decide - the title test in JavaScript
+// truthiness, the open seed, the disclosure flags and the root classes. The
+// state itself stays in each adapter.
+export {
+  resolveGroupBoxClasses,
+  resolveGroupBoxFlags,
+  resolveGroupBoxHasTitle,
+  resolveGroupBoxOpen,
+} from './group-box/state.js';
+export type { GroupBoxFlags, GroupBoxFlagsInput } from './group-box/state.js';

@@ -106,6 +106,10 @@ export const accordionRulePath = 'packages/shared-core/src/accordion/state.ts';
  */
 export const disclosureComposablePath = 'packages/core/src/composables/useDisclosure.ts';
 const accordionSuite = 'src/components/accordion/VfAccordion.characterization.spec.ts';
+export const groupBoxSourcePath = 'packages/core/src/components/group-box/VfGroupBox.vue';
+/** The shared rules VfGroupBox, its Razor controller and the PHP adapter derive from. */
+export const groupBoxRulePath = 'packages/shared-core/src/group-box/state.ts';
+const groupBoxSuite = 'src/components/group-box/VfGroupBox.characterization.spec.ts';
 
 /**
  * The consumer suite a VfProgressSpinner defect is expected to reach.
@@ -397,12 +401,21 @@ export const fieldMutations = [
  * size mapping - must fail the button's evidence and leave the standalone
  * spinner's green. A button mutation that reached VfProgressSpinner's suite
  * would fail the gate as WRONG SUITE, because the dependency runs one way.
+ *
+ * Since M29 seven of them also declare `alsoFails: [groupBoxSuite]`: VfGroupBox
+ * renders its disclosure trigger as a ghost VfButton, and its characterization
+ * pins that button's type, classes, disabled attribute, forwarded ids and ARIA,
+ * slot content and the spinner placeholder's position. Measured, not assumed:
+ * each of the seven failed the group box suite on a real run, and the other
+ * five (block, loading, loading-disabling, aria-busy, spinner class) did not -
+ * a group box trigger is never a block and never loading.
  */
 export const buttonMutations = [
   {
     id: 'button-submits-by-default',
     file: buttonSourcePath,
     suite: buttonSuite,
+    alsoFails: [groupBoxSuite],
     description: 'the default type becomes submit, so a button inside a form posts it',
     find: "  type: 'button',",
     replace: "  type: 'submit',",
@@ -411,6 +424,7 @@ export const buttonMutations = [
     id: 'button-drops-the-variant-modifier',
     file: buttonRulePath,
     suite: buttonSuite,
+    alsoFails: [groupBoxSuite],
     description: 'the variant modifier disappears, so every button renders as the base style',
     find: "  const classes = ['vf-button', `vf-button--${variant}`];",
     replace: "  const classes = ['vf-button'];",
@@ -419,6 +433,7 @@ export const buttonMutations = [
     id: 'button-emits-a-default-size-modifier',
     file: buttonRulePath,
     suite: buttonSuite,
+    alsoFails: [groupBoxSuite],
     description: 'the medium size starts emitting a modifier the stylesheet never defined',
     find: "  if (size !== 'md') classes.push(`vf-button--${size}`);",
     replace: '  classes.push(`vf-button--${size}`);',
@@ -451,6 +466,7 @@ export const buttonMutations = [
     id: 'button-ignores-the-disabled-attribute',
     file: buttonSourcePath,
     suite: buttonSuite,
+    alsoFails: [groupBoxSuite],
     description: 'a disabled button becomes operable',
     find: ' :disabled="isDisabled"',
     replace: '',
@@ -459,6 +475,7 @@ export const buttonMutations = [
     id: 'button-drops-attribute-forwarding',
     file: buttonSourcePath,
     suite: buttonSuite,
+    alsoFails: [groupBoxSuite],
     description: 'inherited attrs stop reaching the button, losing aria-label, name and consumer class',
     find: 'v-bind="attrs" ',
     replace: '',
@@ -467,6 +484,7 @@ export const buttonMutations = [
     id: 'button-drops-its-slot',
     file: buttonSourcePath,
     suite: buttonSuite,
+    alsoFails: [groupBoxSuite],
     description: 'the button renders empty, so it has no label at all',
     find: '    <slot />\n',
     replace: '',
@@ -475,6 +493,7 @@ export const buttonMutations = [
     id: 'button-renders-the-spinner-after-its-label',
     file: buttonSourcePath,
     suite: buttonSuite,
+    alsoFails: [groupBoxSuite],
     description: 'the loading spinner moves to the far side of the label',
     find: '    <VfProgressSpinner\n      v-if="props.loading"\n      class="vf-button__spinner"\n      size="var(--vf-icon-current-size)"\n      :stroke-width="5"\n    />\n    <slot />',
     replace:
@@ -3033,6 +3052,557 @@ export const accordionMutations = [
  * and End, focus that moves between the owned buttons - document-wide, which
  * is the historical quirk pinned as such - and the deep items watch.
  */
+/**
+ * VfGroupBox regressions.
+ *
+ * The M29 set: the native element identities (fieldset, legend, button), the
+ * JavaScript title test with its "" and "0" spellings, the collapse
+ * resolution and the controlled protocol, the trigger's VfButton identity,
+ * ARIA and the id graph including the closed dangling reference, the absence
+ * of any keyboard handling, the two emits, the disabled contract, v-if
+ * retention, the slots and the consumer-attribute contract.
+ *
+ * The disabled guard (`group-box-disabled-guard-removed`) is observable in a
+ * browser only through the Vue type misuse disabled="true": a boolean
+ * disabled writes the native attribute and the browser never delivers the
+ * click, so without that characterized quirk the mutation would be
+ * equivalent. It is detected by the quirk test and by nothing else - see the
+ * M29 appendix.
+ */
+export const groupBoxMutations = [
+  // ------------------------------------------------------------ element identity
+  {
+    id: 'group-box-root-becomes-a-div',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'the fieldset becomes a div with role=group, which keeps the accessible group and loses the element',
+    edits: [
+      {
+        find: '  <fieldset :class="classes" v-bind="attrs">',
+        replace: '  <div role="group" :class="classes" v-bind="attrs">',
+      },
+      { find: '  </fieldset>\n</template>', replace: '  </div>\n</template>' },
+    ],
+  },
+  {
+    id: 'group-box-legend-becomes-a-div',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'the legend becomes a div, so the fieldset loses its name',
+    edits: [
+      {
+        find: '    <legend v-if="hasTitle" class="vf-group-box__legend">',
+        replace: '    <div v-if="hasTitle" class="vf-group-box__legend">',
+      },
+      { find: '    </legend>\n', replace: '    </div>\n' },
+    ],
+  },
+  {
+    id: 'group-box-content-becomes-a-section',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'the content div becomes a section - a region by itself, identical in the accessibility tree',
+    edits: [
+      { find: '    <div\n      v-if="!isCollapsed"', replace: '    <section\n      v-if="!isCollapsed"' },
+      {
+        find: '      <slot :collapsed="isCollapsed" />\n    </div>',
+        replace: '      <slot :collapsed="isCollapsed" />\n    </section>',
+      },
+    ],
+  },
+
+  // ------------------------------------------------------------ title presence
+  {
+    id: 'group-box-empty-title-counts',
+    file: groupBoxRulePath,
+    suite: groupBoxSuite,
+    description: 'an empty title string counts as a title, so an empty legend and a trigger appear',
+    find: '  return Boolean(title) || hasTitleSlot;',
+    replace: '  return title !== undefined || hasTitleSlot;',
+  },
+  {
+    id: 'group-box-title-zero-dropped',
+    file: groupBoxRulePath,
+    suite: groupBoxSuite,
+    description: 'the title "0" is treated as falsy, as PHP truthiness would',
+    find: '  return Boolean(title) || hasTitleSlot;',
+    replace: "  return (Boolean(title) && title !== '0') || hasTitleSlot;",
+  },
+  {
+    id: 'group-box-title-slot-ignored',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'a title slot no longer counts, so a slot-titled group has no legend',
+    find: 'resolveGroupBoxHasTitle(props.title, Boolean(slots.title))',
+    replace: 'resolveGroupBoxHasTitle(props.title, false)',
+  },
+  {
+    id: 'group-box-title-slot-replaced-by-prop',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'the collapsible title span renders the prop and ignores the title slot',
+    find: '          <slot name="title" :collapsed="isCollapsed">{{ props.title }}</slot>',
+    replace: '          {{ props.title }}',
+  },
+  {
+    id: 'group-box-title-span-dropped',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'the static legend renders its text without the title span',
+    edits: [
+      {
+        find: '      <span v-else class="vf-group-box__title">\n        <slot name="title" :collapsed="false">{{ props.title }}</slot>\n      </span>',
+        replace: '      <slot v-else name="title" :collapsed="false">{{ props.title }}</slot>',
+      },
+    ],
+  },
+
+  // ------------------------------------------------------------ collapse resolution
+  {
+    id: 'group-box-collapsible-without-title',
+    file: groupBoxRulePath,
+    suite: groupBoxSuite,
+    description: 'collapsible no longer needs a title, so an untitled group grows a disclosure',
+    find: '  const isCollapsible = Boolean(collapsible) && hasTitle;',
+    replace: '  const isCollapsible = Boolean(collapsible);',
+  },
+  {
+    id: 'group-box-collapsed-without-collapsible',
+    file: groupBoxRulePath,
+    suite: groupBoxSuite,
+    description: 'a static group honours a closed seed and hides its content',
+    find: '    collapsed: isCollapsible && !open,',
+    replace: '    collapsed: !open,',
+  },
+  {
+    id: 'group-box-ignores-default-collapsed',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'defaultCollapsed is never handed to the disclosure',
+    find: '  defaultOpen: !props.defaultCollapsed,',
+    replace: '  defaultOpen: true,',
+  },
+  {
+    id: 'group-box-inverts-default-collapsed',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'defaultCollapsed seeds the opposite state',
+    find: '  defaultOpen: !props.defaultCollapsed,',
+    replace: '  defaultOpen: props.defaultCollapsed,',
+  },
+  {
+    id: 'group-box-ignores-the-controlled-prop',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'collapsed is never handed to the disclosure, so the group is uncontrolled whatever the consumer says',
+    find: '  open: computed(() => (props.collapsed === undefined ? undefined : !props.collapsed)),',
+    replace: '  open: undefined,',
+  },
+  {
+    id: 'group-box-collapsed-read-as-initial-state',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description:
+      'collapsed only seeds the state - the Razor reading - so a controlled group toggles on its own and stops following the prop',
+    edits: [
+      {
+        find: '  defaultOpen: !props.defaultCollapsed,',
+        replace: '  defaultOpen: props.collapsed === undefined ? !props.defaultCollapsed : !props.collapsed,',
+      },
+      {
+        find: '  open: computed(() => (props.collapsed === undefined ? undefined : !props.collapsed)),',
+        replace: '  open: undefined,',
+      },
+    ],
+  },
+  {
+    id: 'group-box-state-reset-when-collapsible-returns',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'turning collapsible off and on again resets the disclosure to open',
+    edits: [
+      {
+        find: "import { computed, useAttrs, useSlots } from 'vue';",
+        replace: "import { computed, useAttrs, useSlots, watch } from 'vue';",
+      },
+      {
+        find: 'const hasTitle = computed(',
+        replace:
+          'watch(() => props.collapsible, (value) => { if (!value) disclosure.open(); });\nconst hasTitle = computed(',
+      },
+    ],
+  },
+
+  // ------------------------------------------------------------ trigger identity
+  {
+    id: 'group-box-trigger-becomes-a-native-button',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'the trigger is a bare button instead of VfButton, losing the ghost button classes',
+    edits: [
+      {
+        find: '      <VfButton\n        v-if="isCollapsible"',
+        replace: '      <button\n        type="button"\n        v-if="isCollapsible"',
+      },
+      { find: '        variant="ghost"\n', replace: '' },
+      { find: '      </VfButton>', replace: '      </button>' },
+    ],
+  },
+  {
+    id: 'group-box-trigger-variant-secondary',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'the trigger becomes a secondary button',
+    find: '        variant="ghost"',
+    replace: '        variant="secondary"',
+  },
+  {
+    id: 'group-box-trigger-loses-its-class',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'the group box class is no longer passed to the trigger',
+    find: '        class="vf-group-box__trigger"\n',
+    replace: '',
+  },
+  {
+    id: 'group-box-trigger-type-submit',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'the trigger submits a surrounding form',
+    find: '        variant="ghost"',
+    replace: '        variant="ghost"\n        type="submit"',
+  },
+
+  // ------------------------------------------------------------ ARIA and ids
+  {
+    id: 'group-box-inverts-aria-expanded',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'aria-expanded announces the opposite of the state',
+    find: '        :aria-expanded="!isCollapsed"',
+    replace: '        :aria-expanded="isCollapsed"',
+  },
+  {
+    id: 'group-box-drops-aria-expanded',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'the trigger stops announcing its state',
+    find: '        :aria-expanded="!isCollapsed"\n',
+    replace: '',
+  },
+  {
+    id: 'group-box-drops-aria-controls-while-closed',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'the closed trigger stops naming the absent content - the "fixed" dangling reference',
+    find: '        :aria-controls="contentId"',
+    replace: '        :aria-controls="isCollapsed ? undefined : contentId"',
+  },
+  {
+    id: 'group-box-aria-controls-points-at-the-trigger',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'aria-controls names the trigger itself',
+    find: '        :aria-controls="contentId"',
+    replace: '        :aria-controls="triggerId"',
+  },
+  {
+    id: 'group-box-drops-aria-labelledby',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'the region loses its name',
+    find: '      :aria-labelledby="isCollapsible ? triggerId : undefined"\n',
+    replace: '',
+  },
+  {
+    id: 'group-box-content-labelled-by-itself',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'the region names itself',
+    find: '      :aria-labelledby="isCollapsible ? triggerId : undefined"',
+    replace: '      :aria-labelledby="isCollapsible ? contentId : undefined"',
+  },
+  {
+    id: 'group-box-drops-the-region-role',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'the collapsible content is no longer a region',
+    find: '      :role="isCollapsible ? \'region\' : undefined"\n',
+    replace: '',
+  },
+  {
+    id: 'group-box-static-content-becomes-a-region',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'a merely titled group labels its content as a region',
+    find: '      :role="isCollapsible ? \'region\' : undefined"',
+    replace: '      :role="hasTitle ? \'region\' : undefined"',
+  },
+  {
+    id: 'group-box-static-content-loses-its-id',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'the unreferenced static content id is "cleaned up"',
+    find: '      :id="contentId"\n      :aria-labelledby',
+    replace: '      :id="isCollapsible ? contentId : undefined"\n      :aria-labelledby',
+  },
+  {
+    id: 'group-box-swaps-the-ids',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'the trigger and content id prefixes are swapped',
+    edits: [
+      {
+        find: "const triggerId = useId({ prefix: 'vf-group-box-trigger' });",
+        replace: "const triggerId = useId({ prefix: 'vf-group-box-content' });",
+      },
+      {
+        find: "const contentId = useId({ prefix: 'vf-group-box-content' });",
+        replace: "const contentId = useId({ prefix: 'vf-group-box-trigger' });",
+      },
+    ],
+  },
+  {
+    id: 'group-box-trigger-id-allocated-lazily',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'the content id is allocated before the trigger id',
+    edits: [
+      {
+        find: "const triggerId = useId({ prefix: 'vf-group-box-trigger' });\nconst contentId = useId({ prefix: 'vf-group-box-content' });",
+        replace:
+          "const contentId = useId({ prefix: 'vf-group-box-content' });\nconst triggerId = useId({ prefix: 'vf-group-box-trigger' });",
+      },
+    ],
+  },
+  {
+    id: 'group-box-instances-share-one-id',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'every instance uses the same literal ids, so two groups collide',
+    edits: [
+      {
+        find: "const triggerId = useId({ prefix: 'vf-group-box-trigger' });",
+        replace: "const triggerId = computed(() => 'vf-group-box-trigger');",
+      },
+      {
+        find: "const contentId = useId({ prefix: 'vf-group-box-content' });",
+        replace: "const contentId = computed(() => 'vf-group-box-content');",
+      },
+    ],
+  },
+
+  // ------------------------------------------------------------ keyboard
+  {
+    id: 'group-box-handles-enter-itself',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'an accordion-style keydown handler toggles on Enter and Space and prevents the default',
+    find: '        @click="toggle"',
+    replace:
+      '        @click="toggle"\n        @keydown="(event: KeyboardEvent) => { if (event.key === \'Enter\' || event.key === \' \') { event.preventDefault(); toggle(); } }"',
+  },
+  {
+    id: 'group-box-prevents-arrow-keys',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'the trigger swallows the arrow keys',
+    find: '        @click="toggle"',
+    replace:
+      '        @click="toggle"\n        @keydown="(event: KeyboardEvent) => { if (event.key.startsWith(\'Arrow\')) event.preventDefault(); }"',
+  },
+  {
+    id: 'group-box-listens-on-the-document',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'a document keydown listener appears',
+    find: 'const hasTitle = computed(',
+    replace:
+      "if (typeof document !== 'undefined') document.addEventListener('keydown', () => {});\nconst hasTitle = computed(",
+  },
+
+  // ------------------------------------------------------------ pointer and emits
+  {
+    id: 'group-box-click-stops-toggling',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'the trigger loses its click handler',
+    find: '        @click="toggle"\n',
+    replace: '',
+  },
+  {
+    id: 'group-box-swaps-the-event-order',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'collapsedChange is emitted before update:collapsed',
+    find: "    emit('update:collapsed', collapsed);\n    emit('collapsedChange', collapsed);",
+    replace: "    emit('collapsedChange', collapsed);\n    emit('update:collapsed', collapsed);",
+  },
+  {
+    id: 'group-box-emits-the-open-state',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'the emits carry the open value instead of the collapsed one',
+    find: '    const collapsed = !open;',
+    replace: '    const collapsed = open;',
+  },
+  {
+    id: 'group-box-drops-collapsed-change',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'collapsedChange is never emitted',
+    find: "    emit('collapsedChange', collapsed);\n",
+    replace: '',
+  },
+  {
+    id: 'group-box-doubles-update-collapsed',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'update:collapsed is emitted twice per toggle',
+    find: "    emit('update:collapsed', collapsed);\n",
+    replace: "    emit('update:collapsed', collapsed);\n    emit('update:collapsed', collapsed);\n",
+  },
+
+  // ------------------------------------------------------------ disabled
+  {
+    id: 'group-box-disabled-guard-removed',
+    file: groupBoxRulePath,
+    suite: groupBoxSuite,
+    description:
+      'the toggle guard stops reading disabled; observable only through the characterized disabled="true" quirk',
+    find: '    toggleable: isCollapsible && !disabled,',
+    replace: '    toggleable: isCollapsible,',
+  },
+  {
+    id: 'group-box-disabled-on-the-fieldset',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'disabled is forwarded onto the fieldset, disabling every descendant control',
+    find: '  <fieldset :class="classes" v-bind="attrs">',
+    replace: '  <fieldset :class="classes" v-bind="attrs" :disabled="props.disabled">',
+  },
+  {
+    id: 'group-box-disabled-becomes-aria-disabled',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'the trigger is marked aria-disabled instead of natively disabled, so it stays focusable',
+    find: '        :disabled="props.disabled"',
+    replace: '        :aria-disabled="props.disabled ? \'true\' : undefined"',
+  },
+  {
+    id: 'group-box-disabled-grows-a-modifier',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'a disabled modifier class appears on the root',
+    find: '      collapsed: isCollapsed.value,\n    }),\n  ),',
+    replace: "      collapsed: isCollapsed.value,\n    }),\n    props.disabled && 'vf-group-box--disabled',\n  ),",
+  },
+
+  // ------------------------------------------------------------ classes
+  {
+    id: 'group-box-drops-the-titled-modifier',
+    file: groupBoxRulePath,
+    suite: groupBoxSuite,
+    description: 'a titled group loses its modifier',
+    find: "  if (hasTitle) classes.push('vf-group-box--titled');\n",
+    replace: '',
+  },
+  {
+    id: 'group-box-collapsed-modifier-always',
+    file: groupBoxRulePath,
+    suite: groupBoxSuite,
+    description: 'the collapsed modifier follows collapsible rather than the state',
+    find: "  if (collapsed) classes.push('vf-group-box--collapsed');",
+    replace: "  if (collapsible) classes.push('vf-group-box--collapsed');",
+  },
+  {
+    id: 'group-box-consumer-class-first',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'attributes are bound before the canonical classes, so a consumer class leads the list',
+    find: '  <fieldset :class="classes" v-bind="attrs">',
+    replace: '  <fieldset v-bind="attrs" :class="classes">',
+  },
+  {
+    id: 'group-box-attrs-on-the-trigger',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'consumer attributes move from the fieldset onto the trigger',
+    edits: [
+      { find: '  <fieldset :class="classes" v-bind="attrs">', replace: '  <fieldset :class="classes">' },
+      { find: '        variant="ghost"', replace: '        variant="ghost"\n        v-bind="attrs"' },
+    ],
+  },
+
+  // ------------------------------------------------------------ lifecycle
+  {
+    id: 'group-box-retains-the-content-with-v-show',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'the collapsed content stays in the DOM, hidden',
+    find: '      v-if="!isCollapsed"',
+    replace: '      v-show="!isCollapsed"',
+  },
+
+  // ------------------------------------------------------------ slots and icon
+  {
+    id: 'group-box-toggle-icon-slot-ignored',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'the toggle-icon slot is ignored and the default icon always renders',
+    edits: [
+      { find: '        <slot name="toggle-icon" :collapsed="isCollapsed">\n', replace: '' },
+      { find: '          </span>\n        </slot>\n', replace: '          </span>\n' },
+    ],
+  },
+  {
+    id: 'group-box-toggle-icon-inside-the-wrapper',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'the toggle-icon slot fills the aria-hidden wrapper instead of replacing it',
+    edits: [
+      {
+        find: '        <slot name="toggle-icon" :collapsed="isCollapsed">\n          <span aria-hidden="true" class="vf-group-box__icon">',
+        replace:
+          '          <span aria-hidden="true" class="vf-group-box__icon">\n        <slot name="toggle-icon" :collapsed="isCollapsed">',
+      },
+      { find: '          </span>\n        </slot>\n', replace: '        </slot>\n          </span>\n' },
+    ],
+  },
+  {
+    id: 'group-box-icon-exposed',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'the default icon wrapper loses aria-hidden',
+    find: '          <span aria-hidden="true" class="vf-group-box__icon">',
+    replace: '          <span class="vf-group-box__icon">',
+  },
+  {
+    id: 'group-box-swaps-the-glyph',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'the chevron-down glyph becomes chevron-right',
+    find: '<VueIconify :icon="icons.chevronDown"',
+    replace: '<VueIconify :icon="icons.chevronRight"',
+  },
+  {
+    id: 'group-box-slot-scope-inverted',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'the default slot is told the opposite collapsed state',
+    find: '      <slot :collapsed="isCollapsed" />',
+    replace: '      <slot :collapsed="!isCollapsed" />',
+  },
+  {
+    id: 'group-box-static-title-slot-sees-the-state',
+    file: groupBoxSourcePath,
+    suite: groupBoxSuite,
+    description: 'the static title slot receives the resolved collapsed state instead of a literal false',
+    find: '        <slot name="title" :collapsed="false">{{ props.title }}</slot>',
+    replace: '        <slot name="title" :collapsed="!disclosure.isOpen.value">{{ props.title }}</slot>',
+  },
+];
+
 export const stepperMutations = [
   // ------------------------------------------------------------ state model
   {
@@ -5534,6 +6104,7 @@ export const componentMutations = [
   ...progressSpinnerMutations,
   ...progressBarMutations,
   ...accordionMutations,
+  ...groupBoxMutations,
   ...stepperMutations,
   ...tabsMutations,
   ...linkMutations,

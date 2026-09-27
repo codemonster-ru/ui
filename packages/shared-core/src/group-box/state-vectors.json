@@ -1,0 +1,124 @@
+{
+  "$comment": "Shared input/expected vectors for VfGroupBox. The TypeScript rules in group-box/state.ts and the PHP mirror in packages/razor/src/Support/GroupBoxState.php both run this file. An absent key is `undefined` on the TypeScript side and null on the PHP side, which is that adapter's 'nothing said'. The title vectors are spelled as raw strings on purpose - \"\" and \"0\" are the two where JavaScript and PHP truthiness disagree, and the rule is JavaScript's. A vector marked $vueOnly records a Vue type misuse (the string \"true\" for a Boolean prop) that has no PHP counterpart: the Razor adapter parses its attributes into real booleans before the rule runs. There is deliberately no vector for a toggle or a next state.",
+  "resolveGroupBoxHasTitle": [
+    { "$why": "Nothing said: no title.", "hasTitleSlot": false, "expected": false },
+    { "$why": "The empty string is falsy in JavaScript.", "title": "", "hasTitleSlot": false, "expected": false },
+    {
+      "$why": "\"0\" is a non-empty string and therefore a title. PHP truthiness would say false.",
+      "title": "0",
+      "hasTitleSlot": false,
+      "expected": true
+    },
+    { "$why": "Whitespace is a title.", "title": " ", "hasTitleSlot": false, "expected": true },
+    { "title": "Shipping", "hasTitleSlot": false, "expected": true },
+    {
+      "$why": "A slot counts by its presence beside an empty prop.",
+      "title": "",
+      "hasTitleSlot": true,
+      "expected": true
+    },
+    { "hasTitleSlot": true, "expected": true },
+    { "title": "0", "hasTitleSlot": true, "expected": true }
+  ],
+  "resolveGroupBoxOpen": [
+    { "$why": "Nothing said: open.", "expected": true },
+    { "defaultCollapsed": true, "expected": false },
+    { "defaultCollapsed": false, "expected": true },
+    { "collapsed": true, "expected": false },
+    { "collapsed": false, "expected": true },
+    {
+      "$why": "collapsed wins over the seed, in both directions.",
+      "collapsed": false,
+      "defaultCollapsed": true,
+      "expected": true
+    },
+    { "collapsed": true, "defaultCollapsed": false, "expected": false },
+    { "collapsed": true, "defaultCollapsed": true, "expected": false }
+  ],
+  "resolveGroupBoxFlags": [
+    {
+      "$why": "The static untitled group.",
+      "hasTitle": false,
+      "collapsible": false,
+      "open": true,
+      "disabled": false,
+      "expected": { "collapsible": false, "collapsed": false, "toggleable": false }
+    },
+    {
+      "$why": "collapsible without a title renders no disclosure, and a closed seed is ignored.",
+      "hasTitle": false,
+      "collapsible": true,
+      "open": false,
+      "disabled": false,
+      "expected": { "collapsible": false, "collapsed": false, "toggleable": false }
+    },
+    {
+      "$why": "Titled but not collapsible: a closed seed is ignored.",
+      "hasTitle": true,
+      "collapsible": false,
+      "open": false,
+      "disabled": false,
+      "expected": { "collapsible": false, "collapsed": false, "toggleable": false }
+    },
+    {
+      "hasTitle": true,
+      "collapsible": true,
+      "open": true,
+      "disabled": false,
+      "expected": { "collapsible": true, "collapsed": false, "toggleable": true }
+    },
+    {
+      "hasTitle": true,
+      "collapsible": true,
+      "open": false,
+      "disabled": false,
+      "expected": { "collapsible": true, "collapsed": true, "toggleable": true }
+    },
+    {
+      "$why": "disabled refuses the toggle and leaves the state alone.",
+      "hasTitle": true,
+      "collapsible": true,
+      "open": false,
+      "disabled": true,
+      "expected": { "collapsible": true, "collapsed": true, "toggleable": false }
+    },
+    {
+      "$why": "disabled without collapsible does nothing at all.",
+      "hasTitle": true,
+      "collapsible": false,
+      "open": true,
+      "disabled": true,
+      "expected": { "collapsible": false, "collapsed": false, "toggleable": false }
+    },
+    {
+      "$why": "The Vue type misuse disabled=\"true\": the guard reads JavaScript truthiness and refuses.",
+      "$vueOnly": true,
+      "hasTitle": true,
+      "collapsible": true,
+      "open": true,
+      "disabled": "true",
+      "expected": { "collapsible": true, "collapsed": false, "toggleable": false }
+    }
+  ],
+  "resolveGroupBoxClasses": [
+    { "hasTitle": false, "collapsible": false, "collapsed": false, "expected": ["vf-group-box"] },
+    {
+      "hasTitle": true,
+      "collapsible": false,
+      "collapsed": false,
+      "expected": ["vf-group-box", "vf-group-box--titled"]
+    },
+    {
+      "hasTitle": true,
+      "collapsible": true,
+      "collapsed": false,
+      "expected": ["vf-group-box", "vf-group-box--titled", "vf-group-box--collapsible"]
+    },
+    {
+      "hasTitle": true,
+      "collapsible": true,
+      "collapsed": true,
+      "expected": ["vf-group-box", "vf-group-box--titled", "vf-group-box--collapsible", "vf-group-box--collapsed"]
+    }
+  ]
+}
