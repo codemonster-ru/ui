@@ -21,6 +21,7 @@ import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { delay, launchChrome, openPage } from '../baseline/cdp.mjs';
 import { artifactsDirectory, captureEnvironment, stableStringify } from '../baseline/reference.mjs';
+import { packageTreeDifferences } from './installed-package-freshness.mjs';
 
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const runDirectory = resolve(artifactsDirectory, 'showcase-routes');
@@ -437,6 +438,33 @@ check(
 // vendor/, so a stale install serves an older adapter while every other check
 // passes. Comparing the installed source against the staged source is what
 // turns that into a failure rather than a confusing missing component.
+//
+// M30: the whole installed tree, not the provider alone. Composer's reference
+// for a path repository is a hash of the package's composer.json, so an edit
+// to a component, the runtime or the stylesheet never moves it and the
+// provider stays identical (reproduced in installed-package-freshness.test.mjs).
+// A stale copy is replaced with Composer's own reinstall, and the check below
+// still decides: it passes only when every installed file is the staged one.
+const installedPackage = resolve(razorAssets, '..');
+const stagedPackage = resolve(repositoryRoot, '.release/razor-package');
+const staleFiles = packageTreeDifferences(stagedPackage, installedPackage);
+if (staleFiles.length > 0) {
+  process.stdout.write(`The installed Razor package was stale (${staleFiles.join(', ')}); reinstalling it\n`);
+  execFileSync(
+    'composer',
+    ['reinstall', 'codemonster-ru/vueforge-razor', '--no-interaction', '--no-progress', '--quiet'],
+    {
+      cwd: razorExample,
+      stdio: ['ignore', 'ignore', 'pipe'],
+    },
+  );
+}
+const remainingDifferences = packageTreeDifferences(stagedPackage, installedPackage);
+check(
+  'every installed Razor package file is the staged artifact file',
+  remainingDifferences.length === 0,
+  remainingDifferences.join(', '),
+);
 const installedProvider = resolve(razorAssets, '../src/VueForgeRazorProvider.php');
 const stagedProvider = resolve(repositoryRoot, '.release/razor-package/src/VueForgeRazorProvider.php');
 check(
