@@ -1571,6 +1571,142 @@ function accordionInteractionExpression(caseId, controlOwnership = {}) {
 }
 
 /**
+ * What a VfGroupBox case reports, before and after an interaction.
+ *
+ * Component-specific and named so, like accordionInteractionExpression, and
+ * deliberately a separate function rather than that one with its selectors
+ * swapped: the group box's trigger lives in a legend and exists only when the
+ * group is collapsible, its content is a direct child of the fieldset with no
+ * inner wrapper, a static group owns no control at all, and there is no
+ * transition to wait for. The field names are the accordion's where the
+ * meaning is the same - so the comparator's existing rules apply - and the
+ * record falls into the same four groups:
+ *
+ *   - ownership: every trigger the profile's rule finds, with its tag, type,
+ *     place and state, and every focusable element that is not one of them;
+ *   - state: aria-expanded of every trigger, whether the first group's content
+ *     is in the DOM and painted, its role and text, how many content elements
+ *     the case holds, and the first root's class list;
+ *   - relationships: whether the first trigger's aria-controls resolves to
+ *     content that points back at it, on the live DOM;
+ *   - the scenario's own record: native activations, whether each keydown was
+ *     prevented, focus, and the neutral collapsed-change log.
+ *
+ * Synchronous: the reference removes and renders its content in the same tick,
+ * and a snapshot that waited would hide a port that did not.
+ */
+function groupBoxInteractionExpression(caseId, controlOwnership = {}) {
+  return `(() => {
+    const root = document.querySelector('[data-parity-case="${caseId}"]');
+    if (!root) throw new Error('missing case ${caseId}');
+
+    const OWNED = ${JSON.stringify(controlOwnership)};
+    const FOCUSABLE = 'a[href], button, input, select, textarea, [tabindex], [contenteditable=""], [contenteditable="true"]';
+    const INTERACTIVE_ROLES = new Set([
+      'button', 'link', 'checkbox', 'radio', 'switch', 'textbox', 'combobox',
+      'listbox', 'menuitem', 'option', 'slider', 'spinbutton', 'tab',
+    ]);
+
+    const pathOf = (element) => {
+      const segments = [];
+      for (let node = element; node && node !== root; node = node.parentElement) {
+        const classes = [...node.classList].filter((name) => name.startsWith('vf-')).sort();
+        segments.unshift(node.tagName.toLowerCase() + (classes.length ? '.' + classes.join('.') : ''));
+      }
+      return segments.join('>');
+    };
+
+    const focusable = [...root.querySelectorAll(FOCUSABLE)];
+    const owned = [];
+    for (const [role, rule] of Object.entries(OWNED)) {
+      for (const element of root.querySelectorAll(rule.selector)) {
+        const controls = element.getAttribute('aria-controls');
+        const target = controls ? document.getElementById(controls) : null;
+        owned.push({
+          element,
+          record: {
+            role,
+            tag: element.tagName.toLowerCase(),
+            type: element.getAttribute('type'),
+            path: pathOf(element),
+            expanded: element.getAttribute('aria-expanded'),
+            disabled: element.hasAttribute('disabled'),
+            focusable: focusable.includes(element),
+            controls: !controls
+              ? 'none'
+              : !target
+                ? 'dangling'
+                : root.contains(target) && target.getAttribute('aria-labelledby') === element.id
+                  ? 'panel'
+                  : 'other',
+            name: (element.textContent ?? '').replace(/\\s+/g, ' ').trim(),
+          },
+        });
+      }
+    }
+    const ownedElements = owned.map((entry) => entry.element);
+    const consumer = focusable.filter((element) => !ownedElements.includes(element));
+
+    const triggers = owned.filter((entry) => entry.record.role === 'trigger').map((entry) => entry.element);
+    const first = triggers[0] ?? null;
+    const firstRoot = root.querySelector('.vf-group-box');
+    const firstControls = first?.getAttribute('aria-controls') ?? null;
+    const controlled = firstControls ? document.getElementById(firstControls) : null;
+    // With a trigger, the content is whatever it controls; without one - a
+    // static group - it is the first root's own content element.
+    const content = first
+      ? (controlled && root.contains(controlled) ? controlled : null)
+      : firstRoot?.querySelector(':scope > .vf-group-box__content') ?? null;
+    const rect = content?.getBoundingClientRect();
+    const style = content ? getComputedStyle(content) : null;
+
+    const activeElement = document.activeElement;
+    const focusRole = first && activeElement === first
+      ? 'trigger'
+      : triggers.includes(activeElement)
+        ? 'other-trigger'
+        : content && content.contains(activeElement)
+          ? 'panel'
+          : activeElement === document.body
+            ? 'body'
+            : root.contains(activeElement) ? 'other-inside-case' : 'outside-case';
+
+    const caseRect = root.getBoundingClientRect();
+
+    return {
+      clip: {
+        x: Math.round(caseRect.left + window.scrollX),
+        y: Math.round(caseRect.top + window.scrollY),
+        width: Math.round(caseRect.width),
+        height: Math.round(caseRect.height),
+      },
+      ownershipPosture: 'component',
+      componentControls: owned.map((entry) => entry.record),
+      consumerControlCount: consumer.length,
+      focusableTotal: focusable.length,
+      interactiveRoleTotal: [...root.querySelectorAll('*')].filter((element) =>
+        INTERACTIVE_ROLES.has(element.getAttribute('role') ?? '')).length,
+      expanded: first?.getAttribute('aria-expanded') ?? null,
+      expandedStates: triggers.map((trigger) => trigger.getAttribute('aria-expanded')),
+      panelPresent: content !== null,
+      panelCount: root.querySelectorAll('.vf-group-box__content').length,
+      panelVisible: content !== null && style.display !== 'none' && style.visibility !== 'hidden' && rect.height > 0,
+      panelRole: content?.getAttribute('role') ?? null,
+      panelText: content ? (content.textContent ?? '').replace(/\\s+/g, ' ').trim() : null,
+      rootClasses: firstRoot ? [...firstRoot.classList] : [],
+      controlsResolved: first === null ? null : !firstControls ? 'none' : !controlled ? 'dangling' : content ? 'panel' : 'outside-case',
+      panelLabelledBy: !first || content === null
+        ? null
+        : content.getAttribute('aria-labelledby') === first.id ? 'trigger' : 'other',
+      activations: window.__parityActivations ?? 0,
+      keydownPrevented: (window.__parityInputEvents ?? []).filter((entry) => entry.type === 'keydown').map((entry) => entry.defaultPrevented),
+      focusRole,
+      events: window.__parityGroupBoxEvents?.[${JSON.stringify(caseId)}] ?? [],
+    };
+  })()`;
+}
+
+/**
  * What a VfStepper case reports, before and after an interaction.
  *
  * Component-specific and named so, like accordionInteractionExpression. It
@@ -2445,6 +2581,9 @@ export function interactionExpression(caseId, snapshot = 'input', controlOwnersh
 
   if (snapshot === 'dropdown') {
     return dropdownInteractionExpression(caseId, controlOwnership);
+  }
+  if (snapshot === 'group-box') {
+    return groupBoxInteractionExpression(caseId, controlOwnership);
   }
 
   if (snapshot === 'checkable') {

@@ -34,6 +34,7 @@ import VfBreadcrumbs from '@parity/core/components/breadcrumbs/VfBreadcrumbs.vue
 import VfMenu from '@parity/core/components/menu/VfMenu.vue';
 import VfMenuItem from '@parity/core/components/menu/VfMenuItem.vue';
 import VfDropdown from '@parity/core/components/dropdown/VfDropdown.vue';
+import VfGroupBox from '@parity/core/components/group-box/VfGroupBox.vue';
 import { VueIconify } from '@codemonster-ru/vueforge-icons';
 import '@parity/core/styles/components.css';
 import cases from '@parity/cases.json';
@@ -122,6 +123,22 @@ interface AccordionSlot {
 }
 
 /**
+ * One VfGroupBox slot, as the shared catalog spells it.
+ *
+ * `control` in the title slot is a real consumer link - inside the trigger
+ * button when the group is collapsible, where a button is not a shape a
+ * consumer can write - and in the content a real consumer button. `groupBox`
+ * nests a second real VfGroupBox. `markup` names a shape rather than carrying
+ * HTML, so both fixtures build the same elements from the same name.
+ */
+interface GroupBoxSlot {
+  text?: string;
+  markup?: 'rich' | 'paragraphs';
+  control?: { text: string };
+  groupBox?: { title?: string; collapsible?: boolean; defaultCollapsed?: boolean; text?: string };
+}
+
+/**
  * The VfLink default slot, as the shared catalog spells it.
  *
  * `markup: 'label'` puts the text in a consumer span; `control` is a real
@@ -182,6 +199,8 @@ interface ParityCase {
     skeleton?: GateSlot;
     /** VfAccordion's trigger slot. */
     trigger?: AccordionSlot;
+    /** VfGroupBox's toggle-icon slot. */
+    toggleIcon?: { text?: string };
     /** A consumer control rendered beside VfStepper, which has no slot of its own. */
     beside?: { control?: { text: string } };
     /** VfTabs' panel slot: a paragraph showing the active value, and optionally a consumer control. */
@@ -1249,6 +1268,104 @@ function renderAccordion(parityCase: ParityCase): VNode[] {
   return [renderAccordionInstance(parityCase.id, parityCase.id, parityCase.props, parityCase.attrs, content)];
 }
 
+/**
+ * The reactive props each VfGroupBox instance is rendered with, for the reason
+ * the accordion's are: a controlled case (`collapsed` in its props) is
+ * rendered the way a v-model consumer renders it, with update:collapsed
+ * written back into the prop. An uncontrolled case is left to the component.
+ */
+const groupBoxProps = reactive<Record<string, Record<string, unknown>>>({});
+
+/**
+ * The neutral collapsed-change log the harness reads after a group box
+ * scenario: one entry per collapsedChange, for every instance in the case -
+ * nested and sibling instances included. The update:collapsed emit that
+ * precedes each one is the v-model transport, pinned with its order by the
+ * characterization suite. The Razor fixture keeps the same log from its
+ * controller's `vf-group-box:collapsed-change`.
+ */
+declare global {
+  interface Window {
+    __parityGroupBoxEvents?: Record<string, { collapsed: boolean }[]>;
+  }
+}
+window.__parityGroupBoxEvents = {};
+
+function groupBoxSlotChildren(slot: GroupBoxSlot, caseId: string, inTitle: boolean): unknown[] {
+  const nodes: unknown[] = [];
+
+  if (slot.text !== undefined && slot.text !== '') nodes.push(slot.text);
+  if (slot.markup === 'rich') nodes.push(h('strong', 'Invoice'), ' ', h('em', '#1024'));
+  if (slot.markup === 'paragraphs') {
+    nodes.push(h('p', 'Invoice #1024 · Design service.'), h('p', 'Due on receipt.'));
+  }
+  if (slot.control !== undefined) {
+    nodes.push(inTitle ? h('a', { href: '#' }, slot.control.text) : h('button', { type: 'button' }, slot.control.text));
+  }
+  if (slot.groupBox !== undefined) {
+    const { text, ...props } = slot.groupBox;
+    nodes.push(
+      renderGroupBoxInstance(caseId, `${caseId}/nested`, props, {}, text === undefined ? {} : { body: { text } }),
+    );
+  }
+
+  return nodes;
+}
+
+function renderGroupBoxInstance(
+  caseId: string,
+  key: string,
+  props: Record<string, unknown>,
+  attrs: Record<string, unknown>,
+  content: { title?: GroupBoxSlot; toggleIcon?: { text?: string }; body?: GroupBoxSlot },
+): VNode {
+  const slots: Record<string, () => unknown> = {};
+  if (content.title !== undefined) slots.title = () => groupBoxSlotChildren(content.title!, caseId, true);
+  if (content.toggleIcon !== undefined) slots['toggle-icon'] = () => content.toggleIcon!.text ?? '';
+  if (content.body !== undefined) slots.default = () => groupBoxSlotChildren(content.body!, caseId, false);
+
+  groupBoxProps[key] ??= reactive({ ...props, ...attrs });
+  const live = groupBoxProps[key];
+  const log = (window.__parityGroupBoxEvents![caseId] ??= []);
+
+  return h(
+    VfGroupBox,
+    {
+      ...live,
+      key,
+      onCollapsedChange: (collapsed: boolean) => log.push({ collapsed }),
+      // v-model:collapsed, spelled out. A consumer that binds `collapsed`
+      // writes the emitted value back; an uncontrolled instance never has the
+      // prop and the write is inert.
+      ...('collapsed' in live ? { 'onUpdate:collapsed': (collapsed: boolean) => (live.collapsed = collapsed) } : {}),
+    },
+    slots,
+  );
+}
+
+/**
+ * VfGroupBox, for the group box catalog.
+ *
+ * Its own function, not the accordion's with a legend bolted on: nothing here
+ * renders a button that is not the consumer's declared control. A `group`
+ * renders each member as its own instance with the case's content.
+ */
+function renderGroupBox(parityCase: ParityCase): VNode[] {
+  const content = (parityCase.content ?? {}) as {
+    title?: GroupBoxSlot;
+    toggleIcon?: { text?: string };
+    body?: GroupBoxSlot;
+  };
+
+  if (Array.isArray(parityCase.group)) {
+    return parityCase.group.map((member, index) =>
+      renderGroupBoxInstance(parityCase.id, `${parityCase.id}/${index}`, member, parityCase.attrs, content),
+    );
+  }
+
+  return [renderGroupBoxInstance(parityCase.id, parityCase.id, parityCase.props, parityCase.attrs, content)];
+}
+
 function renderIconButton(parityCase: ParityCase): VNode {
   // No slots and no wrapper: the historical VfIconButton renders one button
   // carrying one glyph, and the case root is the only element around it.
@@ -1333,6 +1450,10 @@ function renderCase(parityCase: ParityCase): VNode {
 
   if (catalog.component === 'dropdown') {
     return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, renderDropdown(parityCase));
+  }
+
+  if (catalog.component === 'group-box') {
+    return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, renderGroupBox(parityCase));
   }
 
   if (catalog.component === 'icon-button') {

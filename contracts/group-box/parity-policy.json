@@ -1,0 +1,228 @@
+{
+  "$comment": "Parity policy for the shared VfGroupBox cases. Plain data: no DSL, no waiver engine. It starts with no approvals and M29 ended with none. The one deliberate platform difference - no controlled mode on the server - is declared in platformDivergences with where each half is covered, rather than absorbed by an approval or hidden in the Razor implementation.",
+  "classifications": {
+    "exact": "Must match literally across every target. Structure, canonical classes, native attributes, visible text, accessible names, computed geometry and colour, live state, ownership.",
+    "semantic": "Framework mechanics may differ; the observable meaning must not. Generated id values, how content is composed, how state is stored, how a renderer marks its own output.",
+    "framework-specific": "Historical behaviour of one adapter that the other is not required to reproduce. Narrow, named, and covered by its own test."
+  },
+  "notCompared": {
+    "$comment": "Recorded so a reviewer can see what is deliberately outside the comparison. Nothing here is a waiver: the extractor never produces these differences in the first place.",
+    "attributeOrder": "Attributes are extracted into a sorted map, so serialisation order cannot produce a difference. It carries no meaning.",
+    "classOrder": "Canonical and consumer classes are each compared as a set. The Vue trigger's class attribute reads 'vf-group-box__trigger vf-button vf-button--ghost' - an inherited class leads VfButton's list - while the Razor ButtonComponent appends a consumer class after its own, as it has since M12 for every consumer, so the Razor string reads 'vf-button vf-button--ghost vf-group-box__trigger'. The same set; no stylesheet, accessibility tree or comparison can see the order. Both strings are pinned: the Vue one by the characterization suite, the Razor one by GroupBoxComponentTest. The fieldset's canonical-then-consumer order is the same on both adapters and is asserted by the Razor browser gate across a toggle.",
+    "rendererMarkers": "Vue scope attributes (data-v-*) and the Razor ownership marker (data-vf-razor*) are dropped by scripts/parity/extract.mjs. They identify the renderer, not the product. Any other data-* attribute is compared as dom.productData.",
+    "deferredContentTemplate": "A closed Razor group box keeps its content in an inert <template data-vf-razor-group-box=\"content\"> so the enhancement can render it on open. The reference keeps no such node: under v-if closed content does not exist. The extractor drops template elements carrying a Razor marker and nothing else; what the template holds is compared the moment it is rendered, by the post-interaction DOM and by convergence.",
+    "danglingReferenceLiteral": "A closed group box's aria-controls names an id no element carries, on every target. The extractor records it as #dangling rather than as the generated literal; the dangling form against a resolved one, or against no attribute at all, is still a dom.relationships difference.",
+    "eventTransport": "Vue emits update:collapsed then collapsedChange; the Razor controller dispatches one bubbling vf-group-box:collapsed-change CustomEvent with { collapsed }. What is compared is the neutral log each fixture keeps of every collapsed-change notification with its value, as interaction.events. The emit order is pinned by the characterization suite.",
+    "spinnerPlaceholderComment": "VfButton renders a <!--v-if--> comment where its loading spinner would be; the Razor ButtonComponent renders nothing there. Comments are not elements and are not extracted."
+  },
+  "platformDivergences": [
+    {
+      "id": "razor-has-no-controlled-mode",
+      "description": "Vue: a defined `collapsed` is controlled - a click emits update:collapsed and collapsedChange with the requested value and changes nothing until the parent writes it back. Razor: `collapsed` is the initial state only (it still wins over default-collapsed), and the controller toggles on its own and dispatches vf-group-box:collapsed-change.",
+      "reason": "A server-rendered group box has no parent in the page to emit a request to and wait on. Reproducing the wait would leave every Razor group box given `collapsed` permanently inert without a script protocol the reference never had.",
+      "comparedAs": "group-box/interaction-controlled-model and group-box/interaction-controlled-model-expand: the Vue fixtures wire update:collapsed back into the prop (v-model), the Razor adapter toggles directly, and all three targets must land on the same DOM, events, focus and tree.",
+      "vueHalfCoveredBy": "packages/core/src/components/group-box/VfGroupBox.characterization.spec.ts (controlled mode: collapsed=true, click, emits false, DOM unchanged until setProps; no deduplication; v-model round trip)",
+      "razorHalfCoveredBy": "packages/razor/tests/Components/GroupBoxComponentTest.php (testCollapsedIsTheInitialStateOnlyAndCarriesNoControlledMarker, testTheCollapseResolution) and scripts/ci/check-razor-browser.mjs (a group box rendered with collapsed=true opens on its own click)",
+      "mutationCoveredBy": "scripts/baseline/input-mutations.mjs#group-box-collapsed-read-as-initial-state - the Razor reading applied to the Vue component - is detected by the characterization suite"
+    }
+  ],
+  "outsideTheCatalog": {
+    "$comment": "Behaviour that is part of the contract and deliberately not represented as a parity case, each with where it is covered instead.",
+    "controlledWithoutConsumer": "A controlled Vue group box whose consumer never writes update:collapsed back: the click emits and nothing changes. See platformDivergences; pinned by the characterization suite.",
+    "dynamicProps": "Changing collapsible, title, disabled or defaultCollapsed after mount - including the historical collapsible false -> true that keeps the internal collapsed state. A server-rendered group box has no props after render, and the harness's transition stage is the skeleton gate's (its identity measurement refuses any other component). Pinned by the characterization suite (dynamic collapsible and title) and by the mutation group-box-state-reset-when-collapsible-returns.",
+    "disabledPointerClick": "A real pointer click on a disabled trigger. The harness refuses to dispatch a click at an element the browser would not deliver it to; the disabled contract is driven through focus and the keyboard, and the click route is covered by the characterization suite and the Razor browser gate.",
+    "disabledStringQuirk": "disabled=\"true\" as a string is a Vue type misuse: VfButton leaves the trigger operable while the group box's guard refuses the toggle. It is the only place the guard is observable apart from the native attribute, and it has no Razor counterpart - the adapter parses attributes into booleans. Pinned by the characterization suite; the guard mutation is detected there and nowhere else.",
+    "stateDiscardedOnCollapse": "Text typed into consumer content does not survive a collapse and re-expand, because v-if renders the slot afresh. The scenario vocabulary has no step that types into a consumer element; pinned by the characterization suite and by the Razor browser gate, which types, collapses, re-expands and finds a new, empty element.",
+    "formAttribute": "A consumer `form` attribute falls through to the fieldset like every other attribute (characterization suite, GroupBoxComponentTest). It is not in the comparator's attribute list and no case forwards it: the forwarding path is compared through `name`, and adding a generic comparison for one attribute no group box behaviour depends on was not justified.",
+    "hoverAndFocusRing": "The ghost trigger's hover and focus-visible paint are measured on the real showcase pages of both platforms by scripts/ci/check-showcase-routes.mjs."
+  },
+  "dimensions": {
+    "dom.structure": {
+      "classification": "exact",
+      "description": "An unexpected element, missing content, a fieldset that is a div, a legend that is not a legend, a region that is a section, a trigger that is not a button. Never approvable."
+    },
+    "dom.canonicalClasses": {
+      "classification": "exact",
+      "description": "vf-* classes on every element: the root modifiers (titled, collapsible, collapsed), the trigger's group box and ghost button classes. Consumer classes included."
+    },
+    "dom.nativeAttributes": {
+      "classification": "exact",
+      "description": "type and disabled on the trigger, the style attribute, and every native attribute a consumer forwards onto the fieldset (name included). disabled on the fieldset would appear here."
+    },
+    "dom.text": {
+      "classification": "exact",
+      "description": "Visible text of every element: the title span, the title and toggle-icon slots, the content."
+    },
+    "dom.aria": {
+      "classification": "exact",
+      "description": "aria-expanded on the trigger, role=region on collapsible content, aria-hidden on the icon wrapper, aria-disabled never. Chrome derives several of these, so the attribute is compared here independently of the tree."
+    },
+    "dom.productData": {
+      "classification": "exact",
+      "description": "Consumer data-* attributes, on the fieldset only."
+    },
+    "dom.relationships": {
+      "classification": "semantic",
+      "description": "The id graph: trigger -> aria-controls -> content -> aria-labelledby -> trigger, as document-order tokens; a closed trigger's aria-controls as #dangling; the static content's unreferenced id; a consumer id on the root."
+    },
+    "dom.actionPresence": {
+      "classification": "exact",
+      "description": "Whether the trigger is operable. A disabled trigger is inoperable on every target."
+    },
+    "dom.wrapperPresence": {
+      "classification": "exact",
+      "description": "Present so the comparator has a classification for it. A group box has no wrapper either adapter may add."
+    },
+    "dom.inertAction": {
+      "classification": "exact",
+      "description": "Present for the same reason. A group box renders no inert action."
+    },
+    "style.geometry": {
+      "classification": "exact",
+      "description": "width, height, padding, border width and radius, font size, line height of the root, the trigger, the icon, the region and the inner wrapper."
+    },
+    "style.colour": {
+      "classification": "exact",
+      "description": "colour, background colour and border colour, which is where token drift shows."
+    },
+    "visual": {
+      "classification": "exact",
+      "description": "Clipped screenshot of the case root in its initial state, per theme, under reduced motion."
+    },
+    "visual.postInteraction": {
+      "classification": "exact",
+      "description": "Clipped screenshot of the case root after the gesture, per theme."
+    },
+    "a11y.role": {
+      "classification": "exact",
+      "description": "The fieldset's group, the legend, the trigger's button, the content's region when collapsible, and the absence of the decorative icon."
+    },
+    "a11y.name": {
+      "classification": "exact",
+      "description": "The group's name from its legend, the trigger's name from its content - a custom toggle icon included - and the region's name through aria-labelledby."
+    },
+    "a11y.states": {
+      "classification": "exact",
+      "description": "expanded, disabled and focusable as exposed to assistive technology, before and after an interaction."
+    },
+    "ownership.controls": {
+      "classification": "exact",
+      "description": "The component-owned triggers measured in the case - count, tag, type, place - beside the consumer-owned count and the totals. Zero for a static group, one per collapsible instance. Never approvable."
+    },
+    "interaction.state": {
+      "classification": "exact",
+      "description": "The live state after a scenario: aria-expanded per trigger, content presence and count, its role and text, the first root's classes, native activations and whether each keydown was prevented. Never approvable."
+    },
+    "interaction.relationships": {
+      "classification": "exact",
+      "description": "Whether aria-controls resolves to the content and aria-labelledby to the trigger after the scenario, measured on the live DOM. Never approvable."
+    },
+    "interaction.events": {
+      "classification": "exact",
+      "description": "The neutral log of collapsed-change notifications the fixture recorded, with their values: collapsedChange on Vue, vf-group-box:collapsed-change on Razor. Never approvable."
+    },
+    "interaction.convergence": {
+      "classification": "exact",
+      "description": "Whether the post-interaction DOM equals the target's own render of the initial case the catalog names. Content hidden rather than removed, or a nested group box that survived its parent's collapse, fails here. Never approvable."
+    },
+    "interaction.focus": {
+      "classification": "exact",
+      "description": "Which element owns focus after the scenario: the trigger after a click or a key, the body when a disabled trigger refused focus."
+    },
+    "interaction.value": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. A group box carries no value."
+    },
+    "interaction.selection": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. A group box carries no caret."
+    },
+    "interaction.wrapperPresence": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. A group box renders no wrapper that could appear on one side only."
+    }
+  },
+  "historicalQuirks": [
+    {
+      "id": "closed-trigger-controls-missing-content",
+      "description": "While closed, aria-controls names the content id although v-if has removed the content.",
+      "classification": "semantic",
+      "reason": "Reproduced: both adapters write it, and the extractor compares it as #dangling.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/group-box/cases.json#group-box/collapsible-default-collapsed"
+    },
+    {
+      "id": "static-content-carries-an-unreferenced-id",
+      "description": "The content element carries a generated id in every mode, static and untitled included, and the trigger id is allocated even when no trigger renders.",
+      "classification": "exact",
+      "reason": "Both adapters allocate both ids on every render, trigger first; the id is compared as a document-order token.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/group-box/cases.json#group-box/static-untitled"
+    },
+    {
+      "id": "title-is-javascript-truthiness",
+      "description": "\"\" is no title and \"0\" is a title; a title slot counts by its presence.",
+      "classification": "exact",
+      "reason": "The shared rule is JavaScript's, restated in PHP without PHP truthiness; the vectors carry both spellings raw.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/group-box/cases.json#group-box/title-zero-collapsible"
+    },
+    {
+      "id": "collapsible-needs-a-title",
+      "description": "collapsible without a title renders the static group, and collapsed and defaultCollapsed are then ignored.",
+      "classification": "exact",
+      "reason": "Reproduced on both adapters.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/group-box/cases.json#group-box/untitled-collapsible-ignores-collapsed"
+    },
+    {
+      "id": "region-only-when-collapsible",
+      "description": "role=region and aria-labelledby appear only on collapsible content; titled static content is a plain div.",
+      "classification": "exact",
+      "reason": "Reproduced on both adapters.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/group-box/cases.json#group-box/titled"
+    },
+    {
+      "id": "disabled-never-reaches-the-fieldset",
+      "description": "disabled is consumed: the native attribute on the trigger only, never on the fieldset, no aria-disabled, no modifier; without collapsible it does nothing.",
+      "classification": "exact",
+      "reason": "Reproduced on both adapters.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/group-box/cases.json#group-box/disabled-static"
+    },
+    {
+      "id": "keyboard-is-native-activation",
+      "description": "There is no keydown handler: Enter and Space toggle through the browser's native button activation, one click each, keydown not prevented.",
+      "classification": "exact",
+      "reason": "The Razor controller adds no keyboard handling; activates and keydownPrevented are compared.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/group-box/cases.json#group-box/interaction-enter-collapses"
+    },
+    {
+      "id": "toggle-icon-replaces-the-hidden-wrapper",
+      "description": "The toggle-icon slot replaces the whole aria-hidden wrapper, so a consumer icon is exposed and named with the trigger.",
+      "classification": "exact",
+      "reason": "Reproduced on both adapters; the tree is compared.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/group-box/cases.json#group-box/custom-toggle-icon"
+    },
+    {
+      "id": "content-is-v-if",
+      "description": "Collapsing removes the content in the same tick; expanding renders the slot afresh, so a nested group box comes back in its initial state.",
+      "classification": "exact",
+      "reason": "The Razor controller removes the element and renders from the pristine slot markup.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/group-box/cases.json#group-box/interaction-nested-rerender"
+    },
+    {
+      "id": "razor-has-no-controlled-mode",
+      "description": "See platformDivergences.",
+      "classification": "framework-specific",
+      "reason": "Declared as a platform divergence with both halves covered.",
+      "razorDiffers": true,
+      "coveredBy": "packages/core/src/components/group-box/VfGroupBox.characterization.spec.ts"
+    }
+  ],
+  "approvedDivergences": []
+}

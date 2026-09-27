@@ -98,6 +98,13 @@ $menuItemComponent = $registry->resolve('vf-menu-item');
 // The M28 component. Resolved on its own account; its menu content is built
 // from the real vf-menu and vf-menu-item above, never from this component.
 $dropdownComponent = $registry->resolve('vf-dropdown');
+// The M29 component. Resolved on its own account: its trigger is the canonical
+// vf-button the provider hands it, never a button this fixture writes.
+$groupBoxComponent = $registry->resolve('vf-group-box');
+if ($groupBoxComponent === null) {
+    fwrite(STDERR, "The VueForge vf-group-box component is not registered.\n");
+    exit(1);
+}
 
 if (
     $input === null || $iconButton === null || $fieldComponent === null
@@ -905,6 +912,99 @@ $renderAccordionInstance = static function (array $props, array $attrs, array $c
 };
 
 /**
+ * One VfGroupBox slot's markup, built the same way the Vue fixture builds it.
+ *
+ * A control is a real consumer link in the title slot and a real consumer
+ * button in the content, unmarked and unwrapped. A nested group box is a real
+ * vf-group-box render placed into the slot markup, exactly as a template
+ * engine would place it.
+ */
+$groupBoxSlotMarkup = static function (array $slot, bool $inTitle) use (&$renderGroupBoxInstance, $escape): string {
+    $markup = '';
+
+    if (isset($slot['text']) && $slot['text'] !== '') {
+        $markup .= $escape((string) $slot['text']);
+    }
+    if (($slot['markup'] ?? null) === 'rich') {
+        $markup .= '<strong>Invoice</strong> <em>#1024</em>';
+    }
+    if (($slot['markup'] ?? null) === 'paragraphs') {
+        $markup .= '<p>Invoice #1024 · Design service.</p><p>Due on receipt.</p>';
+    }
+    if (isset($slot['control'])) {
+        $markup .= $inTitle
+            ? '<a href="#">' . $escape((string) $slot['control']['text']) . '</a>'
+            : '<button type="button">' . $escape((string) $slot['control']['text']) . '</button>';
+    }
+    if (isset($slot['groupBox'])) {
+        $nested = $slot['groupBox'];
+        $text = $nested['text'] ?? null;
+        unset($nested['text']);
+        $markup .= $renderGroupBoxInstance($nested, [], $text === null ? [] : ['body' => ['text' => $text]]);
+    }
+
+    return $markup;
+};
+
+/**
+ * One vf-group-box render from neutral props, attrs and slots.
+ *
+ * `defaultCollapsed` is spelled `default-collapsed`, as a template would spell
+ * it. There is no v-model to wire: the Razor adapter reads `collapsed` as the
+ * initial state and its controller toggles on its own - the documented
+ * platform divergence.
+ */
+$renderGroupBoxInstance = static function (array $props, array $attrs, array $content) use (
+    $groupBoxComponent,
+    $groupBoxSlotMarkup,
+    $escape,
+): string {
+    $rename = ['defaultCollapsed' => 'default-collapsed'];
+    $resolved = [];
+    foreach ($props as $name => $value) {
+        $resolved[$rename[$name] ?? $name] = $value;
+    }
+    foreach ($attrs as $name => $value) {
+        $resolved[$name] = $value;
+    }
+
+    $slots = [];
+    if (array_key_exists('title', $content)) {
+        $markup = $groupBoxSlotMarkup($content['title'], true);
+        $slots['title'] = static fn (): RenderedHtml => RenderedHtml::fromTrustedString($markup);
+    }
+    if (array_key_exists('toggleIcon', $content)) {
+        $icon = $escape((string) ($content['toggleIcon']['text'] ?? ''));
+        $slots['toggle-icon'] = static fn (): RenderedHtml => RenderedHtml::fromTrustedString($icon);
+    }
+    if (array_key_exists('body', $content)) {
+        $body = $groupBoxSlotMarkup($content['body'], false);
+        $slots['default'] = static fn (): RenderedHtml => RenderedHtml::fromTrustedString($body);
+    }
+
+    return $groupBoxComponent->render(new ComponentRenderContext($resolved, $slots))->value();
+};
+
+/**
+ * VfGroupBox, for the group box catalog. A `group` renders each member as its
+ * own instance with the case's content.
+ */
+$renderGroupBox = static function (array $case) use ($renderGroupBoxInstance): string {
+    $content = $case['content'] ?? [];
+
+    if (isset($case['group']) && is_array($case['group'])) {
+        $markup = '';
+        foreach ($case['group'] as $member) {
+            $markup .= $renderGroupBoxInstance($member, $case['attrs'] ?? [], $content);
+        }
+
+        return $markup;
+    }
+
+    return $renderGroupBoxInstance($case['props'] ?? [], $case['attrs'] ?? [], $content);
+};
+
+/**
  * VfAccordion, for the accordion catalog.
  *
  * Its own closure, and deliberately not $renderPanel or $renderCard with a
@@ -1263,6 +1363,8 @@ foreach ($catalog['cases'] as $case) {
 
     if ($component === 'dropdown') {
         $body = $renderDropdown($case);
+    } elseif ($component === 'group-box') {
+        $body = $renderGroupBox($case);
     } elseif ($component === 'breadcrumbs') {
         $body = $renderBreadcrumbs($case);
     } elseif ($component === 'menu') {
@@ -1410,6 +1512,14 @@ $html = <<<HTML
     const caseId = event.target.closest('[data-parity-case]')?.getAttribute('data-parity-case');
     if (!caseId) return;
     (window.__parityAccordionEvents[caseId] ??= []).push({ open: event.detail.open });
+  });
+  // The neutral group box log, from the controller's one event. The Vue
+  // fixture keeps the same log from the component's collapsedChange emit.
+  window.__parityGroupBoxEvents = {};
+  document.addEventListener('vf-group-box:collapsed-change', (event) => {
+    const caseId = event.target.closest('[data-parity-case]')?.getAttribute('data-parity-case');
+    if (!caseId) return;
+    (window.__parityGroupBoxEvents[caseId] ??= []).push({ collapsed: event.detail.collapsed });
   });
   // The neutral stepper change log, from the controller's one event. The Vue
   // fixture keeps the same log from the component's change emit.

@@ -1,0 +1,1383 @@
+{
+  "$comment": "Shared VfGroupBox cases. Plain data only: no Vue, no PHP, no renderer objects. Each adapter maps these neutral fields onto its own API. The vocabulary is the historical Vue contract at fd793696f50d3be0fcd3788f0f8f751c63869963. Every case declares `componentInteractive` - zero for a static group (untitled, titled and not collapsible, collapsible without a title), one trigger per collapsible instance otherwise - and `consumerInteractive` where a slot holds a control. An interaction case names the gesture, the effect it must produce on every target, and the initial case whose DOM the result must converge on. scripts/ci/group-box-coverage.mjs is what stops the list eroding.",
+  "component": "group-box",
+  "propVocabulary": {
+    "title": "string, default undefined. JavaScript truthiness decides whether there is a title: \"\" is none, \"0\" is one. Rendered in the title span unless a title slot replaces it.",
+    "collapsible": "boolean, default false. The disclosure exists only when there is also a title (prop or slot).",
+    "collapsed": "boolean | undefined, default undefined. The controlled state; wins whenever defined. A Vue consumer pairs it with update:collapsed (v-model:collapsed). The Razor adapter reads it as the initial state and toggles on its own - the documented platform divergence (parity-policy.json, platformDivergences).",
+    "defaultCollapsed": "boolean, default false. Seeds the uncontrolled state; read once.",
+    "disabled": "boolean, default false. The native disabled attribute on the trigger and nothing else; never on the fieldset. Does nothing without collapsible."
+  },
+  "contentVocabulary": {
+    "title": "The title slot. `text` is plain text, `markup: rich` is consumer <strong>/<em>, `control` is a real consumer link (inside the trigger when collapsible).",
+    "toggleIcon": "The toggle-icon slot. `text` replaces the whole aria-hidden icon wrapper.",
+    "body": "The default slot, rendered directly in div.vf-group-box__content while open. `text`, `markup: paragraphs`, `control` (a real consumer button), and `groupBox` nesting a second group box with its own title, collapsible, defaultCollapsed and text.",
+    "group": "Sibling group boxes rendered side by side in one case, each with its own props and the case's content."
+  },
+  "ownershipVocabulary": {
+    "componentInteractive": "The exact number of controls the component renders in this case: one button.vf-group-box__trigger per collapsible instance that reaches the DOM, zero for a static group.",
+    "consumerInteractive": "The exact number of consumer controls that reach the DOM in this case's initial state. Zero when a control sits in closed content, because v-if renders nothing."
+  },
+  "interactionVocabulary": {
+    "$comment": "A case with an `interaction` is driven in the browser with real pointer and key events, then re-measured: the snapshot, the DOM and the accessibility tree are all taken again after the gesture.",
+    "steps": "clickButton (a real pointer click at the element's centre; `index` picks a trigger in a group or a nested pair), focusButton, pressKey with Enter or Space.",
+    "expect": "Claims checked against the snapshot on every target: `activates` is whether a native click reached a trigger, `keydownPrevented` the per-key record of whether the keydown was prevented, `expanded`/`expandedStates` aria-expanded, `panelPresent`/`panelCount` whether content is in the DOM, `consumerControlCount`, `focusRole`, `controlsResolved` (`panel` or `dangling`), `panelLabelledBy`, `events` the neutral collapsed-change log. `a11y:trigger.expanded` is what assistive technology is told after the gesture.",
+    "matches": "The initial case whose DOM the post-interaction DOM must equal on the same target.",
+    "consumerInteractive": "The consumer-control budget after the action, when it differs from the case's initial budget."
+  },
+  "cases": [
+    {
+      "id": "group-box/static-untitled",
+      "title": "No title: a bare fieldset, no legend, and a content div that still carries a generated id",
+      "$why": "The untitled group is still a group in the accessibility tree, unnamed. The content id is referenced by nothing and is part of the DOM contract anyway.",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 0,
+      "visual": true
+    },
+    {
+      "id": "group-box/titled",
+      "title": "A title: the legend on the border with its title span, and a plain content div",
+      "props": {
+        "title": "Shipping address"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "1234 Elm Street, San Francisco, CA 94102"
+        }
+      },
+      "componentInteractive": 0,
+      "visual": true
+    },
+    {
+      "id": "group-box/empty-title",
+      "title": "An empty title is no title: no legend, no modifier",
+      "$why": "JavaScript truthiness. The empty string renders exactly the untitled group.",
+      "props": {
+        "title": ""
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 0,
+      "visual": true
+    },
+    {
+      "id": "group-box/empty-title-collapsible",
+      "title": "An empty title with collapsible: still no legend and no trigger",
+      "$why": "collapsible needs a title; without one the disclosure does not exist.",
+      "props": {
+        "title": "",
+        "collapsible": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 0,
+      "visual": true
+    },
+    {
+      "id": "group-box/title-zero",
+      "title": "The title \"0\" is a title: a legend reading 0",
+      "$why": "The cross-platform vector: \"0\" is truthy in JavaScript and falsy in PHP. A port using PHP truthiness drops the legend here.",
+      "props": {
+        "title": "0"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 0,
+      "visual": true
+    },
+    {
+      "id": "group-box/title-zero-collapsible",
+      "title": "The title \"0\" with collapsible: a real trigger and a region",
+      "$why": "The same vector with the disclosure: the trigger exists, aria-expanded is true, the content is a region.",
+      "props": {
+        "title": "0",
+        "collapsible": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "group-box/title-slot",
+      "title": "A title slot beside an empty title prop: the slot counts, the trigger renders it",
+      "$why": "hasTitle counts the slot by its presence; the empty prop would otherwise mean no title.",
+      "props": {
+        "title": "",
+        "collapsible": true
+      },
+      "attrs": {},
+      "content": {
+        "title": {
+          "text": "Slotted title"
+        },
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "group-box/title-slot-static",
+      "title": "A title slot in a static group: rendered in the legend's title span",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "title": {
+          "text": "Slotted title"
+        },
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 0,
+      "visual": true
+    },
+    {
+      "id": "group-box/rich-title",
+      "title": "Rich title markup inside the trigger's title span",
+      "props": {
+        "collapsible": true
+      },
+      "attrs": {},
+      "content": {
+        "title": {
+          "markup": "rich"
+        },
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "group-box/static-ignores-collapsed",
+      "title": "A titled group that is not collapsible ignores collapsed and defaultCollapsed",
+      "$why": "The disclosure does not exist, so neither state prop can hide the content.",
+      "props": {
+        "title": "Invoice details",
+        "collapsed": true,
+        "defaultCollapsed": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 0,
+      "visual": true
+    },
+    {
+      "id": "group-box/untitled-collapsible-ignores-collapsed",
+      "title": "collapsible and collapsed without a title: the static untitled group, content shown",
+      "props": {
+        "collapsible": true,
+        "collapsed": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 0,
+      "visual": true
+    },
+    {
+      "id": "group-box/collapsible-open",
+      "title": "Collapsible and open by default: the ghost trigger in the legend, the content a region named by it",
+      "props": {
+        "title": "Invoice details",
+        "collapsible": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "group-box/collapsible-default-collapsed",
+      "title": "defaultCollapsed: closed, no content, and aria-controls names the absent content id",
+      "$why": "The closed state: the v-if absence and the dangling aria-controls, compared as #dangling.",
+      "props": {
+        "title": "Invoice details",
+        "collapsible": true,
+        "defaultCollapsed": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "group-box/collapsible-collapsed",
+      "title": "collapsed: closed through the state prop alone",
+      "props": {
+        "title": "Invoice details",
+        "collapsible": true,
+        "collapsed": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "group-box/collapsed-over-default",
+      "title": "collapsed=false with defaultCollapsed=true: collapsed wins, open",
+      "props": {
+        "title": "Invoice details",
+        "collapsible": true,
+        "collapsed": false,
+        "defaultCollapsed": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "group-box/collapsed-true-over-default-false",
+      "title": "collapsed=true with defaultCollapsed=false: collapsed wins, closed",
+      "props": {
+        "title": "Invoice details",
+        "collapsible": true,
+        "collapsed": true,
+        "defaultCollapsed": false
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "group-box/disabled-open",
+      "title": "Disabled and open: the native disabled attribute on the trigger and nothing else, content still shown",
+      "props": {
+        "title": "Invoice details",
+        "collapsible": true,
+        "disabled": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "group-box/disabled-closed",
+      "title": "Disabled and closed: disabling does not open it",
+      "props": {
+        "title": "Invoice details",
+        "collapsible": true,
+        "disabled": true,
+        "collapsed": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "group-box/disabled-static",
+      "title": "disabled on a static group does nothing, and never reaches the fieldset",
+      "$why": "The prop is consumed; the native fieldset disabling of descendants is not available.",
+      "props": {
+        "title": "Shipping address",
+        "disabled": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "1234 Elm Street, San Francisco, CA 94102"
+        }
+      },
+      "componentInteractive": 0,
+      "visual": true
+    },
+    {
+      "id": "group-box/custom-toggle-icon",
+      "title": "A toggle-icon slot replaces the whole aria-hidden icon wrapper",
+      "$why": "The consumer's icon is exposed: whatever the accessibility tree names the trigger, it is compared three ways.",
+      "props": {
+        "title": "Invoice details",
+        "collapsible": true
+      },
+      "attrs": {},
+      "content": {
+        "toggleIcon": {
+          "text": "+"
+        },
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "group-box/long-title",
+      "title": "A title long enough to overflow the legend",
+      "props": {
+        "title": "Shipping, billing and delivery preferences for every workspace in the organisation"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 0,
+      "visual": true
+    },
+    {
+      "id": "group-box/long-title-collapsible",
+      "title": "A long title inside the trigger, where the title span is a flex item",
+      "props": {
+        "title": "Shipping, billing and delivery preferences for every workspace in the organisation",
+        "collapsible": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "group-box/narrow",
+      "title": "A narrow group with a long collapsible title",
+      "$why": "The fieldset's min-width: 0 and the legend's max-width at a width the title cannot fit.",
+      "props": {
+        "title": "Shipping, billing and delivery preferences",
+        "collapsible": true
+      },
+      "attrs": {
+        "style": "width: 180px"
+      },
+      "content": {
+        "body": {
+          "text": "Narrow content."
+        }
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "group-box/rich-content",
+      "title": "Rich markup in the content",
+      "props": {
+        "title": "Invoice details",
+        "collapsible": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "markup": "paragraphs"
+        }
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "group-box/empty-content",
+      "title": "No default slot: the content div renders empty",
+      "props": {
+        "title": "Invoice details",
+        "collapsible": true
+      },
+      "attrs": {},
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "group-box/consumer-control-open",
+      "title": "A consumer button in the open content: one component trigger and one consumer control",
+      "props": {
+        "title": "Export",
+        "collapsible": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "The export could not be started.",
+          "control": {
+            "text": "Retry"
+          }
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "group-box/consumer-control-closed",
+      "title": "A consumer button in closed content reaches no DOM",
+      "props": {
+        "title": "Export",
+        "collapsible": true,
+        "defaultCollapsed": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "The export could not be started.",
+          "control": {
+            "text": "Retry"
+          }
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "visual": true
+    },
+    {
+      "id": "group-box/consumer-control-in-title",
+      "title": "A consumer link inside the title slot, inside the trigger: still one component-owned button",
+      "props": {
+        "collapsible": true
+      },
+      "attrs": {},
+      "content": {
+        "title": {
+          "text": "Terms",
+          "control": {
+            "text": "read"
+          }
+        },
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "group-box/consumer-class",
+      "title": "A consumer class lands on the fieldset after the canonical classes",
+      "props": {
+        "title": "Invoice details",
+        "collapsible": true
+      },
+      "attrs": {
+        "class": "billing-group"
+      },
+      "content": {
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "group-box/consumer-style",
+      "title": "A consumer style lands on the fieldset",
+      "props": {
+        "title": "Invoice details",
+        "collapsible": true
+      },
+      "attrs": {
+        "style": "border-color: rgb(200, 40, 40)"
+      },
+      "content": {
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "group-box/consumer-attributes",
+      "title": "id, name, data-* and an accessible name fall through to the fieldset, never the trigger or the content",
+      "$why": "A consumer id on the root takes the first document-order id token; the generated pair follows it.",
+      "props": {
+        "title": "Invoice details",
+        "collapsible": true
+      },
+      "attrs": {
+        "id": "invoice-group",
+        "name": "invoice",
+        "data-testid": "invoice-group",
+        "aria-label": "Invoice"
+      },
+      "content": {
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "group-box/consumer-aria-expanded-on-root",
+      "title": "A consumer aria-expanded lands on the fieldset and leaves the trigger its own",
+      "props": {
+        "title": "Invoice details",
+        "collapsible": true,
+        "defaultCollapsed": true
+      },
+      "attrs": {
+        "aria-expanded": "true"
+      },
+      "content": {
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "group-box/nested",
+      "title": "A collapsible group box inside another's content: two triggers, two local relationship pairs",
+      "props": {
+        "title": "Outer",
+        "collapsible": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Outer content.",
+          "groupBox": {
+            "title": "Inner",
+            "collapsible": true,
+            "defaultCollapsed": true,
+            "text": "Inner content."
+          }
+        }
+      },
+      "componentInteractive": 2,
+      "visual": true
+    },
+    {
+      "id": "group-box/nested-collapsed",
+      "title": "The outer group box closed: the inner one is not rendered at all",
+      "props": {
+        "title": "Outer",
+        "collapsible": true,
+        "defaultCollapsed": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Outer content.",
+          "groupBox": {
+            "title": "Inner",
+            "collapsible": true,
+            "defaultCollapsed": true,
+            "text": "Inner content."
+          }
+        }
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "group-box/siblings",
+      "title": "Two independent group boxes in one case, one open and one closed",
+      "$why": "ids must not collide and relationships must stay local.",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "group": [
+        {
+          "title": "First",
+          "collapsible": true
+        },
+        {
+          "title": "Second",
+          "collapsible": true,
+          "defaultCollapsed": true
+        }
+      ],
+      "componentInteractive": 2,
+      "visual": true
+    },
+    {
+      "id": "group-box/interaction-click-collapses",
+      "title": "A click on the open trigger collapses it: the content leaves the DOM, the notification says collapsed=true",
+      "props": {
+        "title": "Invoice details",
+        "collapsible": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 1,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-group-box__trigger"
+          }
+        ],
+        "expect": {
+          "expanded": "false",
+          "panelPresent": false,
+          "controlsResolved": "dangling",
+          "panelLabelledBy": null,
+          "a11y:trigger.expanded": "false",
+          "activates": true,
+          "focusRole": "trigger",
+          "events": [
+            {
+              "collapsed": true
+            }
+          ]
+        },
+        "matches": "group-box/collapsible-default-collapsed"
+      },
+      "visual": true
+    },
+    {
+      "id": "group-box/interaction-click-expands",
+      "title": "A click on the closed trigger expands it: a fresh region, named by the trigger",
+      "props": {
+        "title": "Invoice details",
+        "collapsible": true,
+        "defaultCollapsed": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 1,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-group-box__trigger"
+          }
+        ],
+        "expect": {
+          "expanded": "true",
+          "panelPresent": true,
+          "controlsResolved": "panel",
+          "panelLabelledBy": "trigger",
+          "a11y:trigger.expanded": "true",
+          "activates": true,
+          "focusRole": "trigger",
+          "events": [
+            {
+              "collapsed": false
+            }
+          ]
+        },
+        "matches": "group-box/collapsible-open"
+      },
+      "visual": true
+    },
+    {
+      "id": "group-box/interaction-click-twice",
+      "title": "Two clicks: collapsed and expanded again, two notifications in order",
+      "props": {
+        "title": "Invoice details",
+        "collapsible": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 1,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-group-box__trigger"
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-group-box__trigger"
+          }
+        ],
+        "expect": {
+          "expanded": "true",
+          "panelPresent": true,
+          "controlsResolved": "panel",
+          "panelLabelledBy": "trigger",
+          "a11y:trigger.expanded": "true",
+          "activates": true,
+          "focusRole": "trigger",
+          "events": [
+            {
+              "collapsed": true
+            },
+            {
+              "collapsed": false
+            }
+          ]
+        },
+        "matches": "group-box/collapsible-open"
+      },
+      "visual": true
+    },
+    {
+      "id": "group-box/interaction-enter-collapses",
+      "title": "Enter on the focused trigger collapses it through native activation: one click, keydown not prevented",
+      "$why": "The inverse of the accordion: the reference has no keydown handler, so a keyboard toggle records a native click. A port that copied the accordion's handler would record zero and a prevented keydown.",
+      "props": {
+        "title": "Invoice details",
+        "collapsible": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 1,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-group-box__trigger"
+          },
+          {
+            "action": "pressKey",
+            "key": "Enter"
+          }
+        ],
+        "expect": {
+          "expanded": "false",
+          "panelPresent": false,
+          "controlsResolved": "dangling",
+          "panelLabelledBy": null,
+          "a11y:trigger.expanded": "false",
+          "activates": true,
+          "keydownPrevented": [false],
+          "focusRole": "trigger",
+          "events": [
+            {
+              "collapsed": true
+            }
+          ]
+        },
+        "matches": "group-box/collapsible-default-collapsed"
+      },
+      "visual": true
+    },
+    {
+      "id": "group-box/interaction-enter-expands",
+      "title": "Enter on the focused closed trigger expands it through native activation",
+      "props": {
+        "title": "Invoice details",
+        "collapsible": true,
+        "defaultCollapsed": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 1,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-group-box__trigger"
+          },
+          {
+            "action": "pressKey",
+            "key": "Enter"
+          }
+        ],
+        "expect": {
+          "expanded": "true",
+          "panelPresent": true,
+          "controlsResolved": "panel",
+          "panelLabelledBy": "trigger",
+          "a11y:trigger.expanded": "true",
+          "activates": true,
+          "keydownPrevented": [false],
+          "focusRole": "trigger",
+          "events": [
+            {
+              "collapsed": false
+            }
+          ]
+        },
+        "matches": "group-box/collapsible-open"
+      },
+      "visual": true
+    },
+    {
+      "id": "group-box/interaction-space-expands",
+      "title": "Space on the focused closed trigger expands it through native activation on keyup",
+      "props": {
+        "title": "Invoice details",
+        "collapsible": true,
+        "defaultCollapsed": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 1,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-group-box__trigger"
+          },
+          {
+            "action": "pressKey",
+            "key": " "
+          }
+        ],
+        "expect": {
+          "expanded": "true",
+          "panelPresent": true,
+          "controlsResolved": "panel",
+          "panelLabelledBy": "trigger",
+          "a11y:trigger.expanded": "true",
+          "activates": true,
+          "keydownPrevented": [false],
+          "focusRole": "trigger",
+          "events": [
+            {
+              "collapsed": false
+            }
+          ]
+        },
+        "matches": "group-box/collapsible-open"
+      },
+      "visual": true
+    },
+    {
+      "id": "group-box/interaction-space-collapses",
+      "title": "Space on the focused open trigger collapses it through native activation on keyup",
+      "props": {
+        "title": "Invoice details",
+        "collapsible": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 1,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-group-box__trigger"
+          },
+          {
+            "action": "pressKey",
+            "key": " "
+          }
+        ],
+        "expect": {
+          "expanded": "false",
+          "panelPresent": false,
+          "controlsResolved": "dangling",
+          "panelLabelledBy": null,
+          "a11y:trigger.expanded": "false",
+          "activates": true,
+          "keydownPrevented": [false],
+          "focusRole": "trigger",
+          "events": [
+            {
+              "collapsed": true
+            }
+          ]
+        },
+        "matches": "group-box/collapsible-default-collapsed"
+      },
+      "visual": true
+    },
+    {
+      "id": "group-box/interaction-focus-only",
+      "title": "Focusing the trigger changes nothing",
+      "props": {
+        "title": "Invoice details",
+        "collapsible": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 1,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-group-box__trigger"
+          }
+        ],
+        "expect": {
+          "expanded": "true",
+          "panelPresent": true,
+          "controlsResolved": "panel",
+          "panelLabelledBy": "trigger",
+          "a11y:trigger.expanded": "true",
+          "activates": false,
+          "focusRole": "trigger",
+          "events": []
+        },
+        "matches": "group-box/collapsible-open"
+      },
+      "visual": true
+    },
+    {
+      "id": "group-box/interaction-disabled-enter",
+      "title": "A disabled trigger takes no focus, and Enter changes nothing",
+      "props": {
+        "title": "Invoice details",
+        "collapsible": true,
+        "disabled": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 1,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-group-box__trigger"
+          },
+          {
+            "action": "pressKey",
+            "key": "Enter"
+          }
+        ],
+        "expect": {
+          "expanded": "true",
+          "panelPresent": true,
+          "controlsResolved": "panel",
+          "panelLabelledBy": "trigger",
+          "a11y:trigger.expanded": "true",
+          "activates": false,
+          "focusRole": "body",
+          "events": []
+        },
+        "matches": "group-box/disabled-open"
+      },
+      "visual": true
+    },
+    {
+      "id": "group-box/interaction-disabled-space",
+      "title": "A disabled closed trigger takes no focus, and Space changes nothing",
+      "props": {
+        "title": "Invoice details",
+        "collapsible": true,
+        "disabled": true,
+        "collapsed": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 1,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-group-box__trigger"
+          },
+          {
+            "action": "pressKey",
+            "key": " "
+          }
+        ],
+        "expect": {
+          "expanded": "false",
+          "panelPresent": false,
+          "controlsResolved": "dangling",
+          "panelLabelledBy": null,
+          "a11y:trigger.expanded": "false",
+          "activates": false,
+          "focusRole": "body",
+          "events": []
+        },
+        "matches": "group-box/disabled-closed"
+      },
+      "visual": true
+    },
+    {
+      "id": "group-box/interaction-controlled-model",
+      "title": "A v-model consumer: the click emits collapsed=true, the consumer writes it back, the group collapses",
+      "$why": "The controlled protocol through a consumer that accepts. The Vue fixtures wire update:collapsed back into the prop; the Razor adapter has no controlled mode - the documented platform divergence - and toggles directly. All three land on the same state. The emit-without-change half is Vue-only and pinned by the characterization suite.",
+      "props": {
+        "title": "Invoice details",
+        "collapsible": true,
+        "collapsed": false
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 1,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-group-box__trigger"
+          }
+        ],
+        "expect": {
+          "expanded": "false",
+          "panelPresent": false,
+          "controlsResolved": "dangling",
+          "panelLabelledBy": null,
+          "a11y:trigger.expanded": "false",
+          "activates": true,
+          "focusRole": "trigger",
+          "events": [
+            {
+              "collapsed": true
+            }
+          ]
+        },
+        "matches": "group-box/collapsible-collapsed"
+      },
+      "visual": true
+    },
+    {
+      "id": "group-box/interaction-controlled-model-expand",
+      "title": "A v-model consumer on a controlled closed group: the click emits collapsed=false and it expands",
+      "props": {
+        "title": "Invoice details",
+        "collapsible": true,
+        "collapsed": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 1,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-group-box__trigger"
+          }
+        ],
+        "expect": {
+          "expanded": "true",
+          "panelPresent": true,
+          "controlsResolved": "panel",
+          "panelLabelledBy": "trigger",
+          "a11y:trigger.expanded": "true",
+          "activates": true,
+          "focusRole": "trigger",
+          "events": [
+            {
+              "collapsed": false
+            }
+          ]
+        },
+        "matches": "group-box/collapsed-over-default"
+      },
+      "visual": true
+    },
+    {
+      "id": "group-box/interaction-title-zero",
+      "title": "The title \"0\" trigger toggles like any other",
+      "props": {
+        "title": "0",
+        "collapsible": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "componentInteractive": 1,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-group-box__trigger"
+          }
+        ],
+        "expect": {
+          "expanded": "false",
+          "panelPresent": false,
+          "controlsResolved": "dangling",
+          "panelLabelledBy": null,
+          "a11y:trigger.expanded": "false",
+          "activates": true,
+          "focusRole": "trigger",
+          "events": [
+            {
+              "collapsed": true
+            }
+          ]
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "group-box/interaction-consumer-control-appears",
+      "title": "Expanding content that holds a consumer button brings it into the DOM",
+      "props": {
+        "title": "Export",
+        "collapsible": true,
+        "defaultCollapsed": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "The export could not be started.",
+          "control": {
+            "text": "Retry"
+          }
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-group-box__trigger"
+          }
+        ],
+        "expect": {
+          "expanded": "true",
+          "panelPresent": true,
+          "controlsResolved": "panel",
+          "panelLabelledBy": "trigger",
+          "a11y:trigger.expanded": "true",
+          "activates": true,
+          "consumerControlCount": 1,
+          "events": [
+            {
+              "collapsed": false
+            }
+          ]
+        },
+        "matches": "group-box/consumer-control-open",
+        "consumerInteractive": 1
+      },
+      "visual": true
+    },
+    {
+      "id": "group-box/interaction-sibling-isolation",
+      "title": "Clicking the first of two siblings collapses it and leaves the second alone",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Invoice #1024 · Design service · $120.00"
+        }
+      },
+      "group": [
+        {
+          "title": "First",
+          "collapsible": true
+        },
+        {
+          "title": "Second",
+          "collapsible": true,
+          "defaultCollapsed": true
+        }
+      ],
+      "componentInteractive": 2,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-group-box__trigger",
+            "index": 0
+          }
+        ],
+        "expect": {
+          "expandedStates": ["false", "false"],
+          "panelCount": 0,
+          "events": [
+            {
+              "collapsed": true
+            }
+          ]
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "group-box/interaction-nested-inner",
+      "title": "Clicking the inner trigger expands the inner group box only",
+      "props": {
+        "title": "Outer",
+        "collapsible": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Outer content.",
+          "groupBox": {
+            "title": "Inner",
+            "collapsible": true,
+            "defaultCollapsed": true,
+            "text": "Inner content."
+          }
+        }
+      },
+      "componentInteractive": 2,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-group-box__trigger",
+            "index": 1
+          }
+        ],
+        "expect": {
+          "expandedStates": ["true", "true"],
+          "panelCount": 2,
+          "events": [
+            {
+              "collapsed": false
+            }
+          ]
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "group-box/interaction-nested-rerender",
+      "title": "Expand the inner, collapse and re-expand the outer: the inner is rendered afresh, closed again",
+      "$why": "v-if recreation: the inner instance does not survive the outer collapse, so it comes back in its initial state. A port that kept the removed content, or cloned the live one, keeps the inner open.",
+      "props": {
+        "title": "Outer",
+        "collapsible": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Outer content.",
+          "groupBox": {
+            "title": "Inner",
+            "collapsible": true,
+            "defaultCollapsed": true,
+            "text": "Inner content."
+          }
+        }
+      },
+      "componentInteractive": 2,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-group-box__trigger",
+            "index": 1
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-group-box__trigger",
+            "index": 0
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-group-box__trigger",
+            "index": 0
+          }
+        ],
+        "expect": {
+          "expandedStates": ["true", "false"],
+          "panelCount": 1,
+          "events": [
+            {
+              "collapsed": false
+            },
+            {
+              "collapsed": true
+            },
+            {
+              "collapsed": false
+            }
+          ]
+        },
+        "matches": "group-box/nested"
+      },
+      "visual": true
+    }
+  ]
+}

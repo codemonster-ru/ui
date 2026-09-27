@@ -1316,6 +1316,68 @@ export const profiles = {
     followedReferences: [{ source: '.vf-dropdown__trigger', attribute: 'aria-controls' }],
     liveParity: true,
   },
+  // The M29 component: a native fieldset whose legend holds a disclosure
+  // trigger - a ghost VfButton - only when the group is collapsible and titled.
+  // The first owning profile whose cases legitimately own zero controls as
+  // often as one: every static form (untitled, titled and not collapsible,
+  // collapsible without a title) declares componentInteractive: 0 and is
+  // measured against the same rule. Everything is inside the case root, so
+  // there is no followedReferences declaration: the closed aria-controls
+  // dangles inside the case and is compared as #dangling, as the accordion's.
+  'group-box': {
+    id: 'group-box',
+    label: 'VfGroupBox',
+    component: 'group-box',
+    casesPath: 'contracts/group-box/cases.json',
+    policyPath: 'contracts/group-box/parity-policy.json',
+    artifactDirectory: 'parity-group-box',
+    reportName: 'group-box-parity-report.json',
+    measuredRoles: {
+      root: '.vf-group-box',
+      legend: '.vf-group-box__legend',
+      trigger: '.vf-group-box__trigger',
+      icon: '.vf-group-box__icon',
+      glyph: '.vf-group-box__icon svg',
+      title: '.vf-group-box__title',
+      content: '.vf-group-box__content',
+    },
+    // The fieldset is a group named by its legend - or an unnamed group
+    // without one - and the legend is exposed as a legend. The trigger carries
+    // the role, the name, the expanded and disabled states; the content is a
+    // region named by the trigger only when the group is collapsible. The
+    // icon and its glyph are listed because they are aria-hidden and so
+    // expected absent, which is only a measurement if the selector is queried.
+    accessibilityRoles: {
+      root: '.vf-group-box',
+      legend: '.vf-group-box__legend',
+      trigger: '.vf-group-box__trigger',
+      content: '.vf-group-box__content',
+      icon: '.vf-group-box__icon',
+      glyph: '.vf-group-box__icon svg',
+    },
+    semanticAttributes: [
+      'class',
+      'style',
+      'id',
+      'name',
+      'type',
+      'disabled',
+      'role',
+      'aria-expanded',
+      'aria-controls',
+      'aria-labelledby',
+      'aria-disabled',
+      'aria-label',
+      'aria-hidden',
+      'data-testid',
+    ],
+    snapshot: 'group-box',
+    activationSelector: '.vf-group-box__trigger',
+    controlOwnership: {
+      trigger: { selector: '.vf-group-box__trigger', tag: 'button' },
+    },
+    liveParity: true,
+  },
 };
 
 export function loadProfile(id) {
