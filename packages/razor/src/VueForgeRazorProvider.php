@@ -23,6 +23,7 @@ use Codemonster\VueForge\Razor\Components\LinkComponent;
 use Codemonster\VueForge\Razor\Components\MenuComponent;
 use Codemonster\VueForge\Razor\Components\MenuItemComponent;
 use Codemonster\VueForge\Razor\Components\PanelComponent;
+use Codemonster\VueForge\Razor\Components\PopoverComponent;
 use Codemonster\VueForge\Razor\Components\ProgressBarComponent;
 use Codemonster\VueForge\Razor\Components\ProgressSpinnerComponent;
 use Codemonster\VueForge\Razor\Components\RadioComponent;
@@ -123,6 +124,11 @@ final class VueForgeRazorProvider implements ComponentProviderInterface
             'menu-item' => new MenuItemComponent(),
             // Registered beside the card, never through it. See PanelComponent.
             'panel' => new PanelComponent(),
+            // The second overlay, registered beside vf-dropdown and never
+            // through it: the two share the page's escape stack at runtime and
+            // no server code. Its browser enhancement lives in
+            // browser/popover.ts. See PopoverComponent.
+            'popover' => new PopoverComponent(),
             // Registered beside the spinner, never through it: the two share a
             // role name and a tone union and no rule. See ProgressBarComponent.
             'progress-bar' => new ProgressBarComponent(),

@@ -425,6 +425,6 @@ final class TabsComponentTest extends TestCase
 
         self::assertInstanceOf(TabsComponent::class, $components['tabs']);
         self::assertNull((new \ReflectionClass(TabsComponent::class))->getConstructor());
-        self::assertCount(28, $components);
+        self::assertCount(29, $components);
     }
 }
