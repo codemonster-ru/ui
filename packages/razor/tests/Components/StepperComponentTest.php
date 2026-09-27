@@ -441,6 +441,6 @@ final class StepperComponentTest extends TestCase
 
         self::assertInstanceOf(StepperComponent::class, $components['stepper']);
         self::assertNull((new \ReflectionClass(StepperComponent::class))->getConstructor());
-        self::assertCount(27, $components);
+        self::assertCount(28, $components);
     }
 }

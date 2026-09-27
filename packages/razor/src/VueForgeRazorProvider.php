@@ -16,6 +16,7 @@ use Codemonster\VueForge\Razor\Components\CheckboxComponent;
 use Codemonster\VueForge\Razor\Components\DividerComponent;
 use Codemonster\VueForge\Razor\Components\DropdownComponent;
 use Codemonster\VueForge\Razor\Components\FieldComponent;
+use Codemonster\VueForge\Razor\Components\GroupBoxComponent;
 use Codemonster\VueForge\Razor\Components\IconButtonComponent;
 use Codemonster\VueForge\Razor\Components\InputComponent;
 use Codemonster\VueForge\Razor\Components\LinkComponent;
@@ -71,6 +72,11 @@ final class VueForgeRazorProvider implements ComponentProviderInterface
         // the subset it needed; now there is one spinner renderer in the
         // package, and ButtonComponentTest asserts the button holds this one.
         $progressSpinner = new ProgressSpinnerComponent();
+        // And for the button, since M29. One ButtonComponent, registered as
+        // `vf-button` and handed to the group box, whose disclosure trigger is
+        // the canonical ghost button. GroupBoxComponentTest asserts the group
+        // box holds this one.
+        $button = new ButtonComponent($progressSpinner);
 
         return [
             // The first component that owns a control of its own; its browser
@@ -85,7 +91,7 @@ final class VueForgeRazorProvider implements ComponentProviderInterface
             // component's router branch has no counterpart here by design - see
             // BreadcrumbsComponent.
             'breadcrumbs' => new BreadcrumbsComponent(),
-            'button' => new ButtonComponent($progressSpinner),
+            'button' => $button,
             'card' => new CardComponent(),
             'checkbox' => new CheckboxComponent(),
             'divider' => new DividerComponent(),
@@ -97,6 +103,10 @@ final class VueForgeRazorProvider implements ComponentProviderInterface
             // DropdownComponent.
             'dropdown' => new DropdownComponent(),
             'field' => new FieldComponent(),
+            // The fourth component that owns a control - the disclosure
+            // trigger, a ghost vf-button, only when collapsible; its browser
+            // enhancement lives in browser/group-box.ts. See GroupBoxComponent.
+            'group-box' => new GroupBoxComponent($button),
             'icon-button' => new IconButtonComponent(),
             'input' => new InputComponent(),
             // Server-complete: one native anchor and nothing to enhance. The Vue
