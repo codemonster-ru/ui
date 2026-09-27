@@ -194,6 +194,7 @@ $breadcrumbs = $registry->resolve('vf-breadcrumbs');
 $menu = $registry->resolve('vf-menu');
 $menuItem = $registry->resolve('vf-menu-item');
 $dropdown = $registry->resolve('vf-dropdown');
+$groupBox = $registry->resolve('vf-group-box');
 $assetPath = VueForgeRazorProvider::assetPath();
 $tabItems = [
     ['value' => 'overview', 'label' => 'Overview'],
@@ -240,6 +241,7 @@ echo json_encode([
         'vf-menu' => $registry->handles('vf-menu'),
         'vf-menu-item' => $registry->handles('vf-menu-item'),
         'vf-dropdown' => $registry->handles('vf-dropdown'),
+        'vf-group-box' => $registry->handles('vf-group-box'),
     ],
     'markup' => $input->render(new ComponentRenderContext(
         ['name' => 'workspace', 'value' => 'Acme', 'clearable' => true, 'password-reveal' => false],
@@ -829,6 +831,26 @@ echo json_encode([
     // third-party code. Closed, the menu waits in an inert template; open, it
     // is rendered in place until the controller moves it. The controller must
     // arrive with floater.js 1.0.11 bundled and its MIT notice preserved.
+    // VfGroupBox, M29: a fieldset whose trigger is the canonical vf-button the
+    // provider hands in. Closed, the content waits in an inert template; the
+    // title "0" is a title. The controller must arrive in the packaged file.
+    'groupBoxClosed' => $groupBox->render(new ComponentRenderContext(
+        ['title' => 'Invoice details', 'collapsible' => true, 'collapsed' => true],
+        ['default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('<p>Invoice #1024</p>')],
+    ))->value(),
+    'groupBoxZero' => $groupBox->render(new ComponentRenderContext(
+        ['title' => '0', 'collapsible' => true],
+        ['default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('<p>Zero</p>')],
+    ))->value(),
+    'groupBoxStatic' => $groupBox->render(new ComponentRenderContext(
+        ['title' => ''],
+        ['default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('<p>Static</p>')],
+    ))->value(),
+    'groupBoxBrowserCode' => str_contains($controllerSource, 'data-vf-razor-group-box-enhanced')
+        && str_contains($controllerSource, 'vf-group-box:collapsed-change'),
+    'groupBoxCss' => is_file($assetPath . '/vueforge-razor.css')
+        && substr_count((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-group-box {') === 1
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-group-box--collapsed .vf-group-box__icon'),
     'dropdownClosed' => $dropdown->render(new ComponentRenderContext(
         [],
         [
@@ -2009,7 +2031,10 @@ echo json_encode([
       !rendered.menuItemRoleNotOverridable.includes('role="option"'),
     rendered.menuItemRoleNotOverridable,
   );
-  check('the menu and menu item components take no constructor argument', rendered.menuConstructorsTakeNothing === true);
+  check(
+    'the menu and menu item components take no constructor argument',
+    rendered.menuConstructorsTakeNothing === true,
+  );
   check(
     'the packaged controller does not mention the menu or its items: the reference has no browser behaviour for either',
     rendered.menuBrowserCode === false,
@@ -2028,6 +2053,32 @@ echo json_encode([
   );
 
   check('the registry resolves vf-dropdown', rendered.handles['vf-dropdown'] === true);
+  check('the registry resolves vf-group-box', rendered.handles['vf-group-box'] === true);
+  check(
+    'the consumer renders a closed group box: the canonical ghost button trigger with a dangling aria-controls and the content in an inert template',
+    /^<fieldset class="vf-group-box vf-group-box--titled vf-group-box--collapsible vf-group-box--collapsed" data-vf-razor="group-box"><legend class="vf-group-box__legend"><button id="vf-group-box-trigger-r-\d+" aria-controls="vf-group-box-content-r-\d+" aria-expanded="false" class="vf-button vf-button--ghost vf-group-box__trigger" type="button"><span aria-hidden="true" class="vf-group-box__icon">.*<\/span><span class="vf-group-box__title">Invoice details<\/span><\/button><\/legend><template data-vf-razor-group-box="content"><p>Invoice #1024<\/p><\/template><\/fieldset>$/s.test(
+      rendered.groupBoxClosed,
+    ) && !rendered.groupBoxClosed.includes('aria-disabled'),
+    rendered.groupBoxClosed,
+  );
+  check(
+    'the consumer renders the title "0" as a title with a trigger and a region, and the empty title as none',
+    rendered.groupBoxZero.includes('<span class="vf-group-box__title">0</span></button>') &&
+      rendered.groupBoxZero.includes('role="region"') &&
+      !rendered.groupBoxStatic.includes('<legend') &&
+      rendered.groupBoxStatic.includes('class="vf-group-box__content"'),
+    `${rendered.groupBoxZero}\n${rendered.groupBoxStatic}`,
+  );
+  check(
+    'the packaged controller carries the group box layer',
+    rendered.groupBoxBrowserCode === true,
+    'vueforge-razor.js lacks the group box enhancement',
+  );
+  check(
+    'the packaged stylesheet carries the group box rules once, with the collapsed rotation',
+    rendered.groupBoxCss === true,
+    'vueforge-razor.css is missing group box rules or duplicates them',
+  );
   check(
     'the consumer renders a closed dropdown: the trigger wrapper with a dangling aria-controls and the menu in an inert template',
     /^<div class="vf-dropdown" data-vf-razor="dropdown"[^>]*><div id="vf-dropdown-trigger-r-\d+" class="vf-dropdown__trigger" aria-controls="vf-dropdown-menu-r-\d+" aria-expanded="false" aria-haspopup="menu" tabindex="0"><span>Actions<\/span><\/div><template data-vf-razor-dropdown="menu"><button type="button" role="menuitem">Edit<\/button><\/template><\/div>$/.test(

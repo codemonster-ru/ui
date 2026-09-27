@@ -177,6 +177,10 @@ const controlSelectors = {
   // a control and is outside the case entirely, teleported to <body>; the
   // interaction probe below reads it there.
   VfDropdown: '.vf-dropdown__trigger',
+  // The M29 component. The disclosure trigger - a ghost button in the legend -
+  // which exists only for a collapsible, titled group; a static group owns no
+  // control at all (see controlsPerCase).
+  VfGroupBox: 'button.vf-group-box__trigger',
 };
 
 /**
@@ -213,6 +217,10 @@ const controlsPerCase = {
   VfMenuItem: (parityCase) => parityCase.componentInteractive ?? 0,
   // One trigger per instance, which is what the catalog declares.
   VfDropdown: (parityCase) => parityCase.componentInteractive ?? 0,
+  // One trigger per collapsible, titled instance that reaches the DOM - which
+  // is what the catalog declares and the coverage gate checks against the
+  // JavaScript title test. Every static case renders none.
+  VfGroupBox: (parityCase) => parityCase.componentInteractive ?? 0,
 };
 
 /**
@@ -227,7 +235,37 @@ const rootsPerCase = {
   VfStepper: (parityCase) => (Array.isArray(parityCase.group) ? parityCase.group.length : 1),
   VfTabs: (parityCase) => (Array.isArray(parityCase.group) ? parityCase.group.length : 1),
   VfDropdown: (parityCase) => (Array.isArray(parityCase.group) ? parityCase.group.length : 1),
+  // Every group box root carries the marker, static or not; a nested one is in
+  // the DOM only while its parent shows its content - inside a closed parent
+  // it waits in the parent's inert template.
+  VfGroupBox: (parityCase) =>
+    groupBoxMembers(parityCase).reduce(
+      (total, member) =>
+        total + 1 + (parityCase.content?.body?.groupBox && groupBoxShowsContent(parityCase, member) ? 1 : 0),
+      0,
+    ),
 };
+
+/**
+ * How many Razor roots the packaged controller enhances, for the one
+ * component whose controller claims only some of its roots: a static group box
+ * has nothing to enhance and is left unclaimed, so the count is its triggers.
+ */
+const enhancedPerCase = {
+  VfGroupBox: (parityCase) => parityCase.componentInteractive ?? 0,
+};
+
+function groupBoxMembers(parityCase) {
+  return Array.isArray(parityCase.group) ? parityCase.group : [parityCase.props ?? {}];
+}
+
+/** The group box's decisions, restated as data: JavaScript truthiness for the title. */
+function groupBoxShowsContent(parityCase, member) {
+  const hasTitle = Boolean(member.title) || parityCase.content?.title !== undefined;
+  const collapsible = member.collapsible === true && hasTitle;
+  const open = member.collapsed !== undefined ? !member.collapsed : !member.defaultCollapsed;
+  return !collapsible || open;
+}
 
 /**
  * The Razor ownership marker and enhancement attribute each component renders.
@@ -244,6 +282,7 @@ const ownershipMarkers = {
   VfStepper: { root: '[data-vf-razor="stepper"]', enhanced: '[data-vf-razor-stepper-enhanced]' },
   VfTabs: { root: '[data-vf-razor="tabs"]', enhanced: '[data-vf-razor-tabs-enhanced]' },
   VfDropdown: { root: '[data-vf-razor="dropdown"]', enhanced: '[data-vf-razor-dropdown-enhanced]' },
+  VfGroupBox: { root: '[data-vf-razor="group-box"]', enhanced: '[data-vf-razor-group-box-enhanced]' },
 };
 
 const components = showcaseIndex.components
@@ -262,6 +301,10 @@ const components = showcaseIndex.components
         (total, parityCase) => total + (rootsPerCase[entry.name]?.(parityCase) ?? 1),
         0,
       ),
+      expectedEnhanced: catalog.cases.reduce((total, parityCase) => {
+        const count = enhancedPerCase[entry.name] ?? rootsPerCase[entry.name];
+        return total + (count ? count(parityCase) : 1);
+      }, 0),
       casesWithControls: catalog.cases.filter((parityCase) => (controlsPerCase[entry.name]?.(parityCase) ?? 1) > 0)
         .length,
     };
@@ -302,6 +345,7 @@ check(
       'VfDivider',
       'VfDropdown',
       'VfField',
+      'VfGroupBox',
       'VfIconButton',
       'VfInput',
       'VfLink',
@@ -545,6 +589,135 @@ async function probeAccordionToggle(origin, path) {
     })()`);
 
     return { before: point.before, ...after };
+  } finally {
+    await page.close();
+  }
+}
+
+/**
+ * What the group box's showcase case does on one platform, driven with real
+ * input: the open collapsible case collapses on a pointer click and expands
+ * again on Enter through the browser's own button activation - one native
+ * click, keydown not prevented - and the trigger is painted at rest, on a
+ * keyboard focus and under a pointer hover. The long collapsible title is
+ * measured for truncation on the real viewport, because an ellipsis is a
+ * paint property no DOM snapshot records. No showcase script is involved.
+ */
+async function probeGroupBox(origin, path) {
+  const page = await openPage(chrome.endpoint);
+  const selector = (id) => `[data-showcase-case="${id}"] button.vf-group-box__trigger`;
+  try {
+    await page.send('Page.enable');
+    await page.send('Runtime.enable');
+    await page.send('Emulation.setDeviceMetricsOverride', { ...viewport, deviceScaleFactor: 1, mobile: false });
+    await page.send('Page.navigate', { url: `${origin}${path}` });
+    await page.waitFor(`Boolean(document.querySelector(${JSON.stringify(selector('group-box/collapsible-open'))}))`);
+    await delay(300);
+
+    const paint = `(() => {
+      const element = document.querySelector(${JSON.stringify(selector('group-box/collapsible-open'))});
+      const style = getComputedStyle(element);
+      return { color: style.color, background: style.backgroundColor, outlineStyle: style.outlineStyle, boxShadow: style.boxShadow, focusVisible: element.matches(':focus-visible'), hovered: element.matches(':hover') };
+    })()`;
+    const rest = await page.evaluate(paint);
+
+    // The long titles, as the reference paints them: the title rule asks for
+    // an ellipsis, and it never engages. Inside the trigger the ghost button
+    // is an unconstrained inline-flex box, so it grows past the legend and
+    // the title span is never narrower than its text; in a static legend the
+    // span is inline, where text-overflow does not apply, and the text runs
+    // past the legend. Measured in M29 on both showcases and reproduced three
+    // ways by the parity screenshots; asserted here as the contract it is.
+    // Widths are not compared across the two pages: the Vue showcase chrome
+    // leaves the page on the browser's default font, the Razor chrome sets
+    // one, and that is every route's chrome rather than this component.
+    const title = await page.evaluate(`(() => {
+      const at = (id) => document.querySelector('[data-showcase-case="' + id + '"]');
+      const collapsible = at('group-box/long-title-collapsible');
+      const span = collapsible.querySelector('.vf-group-box__title');
+      const button = collapsible.querySelector('.vf-group-box__trigger');
+      const legend = collapsible.querySelector('.vf-group-box__legend');
+      const staticLegend = at('group-box/long-title').querySelector('.vf-group-box__legend');
+      const staticSpan = staticLegend.querySelector('.vf-group-box__title');
+      const style = getComputedStyle(span);
+      return {
+        textOverflow: style.textOverflow,
+        whiteSpace: style.whiteSpace,
+        spanTruncated: span.scrollWidth > span.clientWidth,
+        triggerOverflowsLegend: button.getBoundingClientRect().width > legend.getBoundingClientRect().width,
+        staticSpanDisplay: getComputedStyle(staticSpan).display,
+        staticTextOverflowsLegend: staticLegend.scrollWidth > staticLegend.clientWidth,
+      };
+    })()`);
+
+    const state = `(() => {
+      const trigger = document.querySelector(${JSON.stringify(selector('group-box/collapsible-open'))});
+      const root = trigger.closest('.vf-group-box');
+      return {
+        expanded: trigger.getAttribute('aria-expanded'),
+        content: root.querySelectorAll(':scope > .vf-group-box__content').length,
+        collapsedClass: root.classList.contains('vf-group-box--collapsed'),
+        focused: document.activeElement === trigger,
+      };
+    })()`;
+    const point = await page.evaluate(`(() => {
+      const trigger = document.querySelector(${JSON.stringify(selector('group-box/collapsible-open'))});
+      trigger.scrollIntoView({ block: 'center' });
+      window.__showcaseGroupBoxClicks = 0;
+      window.__showcaseGroupBoxKeys = [];
+      trigger.addEventListener('click', () => { window.__showcaseGroupBoxClicks += 1; });
+      trigger.addEventListener('keydown', (event) => { setTimeout(() => window.__showcaseGroupBoxKeys.push(event.defaultPrevented), 0); });
+      const rect = trigger.getBoundingClientRect();
+      return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+    })()`);
+    const before = await page.evaluate(state);
+    await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...point });
+    await page.send('Input.dispatchMouseEvent', { type: 'mousePressed', ...point, button: 'left', clickCount: 1 });
+    await page.send('Input.dispatchMouseEvent', { type: 'mouseReleased', ...point, button: 'left', clickCount: 1 });
+    await delay(100);
+    const clicked = await page.evaluate(state);
+    for (const type of ['keyDown', 'keyUp']) {
+      await page.send('Input.dispatchKeyEvent', {
+        type,
+        key: 'Enter',
+        code: 'Enter',
+        windowsVirtualKeyCode: 13,
+        nativeVirtualKeyCode: 13,
+        ...(type === 'keyDown' ? { text: '\r', unmodifiedText: '\r' } : {}),
+      });
+    }
+    await delay(100);
+    const entered = await page.evaluate(state);
+    const record = await page.evaluate(
+      `({ clicks: window.__showcaseGroupBoxClicks, keys: window.__showcaseGroupBoxKeys })`,
+    );
+
+    // Keyboard focus from a real Tab, then a real hover, each read after the
+    // button's colour transition would have finished.
+    await page.evaluate(`(() => {
+      document.activeElement?.blur();
+      const trigger = document.querySelector(${JSON.stringify(selector('group-box/collapsible-open'))});
+      const before = document.createElement('button');
+      before.type = 'button';
+      before.id = 'showcase-focus-origin';
+      trigger.closest('.vf-group-box').before(before);
+      before.focus();
+    })()`);
+    await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 1, y: 1 });
+    await page.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9 });
+    await page.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9 });
+    await delay(400);
+    const focus = await page.evaluate(paint);
+    await page.evaluate(`document.getElementById('showcase-focus-origin')?.remove(); document.activeElement?.blur();`);
+    await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...point });
+    await delay(400);
+    const hover = await page.evaluate(paint);
+
+    const inlineScripts = await page.evaluate(
+      `[...document.querySelectorAll('script:not([src])')].filter((script) => /group-box|groupbox/i.test(script.textContent)).length`,
+    );
+
+    return { before, clicked, entered, record, rest, focus, hover, title, inlineScripts };
   } finally {
     await page.close();
   }
@@ -1194,9 +1367,16 @@ try {
     // stronger reason than the checkable controls: there is no interaction to
     // enhance at all. Their parity profiles say the same thing through the
     // static snapshot.
-    const enhanced = ['VfInput', 'VfField', 'VfTextarea', 'VfAccordion', 'VfStepper', 'VfTabs', 'VfDropdown'].includes(
-      name,
-    );
+    const enhanced = [
+      'VfInput',
+      'VfField',
+      'VfTextarea',
+      'VfAccordion',
+      'VfStepper',
+      'VfTabs',
+      'VfDropdown',
+      'VfGroupBox',
+    ].includes(name);
 
     for (const theme of themes) {
       const vue = await readShowcase(
@@ -1252,8 +1432,8 @@ try {
         );
         check(
           `[${name}/${theme}] the packaged Razor controller enhanced every root`,
-          razor.razorEnhanced === component.expectedRoots,
-          `${razor.razorEnhanced} enhanced, expected ${component.expectedRoots}`,
+          razor.razorEnhanced === component.expectedEnhanced,
+          `${razor.razorEnhanced} enhanced, expected ${component.expectedEnhanced}`,
         );
       } else {
         check(
@@ -1312,6 +1492,73 @@ try {
             `${toggled.inlineScripts} inline script(s)`,
           );
         }
+      }
+
+      // --------------------------------------------- the group box actually toggles
+      //
+      // M29: a real click collapses and a real Enter - the browser's own
+      // activation, one native click, keydown not prevented - expands the
+      // open case on both pages; the trigger paints the same at rest, on focus
+      // and on hover; and the long title truncates the same on the real
+      // viewport. No showcase script on either.
+      if (name === 'VfGroupBox') {
+        const probed = {};
+        for (const [platform, origin, route] of [
+          ['vue', vueOrigin, `${vueRoute}&theme=${theme}`],
+          ['razor', razorOrigin, `${razorRoute}&theme=${theme}`],
+        ]) {
+          const box = await probeGroupBox(origin, route);
+          probed[platform] = box;
+          check(
+            `[${name}/${theme}] the ${platform} showcase collapses the open case on a real click and removes its content`,
+            box.before.expanded === 'true' &&
+              box.before.content === 1 &&
+              box.clicked.expanded === 'false' &&
+              box.clicked.content === 0 &&
+              box.clicked.collapsedClass === true &&
+              box.clicked.focused === true,
+            JSON.stringify({ before: box.before, clicked: box.clicked }),
+          );
+          check(
+            `[${name}/${theme}] Enter on the ${platform} showcase trigger is the browser's click, not the component's`,
+            box.entered.expanded === 'true' &&
+              box.entered.content === 1 &&
+              box.record.clicks === 2 &&
+              JSON.stringify(box.record.keys) === '[false]',
+            JSON.stringify({ entered: box.entered, record: box.record }),
+          );
+          check(
+            `[${name}/${theme}] a keyboard focus and a pointer hover each repaint the ${platform} showcase trigger`,
+            box.focus.focusVisible === true &&
+              JSON.stringify(box.focus) !== JSON.stringify(box.rest) &&
+              box.hover.hovered === true &&
+              box.hover.background !== box.rest.background,
+            JSON.stringify({ rest: box.rest, focus: box.focus, hover: box.hover }),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase paints the long titles as the reference does: the ellipsis rule never engages`,
+            box.title.textOverflow === 'ellipsis' &&
+              box.title.whiteSpace === 'nowrap' &&
+              box.title.spanTruncated === false &&
+              box.title.triggerOverflowsLegend === true &&
+              box.title.staticSpanDisplay === 'inline' &&
+              box.title.staticTextOverflowsLegend === true,
+            JSON.stringify(box.title),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase adds no script of its own to the group boxes`,
+            box.inlineScripts === 0,
+            `${box.inlineScripts} inline script(s)`,
+          );
+        }
+        check(
+          `[${name}/${theme}] both platforms paint the trigger identically at rest, on focus and on hover, and paint the long titles alike`,
+          JSON.stringify(probed.vue.rest) === JSON.stringify(probed.razor.rest) &&
+            JSON.stringify(probed.vue.focus) === JSON.stringify(probed.razor.focus) &&
+            JSON.stringify(probed.vue.hover) === JSON.stringify(probed.razor.hover) &&
+            JSON.stringify(probed.vue.title) === JSON.stringify(probed.razor.title),
+          JSON.stringify({ vue: probed.vue, razor: probed.razor }),
+        );
       }
 
       // ------------------------------------------- the stepper actually selects

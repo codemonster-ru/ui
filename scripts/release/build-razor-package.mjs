@@ -125,6 +125,12 @@ export const requiredEntries = [
   'src/Support/MenuItemState.php',
   'src/Components/DropdownComponent.php',
   'src/Support/DropdownState.php',
+  // The M29 component: a fieldset whose trigger is the canonical vf-button,
+  // handed in by the provider, and a browser controller that reproduces the
+  // trigger's click and nothing else. The controller travels inside
+  // dist/vueforge-razor.js; the packaged-consumer proof asserts it is there.
+  'src/Components/GroupBoxComponent.php',
+  'src/Support/GroupBoxState.php',
   'resources/icons/icon-registry.json',
   'dist/vueforge-razor.css',
   'dist/vueforge-razor.js',

@@ -517,7 +517,16 @@
           "status": "implemented"
         },
         "razor": {
-          "status": "not-implemented"
+          "status": "implemented",
+          "caseSource": "contracts/group-box/cases.json"
+        }
+      },
+      "showcase": {
+        "caseSource": "contracts/group-box/cases.json",
+        "caseIdField": "id",
+        "routes": {
+          "vue": "/group-box",
+          "razor": "/"
         }
       }
     },

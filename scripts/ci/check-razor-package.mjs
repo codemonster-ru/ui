@@ -138,6 +138,18 @@ const floaterLicense = readFileSync(
   resolve(repositoryRoot, 'node_modules/@codemonster-ru/floater.js/LICENSE.md'),
   'utf8',
 );
+// M29: the group box controller - one click listener per trigger, no keydown
+// handler, no document or window listener - travels in the same file, once.
+check(
+  'the packaged controller carries the group box enhancement exactly once',
+  js.includes('data-vf-razor-group-box-enhanced') &&
+    js.includes('vf-group-box:collapsed-change') &&
+    js.split('function enhanceVueForgeGroupBoxes(').length === 2,
+);
+check(
+  'the packaged stylesheet carries the group box rules exactly once',
+  css.split('.vf-group-box {').length === 2 && css.includes('.vf-group-box--collapsed .vf-group-box__icon'),
+);
 check(
   'the packaged controller carries the dropdown enhancement exactly once',
   js.includes('data-vf-razor-dropdown-enhanced') && js.split('function enhanceVueForgeDropdowns(').length === 2,

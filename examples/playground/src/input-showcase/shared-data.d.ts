@@ -153,3 +153,8 @@ declare module '@vueforge/dropdown-cases' {
   const cases: { cases: unknown[] };
   export default cases;
 }
+
+declare module '@vueforge/group-box-cases' {
+  const cases: { cases: unknown[] };
+  export default cases;
+}

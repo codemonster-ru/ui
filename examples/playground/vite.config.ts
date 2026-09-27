@@ -150,6 +150,7 @@ export default defineConfig({
         menu: fileURLToPath(new URL('./menu.html', import.meta.url)),
         'menu-item': fileURLToPath(new URL('./menu-item.html', import.meta.url)),
         dropdown: fileURLToPath(new URL('./dropdown.html', import.meta.url)),
+        groupBox: fileURLToPath(new URL('./group-box.html', import.meta.url)),
       },
     },
   },
@@ -280,6 +281,10 @@ export default defineConfig({
       {
         find: /^@vueforge\/dropdown-cases$/,
         replacement: fileURLToPath(new URL('../../contracts/dropdown/cases.json', import.meta.url)),
+      },
+      {
+        find: /^@vueforge\/group-box-cases$/,
+        replacement: fileURLToPath(new URL('../../contracts/group-box/cases.json', import.meta.url)),
       },
       {
         find: /^@vueforge\/menu-item-cases$/,
