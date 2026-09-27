@@ -650,6 +650,19 @@ describe('VfGroupBox characterization: disabled', () => {
     expect(wrapper.emitted('update:collapsed')).toBeUndefined();
   });
 
+  it('refuses a script-dispatched click on the disabled trigger: the guard, not only the attribute', async () => {
+    // A disabled button never receives a user's click, but Chrome and jsdom
+    // both deliver a click event a script dispatches to its listeners. The
+    // component's own guard is what refuses it - verified in Chrome 154 before
+    // this test was written - so the guard is part of the observable contract.
+    const wrapper = mountGroupBox({ props: { title: 'T', collapsible: true, disabled: true } });
+
+    trigger(wrapper).element.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    await nextTick();
+    expect(content(wrapper).exists()).toBe(true);
+    expect(wrapper.emitted('update:collapsed')).toBeUndefined();
+  });
+
   it('keeps a closed group closed when it becomes disabled, and does not close an open one', async () => {
     const closed = mountGroupBox({ props: { title: 'T', collapsible: true, defaultCollapsed: true } });
     await closed.setProps({ disabled: true });
@@ -672,10 +685,10 @@ describe('VfGroupBox characterization: disabled', () => {
   });
 
   it('quirk: the string "true" leaves the trigger operable but the guard still refuses the toggle', async () => {
-    // A type misuse - Vue warns - kept because it is the one place the
-    // component's own guard is observable apart from the native attribute:
-    // VfButton disables only for `true` or '', while `!props.disabled` treats
-    // any non-empty string as disabled.
+    // A type misuse - Vue warns - kept because it is where the component's
+    // guard and VfButton's attribute rule disagree: VfButton disables only for
+    // `true` or '', while `!props.disabled` treats any non-empty string as
+    // disabled.
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const wrapper = mountGroupBox({ props: { title: 'T', collapsible: true, disabled: 'true' as unknown as boolean } });
 

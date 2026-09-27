@@ -3062,12 +3062,14 @@ export const accordionMutations = [
  * of any keyboard handling, the two emits, the disabled contract, v-if
  * retention, the slots and the consumer-attribute contract.
  *
- * The disabled guard (`group-box-disabled-guard-removed`) is observable in a
- * browser only through the Vue type misuse disabled="true": a boolean
- * disabled writes the native attribute and the browser never delivers the
- * click, so without that characterized quirk the mutation would be
- * equivalent. It is detected by the quirk test and by nothing else - see the
- * M29 appendix.
+ * The disabled guard (`group-box-disabled-guard-removed`) is not observable
+ * through a user's click - a natively disabled button never receives one - and
+ * a first run proved the mutation MISSED by every test that clicks. It is
+ * observable through a script-dispatched click, which Chrome 154 and jsdom
+ * both deliver to a disabled button's listeners (measured before the test was
+ * written), and through the Vue type misuse disabled="true". Both are
+ * characterized, and those two tests are what detect it - see the M29
+ * appendix.
  */
 export const groupBoxMutations = [
   // ------------------------------------------------------------ element identity
@@ -3469,7 +3471,7 @@ export const groupBoxMutations = [
     file: groupBoxRulePath,
     suite: groupBoxSuite,
     description:
-      'the toggle guard stops reading disabled; observable only through the characterized disabled="true" quirk',
+      'the toggle guard stops reading disabled; observable through a script-dispatched click and the disabled="true" quirk',
     find: '    toggleable: isCollapsible && !disabled,',
     replace: '    toggleable: isCollapsible,',
   },

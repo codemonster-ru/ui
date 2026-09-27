@@ -82,6 +82,7 @@ import {
   menuPolicyMutations,
 } from './menu-mutations.mjs';
 import { dropdownBrowserMutations, dropdownParityMutations, dropdownPolicyMutations } from './dropdown-mutations.mjs';
+import { groupBoxBrowserMutations, groupBoxParityMutations, groupBoxPolicyMutations } from './group-box-mutations.mjs';
 import {
   skeletonGateBrowserMutations,
   skeletonGateParityMutations,
@@ -191,6 +192,13 @@ const mutationSets = {
     capture: dropdownParityMutations,
     policy: dropdownPolicyMutations,
     browser: dropdownBrowserMutations,
+  },
+  // The M29 disclosure: element identities, the JavaScript title test, the
+  // closed dangling reference, native activation and v-if recreation.
+  'group-box': {
+    capture: groupBoxParityMutations,
+    policy: groupBoxPolicyMutations,
+    browser: groupBoxBrowserMutations,
   },
   'skeleton-gate': {
     capture: skeletonGateParityMutations,
