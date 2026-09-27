@@ -387,6 +387,72 @@ foreach ($groupBoxCases as $name => $markup) {
     $sections .= '<section class="case" data-case="' . $name . '"><h2>' . $name . '</h2>' . $markup . '</section>';
 }
 
+// ------------------------------------------------------------------ popover
+//
+// The M30 sections. Real vf-popover renders in the states the browser suite
+// drives: closed with a button inside, initially open, in place, into the
+// named overlay root, with both autofocus forms in reversed document order,
+// with both dismissal switches off, a pair for the escape stack, and a copy
+// with the ownership marker stripped. The two sections that put a vf-dropdown
+// beside or inside a popover - the shared escape stack and the unmount of a
+// nested dropdown - keep their dropdowns out of the live page until the suite
+// needs them, so the dropdown suite's own count is not changed by them.
+$popover = $registry->resolve('vf-popover');
+if ($popover === null) {
+    fwrite(STDERR, "vf-popover must be registered.\n");
+    exit(1);
+}
+$renderPopover = static function (array $props, string $trigger, string $content) use ($popover): string {
+    return $popover->render(new ComponentRenderContext($props, [
+        'trigger' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString($trigger),
+        'default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString($content),
+    ]))->value();
+};
+$popoverBody = '<p>Body</p><button type="button" class="popover-inside">Inside</button>';
+$popoverCases = [
+    'popover-default' => $renderPopover(['aria-label' => 'Default'], '<span>Details</span>', $popoverBody)
+        . '<button type="button" class="popover-outside">Outside</button>',
+    'popover-open' => '<template id="popover-open-source">'
+        . $renderPopover(['aria-label' => 'Open', 'default-open' => true], '<span>Open</span>', $popoverBody)
+        . '</template>',
+    'popover-inline' => $renderPopover(['aria-label' => 'Inline', 'teleport-to' => false], '<span>Inline</span>', $popoverBody),
+    'popover-target' => $renderPopover(['aria-label' => 'Target', 'teleport-to' => '#razor-overlay-root'], '<span>Target</span>', $popoverBody),
+    'popover-autofocus' => $renderPopover(
+        ['aria-label' => 'Autofocus'],
+        '<span>Autofocus</span>',
+        '<input class="popover-data-first" data-autofocus aria-label="Data"><input class="popover-attribute-second" autofocus aria-label="Attribute">',
+    ),
+    'popover-keep' => $renderPopover(
+        ['aria-label' => 'Keep', 'close-on-outside-click' => false, 'close-on-escape' => false],
+        '<span>Keep</span>',
+        $popoverBody,
+    ) . '<button type="button" class="popover-keep-outside">Outside</button>',
+    'popover-pair' => $renderPopover(['aria-label' => 'One'], '<span>One</span>', '<p>One</p>')
+        . $renderPopover(['aria-label' => 'Two'], '<span>Two</span>', '<p>Two</p>'),
+    'popover-beside' => '<template id="popover-beside-source">'
+        . $renderDropdown(['aria-label' => 'Beside'], '<span>Beside</span>')
+        . $renderPopover(['aria-label' => 'Next'], '<span>Next</span>', '<p>Next</p>')
+        . $renderPopover(['aria-label' => 'Shield', 'close-on-escape' => false], '<span>Shield</span>', '<p>Shield</p>')
+        . '</template>',
+    // Live: the dropdown waits inside the popover's inert template, so it is
+    // not on the page - and not in the dropdown suite's count - until the
+    // popover renders a panel and enhances what the panel holds.
+    'popover-nested' => $renderPopover(
+        ['aria-label' => 'Outer'],
+        '<span>Outer</span>',
+        '<p>Outer</p>' . $renderDropdown(['aria-label' => 'Inner'], '<span>Inner</span>'),
+    ),
+    // The same markup with the marker stripped: not Razor-owned, must not mount.
+    'popover-unowned' => str_replace(
+        ' data-vf-razor="popover"',
+        '',
+        $renderPopover(['aria-label' => 'Unowned'], '<span>Unowned</span>', '<p>No.</p>'),
+    ),
+];
+foreach ($popoverCases as $name => $markup) {
+    $sections .= '<section class="case case--popover" data-case="' . $name . '"><h2>' . $name . '</h2>' . $markup . '</section>';
+}
+
 $withVue = ($argv[2] ?? '') === '--with-vue';
 $vueSection = $withVue
     ? '<section class="case" data-case="vue"><h2>vue</h2><div id="vue-input"></div></section>'
@@ -409,6 +475,7 @@ body { margin: 0; padding: 24px; background: var(--vf-color-background-canvas); 
 .case { margin-bottom: 20px; max-width: 420px; }
 .case--tabs { width: 360px; }
 .case--dropdown { width: 360px; }
+.case--popover { width: 360px; }
 .case h2 { font-size: 12px; margin: 0 0 6px; color: var(--vf-color-text-secondary); font-weight: 400; }
 </style>
 </head>

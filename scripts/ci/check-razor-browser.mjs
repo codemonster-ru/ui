@@ -108,6 +108,8 @@ async function pressKey(page, key) {
     ArrowDown: { code: 'ArrowDown', keyCode: 40 },
     // The tabs' one unhandled key (M24): native focus navigation.
     Tab: { code: 'Tab', keyCode: 9 },
+    // The popover's shared escape stack (M30).
+    Escape: { code: 'Escape', keyCode: 27 },
   }[key];
   const base = {
     key,
@@ -394,6 +396,79 @@ async function clickElement(page, expression) {
 const dropdownTrigger = (label) =>
   `document.querySelector('.vf-dropdown[aria-label="${label}"] > .vf-dropdown__trigger')`;
 const dropdownMenu = (label) => `document.getElementById(${dropdownTrigger(label)}.getAttribute('aria-controls'))`;
+
+/**
+ * Installs a per-root log of the popover's open-change events, keyed by the
+ * root's accessible name, and a per-key record of whether a keydown reaching
+ * the document was prevented. Dropdowns inside or beside a popover are logged
+ * too, under the same object, because the escape stack is theirs as well.
+ */
+const installPopoverLog = `(() => {
+  window.__popoverEvents = window.__popoverEvents ?? {};
+  window.__popoverKeys = window.__popoverKeys ?? [];
+  for (const root of document.querySelectorAll('.vf-popover[aria-label], .vf-dropdown[aria-label]')) {
+    const name = root.getAttribute('aria-label');
+    if (window.__popoverEvents[name] && root.__popoverLogged) continue;
+    root.__popoverLogged = true;
+    window.__popoverEvents[name] = window.__popoverEvents[name] ?? [];
+    for (const type of ['vf-popover:open-change', 'vf-dropdown:open-change']) {
+      root.addEventListener(type, (event) => {
+        if (event.currentTarget === root) window.__popoverEvents[name].push(event.detail.open);
+      });
+    }
+  }
+  if (!window.__popoverKeyLog) {
+    window.__popoverKeyLog = true;
+    document.addEventListener('keydown', (event) => {
+      const entry = { key: event.key, prevented: false };
+      window.__popoverKeys.push(entry);
+      event.__popoverEntry = entry;
+    }, true);
+    // Headless Chrome hides the tab for good - no animation frames, so no
+    // leave ever finishes - when a navigation key or Escape reaches it
+    // unhandled, which is exactly what the unmounted-dropdown Escape does
+    // (M28 found the same in the parity fixtures). So the page's last
+    // listener records whether the component prevented the key and only then
+    // prevents it itself.
+    window.addEventListener('keydown', (event) => {
+      if (event.__popoverEntry) event.__popoverEntry.prevented = event.defaultPrevented;
+      if (['Escape', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) {
+        event.preventDefault();
+      }
+    });
+  }
+  return document.querySelectorAll('.vf-popover[aria-label]').length;
+})()`;
+
+/** One popover as the suite reads it, by the root's accessible name. */
+const readPopover = (label) => `(() => {
+  const root = document.querySelector('.vf-popover[aria-label="${label}"]');
+  if (!root) return null;
+  const trigger = root.querySelector(':scope > .vf-popover__trigger');
+  const panel = document.getElementById(trigger.getAttribute('aria-controls'));
+  const active = document.activeElement;
+  const where = !panel ? null : panel.parentElement === document.body ? 'body' : panel.parentElement === root ? 'inline' : panel.parentElement.id || panel.parentElement.className;
+  return {
+    enhanced: root.hasAttribute('data-vf-razor-popover-enhanced'),
+    expanded: trigger.getAttribute('aria-expanded'),
+    panel: Boolean(panel),
+    where,
+    tag: panel?.tagName.toLowerCase() ?? null,
+    panelClasses: panel ? [...panel.classList] : null,
+    labelledByTrigger: panel ? panel.getAttribute('aria-labelledby') === trigger.id : null,
+    role: panel?.getAttribute('role') ?? null,
+    tabindex: panel?.getAttribute('tabindex') ?? null,
+    arrowFirst: panel ? panel.firstElementChild?.classList.contains('vf-popover__arrow') : null,
+    positioned: panel ? panel.style.left !== '0px' || panel.style.top !== '0px' : null,
+    templates: root.querySelectorAll(':scope > template[data-vf-razor-popover="content"]').length,
+    focus: active === trigger ? 'trigger' : panel && active === panel ? 'panel' : panel && panel.contains(active) ? 'inside:' + (active.className || active.tagName) : active === document.body ? 'body' : 'elsewhere:' + (active?.className ?? ''),
+    events: window.__popoverEvents?.[${JSON.stringify(label)}] ?? null,
+  };
+})()`;
+
+const popoverTrigger = (label) => `document.querySelector('.vf-popover[aria-label="${label}"] > .vf-popover__trigger')`;
+const popoverPanel = (label) => `document.getElementById(${popoverTrigger(label)}.getAttribute('aria-controls'))`;
+const bodyOverlays = `[...document.body.children].filter((node) => node.matches('.vf-dropdown__menu, .vf-popover__content')).map((node) => node.className.split(' ')[0] + '#' + node.id)`;
 
 /** Installs a per-root log of the group box's collapsed-change events, keyed by the root's title text. */
 const installGroupBoxLog = `(() => {
@@ -2879,6 +2954,512 @@ try {
       page.diagnostics.pageErrors.join('; '),
     );
   });
+  // ------------------------------------------------------------------ popover
+  await withPage(chrome, server.origin, 'fixture-enhanced.html', async (page) => {
+    await page.waitFor(`Boolean(document.querySelector('[data-vf-razor-popover-enhanced]'))`);
+    await page.evaluate(`(async () => {
+      const section = document.querySelector('[data-case="popover-open"]');
+      section.append(document.getElementById('popover-open-source').content.cloneNode(true));
+      (await import('./vueforge-razor.js')).enhanceVueForgePopovers(section);
+    })()`);
+    const logged = await page.evaluate(installPopoverLog);
+    check('the fixture has the popover roots, the unowned copy included', logged === 10, `logged ${logged}`);
+
+    const ownership = await page.evaluate(`(() => ({
+      owned: document.querySelectorAll('[data-vf-razor="popover"]').length,
+      enhanced: document.querySelectorAll('[data-vf-razor="popover"][data-vf-razor-popover-enhanced]').length,
+      unowned: document.querySelectorAll('[data-case="popover-unowned"] .vf-popover[data-vf-razor-popover-enhanced]').length,
+      scripts: [...document.querySelectorAll('[data-case^="popover"] script, [data-case^="popover"] [onclick], [data-case^="popover"] [onkeydown]')].length,
+    }))()`);
+    check(
+      'every Razor popover is enhanced and the unowned copy is not',
+      ownership.owned === 9 && ownership.enhanced === 9 && ownership.unowned === 0 && ownership.scripts === 0,
+      JSON.stringify(ownership),
+    );
+
+    // The server's open panel, taken over at bootstrap: moved to body,
+    // positioned, announced by no event and focused by nobody.
+    await delay(400);
+    const open = await page.evaluate(readPopover('Open'));
+    check(
+      'an initially open popover is teleported to body and positioned at bootstrap, without an event or a focus move',
+      open.expanded === 'true' &&
+        open.where === 'body' &&
+        open.tag === 'section' &&
+        open.positioned === true &&
+        open.labelledByTrigger &&
+        open.role === 'dialog' &&
+        open.tabindex === '-1' &&
+        open.arrowFirst &&
+        open.events.length === 0 &&
+        open.templates === 0 &&
+        open.focus === 'body',
+      JSON.stringify(open),
+    );
+    await page.evaluate(`document.body.focus()`);
+    await pressKey(page, 'Escape');
+    await delay(450);
+    const openClosed = await page.evaluate(readPopover('Open'));
+    check(
+      'Escape closes the server-opened popover, focuses its trigger and removes its panel',
+      openClosed.expanded === 'false' &&
+        openClosed.panel === false &&
+        openClosed.focus === 'trigger' &&
+        JSON.stringify(openClosed.events) === '[false]',
+      JSON.stringify(openClosed),
+    );
+
+    // Pointer: open focuses the panel itself, an inside click keeps it, a
+    // second trigger click closes and focuses the trigger.
+    await clickAt(page, '[data-case="popover-default"] .vf-popover__trigger');
+    const entering = await page.evaluate(`[...${popoverPanel('Default')}.classList]`);
+    await delay(400);
+    const clicked = await page.evaluate(readPopover('Default'));
+    check(
+      'a trigger click opens a dialog section in body, entering with the floating transition, and focuses the section',
+      entering.includes('vf-floating-transition-enter-active') &&
+        clicked.expanded === 'true' &&
+        clicked.where === 'body' &&
+        clicked.role === 'dialog' &&
+        clicked.labelledByTrigger &&
+        clicked.positioned === true &&
+        clicked.focus === 'panel' &&
+        JSON.stringify(clicked.panelClasses) === '["vf-popover__content"]' &&
+        JSON.stringify(clicked.events) === '[true]',
+      JSON.stringify({ entering, clicked }),
+    );
+    await clickElement(page, `${popoverPanel('Default')}.querySelector('.popover-inside')`);
+    await delay(100);
+    const inside = await page.evaluate(readPopover('Default'));
+    check(
+      'a click inside the panel keeps it open and emits nothing',
+      inside.expanded === 'true' && inside.events.length === 1,
+      JSON.stringify(inside),
+    );
+    const panelNode = await page.evaluate(`window.__popoverPanel = ${popoverPanel('Default')}; true`);
+    await clickAt(page, '[data-case="popover-default"] .vf-popover__trigger');
+    const leaving = await page.evaluate(`[...window.__popoverPanel.classList]`);
+    await delay(450);
+    const toggled = await page.evaluate(readPopover('Default'));
+    const removed = await page.evaluate(`window.__popoverPanel.isConnected`);
+    check(
+      'a second trigger click closes, focuses the trigger, and the panel leaves before it is removed',
+      panelNode &&
+        leaving.includes('vf-floating-transition-leave-active') &&
+        toggled.expanded === 'false' &&
+        toggled.focus === 'trigger' &&
+        removed === false &&
+        JSON.stringify(toggled.events) === '[true,false]',
+      JSON.stringify({ leaving, toggled, removed }),
+    );
+
+    // Keyboard: Enter and Space toggle, ArrowDown opens and re-opens, the
+    // others are left alone; only the handled keys are prevented.
+    await page.evaluate(
+      `window.__popoverKeys.length = 0; window.__popoverEvents.Default.length = 0; ${popoverTrigger('Default')}.focus()`,
+    );
+    await pressKey(page, 'ArrowUp');
+    await pressKey(page, 'Home');
+    await delay(100);
+    const ignored = await page.evaluate(readPopover('Default'));
+    await pressKey(page, 'Enter');
+    await delay(100);
+    const enterOpened = await page.evaluate(readPopover('Default'));
+    await page.evaluate(`${popoverTrigger('Default')}.focus()`);
+    await pressKey(page, 'Enter');
+    await delay(450);
+    const enterClosed = await page.evaluate(readPopover('Default'));
+    await pressKey(page, ' ');
+    await delay(100);
+    const spaceOpened = await page.evaluate(readPopover('Default'));
+    await page.evaluate(`${popoverTrigger('Default')}.focus()`);
+    await pressKey(page, 'ArrowDown');
+    await delay(100);
+    const reopened = await page.evaluate(readPopover('Default'));
+    const keys = await page.evaluate(`window.__popoverKeys.map((entry) => entry.key + ':' + entry.prevented)`);
+    check(
+      'ArrowUp and Home do nothing; Enter opens and closes; Space opens; ArrowDown on an open popover notifies again and refocuses the panel',
+      ignored.expanded === 'false' &&
+        enterOpened.expanded === 'true' &&
+        enterOpened.focus === 'panel' &&
+        enterClosed.expanded === 'false' &&
+        enterClosed.focus === 'trigger' &&
+        spaceOpened.expanded === 'true' &&
+        spaceOpened.focus === 'panel' &&
+        reopened.expanded === 'true' &&
+        reopened.focus === 'panel' &&
+        JSON.stringify(reopened.events) === '[true,false,true,true]',
+      JSON.stringify({ ignored, enterOpened, enterClosed, spaceOpened, reopened }),
+    );
+    check(
+      'the trigger prevents Enter, Space and ArrowDown and nothing else',
+      JSON.stringify(keys) === '["ArrowUp:false","Home:false","Enter:true","Enter:true"," :true","ArrowDown:true"]',
+      JSON.stringify(keys),
+    );
+    // An outside click closes it and focuses the trigger, away from what was clicked.
+    await clickAt(page, '[data-case="popover-default"] .popover-outside');
+    await delay(450);
+    const outside = await page.evaluate(readPopover('Default'));
+    check(
+      'an outside click closes the popover and focuses its trigger',
+      outside.expanded === 'false' && outside.panel === false && outside.focus === 'trigger',
+      JSON.stringify(outside),
+    );
+
+    // Both dismissal switches off.
+    await clickAt(page, '[data-case="popover-keep"] .vf-popover__trigger');
+    await delay(400);
+    await clickAt(page, '[data-case="popover-keep"] .popover-keep-outside');
+    await delay(100);
+    const keptOutside = await page.evaluate(readPopover('Keep'));
+    await page.evaluate(`window.__popoverKeys.length = 0`);
+    await pressKey(page, 'Escape');
+    await delay(100);
+    const keptEscape = await page.evaluate(readPopover('Keep'));
+    const keepKeys = await page.evaluate(`window.__popoverKeys.map((entry) => entry.key + ':' + entry.prevented)`);
+    check(
+      'closeOnOutsideClick off keeps it open and leaves focus where the click put it; closeOnEscape off takes Escape unprevented',
+      keptOutside.expanded === 'true' &&
+        keptOutside.focus === 'elsewhere:popover-keep-outside' &&
+        keptEscape.expanded === 'true' &&
+        JSON.stringify(keepKeys) === '["Escape:false"]',
+      JSON.stringify({ keptOutside, keptEscape, keepKeys }),
+    );
+    await clickAt(page, '[data-case="popover-keep"] .vf-popover__trigger');
+    await delay(450);
+
+    // Autofocus: the first match in document order, whichever form it is.
+    await clickAt(page, '[data-case="popover-autofocus"] .vf-popover__trigger');
+    await delay(100);
+    const autofocus = await page.evaluate(readPopover('Autofocus'));
+    check(
+      'the first [autofocus] or [data-autofocus] in document order takes focus',
+      autofocus.focus === 'inside:popover-data-first',
+      JSON.stringify(autofocus),
+    );
+    await clickAt(page, '[data-case="popover-autofocus"] .vf-popover__trigger');
+    await delay(450);
+
+    // Destinations.
+    await clickAt(page, '[data-case="popover-inline"] .vf-popover__trigger');
+    await delay(100);
+    const inline = await page.evaluate(
+      `[...document.querySelector('.vf-popover[aria-label="Inline"]').children].map((child) => child.tagName.toLowerCase() + '.' + child.className.split(' ')[0])`,
+    );
+    await clickAt(page, '[data-case="popover-inline"] .vf-popover__trigger');
+    await delay(450);
+    await clickAt(page, '[data-case="popover-target"] .vf-popover__trigger');
+    await delay(100);
+    const target = await page.evaluate(readPopover('Target'));
+    await clickAt(page, '[data-case="popover-target"] .vf-popover__trigger');
+    await delay(450);
+    check(
+      'teleport-to=false renders the panel after the trigger; a selector target receives it',
+      JSON.stringify(inline) === '["div.vf-popover__trigger","section.vf-popover__content","template."]' &&
+        target.where === 'razor-overlay-root',
+      JSON.stringify({ inline, target }),
+    );
+
+    // Two popovers on the stack.
+    await page.evaluate(`${popoverTrigger('One')}.focus()`);
+    await pressKey(page, 'ArrowDown');
+    await page.evaluate(`${popoverTrigger('Two')}.focus()`);
+    await pressKey(page, 'ArrowDown');
+    await delay(400);
+    await pressKey(page, 'Escape');
+    await delay(100);
+    const afterFirst = { one: await page.evaluate(readPopover('One')), two: await page.evaluate(readPopover('Two')) };
+    await pressKey(page, 'Escape');
+    await delay(450);
+    const afterSecond = await page.evaluate(readPopover('One'));
+    check(
+      'one Escape closes only the most recently opened popover, and the next the one below',
+      afterFirst.one.expanded === 'true' &&
+        afterFirst.two.expanded === 'false' &&
+        afterFirst.two.focus === 'trigger' &&
+        afterSecond.expanded === 'false' &&
+        afterSecond.focus === 'trigger',
+      JSON.stringify({ afterFirst, afterSecond }),
+    );
+    check(
+      'the enhanced popover page produced no script errors',
+      page.diagnostics.pageErrors.length === 0,
+      page.diagnostics.pageErrors.join('; '),
+    );
+  });
+
+  // ------------------------------------------- popover and dropdown, one stack
+  await withPage(chrome, server.origin, 'fixture-enhanced.html', async (page) => {
+    await page.waitFor(`Boolean(document.querySelector('[data-vf-razor-popover-enhanced]'))`);
+    await page.evaluate(`(async () => {
+      const section = document.querySelector('[data-case="popover-beside"]');
+      section.append(document.getElementById('popover-beside-source').content.cloneNode(true));
+      const module = await import('./vueforge-razor.js');
+      module.enhanceVueForgePopovers(section);
+      module.enhanceVueForgeDropdowns(section);
+    })()`);
+    await page.evaluate(installPopoverLog);
+    const dropdownOpen = `${dropdownTrigger('Beside')}.getAttribute('aria-expanded')`;
+
+    // Dropdown first, popover second: the popover closes first.
+    await page.evaluate(`${dropdownTrigger('Beside')}.focus()`);
+    await pressKey(page, 'ArrowDown');
+    await page.evaluate(`${popoverTrigger('Next')}.focus()`);
+    await pressKey(page, 'ArrowDown');
+    await delay(400);
+    await pressKey(page, 'Escape');
+    await delay(100);
+    const first = {
+      dropdown: await page.evaluate(dropdownOpen),
+      popover: (await page.evaluate(readPopover('Next'))).expanded,
+    };
+    await pressKey(page, 'Escape');
+    await delay(450);
+    const second = await page.evaluate(dropdownOpen);
+    check(
+      'across the two components Escape is one LIFO stack: the later-opened popover closes before the dropdown',
+      first.dropdown === 'true' && first.popover === 'false' && second === 'false',
+      JSON.stringify({ first, second }),
+    );
+
+    // Popover first, dropdown second: the dropdown closes first.
+    await page.evaluate(`${popoverTrigger('Next')}.focus()`);
+    await pressKey(page, 'ArrowDown');
+    await page.evaluate(`${dropdownTrigger('Beside')}.focus()`);
+    await pressKey(page, 'ArrowDown');
+    await delay(400);
+    await pressKey(page, 'Escape');
+    await delay(100);
+    const reversed = {
+      dropdown: await page.evaluate(dropdownOpen),
+      popover: (await page.evaluate(readPopover('Next'))).expanded,
+    };
+    await pressKey(page, 'Escape');
+    await delay(450);
+    check(
+      'and the other way round: the later-opened dropdown closes before the popover',
+      reversed.dropdown === 'false' && reversed.popover === 'true',
+      JSON.stringify(reversed),
+    );
+
+    // A closeOnEscape=false popover on top shields the dropdown below.
+    await page.evaluate(`${dropdownTrigger('Beside')}.focus()`);
+    await pressKey(page, 'ArrowDown');
+    await page.evaluate(`${popoverTrigger('Shield')}.focus()`);
+    await pressKey(page, 'ArrowDown');
+    await delay(400);
+    await page.evaluate(`window.__popoverKeys.length = 0`);
+    await pressKey(page, 'Escape');
+    await delay(100);
+    const shielded = {
+      dropdown: await page.evaluate(dropdownOpen),
+      popover: (await page.evaluate(readPopover('Shield'))).expanded,
+      keys: await page.evaluate(`window.__popoverKeys.map((entry) => entry.key + ':' + entry.prevented)`),
+    };
+    check(
+      'a closeOnEscape=false popover on top takes the Escape: nothing closes, nothing is prevented, the dropdown below stays open',
+      shielded.dropdown === 'true' &&
+        shielded.popover === 'true' &&
+        JSON.stringify(shielded.keys) === '["Escape:false"]',
+      JSON.stringify(shielded),
+    );
+    check(
+      'the shared-stack page produced no script errors',
+      page.diagnostics.pageErrors.length === 0,
+      page.diagnostics.pageErrors.join('; '),
+    );
+  });
+
+  // ---------------------------------------- popover unmounts a nested dropdown
+  await withPage(chrome, server.origin, 'fixture-enhanced.html', async (page) => {
+    await page.waitFor(`Boolean(document.querySelector('[data-vf-razor-popover-enhanced]'))`);
+    await page.evaluate(`(async () => {
+      // Only the sibling dropdown is inserted; the nested one is rendered by
+      // the popover itself, which enhances what each fresh panel holds.
+      const section = document.querySelector('[data-case="popover-beside"]');
+      section.append(document.getElementById('popover-beside-source').content.cloneNode(true));
+      const module = await import('./vueforge-razor.js');
+      module.enhanceVueForgePopovers(section);
+      module.enhanceVueForgeDropdowns(section);
+    })()`);
+    await page.evaluate(installPopoverLog);
+    const innerTrigger = `document.querySelector('.vf-dropdown[aria-label="Inner"] > .vf-dropdown__trigger')`;
+    const openNested = async () => {
+      await clickAt(page, '[data-case="popover-nested"] .vf-popover__trigger');
+      await delay(400);
+      await page.evaluate(installPopoverLog);
+      await page.evaluate(`${innerTrigger}.focus()`);
+      await pressKey(page, 'ArrowDown');
+      await delay(400);
+    };
+
+    await openNested();
+    const before = await page.evaluate(`({
+      inner: ${innerTrigger}?.closest('.vf-dropdown').hasAttribute('data-vf-razor-dropdown-enhanced') ?? null,
+      overlays: ${bodyOverlays},
+    })`);
+    check(
+      'a dropdown inside an open popover is enhanced and opens its menu in body beside the panel',
+      before.inner === true && before.overlays.length === 2,
+      JSON.stringify(before),
+    );
+
+    // Enter on the popover trigger closes it without any click reaching the
+    // dropdown; the reference's unmount takes the menu and the entry at once.
+    await page.evaluate(`window.__innerPanel = ${popoverPanel('Outer')}; ${popoverTrigger('Outer')}.focus()`);
+    await pressKey(page, 'Enter');
+    await delay(60);
+    const during = await page.evaluate(`({
+      overlays: ${bodyOverlays},
+      panelLeaving: window.__innerPanel.isConnected,
+      innerExpanded: window.__innerPanel.querySelector('.vf-dropdown__trigger')?.getAttribute('aria-expanded') ?? null,
+    })`);
+    await page.evaluate(`window.__popoverKeys.length = 0`);
+    await pressKey(page, 'Escape');
+    await delay(450);
+    const after = await page.evaluate(`({
+      overlays: ${bodyOverlays},
+      focus: document.activeElement === ${popoverTrigger('Outer')} ? 'outer trigger' : document.activeElement?.className ?? null,
+      keys: window.__popoverKeys.map((entry) => entry.key + ':' + entry.prevented),
+      events: window.__popoverEvents.Inner,
+    })`);
+    check(
+      'closing the popover with Enter removes the nested dropdown menu from body at once, while the panel still leaves',
+      JSON.stringify(during.overlays) ===
+        JSON.stringify([
+          `vf-popover__content#${await page.evaluate(`${popoverTrigger('Outer')}.getAttribute('aria-controls')`)}`,
+        ]) &&
+        during.panelLeaving === true &&
+        during.innerExpanded === 'true',
+      JSON.stringify(during),
+    );
+    check(
+      'the unmounted dropdown leaves the escape stack: the next Escape reaches nobody, is not prevented and moves no focus',
+      after.overlays.length === 0 &&
+        after.focus === 'outer trigger' &&
+        JSON.stringify(after.keys) === '["Escape:false"]' &&
+        JSON.stringify(after.events) === '[true]',
+      JSON.stringify(after),
+    );
+
+    // A fresh panel holds a fresh dropdown; the teardown did not break it or
+    // anything beside it.
+    await openNested();
+    const again = await page.evaluate(
+      `({ overlays: ${bodyOverlays}.length, expanded: ${innerTrigger}.getAttribute('aria-expanded') })`,
+    );
+    await pressKey(page, 'Escape');
+    await delay(450);
+    const againClosed = await page.evaluate(
+      `({ overlays: ${bodyOverlays}.length, outer: ${popoverTrigger('Outer')}.getAttribute('aria-expanded') })`,
+    );
+    await page.evaluate(`${dropdownTrigger('Beside')}.focus()`);
+    await pressKey(page, 'ArrowDown');
+    await delay(400);
+    await pressKey(page, 'Escape');
+    await delay(450);
+    const beside = await page.evaluate(`${dropdownTrigger('Beside')}.getAttribute('aria-expanded')`);
+    check(
+      'the reopened popover renders a working dropdown, and a dropdown beside it still opens and closes',
+      again.overlays === 2 &&
+        again.expanded === 'true' &&
+        againClosed.overlays === 1 &&
+        againClosed.outer === 'true' &&
+        beside === 'false',
+      JSON.stringify({ again, againClosed, beside }),
+    );
+    await pressKey(page, 'Escape');
+    await delay(450);
+
+    // An item click in the nested menu closes both: the teleported menu is
+    // outside the panel, so the popover sees an outside click.
+    await openNested();
+    await clickElement(
+      page,
+      `document.getElementById(${innerTrigger}.getAttribute('aria-controls')).querySelector('[role="menuitem"]')`,
+    );
+    await delay(450);
+    const itemClick = await page.evaluate(
+      `({ overlays: ${bodyOverlays}.length, outer: ${popoverTrigger('Outer')}.getAttribute('aria-expanded'), focus: document.activeElement === ${popoverTrigger('Outer')} })`,
+    );
+    check(
+      'an item click in the nested menu closes the menu and the popover, and focus ends on the popover trigger',
+      itemClick.overlays === 0 && itemClick.outer === 'false' && itemClick.focus === true,
+      JSON.stringify(itemClick),
+    );
+    check(
+      'the nested-teardown page produced no script errors',
+      page.diagnostics.pageErrors.length === 0,
+      page.diagnostics.pageErrors.join('; '),
+    );
+  });
+
+  // -------------------------------------------------------- popover, no-js
+  await withPage(chrome, server.origin, 'fixture-no-js.html', async (page) => {
+    const noJs = await page.evaluate(`(() => {
+      const trigger = document.querySelector('.vf-popover[aria-label="Default"] > .vf-popover__trigger');
+      trigger.click();
+      const section = document.querySelector('[data-case="popover-open"]');
+      section.append(document.getElementById('popover-open-source').content.cloneNode(true));
+      const openRoot = document.querySelector('.vf-popover[aria-label="Open"]');
+      const openPanel = openRoot.querySelector(':scope > .vf-popover__content');
+      return {
+        enhanced: document.querySelectorAll('[data-vf-razor-popover-enhanced]').length,
+        expandedAfterClick: trigger.getAttribute('aria-expanded'),
+        panelsInBody: document.querySelectorAll('body > .vf-popover__content').length,
+        closedPanel: Boolean(document.getElementById(trigger.getAttribute('aria-controls'))),
+        templateContentInert: document.querySelectorAll('[data-case="popover-default"] .popover-inside').length,
+        openInPlace: Boolean(openPanel),
+        openStyle: openPanel?.getAttribute('style') ?? null,
+        openExpanded: openRoot.querySelector(':scope > .vf-popover__trigger').getAttribute('aria-expanded'),
+      };
+    })()`);
+    check('no popover controller runs without its script', noJs.enhanced === 0, JSON.stringify(noJs));
+    check(
+      'without javascript a closed popover stays closed and its content is unreachable',
+      noJs.expandedAfterClick === 'false' &&
+        noJs.closedPanel === false &&
+        noJs.templateContentInert === 0 &&
+        noJs.panelsInBody === 0,
+      JSON.stringify(noJs),
+    );
+    check(
+      'without javascript an open popover shows its panel in place, unpositioned',
+      noJs.openInPlace && noJs.openStyle === 'left:0px;top:0px;' && noJs.openExpanded === 'true',
+      JSON.stringify(noJs),
+    );
+  });
+
+  // ------------------------------------------------ popover, double bootstrap
+  await withPage(chrome, server.origin, 'fixture-enhanced.html', async (page) => {
+    await page.waitFor(`Boolean(document.querySelector('[data-vf-razor-popover-enhanced]'))`);
+    await page.evaluate(installPopoverLog);
+    const anchorsBefore = await page.evaluate(
+      `[...document.body.childNodes].filter((node) => node.nodeType === Node.TEXT_NODE && node.textContent === '').length`,
+    );
+    await page.evaluate(`import('./vueforge-razor.js?bootstrap=popover').then(() => true)`);
+    await delay(250);
+    const anchorsAfter = await page.evaluate(
+      `[...document.body.childNodes].filter((node) => node.nodeType === Node.TEXT_NODE && node.textContent === '').length`,
+    );
+    await clickAt(page, '[data-case="popover-default"] .vf-popover__trigger');
+    await delay(400);
+    const twice = await page.evaluate(readPopover('Default'));
+    const panels = await page.evaluate(`document.querySelectorAll('body > .vf-popover__content').length`);
+    check(
+      'after a second bootstrap one popover click is one open: one panel, one event, no second anchor',
+      twice.expanded === 'true' &&
+        JSON.stringify(twice.events) === '[true]' &&
+        anchorsAfter === anchorsBefore &&
+        panels === 1,
+      JSON.stringify({ twice, anchorsBefore, anchorsAfter, panels }),
+    );
+    check(
+      'the double-bootstrapped popover page produced no script errors',
+      page.diagnostics.pageErrors.length === 0,
+      page.diagnostics.pageErrors.join('; '),
+    );
+  });
 } finally {
   await chrome.close();
   await server.close();
@@ -2895,5 +3476,5 @@ if (failures.length > 0) {
 }
 
 process.stdout.write(
-  '[razor-browser] OK: enhanced interactions, no-JS fallback, mixed Vue/Razor ownership and the accordion, stepper, tabs, dropdown and group box controllers.\n',
+  '[razor-browser] OK: enhanced interactions, no-JS fallback, mixed Vue/Razor ownership and the accordion, stepper, tabs, dropdown, group box and popover controllers.\n',
 );

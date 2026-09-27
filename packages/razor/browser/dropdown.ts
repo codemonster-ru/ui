@@ -31,9 +31,12 @@
 //     document click outside the trigger and the menu closes it and focuses
 //     the trigger; one listener per instance, registered at bootstrap in
 //     document order, as the reference registers them at mount;
-//   - Escape is a LIFO stack shared by every dropdown on the page: one
-//     document keydown listener, the most recently opened entry handles an
-//     Escape nobody prevented, and closes.
+//   - Escape is the page-wide LIFO stack in escape-stack.ts, shared with every
+//     other overlay: one document keydown listener, the most recently opened
+//     entry handles an Escape nobody prevented, and closes;
+//   - unmounted by a host (disposal.ts), as a dropdown inside a closing
+//     popover is: the menu leaves at once, without a leave, the entry leaves
+//     the stack, and nothing of this instance answers again.
 //
 // Every open and close dispatches one bubbling `vf-dropdown:open-change` on
 // the root with `{ open }`, the host's equivalent of update:open and
@@ -68,6 +71,8 @@ import {
   resolveDropdownMenuNavigation,
 } from '@codemonster-ru/vueforge-shared-core';
 import { vfMotionDurationsMs } from '@codemonster-ru/vueforge-theme';
+import { registerDisposal } from './disposal.js';
+import { activateEscapeEntry, removeEscapeEntry } from './escape-stack.js';
 
 const ROOT_SELECTOR = '[data-vf-razor="dropdown"]';
 const ENHANCED_ATTRIBUTE = 'data-vf-razor-dropdown-enhanced';
@@ -78,36 +83,8 @@ const DURATION = vfMotionDurationsMs.normal;
 
 // ------------------------------------------------------------- escape stack
 
-// The reference's useEscapeKey, for this adapter's dropdowns: an entry is
-// removed and pushed again whenever it activates, the single document
-// listener exists only while an entry does, and only the last entry sees an
-// Escape nobody has prevented.
-type EscapeEntry = (event: KeyboardEvent) => void;
-const escapeEntries: EscapeEntry[] = [];
-let escapeListener: ((event: KeyboardEvent) => void) | null = null;
-
-function removeEscapeEntry(entry: EscapeEntry): void {
-  const index = escapeEntries.indexOf(entry);
-  if (index >= 0) escapeEntries.splice(index, 1);
-
-  if (escapeEntries.length === 0 && escapeListener) {
-    document.removeEventListener('keydown', escapeListener);
-    escapeListener = null;
-  }
-}
-
-function activateEscapeEntry(entry: EscapeEntry): void {
-  removeEscapeEntry(entry);
-  escapeEntries.push(entry);
-
-  if (escapeListener) return;
-
-  escapeListener = (event: KeyboardEvent) => {
-    if (event.key !== 'Escape' || event.defaultPrevented) return;
-    escapeEntries[escapeEntries.length - 1]?.(event);
-  };
-  document.addEventListener('keydown', escapeListener);
-}
+// The reference's useEscapeKey stack is page-wide and shared with every other
+// consumer - since M30 a popover too - so it lives in its own module.
 
 // --------------------------------------------------------------- transition
 
@@ -235,6 +212,8 @@ function enhanceRoot(root: HTMLElement, enhanceContent: (node: ParentNode) => vo
   let live: LiveMenu | null = null;
   let stopAutoUpdate: (() => void) | null = null;
   let run = 0;
+  // Set once a host has unmounted this instance; nothing answers after it.
+  let disposed = false;
 
   const isOpen = () => trigger.getAttribute('aria-expanded') === 'true';
   const menuClasses = () => resolveDropdownMenuClasses(variant, currentPlacement);
@@ -441,13 +420,13 @@ function enhanceRoot(root: HTMLElement, enhanceContent: (node: ParentNode) => vo
   }
 
   trigger.addEventListener('click', () => {
-    if (disabled) return;
+    if (disabled || disposed) return;
     if (isOpen()) close();
     else open(false);
   });
 
   trigger.addEventListener('keydown', (event) => {
-    if (disabled) return;
+    if (disabled || disposed) return;
     if (!DROPDOWN_TRIGGER_OPEN_KEYS.includes(event.key)) return;
     event.preventDefault();
     open(true);
@@ -456,11 +435,29 @@ function enhanceRoot(root: HTMLElement, enhanceContent: (node: ParentNode) => vo
   // One outside listener per instance, for the life of the page, gated by the
   // open state - the reference's useClickOutside with event 'click'.
   document.addEventListener('click', (event) => {
-    if (!isOpen()) return;
+    if (disposed || !isOpen()) return;
     const node = event.target;
     if (!(node instanceof Node)) return;
     if (trigger.contains(node) || (live && live.phase !== 'leaving' && live.element.contains(node))) return;
     close();
+  });
+
+  // What the reference's unmount does to a dropdown inside content a host
+  // removes: a teleported menu goes at once - Teleport removes its children
+  // without the leave - the entry leaves the escape stack and autoUpdate
+  // stops. An in-place menu, like the trigger, is left as it is, aria-expanded
+  // included, because it leaves with the host's markup. No notification and
+  // no focus move: an unmount emits nothing.
+  registerDisposal(root, () => {
+    disposed = true;
+    removeEscapeEntry(onEscape);
+    stopPositioning();
+    if (live) {
+      clearTimers(live);
+      if (teleported) live.element.remove();
+      live = null;
+    }
+    anchor?.remove();
   });
 
   // A menu the server rendered open is replaced by a fresh one at its
