@@ -131,6 +131,11 @@ export const requiredEntries = [
   // dist/vueforge-razor.js; the packaged-consumer proof asserts it is there.
   'src/Components/GroupBoxComponent.php',
   'src/Support/GroupBoxState.php',
+  // The M30 component: the second overlay. Its browser controller, the
+  // page-wide escape stack it shares with the dropdown and the disposal of
+  // what a closing panel holds all travel inside dist/vueforge-razor.js.
+  'src/Components/PopoverComponent.php',
+  'src/Support/PopoverState.php',
   'resources/icons/icon-registry.json',
   'dist/vueforge-razor.css',
   'dist/vueforge-razor.js',

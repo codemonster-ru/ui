@@ -182,6 +182,9 @@ const controlSelectors = {
   // which exists only for a collapsible, titled group; a static group owns no
   // control at all (see controlsPerCase).
   VfGroupBox: 'button.vf-group-box__trigger',
+  // The M30 component. The trigger wrapper, one per instance; the panel it
+  // owns while open is outside the case, and the probe below reads it there.
+  VfPopover: '.vf-popover__trigger',
 };
 
 /**
@@ -222,6 +225,9 @@ const controlsPerCase = {
   // is what the catalog declares and the coverage gate checks against the
   // JavaScript title test. Every static case renders none.
   VfGroupBox: (parityCase) => parityCase.componentInteractive ?? 0,
+  // One trigger per instance; a panel is a control only while open, and it is
+  // outside the case.
+  VfPopover: (parityCase) => (Array.isArray(parityCase.group) ? parityCase.group.length : 1),
 };
 
 /**
@@ -236,6 +242,9 @@ const rootsPerCase = {
   VfStepper: (parityCase) => (Array.isArray(parityCase.group) ? parityCase.group.length : 1),
   VfTabs: (parityCase) => (Array.isArray(parityCase.group) ? parityCase.group.length : 1),
   VfDropdown: (parityCase) => (Array.isArray(parityCase.group) ? parityCase.group.length : 1),
+  // One popover root per instance. A dropdown beside or inside it carries its
+  // own marker and is not counted here.
+  VfPopover: (parityCase) => (Array.isArray(parityCase.group) ? parityCase.group.length : 1),
   // Every group box root carries the marker, static or not; a nested one is in
   // the DOM only while its parent shows its content - inside a closed parent
   // it waits in the parent's inert template.
@@ -284,6 +293,7 @@ const ownershipMarkers = {
   VfTabs: { root: '[data-vf-razor="tabs"]', enhanced: '[data-vf-razor-tabs-enhanced]' },
   VfDropdown: { root: '[data-vf-razor="dropdown"]', enhanced: '[data-vf-razor-dropdown-enhanced]' },
   VfGroupBox: { root: '[data-vf-razor="group-box"]', enhanced: '[data-vf-razor-group-box-enhanced]' },
+  VfPopover: { root: '[data-vf-razor="popover"]', enhanced: '[data-vf-razor-popover-enhanced]' },
 };
 
 const components = showcaseIndex.components
@@ -353,6 +363,7 @@ check(
       'VfMenu',
       'VfMenuItem',
       'VfPanel',
+      'VfPopover',
       'VfProgressBar',
       'VfProgressSpinner',
       'VfRadio',
@@ -1208,6 +1219,140 @@ async function probeTabsSelect(origin, path) {
 }
 
 /**
+ * Drives the real popover on one platform with real pointer and key events
+ * and reads each panel where it is - in <body>, through its trigger's
+ * aria-controls. The last step is the M30 teardown: a dropdown opened inside a
+ * popover, the popover closed with Enter, which gives the dropdown no outside
+ * click; its menu has to leave <body> with it on both platforms. No Escape is
+ * pressed when nothing on the page would take it, and no unhandled navigation
+ * key: the page has no harness to absorb the headless Chrome defect that hides
+ * a tab after one.
+ */
+async function probePopoverBehaviour(origin, path) {
+  const page = await openPage(chrome.endpoint);
+  const state = (caseId) => `(() => {
+    const trigger = document.querySelector('[data-showcase-case="${caseId}"] .vf-popover__trigger');
+    const panel = document.getElementById(trigger.getAttribute('aria-controls'));
+    const active = document.activeElement;
+    return {
+      expanded: trigger.getAttribute('aria-expanded'),
+      haspopup: trigger.getAttribute('aria-haspopup'),
+      panel: panel ? {
+        inBody: panel.parentElement === document.body,
+        tag: panel.tagName.toLowerCase(),
+        role: panel.getAttribute('role'),
+        tabindex: panel.getAttribute('tabindex'),
+        labelledByTrigger: panel.getAttribute('aria-labelledby') === trigger.id,
+        positioned: panel.style.left !== '0px' || panel.style.top !== '0px',
+        arrowFirst: panel.firstElementChild?.classList.contains('vf-popover__arrow') ?? false,
+        transition: [...panel.classList].filter((name) => name.startsWith('vf-floating-transition-')).join(' '),
+        below: panel.getBoundingClientRect().top >= trigger.getBoundingClientRect().bottom,
+      } : null,
+      focus: active === trigger ? 'trigger' : panel && active === panel ? 'panel' : panel && panel.contains(active) ? 'inside:' + active.textContent.trim() : 'elsewhere',
+      menusInBody: [...document.body.children].filter((node) => node.classList.contains('vf-dropdown__menu')).length,
+    };
+  })()`;
+  const key = async (name, code, keyCode, text) => {
+    const base = { key: name, code, windowsVirtualKeyCode: keyCode, nativeVirtualKeyCode: keyCode };
+    if (text) await page.send('Input.dispatchKeyEvent', { type: 'keyDown', ...base, text, unmodifiedText: text });
+    else await page.send('Input.dispatchKeyEvent', { type: 'rawKeyDown', ...base });
+    await page.send('Input.dispatchKeyEvent', { type: 'keyUp', ...base });
+    await delay(120);
+  };
+  const click = async (expression) => {
+    await page.evaluate(`(${expression}).scrollIntoView({ block: 'center' })`);
+    await delay(150);
+    const point = await page.evaluate(
+      `(() => { const rect = (${expression}).getBoundingClientRect(); return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }; })()`,
+    );
+    await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...point });
+    await page.send('Input.dispatchMouseEvent', { type: 'mousePressed', ...point, button: 'left', clickCount: 1 });
+    await page.send('Input.dispatchMouseEvent', { type: 'mouseReleased', ...point, button: 'left', clickCount: 1 });
+  };
+  const triggerOf = (caseId) => `document.querySelector('[data-showcase-case="${caseId}"] .vf-popover__trigger')`;
+  const panelOf = (caseId) => `document.getElementById(${triggerOf(caseId)}.getAttribute('aria-controls'))`;
+
+  try {
+    await page.send('Page.enable');
+    await page.send('Runtime.enable');
+    await page.send('Emulation.setDeviceMetricsOverride', { ...viewport, deviceScaleFactor: 1, mobile: false });
+    await page.send('Page.navigate', { url: `${origin}${path}` });
+    await page.waitFor(
+      `Boolean(document.querySelector('[data-showcase-case="popover/interaction-click-open"] .vf-popover__trigger'))`,
+    );
+    await delay(600);
+
+    const initial = await page.evaluate(`(() => ({
+      openOnLoad: [...document.querySelectorAll('.vf-popover__trigger[aria-expanded="true"]')].length,
+      panelsInBody: [...document.body.children].filter((node) => node.classList.contains('vf-popover__content')).length,
+      inlineScripts: [...document.querySelectorAll('script:not([src])')].filter((script) => /popover|dropdown|floater/i.test(script.textContent)).length,
+    }))()`);
+
+    // Keyboard: ArrowDown opens into <body> and focuses the panel; Escape - the
+    // top of the stack is this popover - closes it and focuses the trigger.
+    await page.evaluate(`${triggerOf('popover/interaction-arrowdown-open')}.focus()`);
+    await key('ArrowDown', 'ArrowDown', 40);
+    await delay(400);
+    const keyboardOpen = await page.evaluate(state('popover/interaction-arrowdown-open'));
+    await key('Escape', 'Escape', 27);
+    const escaped = await page.evaluate(state('popover/interaction-arrowdown-open'));
+    await delay(450);
+    const escapedLater = await page.evaluate(state('popover/interaction-arrowdown-open'));
+
+    // The catalog's initially open popovers close on the first outside click
+    // and hand focus back to their own triggers - after the new panel took it.
+    // A click on the page corner closes them first, so the pointer steps below
+    // read one popover.
+    await page.evaluate('window.scrollTo(0, 0)');
+    await page.send('Input.dispatchMouseEvent', { type: 'mousePressed', x: 2, y: 2, button: 'left', clickCount: 1 });
+    await page.send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: 2, y: 2, button: 'left', clickCount: 1 });
+    await delay(450);
+
+    // Pointer: a click opens and focuses the panel, a click inside keeps it,
+    // a second trigger click closes it and focuses the trigger.
+    await click(triggerOf('popover/interaction-click-inside'));
+    await delay(450);
+    const pointerOpen = await page.evaluate(state('popover/interaction-click-inside'));
+    await click(`${panelOf('popover/interaction-click-inside')}.querySelector('.parity-panel-control')`);
+    await delay(200);
+    const insideKept = await page.evaluate(state('popover/interaction-click-inside'));
+    await click(triggerOf('popover/interaction-click-inside'));
+    await delay(450);
+    const toggledClosed = await page.evaluate(state('popover/interaction-click-inside'));
+
+    // Teardown: open the popover holding a dropdown, open the dropdown, close
+    // the popover with Enter. The dropdown's menu must leave <body> at once.
+    await click(triggerOf('popover/nested'));
+    await delay(450);
+    await page.evaluate(`${panelOf('popover/nested')}.querySelector('.vf-dropdown__trigger').focus()`);
+    await key('ArrowDown', 'ArrowDown', 40);
+    await delay(450);
+    const nestedOpen = await page.evaluate(state('popover/nested'));
+    await page.evaluate(`${triggerOf('popover/nested')}.focus()`);
+    await key('Enter', 'Enter', 13, '\r');
+    await delay(60);
+    const tornDown = await page.evaluate(state('popover/nested'));
+    await delay(450);
+    const tornDownLater = await page.evaluate(state('popover/nested'));
+
+    return {
+      initial,
+      keyboardOpen,
+      escaped,
+      escapedLater,
+      pointerOpen,
+      insideKept,
+      toggledClosed,
+      nestedOpen,
+      tornDown,
+      tornDownLater,
+    };
+  } finally {
+    await page.close();
+  }
+}
+
+/**
  * Drives the real dropdown on one platform with real pointer and key events
  * and reads each menu where it is - in <body>, found through its trigger's
  * aria-controls. Every step is chosen to mean the same on a page that also
@@ -1404,6 +1549,7 @@ try {
       'VfTabs',
       'VfDropdown',
       'VfGroupBox',
+      'VfPopover',
     ].includes(name);
 
     for (const theme of themes) {
@@ -1627,6 +1773,84 @@ try {
       // tabindex, the one panel with its label and content, the measured
       // indicator - with no showcase script, on a page whose scroller had
       // reached its animated frame.
+      // --------------------------------- the popover on both real pages
+      //
+      // M30: the second overlay, and the teardown of a dropdown inside it.
+      if (name === 'VfPopover') {
+        const popoverCatalog = JSON.parse(
+          readFileSync(resolve(repositoryRoot, 'contracts/popover/cases.json'), 'utf8'),
+        );
+        const initiallyOpen = popoverCatalog.cases.flatMap((parityCase) =>
+          (parityCase.group ?? [parityCase.props ?? {}]).filter((member) => member.open ?? member.defaultOpen),
+        );
+        const teleportedOpen = initiallyOpen.filter((member) => !member.disableTeleport && member.teleportTo !== false);
+        const readings = {};
+        for (const [platform, origin, route] of [
+          ['vue', vueOrigin, `${vueRoute}&theme=${theme}`],
+          ['razor', razorOrigin, `${razorRoute}&theme=${theme}`],
+        ]) {
+          const run = await probePopoverBehaviour(origin, route);
+          readings[platform] = run;
+          check(
+            `[${name}/${theme}] the ${platform} showcase opens the catalog's initially open popovers, the teleported ones in <body>, with no script of its own`,
+            run.initial.openOnLoad === initiallyOpen.length &&
+              run.initial.panelsInBody === teleportedOpen.length &&
+              run.initial.inlineScripts === 0,
+            JSON.stringify({ ...run.initial, expected: [initiallyOpen.length, teleportedOpen.length] }),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase opens on ArrowDown into a positioned dialog section in <body>, labelled by its trigger, focusing the panel`,
+            run.keyboardOpen.expanded === 'true' &&
+              run.keyboardOpen.panel?.inBody &&
+              run.keyboardOpen.panel.tag === 'section' &&
+              run.keyboardOpen.panel.role === 'dialog' &&
+              run.keyboardOpen.panel.tabindex === '-1' &&
+              run.keyboardOpen.panel.labelledByTrigger &&
+              run.keyboardOpen.panel.positioned &&
+              run.keyboardOpen.panel.below &&
+              run.keyboardOpen.panel.arrowFirst &&
+              run.keyboardOpen.focus === 'panel' &&
+              run.keyboardOpen.haspopup === 'dialog',
+            JSON.stringify(run.keyboardOpen),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase closes on Escape, focuses the trigger, and removes the panel after its leave`,
+            run.escaped.expanded === 'false' &&
+              run.escaped.focus === 'trigger' &&
+              run.escaped.panel?.transition.includes('vf-floating-transition-leave') &&
+              run.escapedLater.panel === null,
+            JSON.stringify({ escaped: run.escaped, later: run.escapedLater.panel }),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase keeps the panel open on an inside click and toggles it closed from the trigger`,
+            run.pointerOpen.expanded === 'true' &&
+              run.pointerOpen.focus === 'panel' &&
+              run.insideKept.expanded === 'true' &&
+              run.insideKept.focus === 'inside:Invite' &&
+              run.toggledClosed.expanded === 'false' &&
+              run.toggledClosed.panel === null &&
+              run.toggledClosed.focus === 'trigger',
+            JSON.stringify({ open: run.pointerOpen, inside: run.insideKept, closed: run.toggledClosed }),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase unmounts a dropdown open inside a popover closed with Enter: its menu leaves <body> at once`,
+            run.nestedOpen.expanded === 'true' &&
+              run.nestedOpen.menusInBody === 1 &&
+              run.tornDown.expanded === 'false' &&
+              run.tornDown.menusInBody === 0 &&
+              run.tornDown.focus === 'trigger' &&
+              run.tornDownLater.panel === null &&
+              run.tornDownLater.menusInBody === 0,
+            JSON.stringify({ nestedOpen: run.nestedOpen, tornDown: run.tornDown, later: run.tornDownLater }),
+          );
+        }
+        check(
+          `[${name}/${theme}] the Vue and Razor popover showcases read the same at every step`,
+          JSON.stringify(readings.vue) === JSON.stringify(readings.razor),
+          JSON.stringify(readings),
+        );
+      }
+
       // --------------------------------- the dropdown on both real pages
       //
       // M28: the overlay. Driven with real events on both platforms and read

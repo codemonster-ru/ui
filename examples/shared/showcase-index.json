@@ -748,7 +748,16 @@
           "status": "implemented"
         },
         "razor": {
-          "status": "not-implemented"
+          "status": "implemented",
+          "caseSource": "contracts/popover/cases.json"
+        }
+      },
+      "showcase": {
+        "caseSource": "contracts/popover/cases.json",
+        "caseIdField": "id",
+        "routes": {
+          "vue": "/popover",
+          "razor": "/"
         }
       }
     },

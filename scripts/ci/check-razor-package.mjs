@@ -182,6 +182,33 @@ check(
     JSON.stringify([{ name: '@codemonster-ru/floater.js', version: '1.0.11', license: 'MIT' }]),
   JSON.stringify(assetManifest.browser.thirdParty),
 );
+// M30: the popover controller, and the escape stack and disposal it shares
+// with the dropdown - each once, and floater.js still one bundled copy, not a
+// second one for the second consumer.
+check(
+  'the packaged controller carries the popover enhancement exactly once',
+  js.includes('data-vf-razor-popover-enhanced') &&
+    js.includes('vf-popover:open-change') &&
+    js.split('function enhanceVueForgePopovers(').length === 2,
+);
+check(
+  'the packaged controller carries one escape stack and one disposal registry, shared by both overlays',
+  js.split('function activateEscapeEntry(').length === 2 &&
+    js.split('function removeEscapeEntry(').length === 2 &&
+    js.split('function disposeWithin(').length === 2 &&
+    js.split('function registerDisposal(').length === 2,
+);
+check(
+  'the packaged controller bundles floater.js exactly once for its two consumers',
+  js.split('// node_modules/@codemonster-ru/floater.js/dist/index.mjs').length === 2 &&
+    js.split('[floater.js] flip middleware expects params.placements').length === 2,
+);
+check(
+  'the packaged stylesheet carries the popover rules exactly once',
+  (css.match(/^\.vf-popover__content \{$/gm) ?? []).length === 1 &&
+    (css.match(/^\.vf-popover__trigger \{$/gm) ?? []).length === 1 &&
+    css.includes('.vf-floating-transition-enter-from.vf-popover__content'),
+);
 check(
   'the packaged stylesheet carries the dropdown rules exactly once',
   (css.match(/^\.vf-dropdown__menu \{$/gm) ?? []).length === 1 &&

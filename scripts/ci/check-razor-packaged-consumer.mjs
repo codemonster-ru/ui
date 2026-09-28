@@ -195,6 +195,7 @@ $menu = $registry->resolve('vf-menu');
 $menuItem = $registry->resolve('vf-menu-item');
 $dropdown = $registry->resolve('vf-dropdown');
 $groupBox = $registry->resolve('vf-group-box');
+$popover = $registry->resolve('vf-popover');
 $assetPath = VueForgeRazorProvider::assetPath();
 $tabItems = [
     ['value' => 'overview', 'label' => 'Overview'],
@@ -242,6 +243,7 @@ echo json_encode([
         'vf-menu-item' => $registry->handles('vf-menu-item'),
         'vf-dropdown' => $registry->handles('vf-dropdown'),
         'vf-group-box' => $registry->handles('vf-group-box'),
+        'vf-popover' => $registry->handles('vf-popover'),
     ],
     'markup' => $input->render(new ComponentRenderContext(
         ['name' => 'workspace', 'value' => 'Acme', 'clearable' => true, 'password-reveal' => false],
@@ -851,6 +853,32 @@ echo json_encode([
     'groupBoxCss' => is_file($assetPath . '/vueforge-razor.css')
         && substr_count((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-group-box {') === 1
         && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-group-box--collapsed .vf-group-box__icon'),
+    // VfPopover, M30: closed, the panel waits in an inert template; open, a
+    // section[role=dialog][tabindex=-1] is rendered in place until the
+    // controller moves it. Its controller shares the dropdown's escape stack.
+    'popoverClosed' => $popover->render(new ComponentRenderContext(
+        [],
+        [
+            'trigger' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('<span>Details</span>'),
+            'default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('<p>Shared with 3 people.</p>'),
+        ],
+    ))->value(),
+    'popoverOpen' => $popover->render(new ComponentRenderContext(
+        ['default-open' => true, 'placement' => 'bottom-end', 'close-on-escape' => false],
+        [
+            'trigger' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('<span>Details</span>'),
+            'default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('<p>Shared with 3 people.</p>'),
+        ],
+    ))->value(),
+    'popoverConstructorTakesNothing' => (new ReflectionClass($popover))->getConstructor() === null,
+    'popoverBrowserCode' => str_contains($controllerSource, 'data-vf-razor-popover-enhanced')
+        && str_contains($controllerSource, 'vf-popover:open-change')
+        && substr_count($controllerSource, 'function activateEscapeEntry(') === 1
+        && substr_count($controllerSource, '[floater.js] flip middleware expects params.placements') === 1,
+    'popoverCss' => is_file($assetPath . '/vueforge-razor.css')
+        && preg_match_all('/^\\.vf-popover__content \\{/m', (string) file_get_contents($assetPath . '/vueforge-razor.css')) === 1
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-popover__arrow--top')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-floating-transition-enter-from.vf-popover__content'),
     'dropdownClosed' => $dropdown->render(new ComponentRenderContext(
         [],
         [
@@ -2105,6 +2133,43 @@ echo json_encode([
     );
   }
   check('the dropdown component takes no constructor argument', rendered.dropdownConstructorTakesNothing === true);
+  check('the registry resolves vf-popover', rendered.handles['vf-popover'] === true);
+  check(
+    'the consumer renders a closed popover: the trigger wrapper announcing a dialog, a dangling aria-controls and the panel in an inert template',
+    /^<div class="vf-popover" data-vf-razor="popover"[^>]*><div id="vf-popover-trigger-r-\d+" class="vf-popover__trigger" aria-controls="vf-popover-content-r-\d+" aria-expanded="false" aria-haspopup="dialog" tabindex="0"><span>Details<\/span><\/div><template data-vf-razor-popover="content"><p>Shared with 3 people.<\/p><\/template><\/div>$/.test(
+      rendered.popoverClosed,
+    ),
+    rendered.popoverClosed,
+  );
+  {
+    const trigger = /id="(vf-popover-trigger-r-\d+)"[^>]*aria-controls="(vf-popover-content-r-\d+)"/.exec(
+      rendered.popoverOpen,
+    );
+    check(
+      'the consumer renders an open popover: the dialog section in place, labelled by its trigger, with the placement and the switch as adapter metadata',
+      trigger !== null &&
+        rendered.popoverOpen.includes('aria-expanded="true"') &&
+        rendered.popoverOpen.includes('data-vf-razor-popover-placement="bottom-end"') &&
+        rendered.popoverOpen.includes('data-vf-razor-popover-close-on-escape="false"') &&
+        rendered.popoverOpen.includes(
+          `<section id="${trigger[2]}" class="vf-popover__content" style="left:0px;top:0px;" aria-labelledby="${trigger[1]}" role="dialog" tabindex="-1">`,
+        ) &&
+        !rendered.popoverOpen.includes('<template') &&
+        !rendered.popoverOpen.includes('<script'),
+      rendered.popoverOpen,
+    );
+  }
+  check('the popover component takes no constructor argument', rendered.popoverConstructorTakesNothing === true);
+  check(
+    'the packaged controller carries the popover layer on the one escape stack and the one floater.js copy',
+    rendered.popoverBrowserCode === true,
+    'vueforge-razor.js lacks the popover layer, or carries a second escape stack or floater.js copy',
+  );
+  check(
+    'the packaged stylesheet carries the popover panel rule once, the arrow sides and the floating transition',
+    rendered.popoverCss === true,
+    'vueforge-razor.css is missing popover rules or duplicates them',
+  );
   check(
     'the packaged controller carries the dropdown layer with floater.js 1.0.11 bundled, its MIT notice preserved and no import left to resolve',
     rendered.dropdownBrowserCode === true,
