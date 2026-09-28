@@ -1,0 +1,245 @@
+{
+  "$comment": "Parity policy for the shared VfPopover cases. Plain data: no DSL, no waiver engine. The second overlay policy, and the first whose cases hold another overlay: the escape stack VfPopover shares with VfDropdown and the unmount of a dropdown inside a closing popover are compared live. It starts empty. What the Razor adapter cannot represent - a consumer that refuses the emitted value, the scoped slot props, a teleport target given as an element - is not an approval: the controlled mode is a declared platform divergence with both halves covered, and the rest is recorded below with where it is covered.",
+  "classifications": {
+    "exact": "Must match literally across every target. Structure, canonical classes, native attributes, the menu's inline position and the arrow's, visible text, accessible names and states, live state, ownership, relationships, focus, the event log and the transitions.",
+    "semantic": "Framework mechanics may differ; the observable meaning must not. How content is composed, how state is stored, how a renderer marks its own output, which literal a generated id has, how an adapter anchors its teleported content.",
+    "framework-specific": "Historical behaviour of one adapter that the other is not required to reproduce. Narrow, named, and covered by its own test."
+  },
+  "notCompared": {
+    "$comment": "Recorded so a reviewer can see what is deliberately outside the comparison, without leaving dead dimensions that look like live protection. Nothing here is a waiver: the extractor never produces these differences in the first place.",
+    "attributeOrder": "Attributes are extracted into a sorted map, so serialisation order cannot produce a difference.",
+    "rendererMarkers": "Vue scope attributes (data-v-*), the Razor ownership marker, the Razor adapter's configuration (data-vf-razor-popover-*) and the inert <template data-vf-razor-popover=\"content\"> holding a closed popover's content are dropped by scripts/parity/extract.mjs. What the template holds is compared the moment the controller renders it into a panel.",
+    "teleportAnchors": "Vue's Teleport marks its place in <body> with empty text nodes and a v-if comment; the Razor controller appends one empty text node per instance at bootstrap. Neither is an element. That panels sit in <body> in instance order is compared through document-order id tokens and pinned by the characterization suite.",
+    "generatedIdLiterals": "Vue's useId writes vf-popover-*-v-N and the Razor server writes vf-popover-*-r-N; the extractor rewrites every id to its document position, the followed panel's after the root's, and every aria-controls / aria-labelledby through the same map. A closed popover's aria-controls is compared as #dangling.",
+    "eventTransport": "Vue emits update:open and then openChange; the Razor controllers dispatch one bubbling vf-popover:open-change or vf-dropdown:open-change with { open }. What is compared is the neutral log each fixture keeps from readiness on, with the component and the instance, as interaction.events - repeats included. The Vue pair's order and count are pinned by the characterization suite.",
+    "styleSerialisation": "Both adapters write the panel's and the arrow's inline position through the CSSOM at run time, and the Razor server writes an open panel's unpositioned seed as attribute text. The extractor parses both through the browser and compares the declarations: `top: 84.8589px` written by two scripts compares equal and a rounded or recomputed one does not."
+  },
+  "platformDivergences": [
+    {
+      "id": "razor-has-no-controlled-mode",
+      "description": "Vue: a defined `open` is controlled - a gesture emits update:open and openChange with the requested value and changes nothing until the parent writes it back; focus still moves to the trigger on a refused close. Razor: `open` is the initial state only (it still wins over default-open), and the controller opens and closes on its own and dispatches vf-popover:open-change.",
+      "reason": "A server-rendered popover has no parent in the page to emit a request to and wait on. Reproducing the wait would leave every Razor popover given `open` permanently inert without a script protocol the reference never had. The same divergence as VfDropdown's and VfGroupBox's.",
+      "comparedAs": "popover/interaction-controlled-model and popover/interaction-controlled-model-close: the Vue fixtures wire update:open back into the prop (v-model), the Razor adapter toggles directly, and all three targets must land on the same DOM, events, focus and tree.",
+      "vueHalfCoveredBy": "packages/core/src/components/popover/VfPopover.characterization.spec.ts (controlled: a click emits the request and changes nothing until written back; a refused close still focuses the trigger; the v-model round trip; a parent write emits nothing and moves no focus)",
+      "razorHalfCoveredBy": "packages/razor/tests/Components/PopoverComponentTest.php (testOpenWinsOverDefaultOpenWheneverItIsGiven) and scripts/ci/check-razor-browser.mjs (the server-opened popover is closed by its own Escape and click)",
+      "mutationCoveredBy": "scripts/baseline/input-mutations.mjs#popover-controlled-becomes-uncontrolled - the Razor reading applied to the Vue component - is detected by the characterization suite"
+    }
+  ],
+  "outsideTheCatalog": {
+    "$comment": "Behaviour that is part of the contract and deliberately not represented as a parity case, each with where it is covered instead.",
+    "scopedSlotProps": "The trigger slot's open/toggle and the default slot's open/close are Vue-only: a server-rendered slot is static markup, so a consumer button in a Razor panel has no close function to call. Pinned by the characterization suite; the Razor slots are documented as static.",
+    "teleportToElement": "teleportTo given as an HTMLElement is Vue-only; a selector is covered by the Razor browser gate (teleport-to=\"#razor-overlay-root\") and the characterization suite; teleportTo: null is spelled teleport-to=\"false\" by the Razor adapter's null convention, and teleportTo=false is a catalog case.",
+    "parentWrite": "A parent writing `open` opens or closes a Vue popover without an emit and without moving focus. The Razor adapter has no parent; pinned by the characterization suite.",
+    "focusScopeBranch": "Inside an active modal focus trap the open panel joins the trap's scope. No migrated component owns a trap yet; the branch is pinned by the characterization suite and is outside the Razor controller until a trap exists.",
+    "initiallyOpenDropdowns": "No case opens a dropdown initially, beside a popover or inside one: a dropdown's menu is not a declared edge of this profile, so the isolation of a scenario could not remove it and it would take outside clicks in every other scenario. Every stack and teardown scenario opens its dropdown with real keys.",
+    "leavingPanelContent": "While a closed popover's panel leaves, a nested dropdown's trigger stays inside it frozen at aria-expanded=\"true\" and its teleported menu is already gone. The snapshot waits for the leave to finish, so the catalog compares the end; the in-flight moment is pinned by the characterization suite and the Razor browser gate.",
+    "popoverInPopover": "A popover inside a popover is unmounted the same way - the Razor controller registers its own disposal and disposes what its panel holds. Not a catalog case: the escape stack and the teardown are measured with the dropdown, the one other overlay with a controller.",
+    "tabOutOfTheDocument": "Tab from the last focusable element leaves the document, and headless Chrome then delivers junk keydowns to every later scenario on the page. The catalog's Tab scenarios stay inside the document.",
+    "nodeIdentityAcrossOpens": "Every open creates a new panel node on every target. Pinned by the characterization suite and the Razor browser gate."
+  },
+  "dimensions": {
+    "dom.structure": {
+      "classification": "exact",
+      "description": "An unexpected element, a missing trigger, a panel rendered while closed or left in the product DOM after its leave, a panel inside the root where it should be teleported or outside it where it should be in place, an arrow that is not the panel's first child, a nested VfDropdown missing from an open panel. The followed panel is described as its own top-level entry after the root's children. Never approvable."
+    },
+    "dom.canonicalClasses": {
+      "classification": "exact",
+      "description": "vf-* classes on every element: the root, the trigger, the panel and its --top modifier (there is no --bottom), the arrow's --top/--bottom modifier, a nested or sibling dropdown's own classes. A panel caught mid-transition would carry vf-floating-transition-* here, which is why every page is ready only after its overlays settle and every snapshot waits for them. Consumer classes included."
+    },
+    "dom.nativeAttributes": {
+      "classification": "exact",
+      "description": "tabindex on the trigger (0) and on the panel (-1), the panel's and the arrow's inline position - declarations compared through the browser's parser, unrounded - aria-haspopup, and every native attribute a consumer forwards onto the root."
+    },
+    "dom.text": {
+      "classification": "exact",
+      "description": "Visible text content of every element: the trigger slot and the panel's content."
+    },
+    "dom.aria": {
+      "classification": "exact",
+      "description": "aria-expanded on every trigger (true, or false - never absent), aria-haspopup=\"dialog\", role=dialog on the panel and never aria-modal, aria-hidden on the arrow, and every consumer ARIA attribute on the root."
+    },
+    "dom.productData": {
+      "classification": "exact",
+      "description": "data-* attributes that carry product semantics: a consumer data-testid on the root, a consumer data-autofocus in the panel. The popover writes none of its own."
+    },
+    "dom.relationships": {
+      "classification": "semantic",
+      "description": "The id graph, compared through document-position tokens with the followed panel numbered after the root: every trigger's id and aria-controls, the panel's id and its aria-labelledby resolving to its own trigger, and a nested dropdown's own pair inside the panel. A closed popover's aria-controls is #dangling by design; a resolved one, a dropped one, one naming another instance's panel or a panel labelled by another instance's trigger differs."
+    },
+    "dom.actionPresence": {
+      "classification": "exact",
+      "description": "Whether each button is operable. A popover renders no button of its own."
+    },
+    "dom.wrapperPresence": {
+      "classification": "exact",
+      "description": "Present so the comparator has a classification for it. A popover has no wrapper either adapter may add."
+    },
+    "dom.inertAction": {
+      "classification": "exact",
+      "description": "Present for the same reason. A popover renders no inert action."
+    },
+    "style.geometry": {
+      "classification": "exact",
+      "description": "width, height, padding, border width and radius, font size and line height of the root, the trigger, a consumer trigger control and an in-place panel."
+    },
+    "style.colour": {
+      "classification": "exact",
+      "description": "colour, background colour and border colour of the same elements."
+    },
+    "visual": {
+      "classification": "exact",
+      "description": "Clipped screenshot of the case root in its initial state, per theme; every initially open panel lies inside its case box."
+    },
+    "visual.postInteraction": {
+      "classification": "exact",
+      "description": "Clipped screenshot after the interaction, per theme, covering the case root and every panel it owns wherever it is."
+    },
+    "a11y.role": {
+      "classification": "exact",
+      "description": "Computed role of the trigger, a consumer trigger control, the panel (dialog), a button in it, read where the panel is through the trigger's aria-controls; the arrow's absence from the tree."
+    },
+    "a11y.name": {
+      "classification": "exact",
+      "description": "Accessible name of the trigger, of the panel (its trigger's text, through aria-labelledby) and of a button in it."
+    },
+    "a11y.states": {
+      "classification": "exact",
+      "description": "focusable and hasPopup as exposed to assistive tech, before and after an interaction, where Chrome exposes them. What Chrome does not expose is compared as dom.aria and interaction.state only."
+    },
+    "ownership.controls": {
+      "classification": "exact",
+      "description": "The component-owned controls measured in the case - every trigger wrapper (div, no role, aria-expanded, aria-haspopup, tabindex 0) and every open panel (section, role=dialog, tabindex -1: it takes focus) - beside the consumer-owned count over the case, its open panels and their dropdowns' menus, the explicit-role total and the totals they must add up to. A scenario that opens or closes a panel declares the owned count it ends with. Never approvable."
+    },
+    "interaction.state": {
+      "classification": "exact",
+      "description": "The live state after a scenario, per instance: aria-expanded, whether a panel exists, where it is, its tag, classes, role, tabindex, arrow and text, its geometry relative to its trigger, the transitions the fixture saw complete; every dropdown in the case or in an open panel with its aria-expanded and where its menu is; every overlay in <body> by what still owns it, an orphan included; the settled flag; whether each keydown was prevented. Never approvable."
+    },
+    "interaction.events": {
+      "classification": "exact",
+      "description": "The neutral log of open-change notifications the fixture recorded from readiness on - a popover's and a nested or sibling dropdown's - with the component, the instance and the value, in order. Never approvable."
+    },
+    "interaction.convergence": {
+      "classification": "exact",
+      "description": "Whether a closing gesture's DOM equals the target's own render of the closed case of the same content. A leave that left a panel behind, a stale aria-expanded or a resolved reference fails here. Never approvable."
+    },
+    "interaction.focus": {
+      "classification": "exact",
+      "description": "Where focus is after the scenario - a trigger, a consumer control inside one, the panel itself, a control in it (by name), a dropdown trigger or item, the body, outside the case - and which instance owns it."
+    },
+    "interaction.relationships": {
+      "classification": "exact",
+      "description": "Whether each trigger's aria-controls reaches a role=dialog panel labelled by that trigger, measured on the live DOM wherever the panel is."
+    },
+    "interaction.value": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. A popover has no value."
+    },
+    "interaction.selection": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. A popover carries no caret."
+    },
+    "interaction.wrapperPresence": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. A popover renders no wrapper that could appear on one side only."
+    }
+  },
+  "historicalQuirks": [
+    {
+      "id": "enter-and-space-toggle",
+      "description": "Enter and Space on the trigger toggle: an open popover closes. Only ArrowDown opens without toggling.",
+      "classification": "exact",
+      "reason": "Compared as popover/interaction-enter-toggles-closed and popover/interaction-space-toggles-closed.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/popover/cases.json#popover/interaction-enter-toggles-closed"
+    },
+    {
+      "id": "arrowdown-reopens",
+      "description": "ArrowDown on an open popover emits update:open and openChange again and refocuses the panel.",
+      "classification": "exact",
+      "reason": "Compared as popover/interaction-arrowdown-reopens.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/popover/cases.json#popover/interaction-arrowdown-reopens"
+    },
+    {
+      "id": "unhandled-keys",
+      "description": "ArrowUp, Home, End and Tab on the trigger are not handled and not prevented, open or closed.",
+      "classification": "exact",
+      "reason": "Compared as popover/interaction-unhandled-keys-closed, popover/interaction-unhandled-keys-open and popover/interaction-tab-from-trigger.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/popover/cases.json#popover/interaction-unhandled-keys-closed"
+    },
+    {
+      "id": "every-open-focuses-the-panel",
+      "description": "Every open through the component moves focus into the panel - a pointer open too, unlike the dropdown - to the first [autofocus] or [data-autofocus] in document order, or else the panel itself; an autofocus target that cannot take focus stops the move where it is.",
+      "classification": "exact",
+      "reason": "Compared as popover/interaction-click-open, the four autofocus scenarios, popover/interaction-autofocus-unfocusable and popover/interaction-no-focusable.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/popover/cases.json#popover/interaction-autofocus-data-first"
+    },
+    {
+      "id": "every-close-focuses-the-trigger",
+      "description": "Every close the component makes focuses the trigger: a second click, Enter, Space, Escape and an outside click - taking focus from whatever was clicked.",
+      "classification": "exact",
+      "reason": "Compared as popover/interaction-click-close, popover/interaction-outside-click, popover/interaction-escape and the toggle scenarios.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/popover/cases.json#popover/interaction-outside-click"
+    },
+    {
+      "id": "inside-click-does-nothing",
+      "description": "A click inside the panel does nothing: there is no closeOnSelect.",
+      "classification": "exact",
+      "reason": "Compared as popover/interaction-click-inside and popover/interaction-click-note.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/popover/cases.json#popover/interaction-click-inside"
+    },
+    {
+      "id": "close-on-escape-false-swallows",
+      "description": "An open popover with closeOnEscape=false is still an entry on the shared escape stack: on top it takes the Escape, does nothing and prevents nothing, and the entry below never sees it.",
+      "classification": "exact",
+      "reason": "Compared as popover/interaction-escape-kept, popover/interaction-shield and popover/interaction-shield-below.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/popover/cases.json#popover/interaction-shield"
+    },
+    {
+      "id": "one-stack-with-the-dropdown",
+      "description": "Escape is one LIFO stack across VfPopover and VfDropdown, ordered by opening.",
+      "classification": "exact",
+      "reason": "Compared as popover/interaction-nested-escape-inner, popover/interaction-nested-escape-both, popover/interaction-beside-popover-last and popover/interaction-beside-dropdown-last.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/popover/cases.json#popover/interaction-nested-escape-inner"
+    },
+    {
+      "id": "close-unmounts-a-nested-dropdown",
+      "description": "Closing a popover unmounts what its panel holds: an open nested dropdown's teleported menu leaves <body> and its escape entry leaves the stack, even when the close gave it no outside click.",
+      "classification": "exact",
+      "reason": "Compared as popover/interaction-nested-enter-teardown, popover/interaction-nested-teardown-escape and popover/interaction-nested-reopen.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/popover/cases.json#popover/interaction-nested-enter-teardown"
+    },
+    {
+      "id": "nested-item-closes-both",
+      "description": "An item activated in a nested teleported menu closes the menu and the popover: the menu is outside the panel, so the popover sees an outside click.",
+      "classification": "exact",
+      "reason": "Compared as popover/interaction-nested-item-enter.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/popover/cases.json#popover/interaction-nested-item-enter"
+    },
+    {
+      "id": "no-mutual-exclusion",
+      "description": "Two keyboard opens leave two popovers open; a pointer open closes an open neighbour only as an outside click.",
+      "classification": "exact",
+      "reason": "Compared as popover/interaction-two-keyboard-open and popover/interaction-pointer-switch.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/popover/cases.json#popover/interaction-two-keyboard-open"
+    },
+    {
+      "id": "closed-reference-dangles",
+      "description": "A closed popover's aria-controls names the id of a panel that does not exist.",
+      "classification": "exact",
+      "reason": "Compared as popover/default and popover/open-one-of-two.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/popover/cases.json#popover/default"
+    }
+  ],
+  "approvedDivergences": []
+}
