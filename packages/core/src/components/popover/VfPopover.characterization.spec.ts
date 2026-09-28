@@ -752,7 +752,7 @@ describe('VfPopover characterization: pointer', () => {
     expect(contentOf(wrapper)).not.toBeNull();
   });
 
-  it('closes an open neighbour on a pointer open only as an outside click, and that neighbour focuses its own trigger', async () => {
+  it('closes an open neighbour on a pointer open only as an outside click, under synthetic dispatch leaving focus in the opener', async () => {
     const { first, second } = mountPair();
     await first.openByKey();
 
@@ -761,8 +761,12 @@ describe('VfPopover characterization: pointer', () => {
 
     expect(first.content()).toBeNull();
     expect(second.content()).not.toBeNull();
-    // The neighbour's outside handler runs after the opener's own click
-    // handler, but the opener's focus waits for its render: it wins.
+    // Under jsdom's synthetic dispatch no microtask runs between listeners, so
+    // the opener's focus - queued behind its render - lands last. A real click
+    // in Chrome runs microtasks between listeners: the opener focuses its panel
+    // first and the neighbour's outside-click close then focuses the
+    // neighbour's trigger. That is the measured browser contract, compared as
+    // popover/interaction-pointer-switch.
     expect(document.activeElement).toBe(second.content());
   });
 });

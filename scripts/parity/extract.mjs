@@ -1373,7 +1373,7 @@ export function controlOwnershipViolations(
   parityCase,
   snapshot,
   profile,
-  { consumerInteractive, consumerInteractiveRoles } = {},
+  { componentInteractive, consumerInteractive, consumerInteractiveRoles } = {},
 ) {
   const declared = profile?.controlOwnership;
   const roles = declared && typeof declared === 'object' ? Object.entries(declared) : [];
@@ -1411,7 +1411,11 @@ export function controlOwnershipViolations(
     snapshot,
     declared,
     controls: snapshot.componentControls,
-    expected: parityCase.componentInteractive,
+    // M30: a scenario that opens or closes an owned panel declares the count
+    // it ends with, as it already declared the consumer's. Only an absent
+    // declaration falls back; null, a string or a fraction is not an integer
+    // and fails the first check below, closed.
+    expected: componentInteractive === undefined ? parityCase.componentInteractive : componentInteractive,
     consumerBudget: consumerInteractive ?? parityCase.consumerInteractive ?? 0,
     // M28: how many of the consumer's controls the case says carry an explicit
     // interactive role. Zero unless declared.
@@ -2440,6 +2444,212 @@ function dropdownInteractionExpression(caseId, controlOwnership = {}) {
 }
 
 /**
+ * What a VfPopover case reports, before and after an interaction.
+ *
+ * Component-specific and named so, like the dropdown's, whose shape it keeps:
+ * the owned controls - here the trigger wrapper and, while open, the panel,
+ * which takes focus - and every other focusable element, the consumer's; per
+ * instance, aria-expanded, the panel's place, tag, classes, role, tabindex and
+ * arrow, its geometry relative to its trigger before and after one resize,
+ * and the live relationship both ways; the transitions the fixture saw
+ * complete; focus, the event log and the keydown log.
+ *
+ * Two records the dropdown has no need for, because a popover is the first
+ * overlay that holds another:
+ *
+ *   - nestedMenus: every VfDropdown in the case or in one of its open panels,
+ *     with aria-expanded and where its menu is - so the escape stack the two
+ *     components share is measured on the dropdown as well as the popover;
+ *   - bodyOverlays: every panel or menu that is a direct child of <body>,
+ *     named by what still owns it - a live popover trigger of the case
+ *     ('panel'), a live dropdown trigger ('menu') - or 'orphan' when no live
+ *     trigger names it. A nested dropdown the popover's close did not unmount
+ *     leaves exactly that behind.
+ */
+function popoverInteractionExpression(caseId, controlOwnership = {}) {
+  return `(async () => {
+    const root = document.querySelector('[data-parity-case="${caseId}"]');
+    if (!root) throw new Error('missing case ${caseId}');
+
+    const OWNED = ${JSON.stringify(controlOwnership)};
+    const FOCUSABLE = 'a[href], button, input, select, textarea, [tabindex], [contenteditable=""], [contenteditable="true"]';
+    const INTERACTIVE_ROLES = new Set([
+      'button', 'link', 'checkbox', 'radio', 'switch', 'textbox', 'combobox',
+      'listbox', 'menuitem', 'option', 'slider', 'spinbutton', 'tab',
+    ]);
+    const vfClasses = (element) => [...element.classList].filter((name) => name.startsWith('vf-')).sort();
+    const nameOf = (element) => (element.textContent ?? '').replace(/\\s+/g, ' ').trim();
+    const referenced = (element) => {
+      const id = element?.getAttribute('aria-controls');
+      return id ? document.getElementById(id) : null;
+    };
+    const isOverlay = (node) => node.matches('.vf-popover__content, .vf-dropdown__menu');
+    const transitioning = (node) => [...node.classList].some((name) => name.startsWith('vf-floating-transition-'));
+
+    const popovers = [...root.querySelectorAll('.vf-popover')];
+    const triggerOf = (popover) => popover.querySelector(':scope > .vf-popover__trigger');
+
+    const deadline = performance.now() + 2000;
+    const unsettled = () => [...document.querySelectorAll('.vf-popover__content, .vf-dropdown__menu')].some(transitioning);
+    while (unsettled() && performance.now() < deadline) {
+      await new Promise((tick) => setTimeout(tick, 20));
+    }
+    const settled = !unsettled();
+
+    const panels = popovers.map((popover) => referenced(triggerOf(popover)));
+    const outside = panels.filter((panel) => panel !== null && !root.contains(panel));
+    const inCase = (node) => root.contains(node) || outside.some((panel) => panel.contains(node));
+    const dropdowns = [...root.querySelectorAll('.vf-dropdown'), ...outside.flatMap((panel) => [...panel.querySelectorAll('.vf-dropdown')])];
+    const dropdownTriggerOf = (dropdown) => dropdown.querySelector(':scope > .vf-dropdown__trigger');
+    const menus = dropdowns.map((dropdown) => referenced(dropdownTriggerOf(dropdown)));
+    const scope = [root, ...outside, ...menus.filter((menu) => menu !== null && !inCase(menu))];
+    const inScope = (selector) => scope.flatMap((node) => [...node.querySelectorAll(selector)]);
+    const focusable = [...outside.filter((panel) => panel.matches(FOCUSABLE)), ...inScope(FOCUSABLE)];
+    const owned = [];
+    for (const [role, rule] of Object.entries(OWNED)) {
+      const found = [...root.querySelectorAll(rule.selector), ...outside.filter((panel) => panel.matches(rule.selector))];
+      for (const element of found) {
+        owned.push({
+          element,
+          record: {
+            role,
+            tag: element.tagName.toLowerCase(),
+            ariaRole: element.getAttribute('role'),
+            expanded: element.getAttribute('aria-expanded'),
+            hasPopup: element.getAttribute('aria-haspopup'),
+            tabindex: element.getAttribute('tabindex'),
+            focusable: focusable.includes(element),
+            name: nameOf(element),
+          },
+        });
+      }
+    }
+    const ownedElements = owned.map((entry) => entry.element);
+    const consumer = focusable.filter((element) => !ownedElements.includes(element));
+
+    const round = (value) => Math.round(value * 1000) / 1000;
+    const location = (popover, panel) =>
+      panel.parentElement === document.body ? 'body' : popover.contains(panel) ? 'in-place' : root.contains(panel) ? 'in-case' : 'elsewhere';
+    const panelStates = popovers.map((popover, index) => {
+      const panel = panels[index];
+      if (!panel) return null;
+      const arrow = panel.firstElementChild;
+      return {
+        location: location(popover, panel),
+        tag: panel.tagName.toLowerCase(),
+        classes: vfClasses(panel),
+        role: panel.getAttribute('role'),
+        tabindex: panel.getAttribute('tabindex'),
+        arrowClasses: arrow && arrow.classList.contains('vf-popover__arrow') ? vfClasses(arrow) : null,
+        text: nameOf(panel),
+      };
+    });
+    const geometry = () => popovers.map((popover, index) => {
+      const panel = panels[index];
+      if (!panel) return null;
+      const trigger = triggerOf(popover).getBoundingClientRect();
+      const box = panel.getBoundingClientRect();
+      return {
+        side: box.top >= trigger.bottom ? 'below' : box.bottom <= trigger.top ? 'above' : 'overlapping',
+        left: round(box.left - trigger.left),
+        right: round(box.right - trigger.right),
+        gap: round(box.top >= trigger.bottom ? box.top - trigger.bottom : trigger.top - box.bottom),
+      };
+    });
+    // As the dropdown's: the entered position, then one resize autoUpdate
+    // answers, then one full repaint so the moved panels are rasterised afresh.
+    const panelGeometry = geometry();
+    window.dispatchEvent(new Event('resize'));
+    await new Promise((done) => {
+      requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(done)));
+      setTimeout(done, 500);
+    });
+    const panelGeometryAfterResize = geometry();
+    const bodyStyle = document.body.getAttribute('style');
+    document.body.style.opacity = '0.999';
+    await new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)));
+    if (bodyStyle === null) document.body.removeAttribute('style');
+    else document.body.setAttribute('style', bodyStyle);
+    await new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)));
+    const panelRelationships = popovers.map((popover, index) => {
+      const trigger = triggerOf(popover);
+      const controls = trigger.getAttribute('aria-controls');
+      const panel = panels[index];
+      return {
+        controls: !controls ? 'none' : !panel ? 'dangling' : panel.getAttribute('role') === 'dialog' ? 'dialog' : 'other',
+        labelledBy: !panel ? null : panel.getAttribute('aria-labelledby') === trigger.id ? 'own-trigger' : 'other',
+      };
+    });
+    const nestedMenus = dropdowns.map((dropdown, index) => ({
+      place: root.contains(dropdown) ? 'case' : 'panel',
+      expanded: dropdownTriggerOf(dropdown)?.getAttribute('aria-expanded') ?? null,
+      menu: !menus[index] ? null : menus[index].parentElement === document.body ? 'body' : dropdown.contains(menus[index]) ? 'in-place' : 'elsewhere',
+    }));
+    const liveTriggers = [...document.querySelectorAll('[aria-controls]')];
+    const bodyOverlays = [...document.body.children].filter(isOverlay).map((node) => {
+      const owner = liveTriggers.find((element) => element.getAttribute('aria-controls') === node.id);
+      if (!owner) return 'orphan';
+      return owner.classList.contains('vf-popover__trigger') ? 'panel' : 'menu';
+    }).sort();
+
+    const active = document.activeElement;
+    const owner = popovers.findIndex((popover, index) => popover.contains(active) || (panels[index] !== null && panels[index].contains(active)));
+    const inDropdown = dropdowns.find((dropdown, index) => dropdown.contains(active) || (menus[index] !== null && menus[index].contains(active)));
+    const focusRole = active === document.body
+      ? 'body'
+      : inDropdown
+        ? active === dropdownTriggerOf(inDropdown) ? 'dropdown-trigger' : active.getAttribute('role') === 'menuitem' ? 'dropdown-item' : 'dropdown-other'
+        : owner < 0
+          ? root.contains(active) ? 'other-inside-case' : 'outside-case'
+          : active === triggerOf(popovers[owner])
+            ? 'trigger'
+            : triggerOf(popovers[owner]).contains(active)
+              ? 'trigger-control'
+              : active === panels[owner] ? 'panel' : 'panel-control';
+
+    const bucket = (ms) => ms < 300 ? 'short' : ms < 480 ? 'normal' : 'long';
+    const transitions = popovers.map((popover) => {
+      const id = triggerOf(popover).getAttribute('aria-controls');
+      return (window.__parityPopoverTransitions?.[id] ?? []).map((entry) => entry.kind + ':' + (entry.ms === null ? 'unfinished' : bucket(entry.ms)));
+    });
+
+    const caseRect = root.getBoundingClientRect();
+    const boxes = [caseRect, ...panels.filter(Boolean).map((panel) => panel.getBoundingClientRect())];
+    const left = Math.min(...boxes.map((box) => box.left));
+    const top = Math.min(...boxes.map((box) => box.top));
+
+    return {
+      clip: {
+        x: Math.round(left + window.scrollX),
+        y: Math.round(top + window.scrollY),
+        width: Math.round(Math.max(...boxes.map((box) => box.right)) - left),
+        height: Math.round(Math.max(...boxes.map((box) => box.bottom)) - top),
+      },
+      ownershipPosture: 'component',
+      componentControls: owned.map((entry) => entry.record),
+      consumerControlCount: consumer.length,
+      focusableTotal: focusable.length,
+      interactiveRoleTotal: inScope('*').filter((element) => INTERACTIVE_ROLES.has(element.getAttribute('role') ?? '')).length,
+      instanceCount: popovers.length,
+      expandedStates: popovers.map((popover) => triggerOf(popover).getAttribute('aria-expanded')),
+      panelStates,
+      panelGeometry,
+      panelGeometryAfterResize,
+      panelRelationships,
+      nestedMenus,
+      bodyOverlays,
+      settled,
+      transitions,
+      focusRole,
+      focusInstance: owner < 0 ? null : owner,
+      focusItem: ['panel-control', 'dropdown-item'].includes(focusRole) ? nameOf(active) : null,
+      events: window.__parityPopoverEvents?.[${JSON.stringify(caseId)}] ?? [],
+      keydownPrevented: (window.__parityPopoverKeys ?? []).map((entry) => entry.key + ':' + entry.prevented),
+    };
+  })()`;
+}
+
+/**
  * What a VfBreadcrumbs case reports.
  *
  * Component-specific and named so, like the link's. The second ownership
@@ -2584,6 +2794,9 @@ export function interactionExpression(caseId, snapshot = 'input', controlOwnersh
   }
   if (snapshot === 'group-box') {
     return groupBoxInteractionExpression(caseId, controlOwnership);
+  }
+  if (snapshot === 'popover') {
+    return popoverInteractionExpression(caseId, controlOwnership);
   }
 
   if (snapshot === 'checkable') {

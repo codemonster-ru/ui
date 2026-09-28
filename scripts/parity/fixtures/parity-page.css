@@ -83,3 +83,19 @@ body {
 .parity-case:has(> .vf-dropdown) {
   min-height: 200px;
 }
+
+/* VfPopover (M30), for the dropdown's reason: its panel is fixed-position and
+   lies below the trigger, outside the trigger's box. Two cases per row keep
+   every initially open case inside the first viewport; the minimum height
+   keeps each open panel inside its own case box.
+
+   Page chrome, applied identically to all three targets. The panel's geometry
+   still comes from floater.js and popover.css. */
+.parity-cases:has(> .parity-case > .vf-popover) {
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.parity-case:has(> .vf-popover) {
+  min-height: 220px;
+}

@@ -764,6 +764,17 @@ const INTERACTION_FIELDS = {
   menuRelationships: { dimension: 'interaction.relationships', format: 'json' },
   transitions: { dimension: 'interaction.state', format: 'json' },
   focusItem: { dimension: 'interaction.focus' },
+  // The VfPopover snapshot (M30): the dropdown's per-instance shape for the
+  // panel, with its tag and tabindex, and two records of what a popover holds -
+  // the dropdowns in the case or its panels, and every overlay in <body> by
+  // what still owns it. `instanceCount`, `expandedStates`, `transitions` and
+  // the focus, event and keydown fields are the ones above, shared.
+  panelStates: { dimension: 'interaction.state', format: 'json' },
+  panelGeometry: { dimension: 'interaction.state', format: 'json' },
+  panelGeometryAfterResize: { dimension: 'interaction.state', format: 'json' },
+  panelRelationships: { dimension: 'interaction.relationships', format: 'json' },
+  nestedMenus: { dimension: 'interaction.state', format: 'json' },
+  bodyOverlays: { dimension: 'interaction.state', format: 'json' },
 };
 
 /**

@@ -105,6 +105,13 @@ if ($groupBoxComponent === null) {
     fwrite(STDERR, "The VueForge vf-group-box component is not registered.\n");
     exit(1);
 }
+// The M30 component. Resolved on its own account; a dropdown inside or beside
+// it is the real vf-dropdown above, rendered as consumer content.
+$popoverComponent = $registry->resolve('vf-popover');
+if ($popoverComponent === null) {
+    fwrite(STDERR, "The VueForge vf-popover component is not registered.\n");
+    exit(1);
+}
 
 if (
     $input === null || $iconButton === null || $fieldComponent === null
@@ -1356,6 +1363,75 @@ $renderDropdown = static function (array $case) use ($dropdownComponent, $dropdo
     return $markup;
 };
 
+/**
+ * A real vf-dropdown beside or inside a popover, as the Vue fixture builds it:
+ * trigger text, two role=menuitem consumer buttons, in place when asked.
+ */
+$overlayDropdown = static function (string $label, bool $inPlace) use ($dropdownComponent, $escape): string {
+    $trigger = '<span>' . $escape($label) . '</span>';
+    $items = '<button type="button" role="menuitem" class="vf-dropdown__item">Edit</button>'
+        . '<button type="button" role="menuitem" class="vf-dropdown__item">Duplicate</button>';
+
+    return $dropdownComponent->render(new ComponentRenderContext($inPlace ? ['teleportTo' => false] : [], [
+        'trigger' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString($trigger),
+        'default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString($items),
+    ]))->value();
+};
+
+/**
+ * VfPopover, for the popover catalog: a `beside` dropdown first, then the
+ * popover roots - one, or one per `group` member - then an `after` control.
+ * The camelCase props of the catalog are the component's own alternative
+ * spellings; attrs fall through to the root.
+ */
+$renderPopover = static function (array $case) use ($popoverComponent, $overlayDropdown, $escape): string {
+    $content = $case['content'] ?? [];
+    $trigger = $content['trigger'] ?? null;
+    $panel = $content['panel'] ?? [];
+    $slots = [];
+
+    if (isset($trigger['control'])) {
+        $html = '<button type="button" class="parity-trigger-control">' . $escape((string) $trigger['control']['text']) . '</button>';
+        $slots['trigger'] = static fn (): RenderedHtml => RenderedHtml::fromTrustedString($html);
+    } elseif (isset($trigger['text'])) {
+        $html = '<span>' . $escape((string) $trigger['text']) . '</span>';
+        $slots['trigger'] = static fn (): RenderedHtml => RenderedHtml::fromTrustedString($html);
+    }
+
+    $inner = '';
+    if (isset($panel['note'])) {
+        $inner .= '<p class="parity-panel-note">' . $escape((string) $panel['note']) . '</p>';
+    }
+    foreach ($panel['controls'] ?? [] as $control) {
+        $focus = match ($control['autofocus'] ?? null) {
+            'attribute' => ' autofocus',
+            'data' => ' data-autofocus',
+            default => '',
+        };
+        $text = $escape((string) $control['text']);
+        $inner .= ($control['tag'] ?? 'button') === 'span'
+            ? '<span class="parity-panel-control"' . $focus . '>' . $text . '</span>'
+            : '<button type="button" class="parity-panel-control"' . $focus . '>' . $text . '</button>';
+    }
+    if (isset($panel['dropdown'])) {
+        $inner .= $overlayDropdown('Inner', (bool) ($panel['dropdown']['inPlace'] ?? false));
+    }
+    $slots['default'] = static fn (): RenderedHtml => RenderedHtml::fromTrustedString($inner);
+
+    $markup = isset($content['beside']['dropdown'])
+        ? $overlayDropdown('Menu', (bool) ($content['beside']['dropdown']['inPlace'] ?? false))
+        : '';
+    $members = isset($case['group']) && is_array($case['group']) ? $case['group'] : [$case['props'] ?? []];
+    foreach ($members as $props) {
+        $markup .= $popoverComponent->render(new ComponentRenderContext($props + ($case['attrs'] ?? []), $slots))->value();
+    }
+    if (isset($content['after']['control'])) {
+        $markup .= '<button type="button" class="parity-after-control">' . $escape((string) $content['after']['control']['text']) . '</button>';
+    }
+
+    return $markup;
+};
+
 $sections = '';
 
 foreach ($catalog['cases'] as $case) {
@@ -1363,6 +1439,8 @@ foreach ($catalog['cases'] as $case) {
 
     if ($component === 'dropdown') {
         $body = $renderDropdown($case);
+    } elseif ($component === 'popover') {
+        $body = $renderPopover($case);
     } elseif ($component === 'group-box') {
         $body = $renderGroupBox($case);
     } elseif ($component === 'breadcrumbs') {
@@ -1489,6 +1567,73 @@ $dropdownLogs = $component === 'dropdown' ? <<<'JS'
   }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
 JS : '';
 
+// The popover's page-level logs, the dropdown's in shape, installed only on the
+// popover catalog's page. A popover's instance is its index among the case's
+// popovers; a dropdown's is 0, its one place in a popover case. A dropdown
+// inside a teleported panel is outside the case root, so its case is the one
+// whose trigger names the panel it is in.
+$popoverLogs = $component === 'popover' ? <<<'JS'
+  window.__parityPopoverEvents = {};
+  window.__parityPopoverKeys = [];
+  window.__parityPopoverTransitions = {};
+  const caseOf = (element) => {
+    const direct = element.closest('[data-parity-case]');
+    if (direct) return direct;
+    const panel = element.closest('.vf-popover__content');
+    const owner = panel ? document.querySelector('[aria-controls="' + panel.id + '"]') : null;
+    return owner ? owner.closest('[data-parity-case]') : null;
+  };
+  const log = (event, component) => {
+    const caseRoot = caseOf(event.target);
+    if (!caseRoot) return;
+    const instance = component === 'popover' ? [...caseRoot.querySelectorAll('.vf-popover')].indexOf(event.target) : 0;
+    (window.__parityPopoverEvents[caseRoot.getAttribute('data-parity-case')] ??= []).push({ component, instance, open: event.detail.open });
+  };
+  document.addEventListener('vf-popover:open-change', (event) => log(event, 'popover'));
+  document.addEventListener('vf-dropdown:open-change', (event) => log(event, 'dropdown'));
+  let observing = false;
+  for (const type of ['pointerdown', 'keydown']) document.addEventListener(type, () => (observing = true), true);
+  const entries = new WeakMap();
+  const swallowed = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown', 'Escape']);
+  document.addEventListener('keydown', (event) => {
+    const entry = { key: event.key, prevented: false };
+    window.__parityPopoverKeys.push(entry);
+    entries.set(event, entry);
+  }, true);
+  window.addEventListener('keydown', (event) => {
+    const entry = entries.get(event);
+    if (entry) entry.prevented = event.defaultPrevented;
+    if (!event.defaultPrevented && swallowed.has(event.key)) event.preventDefault();
+  });
+  const running = new Map();
+  const phase = (element) => !element.isConnected
+    ? 'removed'
+    : [...element.classList].some((name) => name.startsWith('vf-floating-transition-leave'))
+      ? 'leave'
+      : [...element.classList].some((name) => name.startsWith('vf-floating-transition-enter')) ? 'enter' : 'none';
+  new MutationObserver((records) => {
+    if (!observing) return;
+    const now = performance.now();
+    for (const record of records) {
+      const nodes = record.type === 'childList' ? [...record.addedNodes, ...record.removedNodes] : [record.target];
+      for (const node of nodes) {
+        if (!(node instanceof HTMLElement) || !node.matches('.vf-popover__content, .vf-dropdown__menu')) continue;
+        const state = phase(node);
+        const current = running.get(node);
+        if (current && (current.kind === 'enter' ? state !== 'enter' : state === 'removed')) {
+          current.ms = Math.round(now - current.start);
+          running.delete(node);
+        }
+        if (!running.has(node) && (state === 'enter' || state === 'leave')) {
+          const entry = { kind: state, start: now, ms: null };
+          (window.__parityPopoverTransitions[node.id] ??= []).push(entry);
+          running.set(node, entry);
+        }
+      }
+    }
+  }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+JS : '';
+
 $html = <<<HTML
 <!doctype html>
 <html lang="en">
@@ -1538,12 +1683,13 @@ $html = <<<HTML
     (window.__parityTabsEvents[caseId] ??= []).push({ value: event.detail.value });
   });
 {$dropdownLogs}
+{$popoverLogs}
   const theme = new URLSearchParams(window.location.search).get('theme') ?? 'light';
   document.documentElement.setAttribute('data-vf-theme', theme);
   // A dropdown page is ready once every overlay that entered at bootstrap has
   // finished, as the Vue fixture waits for its appear transitions. Bounded;
   // every other catalog is ready at once, as before.
-  if (document.querySelector('.vf-dropdown')) {
+  if (document.querySelector('.vf-dropdown, .vf-popover')) {
     const deadline = performance.now() + 2000;
     while (document.querySelector('[class*="vf-floating-transition-"]') && performance.now() < deadline) {
       await new Promise((tick) => setTimeout(tick, 20));

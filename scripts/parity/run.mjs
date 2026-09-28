@@ -511,6 +511,7 @@ async function captureTarget(
       if (catalog.profile.liveParity) {
         if (ownsControls) {
           assertOwnership(parityCase, result, `after ${parityCase.id} `, {
+            componentInteractive: parityCase.interaction.componentInteractive,
             consumerInteractive: parityCase.interaction.consumerInteractive,
             consumerInteractiveRoles: parityCase.interaction.consumerInteractiveRoles,
           });

@@ -35,6 +35,7 @@ import VfMenu from '@parity/core/components/menu/VfMenu.vue';
 import VfMenuItem from '@parity/core/components/menu/VfMenuItem.vue';
 import VfDropdown from '@parity/core/components/dropdown/VfDropdown.vue';
 import VfGroupBox from '@parity/core/components/group-box/VfGroupBox.vue';
+import VfPopover from '@parity/core/components/popover/VfPopover.vue';
 import { VueIconify } from '@codemonster-ru/vueforge-icons';
 import '@parity/core/styles/components.css';
 import cases from '@parity/cases.json';
@@ -624,11 +625,9 @@ function menuChildren(children: MenuChildren | undefined): VNode[] {
  */
 function renderMenu(parityCase: ParityCase): VNode[] {
   const children: VNode[] = [
-    h(
-      VfMenu,
-      { ...parityCase.props, ...parityCase.attrs } as never,
-      { default: () => menuChildren(parityCase.content?.children) },
-    ),
+    h(VfMenu, { ...parityCase.props, ...parityCase.attrs } as never, {
+      default: () => menuChildren(parityCase.content?.children),
+    }),
   ];
 
   if (parityCase.attrs['aria-describedby'] === 'aria-described-hint') {
@@ -830,6 +829,211 @@ function installDropdownLogs(): void {
         if (!running.has(node) && (state === 'enter' || state === 'leave')) {
           const entry = { kind: state, start: now, ms: null };
           (window.__parityDropdownTransitions![node.id] ??= []).push(entry);
+          running.set(node, entry);
+        }
+      }
+    }
+  }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+}
+
+/**
+ * VfPopover's content, as the shared catalog spells it: the trigger slot as
+ * for the dropdown, the default slot as `panel`, a real VfDropdown `beside`
+ * the roots and a consumer control `after` them.
+ */
+interface PopoverContent {
+  trigger?: { text?: string; control?: { text: string } };
+  panel?: {
+    note?: string;
+    controls?: { text: string; autofocus?: 'attribute' | 'data'; tag?: 'button' | 'span' }[];
+    dropdown?: { inPlace?: boolean };
+  };
+  beside?: { dropdown?: { inPlace?: boolean } };
+  after?: { control?: { text: string } };
+}
+
+/** The reactive props each VfPopover instance is rendered with; see dropdownProps. */
+const popoverProps = reactive<Record<string, Record<string, unknown>>>({});
+
+/**
+ * The neutral logs the harness reads after a popover scenario, kept the same
+ * way by the Razor fixture page: one entry per open-change of a popover or of
+ * a dropdown inside or beside one, with the component and its instance; one
+ * entry per keydown with whether it ended up prevented; every enter and leave
+ * a panel or a menu completes after the first real input.
+ */
+declare global {
+  interface Window {
+    __parityPopoverEvents?: Record<string, { component: string; instance: number; open: boolean }[]>;
+    __parityPopoverKeys?: { key: string; prevented: boolean }[];
+    __parityPopoverTransitions?: Record<string, { kind: string; start: number; ms: number | null }[]>;
+  }
+}
+
+function logPopoverEvent(caseId: string, component: string, instance: number, open: boolean): void {
+  if (document.documentElement.getAttribute('data-parity-ready') !== 'true') return;
+  (window.__parityPopoverEvents![caseId] ??= []).push({ component, instance, open });
+}
+
+/** A real VfDropdown beside or inside a popover: consumer content with its own escape entry. */
+function renderOverlayDropdown(caseId: string, label: string, inPlace: boolean | undefined): VNode {
+  return h(
+    VfDropdown,
+    {
+      ...(inPlace ? { teleportTo: false } : {}),
+      onOpenChange: (open: boolean) => logPopoverEvent(caseId, 'dropdown', 0, open),
+    },
+    {
+      trigger: () => [h('span', label)],
+      default: () => [
+        h('button', { type: 'button', role: 'menuitem', class: 'vf-dropdown__item' }, 'Edit'),
+        h('button', { type: 'button', role: 'menuitem', class: 'vf-dropdown__item' }, 'Duplicate'),
+      ],
+    },
+  );
+}
+
+function renderPopoverPanel(caseId: string, panel: PopoverContent['panel']): VNode[] {
+  const nodes: VNode[] = [];
+  if (panel?.note !== undefined) nodes.push(h('p', { class: 'parity-panel-note' }, panel.note));
+  for (const control of panel?.controls ?? []) {
+    const focus =
+      control.autofocus === 'attribute'
+        ? { autofocus: '' }
+        : control.autofocus === 'data'
+          ? { 'data-autofocus': '' }
+          : {};
+    nodes.push(
+      control.tag === 'span'
+        ? h('span', { class: 'parity-panel-control', ...focus }, control.text)
+        : h('button', { type: 'button', class: 'parity-panel-control', ...focus }, control.text),
+    );
+  }
+  if (panel?.dropdown) nodes.push(renderOverlayDropdown(caseId, 'Inner', panel.dropdown.inPlace));
+  return nodes;
+}
+
+function renderPopoverInstance(
+  caseId: string,
+  key: string,
+  instance: number,
+  props: Record<string, unknown>,
+  attrs: Record<string, unknown>,
+  content: PopoverContent,
+): VNode {
+  popoverProps[key] ??= reactive({ ...props, ...attrs });
+  const live = popoverProps[key];
+  const slots: Record<string, () => VNode[]> = { default: () => renderPopoverPanel(caseId, content.panel) };
+
+  if (content.trigger?.control) {
+    slots.trigger = () => [
+      h('button', { type: 'button', class: 'parity-trigger-control' }, content.trigger!.control!.text),
+    ];
+  } else if (content.trigger?.text !== undefined) {
+    slots.trigger = () => [h('span', content.trigger!.text)];
+  }
+
+  return h(
+    VfPopover,
+    {
+      ...live,
+      key,
+      onOpenChange: (open: boolean) => logPopoverEvent(caseId, 'popover', instance, open),
+      ...('open' in live ? { 'onUpdate:open': (open: boolean) => (live.open = open) } : {}),
+    },
+    slots,
+  );
+}
+
+/**
+ * VfPopover, for the popover catalog: a `beside` dropdown first, then the
+ * popover roots - one, or one per `group` member - then an `after` control.
+ */
+function renderPopover(parityCase: ParityCase): VNode[] {
+  const content = (parityCase.content ?? {}) as unknown as PopoverContent;
+  const nodes: VNode[] = [];
+  if (content.beside?.dropdown)
+    nodes.push(renderOverlayDropdown(parityCase.id, 'Menu', content.beside.dropdown.inPlace));
+  if (Array.isArray(parityCase.group)) {
+    parityCase.group.forEach((member, index) =>
+      nodes.push(
+        renderPopoverInstance(parityCase.id, `${parityCase.id}/${index}`, index, member, parityCase.attrs, content),
+      ),
+    );
+  } else {
+    nodes.push(renderPopoverInstance(parityCase.id, parityCase.id, 0, parityCase.props, parityCase.attrs, content));
+  }
+  if (content.after?.control) {
+    nodes.push(h('button', { type: 'button', class: 'parity-after-control' }, content.after.control.text));
+  }
+  return nodes;
+}
+
+/**
+ * The popover's page-level harness logs, the dropdown's in shape: the key log
+ * is filled on window after every product handler, and only then is an
+ * unconsumed navigation key's or Escape's default swallowed; the transition
+ * observer follows panels and menus alike.
+ */
+function installPopoverLogs(): void {
+  window.__parityPopoverEvents = {};
+  window.__parityPopoverKeys = [];
+  window.__parityPopoverTransitions = {};
+  let observing = false;
+  for (const type of ['pointerdown', 'keydown']) {
+    document.addEventListener(type, () => (observing = true), true);
+  }
+  const entries = new WeakMap<Event, { key: string; prevented: boolean }>();
+  const swallowed = new Set([
+    'ArrowUp',
+    'ArrowDown',
+    'ArrowLeft',
+    'ArrowRight',
+    'Home',
+    'End',
+    'PageUp',
+    'PageDown',
+    'Escape',
+  ]);
+  document.addEventListener(
+    'keydown',
+    (event) => {
+      const entry = { key: event.key, prevented: false };
+      window.__parityPopoverKeys!.push(entry);
+      entries.set(event, entry);
+    },
+    true,
+  );
+  window.addEventListener('keydown', (event) => {
+    const entry = entries.get(event);
+    if (entry) entry.prevented = event.defaultPrevented;
+    if (!event.defaultPrevented && swallowed.has(event.key)) event.preventDefault();
+  });
+  const running = new Map<Element, { kind: string; start: number; ms: number | null }>();
+  const phase = (element: Element) =>
+    !element.isConnected
+      ? 'removed'
+      : [...element.classList].some((name) => name.startsWith('vf-floating-transition-leave'))
+        ? 'leave'
+        : [...element.classList].some((name) => name.startsWith('vf-floating-transition-enter'))
+          ? 'enter'
+          : 'none';
+  new MutationObserver((records) => {
+    if (!observing) return;
+    const now = performance.now();
+    for (const record of records) {
+      const nodes = record.type === 'childList' ? [...record.addedNodes, ...record.removedNodes] : [record.target];
+      for (const node of nodes) {
+        if (!(node instanceof HTMLElement) || !node.matches('.vf-popover__content, .vf-dropdown__menu')) continue;
+        const state = phase(node);
+        const current = running.get(node);
+        if (current && (current.kind === 'enter' ? state !== 'enter' : state === 'removed')) {
+          current.ms = Math.round(now - current.start);
+          running.delete(node);
+        }
+        if (!running.has(node) && (state === 'enter' || state === 'leave')) {
+          const entry = { kind: state, start: now, ms: null };
+          (window.__parityPopoverTransitions![node.id] ??= []).push(entry);
           running.set(node, entry);
         }
       }
@@ -1456,6 +1660,10 @@ function renderCase(parityCase: ParityCase): VNode {
     return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, renderGroupBox(parityCase));
   }
 
+  if (catalog.component === 'popover') {
+    return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, renderPopover(parityCase));
+  }
+
   if (catalog.component === 'icon-button') {
     return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, [renderIconButton(parityCase)]);
   }
@@ -1547,14 +1755,16 @@ const theme = new URLSearchParams(window.location.search).get('theme') ?? 'light
 document.documentElement.setAttribute('data-vf-theme', theme);
 
 if (catalog.component === 'dropdown') installDropdownLogs();
+if (catalog.component === 'popover') installPopoverLogs();
 
 createApp(Cases).mount('#parity-root');
 
 // A dropdown page is ready once every overlay that entered on mount - the
 // initially open menus' appear transition - has finished, so the initial
 // extraction measures a settled menu rather than one frame of its enter.
-// Bounded; every other catalog is ready at once, as before.
-if (catalog.component === 'dropdown') {
+// Bounded; every other catalog is ready at once, as before. The popover page
+// (M30) waits the same way for the same reason.
+if (catalog.component === 'dropdown' || catalog.component === 'popover') {
   void (async () => {
     const deadline = performance.now() + 2000;
     while (document.querySelector('[class*="vf-floating-transition-"]') && performance.now() < deadline) {

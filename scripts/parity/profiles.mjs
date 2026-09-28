@@ -1378,6 +1378,63 @@ export const profiles = {
     },
     liveParity: true,
   },
+  // The M30 component: the second overlay, and the first that holds another.
+  // It owns its trigger wrapper and, while open, its panel - a section with
+  // role=dialog and tabindex=-1 that takes focus on every open, which is why
+  // it is a control and not a structural node like the dropdown's menu. The
+  // panel is followed through the trigger's aria-controls, one hop, as the
+  // dropdown's menu is; a dropdown inside the panel or beside the popover is
+  // consumer content, measured by the snapshot's nestedMenus and bodyOverlays.
+  popover: {
+    id: 'popover',
+    label: 'VfPopover',
+    component: 'popover',
+    casesPath: 'contracts/popover/cases.json',
+    policyPath: 'contracts/popover/parity-policy.json',
+    artifactDirectory: 'parity-popover',
+    reportName: 'popover-parity-report.json',
+    measuredRoles: {
+      root: '.vf-popover',
+      trigger: '.vf-popover__trigger',
+      triggerControl: '.parity-trigger-control',
+      inPlacePanel: '.vf-popover__content',
+    },
+    // The trigger and the panel are read where they are - the panel through
+    // the trigger's aria-controls. The arrow is listed because it is
+    // aria-hidden and so expected absent, which is only a measurement if the
+    // selector is queried.
+    accessibilityRoles: {
+      trigger: '.vf-popover__trigger',
+      triggerControl: '.parity-trigger-control',
+      panel: 'followed(.vf-popover__trigger, aria-controls)',
+      panelControl: 'followed(.vf-popover__trigger, aria-controls) .parity-panel-control',
+      arrow: 'followed(.vf-popover__trigger, aria-controls) .vf-popover__arrow',
+    },
+    semanticAttributes: [
+      'class',
+      'style',
+      'id',
+      'role',
+      'type',
+      'tabindex',
+      'aria-controls',
+      'aria-labelledby',
+      'aria-expanded',
+      'aria-haspopup',
+      'aria-hidden',
+      'aria-label',
+      'data-testid',
+      'data-autofocus',
+    ],
+    snapshot: 'popover',
+    activationSelector: '.vf-popover__trigger',
+    controlOwnership: {
+      trigger: { selector: '.vf-popover__trigger', tag: 'div' },
+      panel: { selector: '.vf-popover__content', tag: 'section' },
+    },
+    followedReferences: [{ source: '.vf-popover__trigger', attribute: 'aria-controls' }],
+    liveParity: true,
+  },
 };
 
 export function loadProfile(id) {

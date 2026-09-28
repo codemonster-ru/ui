@@ -133,7 +133,8 @@
     "parity:dropdown": "node ./scripts/parity/check-input-parity.mjs --component=dropdown",
     "parity:dropdown:mutations": "node ./scripts/parity/check-input-parity-mutations.mjs --component=dropdown",
     "parity:group-box": "node ./scripts/parity/check-input-parity.mjs --component=group-box",
-    "parity:group-box:mutations": "node ./scripts/parity/check-input-parity-mutations.mjs --component=group-box"
+    "parity:group-box:mutations": "node ./scripts/parity/check-input-parity-mutations.mjs --component=group-box",
+    "parity:popover": "node ./scripts/parity/check-input-parity.mjs --component=popover"
   },
   "devDependencies": {
     "@codemonster-ru/floater.js": "1.0.11",
