@@ -206,9 +206,10 @@ const razorPlatform = showcaseIndex.urlContract.platforms.razor;
 const themeStorageKey = 'codemonster-showcase-theme';
 
 const membersOf = (parityCase: ShowcaseCase) => parityCase.group ?? [parityCase.props ?? {}];
-const autofocus = (control: PanelControl) =>
+const autofocus = (control: PanelControl): Record<string, string> =>
   control.autofocus === 'attribute' ? { autofocus: '' } : control.autofocus === 'data' ? { 'data-autofocus': '' } : {};
-const dropdownBindings = (dropdown: { inPlace?: boolean }) => (dropdown.inPlace ? { teleportTo: false } : {});
+const dropdownBindings = (dropdown: { inPlace?: boolean }): { teleportTo?: false } =>
+  dropdown.inPlace ? { teleportTo: false } : {};
 
 // A controlled member keeps its open state here and gets it written back.
 const controlled = reactive<Record<string, boolean>>({});
