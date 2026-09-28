@@ -82,6 +82,7 @@ import {
   menuPolicyMutations,
 } from './menu-mutations.mjs';
 import { dropdownBrowserMutations, dropdownParityMutations, dropdownPolicyMutations } from './dropdown-mutations.mjs';
+import { popoverBrowserMutations, popoverParityMutations, popoverPolicyMutations } from './popover-mutations.mjs';
 import { groupBoxBrowserMutations, groupBoxParityMutations, groupBoxPolicyMutations } from './group-box-mutations.mjs';
 import {
   skeletonGateBrowserMutations,
@@ -199,6 +200,13 @@ const mutationSets = {
     capture: groupBoxParityMutations,
     policy: groupBoxPolicyMutations,
     browser: groupBoxBrowserMutations,
+  },
+  // The M30 overlay: a panel outside its case, and the escape stack and the
+  // teardown it shares with the dropdown it may hold.
+  popover: {
+    capture: popoverParityMutations,
+    policy: popoverPolicyMutations,
+    browser: popoverBrowserMutations,
   },
   'skeleton-gate': {
     capture: skeletonGateParityMutations,

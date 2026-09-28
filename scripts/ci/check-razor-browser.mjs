@@ -3288,7 +3288,10 @@ try {
       await clickAt(page, '[data-case="popover-nested"] .vf-popover__trigger');
       await delay(400);
       await page.evaluate(installPopoverLog);
-      await page.evaluate(`${innerTrigger}.focus()`);
+      // Null-tolerant: a defect that keeps the popover from reopening - an
+      // orphaned menu left over its trigger, say - has to fail the checks
+      // below, not stop the gate before it reports them.
+      await page.evaluate(`${innerTrigger}?.focus()`);
       await pressKey(page, 'ArrowDown');
       await delay(400);
     };
@@ -3346,7 +3349,7 @@ try {
     // anything beside it.
     await openNested();
     const again = await page.evaluate(
-      `({ overlays: ${bodyOverlays}.length, expanded: ${innerTrigger}.getAttribute('aria-expanded') })`,
+      `({ overlays: ${bodyOverlays}.length, expanded: ${innerTrigger}?.getAttribute('aria-expanded') ?? null })`,
     );
     await pressKey(page, 'Escape');
     await delay(450);
@@ -3374,18 +3377,23 @@ try {
     // An item click in the nested menu closes both: the teleported menu is
     // outside the panel, so the popover sees an outside click.
     await openNested();
-    await clickElement(
-      page,
-      `document.getElementById(${innerTrigger}.getAttribute('aria-controls')).querySelector('[role="menuitem"]')`,
+    const itemReachable = await page.evaluate(
+      `Boolean(${innerTrigger} && document.getElementById(${innerTrigger}.getAttribute('aria-controls')))`,
     );
+    if (itemReachable) {
+      await clickElement(
+        page,
+        `document.getElementById(${innerTrigger}.getAttribute('aria-controls')).querySelector('[role="menuitem"]')`,
+      );
+    }
     await delay(450);
     const itemClick = await page.evaluate(
       `({ overlays: ${bodyOverlays}.length, outer: ${popoverTrigger('Outer')}.getAttribute('aria-expanded'), focus: document.activeElement === ${popoverTrigger('Outer')} })`,
     );
     check(
       'an item click in the nested menu closes the menu and the popover, and focus ends on the popover trigger',
-      itemClick.overlays === 0 && itemClick.outer === 'false' && itemClick.focus === true,
-      JSON.stringify(itemClick),
+      itemReachable && itemClick.overlays === 0 && itemClick.outer === 'false' && itemClick.focus === true,
+      JSON.stringify({ itemReachable, ...itemClick }),
     );
     check(
       'the nested-teardown page produced no script errors',
