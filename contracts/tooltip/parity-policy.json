@@ -98,7 +98,7 @@
     },
     "interaction.state": {
       "classification": "exact",
-      "description": "The live state after a scenario, per instance: each described tooltip's place, tag, role, classes, arrow and text, its geometry against its own trigger once a resize has settled it (the entered position before it depends on which enter frame floater.js measures the arrow in, and is not compared), every tooltip node in the document by what names it (an orphan is one nothing names), where the pointer rests, a popover's aria-expanded, and the timing record - every reference written with the latency from the last activation, every reference removed with its lag, every enter and leave with its duration."
+      "description": "The live state after a scenario, per instance: each described tooltip's place, tag, role, classes, arrow and text, its geometry against its own trigger once a resize has settled it (the entered position before it depends on which enter frame floater.js measures the arrow in, and is not compared), every tooltip node in the document by what names it (an orphan is one nothing names), where the pointer rests, a popover's aria-expanded, and the timing record - every reference written with the latency from the last activation (or while-inactive when a deactivation followed it), every reference removed with its lag, every enter and leave with its duration."
     },
     "interaction.events": {
       "classification": "exact",

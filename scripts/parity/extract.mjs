@@ -2711,7 +2711,8 @@ function popoverInteractionExpression(caseId, controlOwnership = {}) {
  *     pointer rests on, and the open state of a popover in the case;
  *   - timing: from the fixture's log, every reference written - with how the
  *     instance was last activated and the latency from that activation,
- *     bucketed against the instance's openDelay - every reference removed,
+ *     bucketed against the instance's openDelay, or while-inactive when a
+ *     deactivation came after it - every reference removed,
  *     with the lag from the last deactivation, and every enter and leave a
  *     tooltip completed;
  *   - focus and keys, as the popover's.
@@ -2848,10 +2849,13 @@ function tooltipInteractionExpression(caseId, controlOwnership = {}) {
       else if (entry.kind === 'deactivate') lastDeactivation.set(entry.instance, entry);
       else if (entry.kind === 'describe') {
         const from = lastActivation.get(entry.instance);
+        // An opening after the instance was last deactivated is a pending
+        // timer a leave did not cancel, however on time it looks.
+        const inactive = from && (lastDeactivation.get(entry.instance)?.t ?? -1) > from.t;
         openings.push({
           instance: entry.instance,
           via: from?.via ?? null,
-          latency: from ? latency(entry.t - from.t, delays[entry.instance] ?? 80) : null,
+          latency: from ? (inactive ? 'while-inactive' : latency(entry.t - from.t, delays[entry.instance] ?? 80)) : null,
         });
       } else if (entry.kind === 'undescribe') {
         const from = lastDeactivation.get(entry.instance);

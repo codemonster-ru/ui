@@ -83,6 +83,7 @@ import {
 } from './menu-mutations.mjs';
 import { dropdownBrowserMutations, dropdownParityMutations, dropdownPolicyMutations } from './dropdown-mutations.mjs';
 import { popoverBrowserMutations, popoverParityMutations, popoverPolicyMutations } from './popover-mutations.mjs';
+import { tooltipBrowserMutations, tooltipParityMutations, tooltipPolicyMutations } from './tooltip-mutations.mjs';
 import { groupBoxBrowserMutations, groupBoxParityMutations, groupBoxPolicyMutations } from './group-box-mutations.mjs';
 import {
   skeletonGateBrowserMutations,
@@ -207,6 +208,14 @@ const mutationSets = {
     capture: popoverParityMutations,
     policy: popoverPolicyMutations,
     browser: popoverBrowserMutations,
+  },
+  // The M31 overlay: a tooltip that owns no control, opens on a timer and is
+  // on no escape stack - its defects are timers, listeners, references and a
+  // lifecycle, each installed as the wrong port would behave.
+  tooltip: {
+    capture: tooltipParityMutations,
+    policy: tooltipPolicyMutations,
+    browser: tooltipBrowserMutations,
   },
   'skeleton-gate': {
     capture: skeletonGateParityMutations,
