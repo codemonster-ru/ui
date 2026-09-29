@@ -2689,6 +2689,241 @@ function popoverInteractionExpression(caseId, controlOwnership = {}) {
 }
 
 /**
+ * What a VfTooltip case reports, before and after a scenario (M31).
+ *
+ * Component-specific and named so, like the popover's. The tooltip owns no
+ * control: the profile's rules name its trigger span and the tooltip, and a
+ * match is counted as an owned control only when it is focusable - so the
+ * declared budget is zero everywhere, and a port that made either focusable
+ * fails ownership rather than growing a control quietly. What it records falls
+ * into five groups, each compared as its own dimension:
+ *
+ *   - ownership: the owned focusable matches, and every other focusable in the
+ *     case, its followed tooltips and its open popover panels;
+ *   - relationships: per instance, whether the trigger's aria-describedby
+ *     names nothing, a missing id, or a tooltip - and which tooltip, by its
+ *     index in document order. Nothing points back from a tooltip, so this and
+ *     the tooltip's position are what tell two instances' tooltips apart;
+ *   - state: each described tooltip - where it is, its tag, role, classes, its
+ *     arrow and whether that is last, its text - its geometry against its own
+ *     trigger once a resize has settled it, every tooltip node in the document
+ *     by what names it (an orphan is one nothing names), which roots the
+ *     pointer rests on, and the open state of a popover in the case;
+ *   - timing: from the fixture's log, every reference written - with how the
+ *     instance was last activated and the latency from that activation,
+ *     bucketed against the instance's openDelay - every reference removed,
+ *     with the lag from the last deactivation, and every enter and leave a
+ *     tooltip completed;
+ *   - focus and keys, as the popover's.
+ *
+ * Asynchronous: it waits, bounded, until no tooltip or popover panel carries
+ * a vf-floating-transition-* class, and records whether it got there. The
+ * catalog guarantees no open timer is still pending when it runs.
+ */
+function tooltipInteractionExpression(caseId, controlOwnership = {}) {
+  return `(async () => {
+    const root = document.querySelector('[data-parity-case="${caseId}"]');
+    if (!root) throw new Error('missing case ${caseId}');
+
+    const OWNED = ${JSON.stringify(controlOwnership)};
+    const FOCUSABLE = 'a[href], button, input, select, textarea, [tabindex], [contenteditable=""], [contenteditable="true"]';
+    const INTERACTIVE_ROLES = new Set([
+      'button', 'link', 'checkbox', 'radio', 'switch', 'textbox', 'combobox',
+      'listbox', 'menuitem', 'option', 'slider', 'spinbutton', 'tab',
+    ]);
+    const vfClasses = (element) => [...element.classList].filter((name) => name.startsWith('vf-')).sort();
+    const round = (value) => Math.round(value * 1000) / 1000;
+
+    const deadline = performance.now() + 2000;
+    const unsettled = () => document.querySelector('.vf-tooltip__content[class*="vf-floating-transition-"], .vf-popover__content[class*="vf-floating-transition-"]') !== null;
+    while (unsettled() && performance.now() < deadline) {
+      await new Promise((tick) => setTimeout(tick, 20));
+    }
+    const settled = !unsettled();
+
+    const popoverTriggers = [...root.querySelectorAll('.vf-popover__trigger')];
+    const panels = popoverTriggers
+      .map((trigger) => document.getElementById(trigger.getAttribute('aria-controls')))
+      .filter((panel) => panel !== null && !root.contains(panel));
+    const instances = [...root.querySelectorAll('.vf-tooltip'), ...panels.flatMap((panel) => [...panel.querySelectorAll('.vf-tooltip')])];
+    const triggerOf = (instance) => instance.querySelector(':scope > .vf-tooltip__trigger');
+    const nodes = [...document.querySelectorAll('.vf-tooltip__content')];
+    const describedOf = (instance) => {
+      const id = triggerOf(instance)?.getAttribute('aria-describedby');
+      return id ? document.getElementById(id) : null;
+    };
+    const tooltips = instances.map(describedOf);
+
+    const outside = [...panels, ...tooltips.filter((node) => node !== null && !root.contains(node))];
+    const scope = [root, ...outside];
+    const inScope = (selector) => scope.flatMap((node) => [...(node.matches(selector) ? [node] : []), ...node.querySelectorAll(selector)]);
+    const focusable = [...new Set(inScope(FOCUSABLE))];
+    const owned = [];
+    for (const [role, rule] of Object.entries(OWNED)) {
+      for (const element of inScope(rule.selector).filter((element) => focusable.includes(element))) {
+        owned.push({
+          element,
+          record: { role, tag: element.tagName.toLowerCase(), ariaRole: element.getAttribute('role'), tabindex: element.getAttribute('tabindex') },
+        });
+      }
+    }
+    const ownedElements = owned.map((entry) => entry.element);
+    const consumer = focusable.filter((element) => !ownedElements.includes(element));
+
+    const describedStates = instances.map((instance, index) => {
+      const id = triggerOf(instance)?.getAttribute('aria-describedby');
+      if (!id) return 'none';
+      const node = tooltips[index];
+      if (!node) return 'dangling';
+      return node.matches('.vf-tooltip__content[role="tooltip"]') ? 'tooltip' : 'other';
+    });
+    const describedTargets = tooltips.map((node) => (node ? nodes.indexOf(node) : null));
+    const place = (node) =>
+      node.parentElement === document.body ? 'body' : node.closest('.vf-tooltip') ? 'in-place' : root.contains(node) ? 'in-case' : 'elsewhere';
+    const tooltipStates = tooltips.map((node) => {
+      if (!node) return null;
+      const arrow = node.lastElementChild;
+      const isArrow = Boolean(arrow && arrow.classList.contains('vf-tooltip__arrow'));
+      return {
+        location: place(node),
+        tag: node.tagName.toLowerCase(),
+        role: node.getAttribute('role'),
+        classes: vfClasses(node),
+        arrowClasses: isArrow ? vfClasses(arrow) : null,
+        arrowLast: isArrow && arrow.getAttribute('aria-hidden') === 'true',
+        text: [...node.childNodes].filter((child) => child !== arrow || !isArrow).map((child) => child.textContent).join(''),
+      };
+    });
+    const geometry = () => instances.map((instance, index) => {
+      const node = tooltips[index];
+      if (!node) return null;
+      const trigger = triggerOf(instance).getBoundingClientRect();
+      const box = node.getBoundingClientRect();
+      const arrow = node.querySelector(':scope > .vf-tooltip__arrow')?.getBoundingClientRect();
+      const centre = trigger.left + trigger.width / 2;
+      return {
+        side: box.top >= trigger.bottom ? 'below' : box.bottom <= trigger.top ? 'above' : 'overlapping',
+        gap: round(box.top >= trigger.bottom ? box.top - trigger.bottom : trigger.top - box.bottom),
+        left: round(box.left - trigger.left),
+        right: round(box.right - trigger.right),
+        arrowFromCentre: arrow ? round(arrow.left + arrow.width / 2 - centre) : null,
+      };
+    });
+    // One resize autoUpdate answers, then the geometry, then one full repaint
+    // so the moved tooltips are rasterised afresh. Unlike the popover's, the
+    // entered position before the resize is not recorded: floater.js measures
+    // the arrow with getBoundingClientRect, so a placement computed during the
+    // enter frames sees the arrow under the enter-from scale, and which frame
+    // autoUpdate's first answer lands in is scheduler timing. M31 measured it:
+    // identical in isolation and in a reduced run, the arrow 1 px apart on one
+    // to three flip or shift cases of a full run - never the tooltip, the
+    // settled geometry, the inline style or a pixel. What is compared is the
+    // placement a recomputation settles on.
+    window.dispatchEvent(new Event('resize'));
+    await new Promise((done) => {
+      requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(done)));
+      setTimeout(done, 500);
+    });
+    const tooltipGeometry = geometry();
+    const bodyStyle = document.body.getAttribute('style');
+    document.body.style.opacity = '0.999';
+    await new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)));
+    if (bodyStyle === null) document.body.removeAttribute('style');
+    else document.body.setAttribute('style', bodyStyle);
+    await new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)));
+
+    const bodyTooltips = [...document.querySelectorAll('.vf-tooltip__content')].map((node) => {
+      const owner = instances.findIndex((instance) => triggerOf(instance)?.getAttribute('aria-describedby') === node.id);
+      return { place: place(node), owner: owner < 0 ? 'orphan' : 'instance:' + owner };
+    });
+
+    const delays = window.__parityTooltipDelays?.[${JSON.stringify(caseId)}] ?? [];
+    const latency = (ms, delay) => (ms < delay / 2 ? 'early' : ms <= delay + 150 ? 'on-time' : 'late');
+    const lastActivation = new Map();
+    const lastDeactivation = new Map();
+    const openings = [];
+    const closings = [];
+    for (const entry of window.__parityTooltipLogs?.[${JSON.stringify(caseId)}] ?? []) {
+      if (entry.kind === 'activate') lastActivation.set(entry.instance, entry);
+      else if (entry.kind === 'deactivate') lastDeactivation.set(entry.instance, entry);
+      else if (entry.kind === 'describe') {
+        const from = lastActivation.get(entry.instance);
+        openings.push({
+          instance: entry.instance,
+          via: from?.via ?? null,
+          latency: from ? latency(entry.t - from.t, delays[entry.instance] ?? 80) : null,
+        });
+      } else if (entry.kind === 'undescribe') {
+        const from = lastDeactivation.get(entry.instance);
+        closings.push({
+          instance: entry.instance,
+          via: from?.via ?? null,
+          lag: from ? (entry.t - from.t < 50 ? 'immediate' : 'late') : null,
+        });
+      }
+    }
+    const bucket = (ms) => (ms < 300 ? 'short' : ms < 480 ? 'normal' : 'long');
+    const transitions = (window.__parityTooltipTransitions?.[${JSON.stringify(caseId)}] ?? []).map(
+      (entry) =>
+        entry.instance +
+        ':' +
+        entry.kind +
+        (entry.framed ? '' : '-unframed') +
+        ':' +
+        (entry.ms === null ? 'unfinished' : bucket(entry.ms)),
+    );
+
+    const active = document.activeElement;
+    const focusInstance = instances.findIndex((instance) => instance.contains(active));
+    const focusRole = active === document.body
+      ? 'body'
+      : focusInstance >= 0
+        ? active.matches('.parity-trigger-control') ? 'control' : 'other-in-tooltip'
+        : active.matches('.parity-after-control')
+          ? 'after-control'
+          : popoverTriggers.includes(active)
+            ? 'popover-trigger'
+            : panels.some((panel) => panel.contains(active))
+              ? 'popover-panel'
+              : root.contains(active) ? 'other-inside-case' : 'outside-case';
+
+    const caseRect = root.getBoundingClientRect();
+    const boxes = [caseRect, ...outside.map((node) => node.getBoundingClientRect())];
+    const left = Math.min(...boxes.map((box) => box.left));
+    const top = Math.min(...boxes.map((box) => box.top));
+
+    return {
+      clip: {
+        x: Math.round(left + window.scrollX),
+        y: Math.round(top + window.scrollY),
+        width: Math.round(Math.max(...boxes.map((box) => box.right)) - left),
+        height: Math.round(Math.max(...boxes.map((box) => box.bottom)) - top),
+      },
+      ownershipPosture: 'component',
+      componentControls: owned.map((entry) => entry.record),
+      consumerControlCount: consumer.length,
+      focusableTotal: focusable.length,
+      interactiveRoleTotal: inScope('*').filter((element) => INTERACTIVE_ROLES.has(element.getAttribute('role') ?? '')).length,
+      instanceCount: instances.length,
+      describedStates,
+      describedTargets,
+      tooltipStates,
+      tooltipGeometry,
+      bodyTooltips,
+      hoverStates: instances.map((instance) => String(instance.matches(':hover'))),
+      expandedStates: popoverTriggers.map((trigger) => trigger.getAttribute('aria-expanded')),
+      openings,
+      closings,
+      transitions,
+      settled,
+      focusRole,
+      focusInstance: focusInstance < 0 ? null : focusInstance,
+      keydownPrevented: (window.__parityTooltipKeys ?? []).map((entry) => entry.key + ':' + entry.prevented),
+    };
+  })()`;
+}
+
+/**
  * What a VfBreadcrumbs case reports.
  *
  * Component-specific and named so, like the link's. The second ownership
@@ -2836,6 +3071,9 @@ export function interactionExpression(caseId, snapshot = 'input', controlOwnersh
   }
   if (snapshot === 'popover') {
     return popoverInteractionExpression(caseId, controlOwnership);
+  }
+  if (snapshot === 'tooltip') {
+    return tooltipInteractionExpression(caseId, controlOwnership);
   }
 
   if (snapshot === 'checkable') {

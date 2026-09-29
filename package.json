@@ -135,7 +135,8 @@
     "parity:group-box": "node ./scripts/parity/check-input-parity.mjs --component=group-box",
     "parity:group-box:mutations": "node ./scripts/parity/check-input-parity-mutations.mjs --component=group-box",
     "parity:popover": "node ./scripts/parity/check-input-parity.mjs --component=popover",
-    "parity:popover:mutations": "node ./scripts/parity/check-input-parity-mutations.mjs --component=popover"
+    "parity:popover:mutations": "node ./scripts/parity/check-input-parity-mutations.mjs --component=popover",
+    "parity:tooltip": "node ./scripts/parity/check-input-parity.mjs --component=tooltip"
   },
   "devDependencies": {
     "@codemonster-ru/floater.js": "1.0.11",

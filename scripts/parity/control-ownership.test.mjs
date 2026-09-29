@@ -327,15 +327,43 @@ test('every shipped accordion case passes with the snapshot its declarations des
   }
 });
 
-test('only the accordion, the stepper, the tabs, the link, the breadcrumbs, the menu item, the dropdown, the group box and the popover declare component-owned controls, and none of the static ones can', () => {
+test('only the accordion, the stepper, the tabs, the link, the breadcrumbs, the menu item, the dropdown, the group box, the popover and the tooltip declare component-owned controls, and none of the static ones can', () => {
   const owning = Object.values(profiles).filter((entry) => entry.controlOwnership !== undefined);
   assert.deepEqual(
     owning.map((entry) => entry.id),
-    ['accordion', 'stepper', 'tabs', 'link', 'breadcrumbs', 'menuItem', 'dropdown', 'group-box', 'popover'],
+    ['accordion', 'stepper', 'tabs', 'link', 'breadcrumbs', 'menuItem', 'dropdown', 'group-box', 'popover', 'tooltip'],
   );
   for (const entry of Object.values(profiles)) {
     assert.ok(!(entry.staticOwnership && entry.controlOwnership), `${entry.id} declares both ownership models`);
   }
+});
+
+test('the tooltip declares its two elements as rules and owns zero controls in every case (M31)', () => {
+  // The tooltip has interactions, so it cannot be static, and it owns nothing
+  // a user can reach: its trigger span has no tabindex and the tooltip is not
+  // focusable. Its rules name both, and its snapshot counts a match as owned
+  // only when it is focusable - so every case declares zero, and a port that
+  // made either element focusable fails the budget instead of growing a
+  // control the catalog never measured.
+  const tooltipCases = JSON.parse(readFileSync(resolve(repositoryRoot, 'contracts/tooltip/cases.json'), 'utf8')).cases;
+  assert.deepEqual(Object.keys(profiles.tooltip.controlOwnership), ['trigger', 'tooltip']);
+  assert.equal(profiles.tooltip.staticOwnership, undefined);
+  assert.ok(tooltipCases.every((entry) => entry.componentInteractive === 0));
+  assert.ok(tooltipCases.some((entry) => entry.interaction));
+  assert.deepEqual(
+    controlOwnershipViolations(
+      tooltipCases[0],
+      {
+        ownershipPosture: 'component',
+        componentControls: [{ role: 'trigger', tag: 'span', ariaRole: null, tabindex: '0' }],
+        consumerControlCount: 1,
+        focusableTotal: 2,
+        interactiveRoleTotal: 0,
+      },
+      profiles.tooltip,
+    ).length,
+    1,
+  );
 });
 
 test('the menu declares no owned control, because it owns none', () => {

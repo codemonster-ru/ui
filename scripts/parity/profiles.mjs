@@ -1435,6 +1435,58 @@ export const profiles = {
     followedReferences: [{ source: '.vf-popover__trigger', attribute: 'aria-controls' }],
     liveParity: true,
   },
+  // The M31 component: the third overlay, and the first that owns no control.
+  // Its trigger span and its tooltip are the profile's rules, and a match is
+  // an owned control only when it is focusable - every case declares zero, so
+  // a trigger that grew a tabindex fails ownership. The tooltip is followed
+  // through the trigger's aria-describedby, one hop, as the popover's panel is
+  // through aria-controls; nothing points back from it. Every scenario is
+  // driven by a real pointer that stays (hover, unhover) or real focus.
+  tooltip: {
+    id: 'tooltip',
+    label: 'VfTooltip',
+    component: 'tooltip',
+    casesPath: 'contracts/tooltip/cases.json',
+    policyPath: 'contracts/tooltip/parity-policy.json',
+    artifactDirectory: 'parity-tooltip',
+    reportName: 'tooltip-parity-report.json',
+    measuredRoles: {
+      root: '.vf-tooltip',
+      trigger: '.vf-tooltip__trigger',
+      triggerControl: '.parity-trigger-control',
+      inPlaceTooltip: '.vf-tooltip__content',
+    },
+    // The trigger span is exposed only while it carries aria-describedby, and
+    // is otherwise ignored; the tooltip is read where it is, through the
+    // reference. The arrow is listed because it is aria-hidden and so expected
+    // absent, which is only a measurement if the selector is queried.
+    accessibilityRoles: {
+      trigger: '.vf-tooltip__trigger',
+      triggerControl: '.parity-trigger-control',
+      tooltip: 'followed(.vf-tooltip__trigger, aria-describedby)',
+      arrow: 'followed(.vf-tooltip__trigger, aria-describedby) .vf-tooltip__arrow',
+    },
+    semanticAttributes: [
+      'class',
+      'style',
+      'id',
+      'role',
+      'type',
+      'tabindex',
+      'aria-describedby',
+      'aria-hidden',
+      'aria-label',
+      'data-testid',
+    ],
+    snapshot: 'tooltip',
+    activationSelector: '.parity-trigger-control',
+    controlOwnership: {
+      trigger: { selector: '.vf-tooltip__trigger', tag: 'span' },
+      tooltip: { selector: '.vf-tooltip__content', tag: 'span' },
+    },
+    followedReferences: [{ source: '.vf-tooltip__trigger', attribute: 'aria-describedby' }],
+    liveParity: true,
+  },
 };
 
 export function loadProfile(id) {

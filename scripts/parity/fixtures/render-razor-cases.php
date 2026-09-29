@@ -107,6 +107,11 @@ if ($groupBoxComponent === null) {
 }
 // The M30 component. Resolved on its own account; a dropdown inside or beside
 // it is the real vf-dropdown above, rendered as consumer content.
+$tooltipComponent = $registry->resolve('vf-tooltip');
+if ($tooltipComponent === null) {
+    fwrite(STDERR, "The VueForge vf-tooltip component is not registered.\n");
+    exit(1);
+}
 $popoverComponent = $registry->resolve('vf-popover');
 if ($popoverComponent === null) {
     fwrite(STDERR, "The VueForge vf-popover component is not registered.\n");
@@ -1432,12 +1437,67 @@ $renderPopover = static function (array $case) use ($popoverComponent, $overlayD
     return $markup;
 };
 
+/**
+ * VfTooltip, for the tooltip catalog, as the Vue fixture builds it: a popover,
+ * the tooltip roots - one, or one per `group` member - and an `after` control.
+ * The camelCase props of the catalog are the component's own alternative
+ * spellings; attrs fall through to the root. Selector targets are page-level,
+ * after the cases, below.
+ */
+$tooltipInstance = static function (array $props, array $attrs, array $content) use ($tooltipComponent, $escape): string {
+    $trigger = $content['trigger'] ?? [];
+    $default = isset($trigger['controls'])
+        ? implode('', array_map(
+            static fn ($text): string => '<button type="button" class="parity-trigger-control">' . $escape((string) $text) . '</button>',
+            $trigger['controls'],
+        ))
+        : $escape((string) ($trigger['text'] ?? ''));
+    $slots = ['default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString($default)];
+    $body = $content['body'] ?? null;
+    if ($body === 'rich') {
+        $slots['content'] = static fn (): RenderedHtml => RenderedHtml::fromTrustedString('<strong>Rich</strong> body');
+    } elseif ($body === 'empty') {
+        $slots['content'] = static fn (): RenderedHtml => RenderedHtml::fromTrustedString('');
+    }
+
+    return $tooltipComponent->render(new ComponentRenderContext($props + $attrs, $slots))->value();
+};
+$renderTooltip = static function (array $case) use ($tooltipInstance, $popoverComponent, $escape): string {
+    $content = $case['content'] ?? [];
+    $members = isset($case['group']) && is_array($case['group']) ? $case['group'] : [$case['props'] ?? []];
+    $markup = '';
+    if (isset($content['popover'])) {
+        $inside = $content['popover'] === 'inside';
+        $inner = $inside
+            ? $tooltipInstance(
+                ['text' => 'Inside hint'] + (isset($content['popoverDelay']) ? ['openDelay' => $content['popoverDelay']] : []),
+                [],
+                ['trigger' => ['controls' => ['Inside']]],
+            )
+            : '<p class="parity-panel-note">Host body</p>';
+        $markup .= $popoverComponent->render(new ComponentRenderContext([], [
+            'trigger' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('<span>Host</span>'),
+            'default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString($inner),
+        ]))->value();
+    }
+    foreach ($members as $props) {
+        $markup .= $tooltipInstance($props, $case['attrs'] ?? [], $content);
+    }
+    if (($content['after'] ?? false) === true) {
+        $markup .= '<button type="button" class="parity-after-control">After</button>';
+    }
+
+    return $markup;
+};
+
 $sections = '';
 
 foreach ($catalog['cases'] as $case) {
     $caseId = (string) $case['id'];
 
-    if ($component === 'dropdown') {
+    if ($component === 'tooltip') {
+        $body = $renderTooltip($case);
+    } elseif ($component === 'dropdown') {
         $body = $renderDropdown($case);
     } elseif ($component === 'popover') {
         $body = $renderPopover($case);
@@ -1499,7 +1559,12 @@ foreach ($catalog['cases'] as $case) {
         $body .= '<p id="aria-described-hint" class="parity-hint">Shown in workspace settings.</p>';
     }
 
-    $sections .= '<div class="parity-case" data-parity-case="' . $escape($caseId) . '">' . $body . '</div>';
+    // The tooltip catalog's layout is page chrome on the case root, as the Vue
+    // fixture writes it.
+    $layout = $component === 'tooltip' && isset($case['content']['layout'])
+        ? ' parity-tooltip-' . $escape((string) $case['content']['layout'])
+        : '';
+    $sections .= '<div class="parity-case' . $layout . '" data-parity-case="' . $escape($caseId) . '">' . $body . '</div>';
 }
 
 // The dropdown's page-level logs, installed only on the dropdown catalog's
@@ -1634,6 +1699,39 @@ $popoverLogs = $component === 'popover' ? <<<'JS'
   }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
 JS : '';
 
+// The tooltip's page-level logs, installed only on the tooltip catalog's page:
+// the same script the Vue fixture imports, inlined, with each case's delays in
+// instance order.
+$tooltipLogs = '';
+$tooltipTargets = '';
+if ($component === 'tooltip') {
+    // Every selector target in <body>, outside every case, present before the
+    // controller enhances anything - where the Vue fixture creates them before
+    // its app mounts.
+    $seen = [];
+    foreach ($catalog['cases'] as $case) {
+        foreach (isset($case['group']) && is_array($case['group']) ? $case['group'] : [$case['props'] ?? []] as $props) {
+            $target = $props['teleportTo'] ?? null;
+            if (is_string($target) && !in_array($target, $seen, true)) {
+                $seen[] = $target;
+                $tooltipTargets .= '<div id="' . $escape(substr($target, 1)) . '" class="parity-tooltip-target"></div>';
+            }
+        }
+    }
+    $delays = [];
+    foreach ($catalog['cases'] as $case) {
+        $members = isset($case['group']) && is_array($case['group']) ? $case['group'] : [$case['props'] ?? []];
+        $caseDelays = array_map(static fn (array $props): int => (int) ($props['openDelay'] ?? 80), $members);
+        if (($case['content']['popover'] ?? null) === 'inside') {
+            $caseDelays[] = (int) ($case['content']['popoverDelay'] ?? 80);
+        }
+        $delays[(string) $case['id']] = $caseDelays;
+    }
+    $source = (string) file_get_contents(__DIR__ . '/tooltip-logs.js');
+    $tooltipLogs = str_replace('export function installTooltipLogs', 'function installTooltipLogs', $source)
+        . "\n  installTooltipLogs(" . json_encode($delays, JSON_THROW_ON_ERROR) . ");\n";
+}
+
 $html = <<<HTML
 <!doctype html>
 <html lang="en">
@@ -1646,6 +1744,7 @@ $html = <<<HTML
 </head>
 <body>
 <div id="parity-root"><div class="parity-cases">{$sections}</div></div>
+{$tooltipTargets}
 <script type="module" src="./vueforge-razor.js"></script>
 <script type="module">
   // The neutral accordion event log the harness reads after a scenario: one
@@ -1684,6 +1783,7 @@ $html = <<<HTML
   });
 {$dropdownLogs}
 {$popoverLogs}
+{$tooltipLogs}
   const theme = new URLSearchParams(window.location.search).get('theme') ?? 'light';
   document.documentElement.setAttribute('data-vf-theme', theme);
   // A dropdown page is ready once every overlay that entered at bootstrap has

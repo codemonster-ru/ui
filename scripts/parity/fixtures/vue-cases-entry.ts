@@ -36,9 +36,12 @@ import VfMenuItem from '@parity/core/components/menu/VfMenuItem.vue';
 import VfDropdown from '@parity/core/components/dropdown/VfDropdown.vue';
 import VfGroupBox from '@parity/core/components/group-box/VfGroupBox.vue';
 import VfPopover from '@parity/core/components/popover/VfPopover.vue';
+import VfTooltip from '@parity/core/components/tooltip/VfTooltip.vue';
 import { VueIconify } from '@codemonster-ru/vueforge-icons';
 import '@parity/core/styles/components.css';
 import cases from '@parity/cases.json';
+// A plain script module shared with the Razor fixture, which inlines it (M31).
+import { installTooltipLogs } from './tooltip-logs.js';
 
 interface CaseContent {
   text?: string;
@@ -1042,6 +1045,92 @@ function installPopoverLogs(): void {
 }
 
 /**
+ * VfTooltip's content, as the shared catalog spells it: the default slot as
+ * `trigger`, the content slot as `body`, a consumer control `after` the roots,
+ * a real VfPopover `beside` them or holding a tooltip `inside`, and a `layout`
+ * the case root's page chrome takes.
+ */
+interface TooltipContent {
+  trigger?: { controls?: string[]; text?: string };
+  body?: 'rich' | 'empty';
+  after?: boolean;
+  popover?: 'beside' | 'inside';
+  popoverDelay?: number;
+  layout?: string;
+}
+
+function renderTooltipInstance(
+  key: string,
+  props: Record<string, unknown>,
+  attrs: Record<string, unknown>,
+  content: TooltipContent,
+): VNode {
+  const slots: Record<string, () => unknown> = {
+    default: () =>
+      content.trigger?.controls
+        ? content.trigger.controls.map((text) => h('button', { type: 'button', class: 'parity-trigger-control' }, text))
+        : (content.trigger?.text ?? ''),
+  };
+  if (content.body === 'rich') slots.content = () => [h('strong', 'Rich'), ' body'];
+  else if (content.body === 'empty') slots.content = () => [];
+  return h(VfTooltip, { ...props, ...attrs, key }, slots);
+}
+
+/**
+ * VfTooltip, for the tooltip catalog: a popover, the tooltip roots - one, or
+ * one per `group` member - and an `after` control.
+ */
+function renderTooltip(parityCase: ParityCase): VNode[] {
+  const content = (parityCase.content ?? {}) as unknown as TooltipContent;
+  const members = Array.isArray(parityCase.group) ? parityCase.group : [parityCase.props];
+  const nodes: VNode[] = [];
+  if (content.popover) {
+    const inside = content.popover === 'inside';
+    nodes.push(
+      h(
+        VfPopover,
+        {},
+        {
+          trigger: () => [h('span', 'Host')],
+          default: () =>
+            inside
+              ? [
+                  renderTooltipInstance(
+                    `${parityCase.id}/inside`,
+                    {
+                      text: 'Inside hint',
+                      ...(content.popoverDelay !== undefined ? { openDelay: content.popoverDelay } : {}),
+                    },
+                    {},
+                    { trigger: { controls: ['Inside'] } },
+                  ),
+                ]
+              : [h('p', { class: 'parity-panel-note' }, 'Host body')],
+        },
+      ),
+    );
+  }
+  members.forEach((member, index) =>
+    nodes.push(renderTooltipInstance(`${parityCase.id}/${index}`, member, parityCase.attrs, content)),
+  );
+  if (content.after) nodes.push(h('button', { type: 'button', class: 'parity-after-control' }, 'After'));
+  return nodes;
+}
+
+/** Each instance's openDelay, in the snapshot's instance order, for the latency buckets. */
+function tooltipDelays(): Record<string, number[]> {
+  return Object.fromEntries(
+    catalog.cases.map((parityCase) => {
+      const content = (parityCase.content ?? {}) as unknown as TooltipContent;
+      const members = Array.isArray(parityCase.group) ? parityCase.group : [parityCase.props];
+      const delays = members.map((member) => Number(member.openDelay ?? 80));
+      if (content.popover === 'inside') delays.push(Number(content.popoverDelay ?? 80));
+      return [parityCase.id, delays];
+    }),
+  );
+}
+
+/**
  * VfMenuItem, for the menu-item catalog.
  *
  * One component, props and attrs spread onto it. There is no slot to pass -
@@ -1664,6 +1753,15 @@ function renderCase(parityCase: ParityCase): VNode {
     return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, renderPopover(parityCase));
   }
 
+  if (catalog.component === 'tooltip') {
+    const layout = ((parityCase.content ?? {}) as unknown as TooltipContent).layout;
+    return h(
+      'div',
+      { class: ['parity-case', layout && `parity-tooltip-${layout}`], 'data-parity-case': parityCase.id },
+      renderTooltip(parityCase),
+    );
+  }
+
   if (catalog.component === 'icon-button') {
     return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, [renderIconButton(parityCase)]);
   }
@@ -1756,6 +1854,21 @@ document.documentElement.setAttribute('data-vf-theme', theme);
 
 if (catalog.component === 'dropdown') installDropdownLogs();
 if (catalog.component === 'popover') installPopoverLogs();
+if (catalog.component === 'tooltip') {
+  installTooltipLogs(tooltipDelays());
+  // A Teleport resolves a selector when it mounts, so every selector target
+  // exists in <body>, outside every case, before the app does - where the
+  // Razor fixture renders them too.
+  for (const parityCase of catalog.cases) {
+    const members = Array.isArray(parityCase.group) ? parityCase.group : [parityCase.props];
+    for (const member of members) {
+      if (typeof member.teleportTo !== 'string' || document.querySelector(member.teleportTo)) continue;
+      const target = document.body.appendChild(document.createElement('div'));
+      target.id = member.teleportTo.slice(1);
+      target.className = 'parity-tooltip-target';
+    }
+  }
+}
 
 createApp(Cases).mount('#parity-root');
 

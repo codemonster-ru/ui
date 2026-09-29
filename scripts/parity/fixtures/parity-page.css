@@ -99,3 +99,44 @@ body {
 .parity-case:has(> .vf-popover) {
   min-height: 220px;
 }
+
+/* The M31 tooltip catalog. A tooltip case lays its roots out in a row with
+   room above them and to their left, so a top tooltip fits above its trigger
+   when the case is alone at the top of the page - which is where every
+   scenario drives it. floater.js's flip reacts to any overflow, a sideways one
+   included, so a centred tooltip on a trigger at the left edge would flip to
+   the bottom. The four edge layouts put the trigger where floater.js has to
+   flip or shift: at the viewport top, at its bottom (the page is exactly one
+   viewport tall, so nothing scrolls it back to the centre), at its left and at
+   its right.
+
+   Page chrome, applied identically to all three targets, so it can produce no
+   difference between them. The tooltip's geometry still comes from floater.js
+   and tooltip.css and is still what the comparison measures. */
+.parity-case:has(> .vf-tooltip) {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  align-items: flex-start;
+  gap: 24px;
+  padding: 72px 0 0 120px;
+}
+
+.parity-case.parity-tooltip-top-edge {
+  padding-top: 0;
+}
+
+.parity-case.parity-tooltip-bottom-edge {
+  min-height: 852px;
+  align-content: flex-end;
+  padding-top: 0;
+}
+
+.parity-case.parity-tooltip-left-edge {
+  padding-left: 0;
+}
+
+.parity-case.parity-tooltip-right-edge {
+  margin-left: 590px;
+  justify-content: flex-end;
+}

@@ -775,6 +775,20 @@ const INTERACTION_FIELDS = {
   panelRelationships: { dimension: 'interaction.relationships', format: 'json' },
   nestedMenus: { dimension: 'interaction.state', format: 'json' },
   bodyOverlays: { dimension: 'interaction.state', format: 'json' },
+  // The VfTooltip snapshot (M31): the reference graph per instance, each
+  // described tooltip and its geometry, every tooltip node by what names it,
+  // where the pointer rests, and the timing the fixture log kept - references
+  // written with their latency, references removed with their lag. The
+  // ownership, instance, expanded, transition, focus and keydown fields, and
+  // describedTargets (the field's, the same dimension), are the ones above,
+  // shared.
+  describedStates: { dimension: 'interaction.relationships', format: 'json' },
+  tooltipStates: { dimension: 'interaction.state', format: 'json' },
+  tooltipGeometry: { dimension: 'interaction.state', format: 'json' },
+  bodyTooltips: { dimension: 'interaction.state', format: 'json' },
+  hoverStates: { dimension: 'interaction.state', format: 'json' },
+  openings: { dimension: 'interaction.state', format: 'json' },
+  closings: { dimension: 'interaction.state', format: 'json' },
 };
 
 /**
