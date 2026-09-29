@@ -202,4 +202,11 @@ export const styleSources = [
   // overlay-primitives.css, already inlined above, so those tokens appear once.
   // Listed last; no selector here overlaps another file's.
   'packages/styles/src/components/popover.css',
+  // VfTooltip, M31: the inline-flex wrapper and trigger, the fixed floating
+  // tooltip with its enter-from/leave-to pair, and the rotated arrow whose two
+  // sides share one overlap offset. A standalone closure beside popover.css,
+  // not a variant of it: the two share tokens and no selector. Its first line
+  // imports overlay-primitives.css, already inlined above, so those tokens
+  // appear once. Listed last; no selector here overlaps another file's.
+  'packages/styles/src/components/tooltip.css',
 ];

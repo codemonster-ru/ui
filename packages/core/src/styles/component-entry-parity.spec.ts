@@ -275,6 +275,31 @@ describe('component entry CSS parity', () => {
     expect(stripImports(source)).not.toContain('--vf-overlay-border-width:');
   });
 
+  it('forwards the tooltip entry to its canonical source in packages/styles, which reads the shared overlay tokens', () => {
+    // The M31 move, checked the way the popover's is. The tooltip is its own
+    // closure: nothing imports it, and it imports only the overlay tokens.
+    const canonical = resolveStyleEntrySource(resolve(entriesDir, 'tooltip.css'));
+    expect(canonical).toBe(resolve(stylesDir, '../../../styles/src/components/tooltip.css'));
+
+    const source = readFileSync(canonical, 'utf8');
+    const imports = [...source.matchAll(/^@import\s+'([^']+)';$/gm)].map((match) => match[1]);
+    expect(imports).toEqual(['./overlay-primitives.css']);
+    expect(resolveStyleEntrySource(resolve(dirname(canonical), imports[0]!))).toBe(
+      resolveStyleEntrySource(resolve(componentsDir, 'overlay-primitives.css')),
+    );
+    // The tooltip is fixed, which is the strategy floater.js is given; its
+    // enter/leave pair is the transition name the component renders; and both
+    // arrow sides carry the overlap offset the historical rule pins.
+    expect(source).toContain('.vf-tooltip__content {\n  position: fixed;');
+    expect(source).toContain('.vf-floating-transition-enter-from.vf-tooltip__content,');
+    expect(source).toContain('.vf-floating-transition-leave-to.vf-tooltip__content {');
+    expect(source).toContain('.vf-tooltip__arrow--bottom {\n  margin-top: var(--vf-overlay-arrow-overlap-offset);');
+    expect(source).toContain('.vf-tooltip__arrow--top {\n  margin-top: var(--vf-overlay-arrow-overlap-offset);');
+    expect(source).not.toContain('.vf-popover');
+    expect(source).not.toContain('.vf-dropdown');
+    expect(stripImports(source)).not.toContain('--vf-overlay-border-width:');
+  });
+
   it('keeps the menu and the menu item in one closure with no descendant coupling', () => {
     // VfMenu and VfMenuItem are one milestone because they are one stylesheet,
     // not because either needs the other. No selector here joins them: every
