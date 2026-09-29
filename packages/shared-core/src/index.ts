@@ -200,3 +200,18 @@ export {
   resolvePopoverTriggerKey,
   resolvePopoverTriggerState,
 } from './popover/state.js';
+// VfTooltip. Values in, values out: the timer, the four wrapper listeners,
+// floater.js and the transition stay in each adapter. Deliberately not the
+// popover's rules under another name - see tooltip/state.ts.
+export {
+  TOOLTIP_FLIP_PLACEMENTS,
+  TOOLTIP_OFFSET,
+  TOOLTIP_OPEN_DELAY,
+  TOOLTIP_STRATEGY,
+  resolveTooltipArrowClasses,
+  resolveTooltipArrowOffset,
+  resolveTooltipContentClasses,
+  resolveTooltipDescribedBy,
+  resolveTooltipHasContent,
+  resolveTooltipTeleport,
+} from './tooltip/state.js';

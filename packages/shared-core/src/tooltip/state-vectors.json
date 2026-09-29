@@ -1,0 +1,104 @@
+{
+  "$comment": "Shared input/expected vectors for VfTooltip. The TypeScript rules in tooltip/state.ts run every section; the PHP mirror in packages/razor/src/Support/TooltipState.php runs the sections a server can decide (listed in $serverRules) and deliberately has no method for the others - the classes, the arrow offset and the description relationship are decided in the browser once the tooltip opens, and a server never renders one open. The contract of the reference at fd793696, quirks included: the flip pair is top/bottom for every placement; --top and --bottom follow the computed placement on the tooltip and on the arrow, and neither is written for any other side; the arrow offset is 0 on an axis missing either number; teleportTo false or null renders in place and anything that is not a string means body; content is JavaScript truthiness of the text or the presence of a slot, so an empty text is none and a whitespace-only text or \"0\" is some; aria-describedby follows the open state alone, content or not. `null` in `teleportTo` or `text` is JSON null; an absent key is `undefined`.",
+  "$serverRules": ["resolveTooltipHasContent", "resolveTooltipTeleport"],
+  "constants": {
+    "TOOLTIP_FLIP_PLACEMENTS": ["top", "bottom"],
+    "TOOLTIP_OFFSET": 10,
+    "TOOLTIP_OPEN_DELAY": 80,
+    "TOOLTIP_STRATEGY": "fixed"
+  },
+  "resolveTooltipContentClasses": [
+    { "placement": "top", "expected": ["vf-tooltip__content", "vf-tooltip__content--top"] },
+    { "placement": "bottom", "expected": ["vf-tooltip__content", "vf-tooltip__content--bottom"] },
+    {
+      "$why": "The computed placement decides the modifier by its prefix.",
+      "placement": "bottom-start",
+      "expected": ["vf-tooltip__content", "vf-tooltip__content--bottom"]
+    },
+    { "placement": "top-end", "expected": ["vf-tooltip__content", "vf-tooltip__content--top"] },
+    {
+      "$why": "Any other side gets neither modifier: two conditions, not a two-way choice.",
+      "placement": "left",
+      "expected": ["vf-tooltip__content"]
+    },
+    { "placement": "right-start", "expected": ["vf-tooltip__content"] }
+  ],
+  "resolveTooltipArrowClasses": [
+    { "placement": "top", "expected": ["vf-tooltip__arrow", "vf-tooltip__arrow--top"] },
+    { "placement": "bottom", "expected": ["vf-tooltip__arrow", "vf-tooltip__arrow--bottom"] },
+    {
+      "$why": "Unlike VfPopover's arrow, which is --bottom for everything that is not on top.",
+      "placement": "left",
+      "expected": ["vf-tooltip__arrow"]
+    }
+  ],
+  "resolveTooltipArrowOffset": [
+    {
+      "data": { "x": 38.5, "y": 56.24, "baseX": 10, "baseY": 20 },
+      "expected": { "x": 28.5, "y": 36.24 }
+    },
+    {
+      "$why": "A missing base zeroes that axis only.",
+      "data": { "x": 38, "y": 15, "baseY": 20 },
+      "expected": { "x": 0, "y": -5 }
+    },
+    { "$why": "No arrow data at all.", "data": null, "expected": { "x": 0, "y": 0 } }
+  ],
+  "resolveTooltipTeleport": [
+    {
+      "$why": "Absent teleportTo means body.",
+      "disableTeleport": false,
+      "expected": { "disabled": false, "target": "body" }
+    },
+    {
+      "teleportTo": "#tooltip-root",
+      "disableTeleport": false,
+      "expected": { "disabled": false, "target": "#tooltip-root" }
+    },
+    { "teleportTo": false, "disableTeleport": false, "expected": { "disabled": true, "target": "body" } },
+    {
+      "$why": "Explicit null renders in place in Vue. Razor reads a null attribute as not given (its adapter convention) and spells this `false`, so the PHP mirror skips this one vector.",
+      "$vueOnly": true,
+      "teleportTo": null,
+      "disableTeleport": false,
+      "expected": { "disabled": true, "target": "body" }
+    },
+    {
+      "$why": "true is not a string and not an element: body, not in place.",
+      "$vueOnly": true,
+      "teleportTo": true,
+      "disableTeleport": false,
+      "expected": { "disabled": false, "target": "body" }
+    },
+    {
+      "$why": "disableTeleport wins over a selector, which is still resolved.",
+      "teleportTo": "#tooltip-root",
+      "disableTeleport": true,
+      "expected": { "disabled": true, "target": "#tooltip-root" }
+    },
+    { "disableTeleport": true, "expected": { "disabled": true, "target": "body" } }
+  ],
+  "resolveTooltipHasContent": [
+    { "text": "Helpful hint", "hasContentSlot": false, "expected": true },
+    {
+      "$why": "No text and no slot: an open tooltip renders nothing and its reference dangles.",
+      "hasContentSlot": false,
+      "expected": false
+    },
+    { "text": null, "hasContentSlot": false, "expected": false },
+    { "$why": "The empty string is falsy.", "text": "", "hasContentSlot": false, "expected": false },
+    { "$why": "Whitespace is not trimmed.", "text": "   ", "hasContentSlot": false, "expected": true },
+    {
+      "$why": "\"0\" is a non-empty string, truthy in JavaScript - not falsy as in PHP.",
+      "text": "0",
+      "hasContentSlot": false,
+      "expected": true
+    },
+    { "$why": "A slot renders whatever the text is.", "text": "", "hasContentSlot": true, "expected": true },
+    { "hasContentSlot": true, "expected": true }
+  ],
+  "resolveTooltipDescribedBy": [
+    { "open": false, "id": "vf-tooltip-1", "expected": null },
+    { "open": true, "id": "vf-tooltip-1", "expected": "vf-tooltip-1" }
+  ]
+}

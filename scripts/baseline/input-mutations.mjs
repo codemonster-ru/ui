@@ -114,6 +114,10 @@ export const popoverSourcePath = 'packages/core/src/components/popover/VfPopover
 /** The shared rules VfPopover, its Razor controller and the PHP adapter derive from. */
 export const popoverRulePath = 'packages/shared-core/src/popover/state.ts';
 const popoverSuite = 'src/components/popover/VfPopover.characterization.spec.ts';
+export const tooltipSourcePath = 'packages/core/src/components/tooltip/VfTooltip.vue';
+/** The shared rules VfTooltip, its Razor controller and the PHP adapter derive from. */
+export const tooltipRulePath = 'packages/shared-core/src/tooltip/state.ts';
+const tooltipSuite = 'src/components/tooltip/VfTooltip.characterization.spec.ts';
 
 /**
  * The consumer suite a VfProgressSpinner defect is expected to reach.
@@ -6017,7 +6021,7 @@ export const dropdownMutations = [
     id: 'dropdown-autoupdate-observes-menu',
     file: floatingComposablePath,
     suite: dropdownSuite,
-    alsoFails: [popoverSuite],
+    alsoFails: [popoverSuite, tooltipSuite],
     description: 'autoUpdate also observes the floating element',
     find: '      cleanupAutoUpdate.value = autoUpdate(referenceRef.value, () => {',
     replace: '      cleanupAutoUpdate.value = autoUpdate(referenceRef.value, floatingRef.value, () => {',
@@ -6114,6 +6118,14 @@ export const dropdownMutations = [
  * conventional popover, where the reference does something else - and each is
  * attributed to the popover suite alone: VfPopover renders no other migrated
  * component, and no other suite renders it.
+ *
+ * Since M31 the tooltip suite renders VfPopover too - a tooltip beside an open
+ * popover and one inside its content, to pin that the tooltip is not on the
+ * escape stack and goes when the content goes. Five of these reach it, by fact
+ * rather than in advance, and declare `alsoFails: [tooltipSuite]`: the three
+ * that break opening or closing the content and the two that break the
+ * popover's Escape. So does the dropdown's useFloating mutation, the shared
+ * runtime the tooltip positions itself with. The other 54 do not.
  */
 export const popoverMutations = [
   // Trigger and panel markup.
@@ -6240,6 +6252,7 @@ export const popoverMutations = [
     id: 'popover-expanded-omitted-when-closed',
     file: popoverRulePath,
     suite: popoverSuite,
+    alsoFails: [tooltipSuite],
     description: 'aria-expanded is omitted while closed instead of written as false',
     find: "  return { ariaExpanded: open ? 'true' : 'false' };",
     replace: "  return { ariaExpanded: open ? 'true' : (undefined as unknown as 'false') };",
@@ -6249,6 +6262,7 @@ export const popoverMutations = [
     id: 'popover-content-kept-while-closed',
     file: popoverSourcePath,
     suite: popoverSuite,
+    alsoFails: [tooltipSuite],
     description: 'the closed panel is hidden with v-show instead of unmounted',
     find: '          v-if="isOpen"',
     replace: '          v-show="isOpen"',
@@ -6257,6 +6271,7 @@ export const popoverMutations = [
     id: 'popover-content-never-rendered',
     file: popoverSourcePath,
     suite: popoverSuite,
+    alsoFails: [tooltipSuite],
     description: 'the panel never renders, whatever the state says',
     find: '          v-if="isOpen"',
     replace: '          v-if="false"',
@@ -6486,6 +6501,7 @@ export const popoverMutations = [
     id: 'popover-escape-never-closes',
     file: popoverRulePath,
     suite: popoverSuite,
+    alsoFails: [tooltipSuite],
     description: 'Escape never closes the popover',
     find: '  return open && closeOnEscape;',
     replace: '  return false && open && closeOnEscape;',
@@ -6502,6 +6518,7 @@ export const popoverMutations = [
     id: 'popover-escape-not-prevented',
     file: popoverSourcePath,
     suite: popoverSuite,
+    alsoFails: [tooltipSuite],
     description: 'a handled Escape is not prevented',
     find: '    event.preventDefault();\n    closePopover();\n  },',
     replace: '    closePopover();\n  },',
@@ -6618,6 +6635,347 @@ export const popoverMutations = [
   },
 ];
 
+/**
+ * VfTooltip (M31): the state machine, the relationship, the content quirks,
+ * floating, the transition and the escape stack it is not on - each broken
+ * where a port written from a description, or copied from VfPopover, would
+ * break it. Every one names the tooltip suite, and no other suite may fail.
+ */
+export const tooltipMutations = [
+  // The timer.
+  {
+    id: 'tooltip-opens-immediately',
+    file: tooltipSourcePath,
+    suite: tooltipSuite,
+    description: 'an activation opens at once instead of starting the openDelay timer',
+    find: '  openTimeout.value = window.setTimeout(() => {\n    isOpen.value = true;\n  }, props.openDelay);',
+    replace: '  isOpen.value = true;',
+  },
+  {
+    id: 'tooltip-timer-never-fires',
+    file: tooltipSourcePath,
+    suite: tooltipSuite,
+    description: 'the open timer is started and does nothing when it fires',
+    find: '  openTimeout.value = window.setTimeout(() => {\n    isOpen.value = true;\n  }, props.openDelay);',
+    replace: '  openTimeout.value = window.setTimeout(() => {}, props.openDelay);',
+  },
+  {
+    id: 'tooltip-close-keeps-the-timer',
+    file: tooltipSourcePath,
+    suite: tooltipSuite,
+    description: 'a leave or focusout closes without cancelling a pending open',
+    find: 'function close() {\n  clearTimer();\n',
+    replace: 'function close() {\n',
+  },
+  {
+    id: 'tooltip-activation-keeps-the-pending-timer',
+    file: tooltipSourcePath,
+    suite: tooltipSuite,
+    description: 'a second activation keeps the pending timer instead of restarting it',
+    find: 'function open() {\n  clearTimer();\n',
+    replace: 'function open() {\n  if (openTimeout.value !== null) return;\n',
+  },
+  {
+    id: 'tooltip-duplicate-timers',
+    file: tooltipSourcePath,
+    suite: tooltipSuite,
+    description: 'every activation starts another timer without clearing the last',
+    find: 'function open() {\n  clearTimer();\n',
+    replace: 'function open() {\n',
+  },
+  // The last event wins.
+  {
+    id: 'tooltip-hovered-or-focused',
+    file: tooltipSourcePath,
+    suite: tooltipSuite,
+    description: 'the tooltip stays open while it is hovered or focused: two flags instead of the last event',
+    edits: [
+      {
+        find: 'const isOpen = ref(false);\n',
+        replace: 'const isOpen = ref(false);\nconst hovered = ref(false);\nconst focused = ref(false);\n',
+      },
+      {
+        find: '@mouseenter="open" @mouseleave="close" @focusin="open" @focusout="close"',
+        replace:
+          '@mouseenter="hovered = true; open()" @mouseleave="hovered = false; focused || close()" @focusin="focused = true; open()" @focusout="focused = false; hovered || close()"',
+      },
+    ],
+  },
+  {
+    id: 'tooltip-mouseleave-ignored-while-focused',
+    file: tooltipSourcePath,
+    suite: tooltipSuite,
+    description: 'a mouseleave does not close while focus is inside the wrapper',
+    edits: [
+      {
+        find: 'function close() {',
+        replace:
+          'function closeUnlessFocused(event: MouseEvent) {\n  if (!(event.currentTarget as HTMLElement).contains(document.activeElement)) close();\n}\n\nfunction close() {',
+      },
+      { find: '@mouseleave="close"', replace: '@mouseleave="closeUnlessFocused"' },
+    ],
+  },
+  {
+    id: 'tooltip-focusout-ignored-while-hovered',
+    file: tooltipSourcePath,
+    suite: tooltipSuite,
+    description: 'a focusout does not close while the pointer is inside the wrapper',
+    edits: [
+      { find: 'const isOpen = ref(false);\n', replace: 'const isOpen = ref(false);\nconst hovered = ref(false);\n' },
+      {
+        find: '@mouseenter="open" @mouseleave="close" @focusin="open" @focusout="close"',
+        replace:
+          '@mouseenter="hovered = true; open()" @mouseleave="hovered = false; close()" @focusin="open" @focusout="hovered || close()"',
+      },
+    ],
+  },
+  {
+    id: 'tooltip-mouseover-mouseout',
+    file: tooltipSourcePath,
+    suite: tooltipSuite,
+    description: 'the pointer listeners are the bubbling mouseover and mouseout instead of mouseenter and mouseleave',
+    find: '@mouseenter="open" @mouseleave="close"',
+    replace: '@mouseover="open" @mouseout="close"',
+  },
+  // The relationship.
+  {
+    id: 'tooltip-describedby-omitted',
+    file: tooltipSourcePath,
+    suite: tooltipSuite,
+    description: 'the trigger wrapper never names the tooltip',
+    find: ' :aria-describedby="resolveTooltipDescribedBy(isOpen, tooltipId)"',
+    replace: '',
+  },
+  {
+    id: 'tooltip-describedby-while-closed',
+    file: tooltipSourcePath,
+    suite: tooltipSuite,
+    description: 'the trigger wrapper names the tooltip id while closed as well',
+    find: ':aria-describedby="resolveTooltipDescribedBy(isOpen, tooltipId)"',
+    replace: ':aria-describedby="tooltipId"',
+  },
+  {
+    id: 'tooltip-describedby-wrong-target',
+    file: tooltipSourcePath,
+    suite: tooltipSuite,
+    description: 'the trigger wrapper names an id the tooltip does not carry',
+    find: ':aria-describedby="resolveTooltipDescribedBy(isOpen, tooltipId)"',
+    replace: `:aria-describedby="resolveTooltipDescribedBy(isOpen, tooltipId + '-content')"`,
+  },
+  {
+    id: 'tooltip-shared-id',
+    file: tooltipSourcePath,
+    suite: tooltipSuite,
+    description: 'every instance uses the same tooltip id',
+    find: "const tooltipId = useId({ prefix: 'vf-tooltip' });",
+    replace: "const tooltipId = computed(() => 'vf-tooltip');",
+  },
+  {
+    id: 'tooltip-describedby-on-root',
+    file: tooltipSourcePath,
+    suite: tooltipSuite,
+    description: 'aria-describedby is written on the root instead of the trigger wrapper',
+    edits: [
+      { find: ' :aria-describedby="resolveTooltipDescribedBy(isOpen, tooltipId)"', replace: '' },
+      {
+        find: '<span class="vf-tooltip" @mouseenter',
+        replace:
+          '<span class="vf-tooltip" :aria-describedby="resolveTooltipDescribedBy(isOpen, tooltipId)" @mouseenter',
+      },
+    ],
+  },
+  {
+    id: 'tooltip-describedby-on-consumer-control',
+    file: tooltipSourcePath,
+    suite: tooltipSuite,
+    description: 'aria-describedby is written on the first consumer control, a better-looking target',
+    edits: [
+      { find: ' :aria-describedby="resolveTooltipDescribedBy(isOpen, tooltipId)"', replace: '' },
+      {
+        find: 'function close() {',
+        replace:
+          "watch(isOpen, (open) => {\n  const control = triggerRef.value?.firstElementChild;\n  if (open) control?.setAttribute('aria-describedby', tooltipId.value);\n  else control?.removeAttribute('aria-describedby');\n});\n\nfunction close() {",
+      },
+      {
+        find: "import { computed, onBeforeUnmount, ref } from 'vue';",
+        replace: "import { computed, onBeforeUnmount, ref, watch } from 'vue';",
+      },
+    ],
+  },
+  {
+    id: 'tooltip-role-status',
+    file: tooltipSourcePath,
+    suite: tooltipSuite,
+    description: 'the tooltip announces role=status',
+    find: '          role="tooltip"',
+    replace: '          role="status"',
+  },
+  // Content.
+  {
+    id: 'tooltip-rendered-while-closed',
+    file: tooltipSourcePath,
+    suite: tooltipSuite,
+    description: 'the tooltip element exists whenever there is content, open or not',
+    find: 'v-if="isOpen && resolveTooltipHasContent(text, Boolean($slots.content))"',
+    replace: 'v-if="resolveTooltipHasContent(text, Boolean($slots.content))"',
+  },
+  {
+    id: 'tooltip-empty-content-not-described',
+    file: tooltipSourcePath,
+    suite: tooltipSuite,
+    description: 'an open tooltip without content does not name its id: the dangling reference is normalized away',
+    find: ':aria-describedby="resolveTooltipDescribedBy(isOpen, tooltipId)"',
+    replace:
+      ':aria-describedby="resolveTooltipDescribedBy(isOpen && resolveTooltipHasContent(text, Boolean($slots.content)), tooltipId)"',
+  },
+  {
+    id: 'tooltip-whitespace-trimmed',
+    file: tooltipRulePath,
+    suite: tooltipSuite,
+    description: 'a whitespace-only text counts as no content',
+    find: '  return Boolean(text) || hasContentSlot;',
+    replace: '  return Boolean(text?.trim()) || hasContentSlot;',
+  },
+  {
+    id: 'tooltip-zero-is-no-content',
+    file: tooltipRulePath,
+    suite: tooltipSuite,
+    description: 'the text "0" counts as no content, as PHP truthiness would have it',
+    find: '  return Boolean(text) || hasContentSlot;',
+    replace: "  return (Boolean(text) && text !== '0') || hasContentSlot;",
+  },
+  {
+    id: 'tooltip-text-beats-slot',
+    file: tooltipSourcePath,
+    suite: tooltipSuite,
+    description: 'the text prop renders instead of a content slot given beside it',
+    find: '          <slot name="content">\n            {{ text }}\n          </slot>',
+    replace: '          <template v-if="text">{{ text }}</template>\n          <slot v-else name="content" />',
+  },
+  // Teleport and floating.
+  {
+    id: 'tooltip-selector-ignored',
+    file: tooltipRulePath,
+    suite: tooltipSuite,
+    description: 'a selector teleportTo is ignored and the tooltip goes to body',
+    find: "  if (typeof teleportTo === 'string') return { disabled, target: teleportTo };",
+    replace: "  if (typeof teleportTo === 'string') return { disabled, target: 'body' };",
+  },
+  {
+    id: 'tooltip-null-teleports',
+    file: tooltipRulePath,
+    suite: tooltipSuite,
+    description: 'teleportTo null teleports to body instead of rendering in place',
+    find: '  const disabled = disableTeleport || teleportTo === false || teleportTo === null;',
+    replace: '  const disabled = disableTeleport || teleportTo === false;',
+  },
+  {
+    id: 'tooltip-default-placement-bottom',
+    file: tooltipSourcePath,
+    suite: tooltipSuite,
+    description: 'the default placement is bottom',
+    find: "  placement: 'top',",
+    replace: "  placement: 'bottom',",
+  },
+  {
+    id: 'tooltip-popover-flip-list',
+    file: tooltipRulePath,
+    suite: tooltipSuite,
+    description: "the flip pair is VfPopover's start pair",
+    find: "export const TOOLTIP_FLIP_PLACEMENTS: readonly string[] = ['top', 'bottom'];",
+    replace: "export const TOOLTIP_FLIP_PLACEMENTS: readonly string[] = ['bottom-start', 'top-start'];",
+  },
+  {
+    id: 'tooltip-offset-12',
+    file: tooltipRulePath,
+    suite: tooltipSuite,
+    description: 'the offset is 12 instead of 10',
+    find: 'export const TOOLTIP_OFFSET = 10;',
+    replace: 'export const TOOLTIP_OFFSET = 12;',
+  },
+  {
+    id: 'tooltip-shift-removed',
+    file: tooltipSourcePath,
+    suite: tooltipSuite,
+    description: 'the shift middleware is not applied',
+    find: '        shift(),\n',
+    replace: '',
+  },
+  {
+    id: 'tooltip-arrow-removed',
+    file: tooltipSourcePath,
+    suite: tooltipSuite,
+    description: 'the tooltip has no arrow span',
+    find: '          <span ref="arrowRef" :class="arrowClasses" :style="arrowStyles" aria-hidden="true" />\n',
+    replace: '',
+  },
+  {
+    id: 'tooltip-arrow-popover-sides',
+    file: tooltipRulePath,
+    suite: tooltipSuite,
+    description: "the arrow modifier is VfPopover's two-way choice: bottom for anything that is not on top",
+    find: "    ...(placement.startsWith('bottom') ? ['vf-tooltip__arrow--bottom'] : []),\n    ...(placement.startsWith('top') ? ['vf-tooltip__arrow--top'] : []),",
+    replace: "    placement.startsWith('top') ? 'vf-tooltip__arrow--top' : 'vf-tooltip__arrow--bottom',",
+  },
+  // The transition.
+  {
+    id: 'tooltip-instant-leave',
+    file: tooltipSourcePath,
+    suite: tooltipSuite,
+    description: 'a closing tooltip is removed at once instead of leaving for 320 ms',
+    find: '  leave: vfMotionDurationsMs.normal,',
+    replace: '  leave: 0,',
+  },
+  {
+    id: 'tooltip-describedby-removed-after-leave',
+    file: tooltipSourcePath,
+    suite: tooltipSuite,
+    description: 'aria-describedby stays on the trigger until the leaving tooltip is gone',
+    edits: [
+      { find: 'const isOpen = ref(false);\n', replace: 'const isOpen = ref(false);\nconst leaving = ref(false);\n' },
+      {
+        find: 'function close() {\n  clearTimer();\n',
+        replace: 'function close() {\n  clearTimer();\n  if (isOpen.value) leaving.value = true;\n',
+      },
+      {
+        find: ':aria-describedby="resolveTooltipDescribedBy(isOpen, tooltipId)"',
+        replace: ':aria-describedby="resolveTooltipDescribedBy(isOpen || leaving, tooltipId)"',
+      },
+      {
+        find: '<Transition name="vf-floating-transition" appear :duration="transitionDuration">',
+        replace:
+          '<Transition name="vf-floating-transition" appear :duration="transitionDuration" @after-leave="leaving = false">',
+      },
+    ],
+  },
+  // The escape stack it is not on.
+  {
+    id: 'tooltip-on-the-escape-stack',
+    file: tooltipSourcePath,
+    suite: tooltipSuite,
+    description: 'an open tooltip takes an entry on the shared escape stack and closes on Escape',
+    edits: [
+      {
+        find: "import { useFloating, useId } from '@/composables';",
+        replace: "import { useEscapeKey, useFloating, useId } from '@/composables';",
+      },
+      {
+        find: 'onBeforeUnmount(() => {',
+        replace:
+          'useEscapeKey(\n  (event) => {\n    event.preventDefault();\n    close();\n  },\n  { enabled: isOpen },\n);\n\nonBeforeUnmount(() => {',
+      },
+    ],
+  },
+  {
+    id: 'tooltip-unmount-keeps-the-timer',
+    file: tooltipSourcePath,
+    suite: tooltipSuite,
+    description: 'unmounting does not cancel a pending open',
+    find: 'onBeforeUnmount(() => {\n  clearTimer();\n',
+    replace: 'onBeforeUnmount(() => {\n',
+  },
+];
+
 export const componentMutations = [
   ...inputMutations,
   ...iconButtonMutations,
@@ -6647,4 +7005,5 @@ export const componentMutations = [
   ...menuMutations,
   ...dropdownMutations,
   ...popoverMutations,
+  ...tooltipMutations,
 ];

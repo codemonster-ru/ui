@@ -1,6 +1,18 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref } from 'vue';
-import { arrow, flip, offset, shift, type MiddlewareType } from '@codemonster-ru/floater.js';
+import { arrow, flip, offset, shift, type MiddlewareType, type PlacementType } from '@codemonster-ru/floater.js';
+import {
+  TOOLTIP_FLIP_PLACEMENTS,
+  TOOLTIP_OFFSET,
+  TOOLTIP_OPEN_DELAY,
+  TOOLTIP_STRATEGY,
+  resolveTooltipArrowClasses,
+  resolveTooltipArrowOffset,
+  resolveTooltipContentClasses,
+  resolveTooltipDescribedBy,
+  resolveTooltipHasContent,
+  resolveTooltipTeleport,
+} from '@codemonster-ru/vueforge-shared-core';
 import { useFloating, useId } from '@/composables';
 import { vfMotionDurationsMs } from '@/theme/motion';
 import type { VfTooltipPlacement } from '@/types/components';
@@ -16,7 +28,7 @@ interface VfTooltipProps {
 const props = withDefaults(defineProps<VfTooltipProps>(), {
   text: undefined,
   placement: 'top',
-  openDelay: 80,
+  openDelay: TOOLTIP_OPEN_DELAY,
   teleportTo: undefined,
   disableTeleport: false,
 });
@@ -31,20 +43,14 @@ const transitionDuration = {
   enter: vfMotionDurationsMs.normal,
   leave: vfMotionDurationsMs.normal,
 } as const;
-const teleportDisabled = computed(
-  () => props.disableTeleport || props.teleportTo === false || props.teleportTo === null,
+// The element case is this adapter's own: no other adapter can pass one.
+const teleport = computed(() =>
+  resolveTooltipTeleport(
+    props.teleportTo,
+    props.disableTeleport,
+    (value): value is HTMLElement => typeof HTMLElement !== 'undefined' && value instanceof HTMLElement,
+  ),
 );
-const teleportTarget = computed(() => {
-  if (typeof props.teleportTo === 'string') {
-    return props.teleportTo;
-  }
-
-  if (typeof HTMLElement !== 'undefined' && props.teleportTo instanceof HTMLElement) {
-    return props.teleportTo;
-  }
-
-  return 'body';
-});
 
 const {
   placement: floatingPlacement,
@@ -57,35 +63,24 @@ const {
   middleware: computed(
     () =>
       [
-        offset(10),
-        flip({ placements: ['top', 'bottom'] }),
+        offset(TOOLTIP_OFFSET),
+        flip({ placements: [...TOOLTIP_FLIP_PLACEMENTS] as PlacementType[] }),
         shift(),
         ...(arrowRef.value ? [arrow(arrowRef.value)] : []),
       ] as MiddlewareType[],
   ),
-  strategy: 'fixed',
+  strategy: TOOLTIP_STRATEGY,
 });
 
-const classes = computed(() => [
-  'vf-tooltip__content',
-  floatingPlacement.value.startsWith('bottom') && 'vf-tooltip__content--bottom',
-  floatingPlacement.value.startsWith('top') && 'vf-tooltip__content--top',
-]);
+const classes = computed(() => resolveTooltipContentClasses(floatingPlacement.value));
 
-const arrowData = computed(() => {
-  const data = middlewareData.value.arrow as { x?: number; y?: number; baseX?: number; baseY?: number } | undefined;
+const arrowData = computed(() =>
+  resolveTooltipArrowOffset(
+    middlewareData.value.arrow as { x?: number; y?: number; baseX?: number; baseY?: number } | undefined,
+  ),
+);
 
-  return {
-    x: data?.x !== undefined && data?.baseX !== undefined ? data.x - data.baseX : 0,
-    y: data?.y !== undefined && data?.baseY !== undefined ? data.y - data.baseY : 0,
-  };
-});
-
-const arrowClasses = computed(() => [
-  'vf-tooltip__arrow',
-  floatingPlacement.value.startsWith('bottom') && 'vf-tooltip__arrow--bottom',
-  floatingPlacement.value.startsWith('top') && 'vf-tooltip__arrow--top',
-]);
+const arrowClasses = computed(() => resolveTooltipArrowClasses(floatingPlacement.value));
 
 const arrowStyles = computed(() => ({
   left: `${arrowData.value.x}px`,
@@ -119,13 +114,13 @@ onBeforeUnmount(() => {
 
 <template>
   <span class="vf-tooltip" @mouseenter="open" @mouseleave="close" @focusin="open" @focusout="close">
-    <span ref="triggerRef" class="vf-tooltip__trigger" :aria-describedby="isOpen ? tooltipId : undefined">
+    <span ref="triggerRef" class="vf-tooltip__trigger" :aria-describedby="resolveTooltipDescribedBy(isOpen, tooltipId)">
       <slot />
     </span>
-    <Teleport :to="teleportTarget" :disabled="teleportDisabled">
+    <Teleport :to="teleport.target" :disabled="teleport.disabled">
       <Transition name="vf-floating-transition" appear :duration="transitionDuration">
         <span
-          v-if="isOpen && (text || $slots.content)"
+          v-if="isOpen && resolveTooltipHasContent(text, Boolean($slots.content))"
           :id="tooltipId"
           ref="contentRef"
           :class="classes"
