@@ -234,6 +234,6 @@ final class DropdownComponentTest extends TestCase
 
         self::assertInstanceOf(DropdownComponent::class, $components['dropdown']);
         self::assertNull((new \ReflectionClass(DropdownComponent::class))->getConstructor());
-        self::assertCount(29, $components);
+        self::assertCount(30, $components);
     }
 }

@@ -34,6 +34,7 @@ use Codemonster\VueForge\Razor\Components\TabsComponent;
 use Codemonster\VueForge\Razor\Components\SwitchComponent;
 use Codemonster\VueForge\Razor\Components\TagComponent;
 use Codemonster\VueForge\Razor\Components\TextareaComponent;
+use Codemonster\VueForge\Razor\Components\TooltipComponent;
 
 /**
  * Registers the VueForge components with an Annabel Razor component registry.
@@ -149,6 +150,11 @@ final class VueForgeRazorProvider implements ComponentProviderInterface
             'tabs' => new TabsComponent(),
             'tag' => new TagComponent(),
             'textarea' => new TextareaComponent(),
+            // The third overlay, registered beside vf-popover and never through
+            // it: it owns no control and shares no server code or escape entry
+            // with either overlay. Its browser enhancement lives in
+            // browser/tooltip.ts. See TooltipComponent.
+            'tooltip' => new TooltipComponent(),
         ];
     }
 

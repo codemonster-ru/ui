@@ -433,6 +433,6 @@ final class AccordionComponentTest extends TestCase
 
         self::assertInstanceOf(AccordionComponent::class, $components['accordion']);
         self::assertNull((new \ReflectionClass(AccordionComponent::class))->getConstructor());
-        self::assertCount(29, $components);
+        self::assertCount(30, $components);
     }
 }
