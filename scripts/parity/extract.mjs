@@ -740,11 +740,13 @@ async function pointerClick(page, caseSelector, targetSelector, index = 0, throu
  * clickButton's neutral point. Both fail closed rather than drive the wrong
  * element: Chrome's hit test at the point must find the target (an open
  * overlay can cover it) or, for the neutral point, the page itself; and
- * afterwards the target must match :hover, or nothing inside body may.
+ * afterwards the element found then - not one looked up again, which a
+ * tooltip closing under the pointer would have taken away - must match
+ * :hover, or nothing inside body may.
  */
 async function pointerRest(page, target) {
   const point = await page.evaluate(`(() => {
-    const target = ${target};
+    const target = (window.__parityPointerTarget = ${target});
     target?.scrollIntoView({ block: 'center' });
     const rect = target?.getBoundingClientRect();
     if (${target !== null} && !(rect?.width && rect.height && getComputedStyle(target).visibility === 'visible')) throw new Error('hover target is missing or not visible');
@@ -754,7 +756,7 @@ async function pointerRest(page, target) {
     return point;
   })()`);
   await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...point });
-  const rests = target ? `${target}.matches(':hover')` : `!document.querySelector('body :hover')`;
+  const rests = target ? `window.__parityPointerTarget.matches(':hover')` : `!document.querySelector('body :hover')`;
   if (!(await page.evaluate(rests))) throw new Error(target ? 'hover target is not :hover' : 'unhover left a :hover');
 }
 

@@ -146,6 +146,26 @@ test('through hovers an element outside the case that a case element names', asy
   assert.ok((await hovered()).includes('target'));
 });
 
+test('through: the element found before the move is the one held to :hover, even when the move breaks the reference', async () => {
+  // A teleported tooltip closes the moment the pointer reaches it - its
+  // trigger drops aria-describedby - and the node stays while it leaves. The
+  // postcondition has to be about that node, not a fresh lookup that can no
+  // longer find it.
+  await load(
+    '<span class="source" aria-describedby="far">Source</span>',
+    '<div id="far" style="margin-top:40px"><span id="target" class="target">Far</span></div>',
+  );
+  await page.evaluate(
+    `document.getElementById('target').addEventListener('mouseenter', () => document.querySelector('.source').removeAttribute('aria-describedby')); true`,
+  );
+  await driveInteraction(page, 'c', [
+    { action: 'hover', selector: '#target', through: { selector: '.source', attribute: 'aria-describedby' } },
+  ]);
+
+  assert.ok((await hovered()).includes('target'));
+  assert.equal(await page.evaluate(`document.querySelector('.source').hasAttribute('aria-describedby')`), false);
+});
+
 test('a hover whose pointer move never reached Chrome fails, and so does an unhover', async () => {
   await load('<span id="target" class="target">Info</span>');
   const send = page.send;
