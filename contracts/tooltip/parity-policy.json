@@ -1,0 +1,207 @@
+{
+  "$comment": "Parity policy for the shared VfTooltip cases. Plain data: no DSL, no waiver engine. The third overlay policy, and the first whose contract is a pointer that stays: every open and close in the catalog is driven by the hover and unhover steps or by real focus, and the timing - the delay, its cancellation, its restart - is compared through the fixture log both adapters load. It starts empty and stays empty. What the Razor adapter cannot represent - reactive props after render, a teleport target given as an element, the Vue crash on a selector that finds nothing - is not an approval: it is recorded below with where it is covered.",
+  "classifications": {
+    "exact": "Must match literally across every target. Structure, canonical classes, native attributes, the tooltip's and the arrow's inline position, visible text, accessible names and roles, ownership, relationships, focus, the timing record and the transitions.",
+    "semantic": "Framework mechanics may differ; the observable meaning must not. How content is composed, how state is stored, how a renderer marks its own output, which literal a generated id has, how an adapter anchors its teleported content.",
+    "framework-specific": "Historical behaviour of one adapter that the other is not required to reproduce. Narrow, named, and covered by its own test."
+  },
+  "notCompared": {
+    "$comment": "Recorded so a reviewer can see what is deliberately outside the comparison, without leaving dead dimensions that look like live protection. Nothing here is a waiver: the extractor never produces these differences in the first place.",
+    "attributeOrder": "Attributes are extracted into a sorted map, so serialisation order cannot produce a difference.",
+    "rendererMarkers": "Vue scope attributes (data-v-*), the Razor ownership marker, the Razor adapter's configuration (data-vf-razor-tooltip-*, the future tooltip id included) and the inert <template data-vf-razor-tooltip=\"content\"> holding the tooltip's body are dropped by scripts/parity/extract.mjs. What the template holds is compared the moment the controller renders it into a tooltip.",
+    "teleportAnchors": "Vue's Teleport marks its place in <body> with empty text nodes and a v-if comment; the Razor controller appends one empty text node per instance at bootstrap. Neither is an element. That tooltips sit in <body> in instance order is compared through document-order id tokens and describedTargets, and pinned by the characterization suite.",
+    "generatedIdLiterals": "Vue's useId writes vf-tooltip-v-N and the Razor server writes vf-tooltip-r-N; the extractor rewrites every id to its document position, the followed tooltip's after the root's, and every aria-describedby through the same map. An open tooltip with no content is compared as #dangling.",
+    "eventTransport": "Neither adapter emits anything. The timing record is kept by one fixture script both targets load, from the DOM events and mutations a user would cause, never from the component.",
+    "styleSerialisation": "Both adapters write the tooltip's and the arrow's inline position through the CSSOM at run time. The extractor parses them through the browser and compares the declarations, unrounded."
+  },
+  "platformDivergences": [],
+  "outsideTheCatalog": {
+    "$comment": "Behaviour that is part of the contract and deliberately not represented as a parity case, each with where it is covered instead.",
+    "reactiveProps": "A parent changing text, openDelay, placement or teleportTo after mount changes a Vue tooltip; a Razor tooltip is server-rendered once and its props are static, as vf-popover's are. Pinned by the characterization suite (openDelay read when an activation starts the timer; emptying the text under an open tooltip leaves the reference dangling).",
+    "teleportToElement": "teleportTo given as an HTMLElement is Vue-only - the runtime prop types even reject it with a development warning, and it still works; a selector is a catalog case, pinned by the characterization suite and the Razor browser gate; teleportTo: null is spelled teleport-to=\"false\" by the Razor adapter's null convention.",
+    "missingTeleportTarget": "A selector that finds nothing makes the reference's Teleport throw in Vue and leaves the reference dangling. Not a behaviour to reproduce or to compare: the Razor controller renders nothing for a destination it cannot find and throws nothing.",
+    "untypedProps": "placement other than top or bottom, and a non-numeric openDelay, reach floater.js and setTimeout untouched in the reference: neither prop has a runtime type. The characterization suite pins that a placement neither top nor bottom gets neither modifier; the Razor server refuses a non-numeric delay.",
+    "scrollUnderPointer": "A scroll under a pointer resting on a trigger makes Chrome re-hit-test and fire mouseleave by itself, which closes a hovered tooltip on every target. The hover step refuses to scroll while it holds the pointer, so no scenario depends on when Chrome does that; autoUpdate following a scroll is pinned by the characterization suite, and following a resize is part of every snapshot."
+  },
+  "dimensions": {
+    "dom.structure": {
+      "classification": "exact",
+      "description": "An unexpected element, a missing trigger, a tooltip rendered while closed or left in the product DOM after its leave, a tooltip inside the root where it should be teleported or outside it where it should be in place, an arrow that is not the tooltip's last child. The followed tooltip is described as its own top-level entry after the root's children. Never approvable."
+    },
+    "dom.canonicalClasses": {
+      "classification": "exact",
+      "description": "vf-* classes on every element: the root, the trigger, the tooltip and its --top or --bottom modifier (neither for another side), the arrow's own two. A tooltip caught mid-transition would carry vf-floating-transition-* here, which is why every snapshot waits for it. Consumer classes included."
+    },
+    "dom.nativeAttributes": {
+      "classification": "exact",
+      "description": "The tooltip's and the arrow's inline position - declarations compared through the browser's parser, unrounded - and every native attribute a consumer forwards onto the root. There is no tabindex anywhere the tooltip renders."
+    },
+    "dom.text": {
+      "classification": "exact",
+      "description": "Visible text content of every element: the trigger slot and the tooltip's body, a whitespace-only or \"0\" text included."
+    },
+    "dom.aria": {
+      "classification": "exact",
+      "description": "aria-describedby on the trigger span only while open, role=tooltip on the tooltip, aria-hidden on the arrow, and a consumer aria-label on the root."
+    },
+    "dom.productData": {
+      "classification": "exact",
+      "description": "data-* attributes that carry product semantics: a consumer data-testid on the root. The tooltip writes none of its own."
+    },
+    "dom.relationships": {
+      "classification": "exact",
+      "description": "The id graph, compared through document-position tokens with the followed tooltip numbered after the root: every trigger's aria-describedby and the tooltip's id. An empty tooltip's reference is #dangling. There is no reverse edge."
+    },
+    "dom.actionPresence": {
+      "classification": "exact",
+      "description": "Whether each button is operable. A tooltip renders no button of its own."
+    },
+    "dom.wrapperPresence": {
+      "classification": "exact",
+      "description": "Present so the comparator has a classification for it. A tooltip has no wrapper either adapter may add."
+    },
+    "dom.inertAction": {
+      "classification": "exact",
+      "description": "Present for the same reason. A tooltip renders no inert action."
+    },
+    "style.geometry": {
+      "classification": "exact",
+      "description": "width, height, padding, border width and radius, font size and line height of the root, the trigger, a consumer trigger control and an in-place tooltip."
+    },
+    "style.colour": {
+      "classification": "exact",
+      "description": "colour, background colour and border colour of the same elements."
+    },
+    "visual": {
+      "classification": "exact",
+      "description": "Clipped screenshot of the case root in its initial, closed state, per theme."
+    },
+    "visual.postInteraction": {
+      "classification": "exact",
+      "description": "Clipped screenshot after the interaction, per theme, covering the case root and every tooltip and popover panel it owns wherever it is."
+    },
+    "a11y.role": {
+      "classification": "exact",
+      "description": "Computed role of the trigger span (ignored while closed, generic while it carries aria-describedby), a consumer trigger control, the tooltip (tooltip), read where it is through the trigger's aria-describedby; the aria-hidden arrow is expected absent."
+    },
+    "a11y.name": {
+      "classification": "exact",
+      "description": "Accessible name of the trigger control and of the tooltip - its contents. Chrome's description on the trigger span follows from the same text through the same reference, which dom.relationships and this name already compare."
+    },
+    "a11y.states": {
+      "classification": "exact",
+      "description": "The states Chrome exposes on the same nodes, before and after an interaction."
+    },
+    "ownership.controls": {
+      "classification": "exact",
+      "description": "The component-owned controls measured in the case: none. The trigger span and the tooltip are the profile's rules, and a match counts only when it is focusable; every other focusable element - trigger controls, an after control, a popover trigger and its open panel - is the consumer's."
+    },
+    "interaction.state": {
+      "classification": "exact",
+      "description": "The live state after a scenario, per instance: each described tooltip's place, tag, role, classes, arrow and text, its geometry against its own trigger once a resize has settled it (the entered position before it depends on which enter frame floater.js measures the arrow in, and is not compared), every tooltip node in the document by what names it (an orphan is one nothing names), where the pointer rests, a popover's aria-expanded, and the timing record - every reference written with the latency from the last activation, every reference removed with its lag, every enter and leave with its duration."
+    },
+    "interaction.events": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. A tooltip emits nothing."
+    },
+    "interaction.convergence": {
+      "classification": "exact",
+      "description": "Whether a closing gesture's DOM equals the target's own render of the closed case of the same content. A leave that left a tooltip behind or a stale aria-describedby does not converge."
+    },
+    "interaction.focus": {
+      "classification": "exact",
+      "description": "Where focus is after the scenario - a consumer control in a tooltip and which instance, the after control, a popover trigger or panel, the body. The tooltip never moves focus."
+    },
+    "interaction.relationships": {
+      "classification": "exact",
+      "description": "Per instance, whether the trigger's aria-describedby names nothing, a missing id, or a tooltip, and which tooltip by its document-order index, measured on the live DOM wherever the tooltip is."
+    },
+    "interaction.value": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. A tooltip has no value."
+    },
+    "interaction.selection": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. A tooltip carries no caret."
+    },
+    "interaction.wrapperPresence": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. A tooltip renders no wrapper that could appear on one side only."
+    }
+  },
+  "historicalQuirks": [
+    {
+      "id": "last-event-wins",
+      "description": "There is no hovered flag and no focused flag: a mouseleave closes a tooltip whose control keeps focus, a focusout closes one still under the pointer, and a click - enter, focus, leave - opens nothing.",
+      "classification": "exact",
+      "reason": "Compared as tooltip/interaction-focus-then-mouseleave, tooltip/interaction-hover-then-focusout and tooltip/interaction-pointer-click.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/tooltip/cases.json#tooltip/interaction-focus-then-mouseleave"
+    },
+    {
+      "id": "every-activation-restarts",
+      "description": "mouseenter and focusin both clear the pending timer and start a fresh one, so a focus during a hover delay restarts it.",
+      "classification": "exact",
+      "reason": "Compared as tooltip/interaction-activation-restart and tooltip/interaction-duplicate-timer through the latency record.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/tooltip/cases.json#tooltip/interaction-activation-restart"
+    },
+    {
+      "id": "descendant-focus-flickers",
+      "description": "Focus moving between two controls inside one wrapper is a focusout and a focusin: the tooltip closes at once and reopens after the delay.",
+      "classification": "exact",
+      "reason": "Compared as tooltip/interaction-descendant-focus-move.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/tooltip/cases.json#tooltip/interaction-descendant-focus-move"
+    },
+    {
+      "id": "dangling-description",
+      "description": "aria-describedby follows the open state alone: an open tooltip with no text and no content slot names an id nothing carries.",
+      "classification": "exact",
+      "reason": "Compared as tooltip/interaction-content-absent and tooltip/interaction-content-empty.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/tooltip/cases.json#tooltip/interaction-content-absent"
+    },
+    {
+      "id": "javascript-truthiness",
+      "description": "A whitespace-only text and \"0\" are content; an empty text is not; a content slot wins over the text.",
+      "classification": "exact",
+      "reason": "Compared as tooltip/interaction-content-whitespace, -zero, -slot-beats-text and -empty-slot.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/tooltip/cases.json#tooltip/interaction-content-zero"
+    },
+    {
+      "id": "description-on-the-wrapper",
+      "description": "aria-describedby is on the trigger span, not on the consumer's control: Chrome describes the generic span, and the button it holds keeps no description.",
+      "classification": "exact",
+      "reason": "Compared through dom.aria and dom.relationships on every open case; the tree's generic trigger and its tooltip name through a11y.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/tooltip/cases.json#tooltip/interaction-hover-open"
+    },
+    {
+      "id": "teleported-tooltip-is-not-hoverable",
+      "description": "A teleported tooltip is outside the wrapper, so moving the pointer onto it closes it; an in-place one is inside, so it stays open.",
+      "classification": "exact",
+      "reason": "Compared as tooltip/interaction-pointer-onto-teleported and tooltip/interaction-pointer-onto-in-place.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/tooltip/cases.json#tooltip/interaction-pointer-onto-teleported"
+    },
+    {
+      "id": "not-on-the-escape-stack",
+      "description": "No key is handled and the tooltip holds no entry on the escape stack VfDropdown and VfPopover share: an Escape reaches a popover open beside an open tooltip.",
+      "classification": "exact",
+      "reason": "Compared as tooltip/interaction-popover-escape and tooltip/interaction-keys-unhandled.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/tooltip/cases.json#tooltip/interaction-popover-escape"
+    },
+    {
+      "id": "unmount-without-leave",
+      "description": "A tooltip inside a closing popover is unmounted at once: its node leaves <body> with no leave of its own, and a pending timer never fires.",
+      "classification": "exact",
+      "reason": "Compared as tooltip/interaction-popover-dispose and tooltip/interaction-popover-dispose-pending.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/tooltip/cases.json#tooltip/interaction-popover-dispose"
+    }
+  ],
+  "approvedDivergences": []
+}

@@ -1,0 +1,2385 @@
+{
+  "$comment": "Shared VfTooltip cases, rendered by the Vue adapter at the reference commit, by the current Vue adapter, and by the real Razor adapter with its browser controller. The third overlay catalog, and the first whose scenarios need a pointer that stays: every open and close here is driven by the hover and unhover steps (M31) or by real focus. Every tooltip is closed in the initial stage - the reference has no open prop - so the whole open half of the contract is measured live. The tooltip is found through its trigger's aria-describedby, the one declared edge the extractor follows, one hop, and compared where it is. Nothing points back from a tooltip to its trigger, so cross-wiring is caught by the reference graph, the texts, the positions and <body> order. The timing evidence - the latency from the last activation to the reference, the lag from a deactivation to its removal, every enter and leave - is kept by one fixture log both adapters load, armed by the events that open a tooltip, never by pointerdown or keydown. No scenario ends with an open timer pending: each waits at least openDelay + 470 ms after its last gesture.",
+  "component": "tooltip",
+  "propVocabulary": {
+    "text": "string | undefined. The body when there is no content slot; JavaScript truthiness decides whether there is one: \"\" is none, \"   \" and \"0\" are.",
+    "placement": "'top' | 'bottom', default 'top'. floater.js flips between top and bottom whatever is requested.",
+    "openDelay": "number, default 80. Milliseconds from an activation to the open.",
+    "teleportTo": "false renders the tooltip in place, as disableTeleport does; a selector '#parity-tooltip-target-N' names a page-level element every fixture puts in <body>, outside every case, before anything mounts - a Teleport resolves its target at mount. An element destination is Vue-only.",
+    "disableTeleport": "boolean, default false. Renders the tooltip in place, after the trigger, inside the root."
+  },
+  "contentVocabulary": {
+    "trigger": "The default slot: `controls` real consumer buttons (.parity-trigger-control), in order; `text` plain text with nothing focusable.",
+    "body": "The content slot: 'rich' is <strong>Rich</strong> body; 'empty' is a slot that renders nothing. Absent, the text prop is the body.",
+    "after": "A consumer control after the roots (.parity-after-control), where focus goes when it leaves a wrapper.",
+    "popover": "A real VfPopover in the case, trigger \"Host\", before the roots: 'beside' holds a note; 'inside' holds its own tooltip (text \"Inside hint\", one control \"Inside\", openDelay from `popoverDelay`, 80 by default), which is instance N after the case's own.",
+    "popoverDelay": "The openDelay of the tooltip inside the popover.",
+    "layout": "Page chrome on the case root, identical on every target: 'top-edge' puts the trigger at the viewport top, 'bottom-edge' at its bottom, 'left-edge' at its left, 'right-edge' at its right. Absent, the case keeps room above and to the left of the trigger, so a top tooltip fits: floater.js's flip reacts to a sideways overflow too."
+  },
+  "groupVocabulary": "A list of sibling tooltips rendered side by side in one case, each with its own props; the case-level props are ignored, the content applies to each.",
+  "ownershipVocabulary": {
+    "componentInteractive": "Always 0: the tooltip owns no control. The trigger span has no tabindex and the tooltip is not focusable; a port that made either focusable fails ownership.",
+    "consumerInteractive": "The exact number of consumer focusable elements in the case and in its open popover panel: the trigger controls, the after control, the popover trigger, and, while the popover is open, its panel (tabindex=-1) and the inside tooltip's control.",
+    "consumerInteractiveRoles": "Always 0."
+  },
+  "interactionVocabulary": {
+    "$comment": "A case with an `interaction` is driven with real pointer and key events and real focus, alone on the page with its followed tooltips, then re-measured: snapshot, DOM (with the followed tooltips) and accessibility tree. The snapshot waits, bounded, for every enter or leave to finish.",
+    "steps": "hover (a real pointer resting at the element's centre - .vf-tooltip__trigger, .parity-trigger-control, .vf-tooltip__content strong; with `through` the search is inside the tooltip the trigger's aria-describedby names, or inside the popover panel the popover trigger's aria-controls names), unhover (the pointer to the neutral point), focusButton (.parity-trigger-control, .parity-after-control, `index` picks a match), clickButton (.parity-trigger-control, .vf-popover__trigger), pressKey (Tab, Escape, Enter, Space), wait (`ms`). Every fixture swallows the browser default of a navigation key or Escape the product left unhandled - after recording that it did.",
+    "expect": "Claims about the snapshot fields of the same name. describedStates: per instance none, dangling or tooltip. describedTargets: per instance, the document-order index of the tooltip it names. openings: every reference written, with the instance, how it was last activated and the latency from that activation - early (under half the delay), on-time (up to the delay + 150 ms) or late. closings: every reference removed, with how it was last deactivated and whether it went immediately (under 50 ms). transitions: every enter and leave a tooltip completed, instance:kind:duration. bodyTooltips: every tooltip node in the document, by where it is and which instance names it - one nothing names is an orphan.",
+    "matches": "The closed case of the same content whose fresh render the gesture has to land on."
+  },
+  "cases": [
+    {
+      "id": "tooltip/default",
+      "title": "Closed: the root span, the trigger span around one consumer button, nothing else",
+      "$why": "The closed half of the contract on every target: no aria-describedby, no tooltip, no id - the reference renders the tooltip only once it opens, and its server render never does. The Razor body waits in an inert template the extractor drops.",
+      "props": {
+        "text": "Helpful hint"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        }
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "visual": true
+    },
+    {
+      "id": "tooltip/plain-text-trigger",
+      "title": "A trigger that is plain text: nothing in the case is focusable",
+      "$why": "The tooltip supplies no focusability of its own: the trigger span has no tabindex and no role, so a text trigger can only be hovered.",
+      "props": {
+        "text": "Plain hint"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Just text"
+        }
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "visual": true
+    },
+    {
+      "id": "tooltip/two-controls",
+      "title": "Two consumer controls inside one trigger wrapper",
+      "$why": "The shape of the descendant-focus scenarios: two buttons in one wrapper, owned by the consumer.",
+      "props": {
+        "text": "Two controls"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["One", "Two"]
+        }
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 2,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "tooltip/attrs",
+      "title": "Consumer attributes land on the root span, never on the trigger",
+      "$why": "id, class, data-testid and aria-label fall through to span.vf-tooltip; the trigger span keeps only its class.",
+      "props": {
+        "text": "Helpful hint"
+      },
+      "attrs": {
+        "id": "parity-tooltip-consumer",
+        "class": "consumer-class",
+        "data-testid": "tip",
+        "aria-label": "Help"
+      },
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        }
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "visual": true
+    },
+    {
+      "id": "tooltip/in-place",
+      "title": "disableTeleport, closed: nothing in place either",
+      "$why": "The in-place tooltip is rendered only when open; closed, the root is the same as the teleported one.",
+      "props": {
+        "text": "Inline hint",
+        "disableTeleport": true
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        }
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "tooltip/group",
+      "title": "Two tooltips side by side, closed",
+      "$why": "Two roots, two triggers, no reference on either: the generated ids exist and are consumed, but nothing names them yet.",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        }
+      },
+      "group": [
+        {
+          "text": "Alpha hint"
+        },
+        {
+          "text": "Beta hint"
+        }
+      ],
+      "componentInteractive": 0,
+      "consumerInteractive": 2,
+      "consumerInteractiveRoles": 0,
+      "visual": true
+    },
+    {
+      "id": "tooltip/with-after",
+      "title": "A tooltip and a consumer control after it",
+      "$why": "The shape of the focusout scenarios: focus has somewhere to go outside the wrapper.",
+      "props": {
+        "text": "Helpful hint"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        },
+        "after": true
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 2,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "tooltip/with-popover-beside",
+      "title": "A closed VfPopover beside a closed tooltip",
+      "$why": "The shape of the escape-stack scenario: the popover trigger is consumer content from the tooltip profile's point of view.",
+      "props": {
+        "text": "Helpful hint"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        },
+        "popover": "beside"
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 2,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "tooltip/with-popover-inside",
+      "title": "A closed VfPopover holding a tooltip, beside a closed tooltip",
+      "$why": "The shape of the disposal scenarios: the tooltip in the popover content does not exist while the popover is closed.",
+      "props": {
+        "text": "Helpful hint"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        },
+        "popover": "inside"
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 2,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "tooltip/no-content",
+      "title": "No text and no content slot, closed",
+      "$why": "Closed, an empty tooltip is indistinguishable from any other: no reference, nothing deferred that the extractor sees.",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        }
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "tooltip/selector-target",
+      "title": "teleportTo a selector, closed",
+      "$why": "The destination exists in <body>, outside the case; nothing is in it while closed.",
+      "props": {
+        "text": "Targeted hint",
+        "teleportTo": "#parity-tooltip-target-1"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        }
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "tooltip/long-text",
+      "title": "A long text on a trigger at the left edge, closed",
+      "$why": "The shape of the shift scenario.",
+      "props": {
+        "text": "A much longer tooltip text that has to be shifted back inside the viewport"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        },
+        "layout": "left-edge"
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "tooltip/interaction-hover-open",
+      "title": "A real hover opens the tooltip after the delay: teleported to body, top, described",
+      "$why": "The pointer path of the state machine: mouseenter starts the 80 ms timer, the timer opens, aria-describedby names the tooltip. The latency from the enter to the reference is on time - not immediate - on every target.",
+      "props": {
+        "text": "Helpful hint"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        }
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "hover",
+            "selector": ".vf-tooltip__trigger"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          }
+        ],
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["tooltip"],
+          "hoverStates": ["true"],
+          "openings": [
+            {
+              "instance": 0,
+              "via": "pointer",
+              "latency": "on-time"
+            }
+          ],
+          "closings": [],
+          "tooltipStates": [
+            {
+              "location": "body",
+              "tag": "span",
+              "role": "tooltip",
+              "classes": ["vf-tooltip__content", "vf-tooltip__content--top"],
+              "arrowClasses": ["vf-tooltip__arrow", "vf-tooltip__arrow--top"],
+              "arrowLast": true,
+              "text": "Helpful hint"
+            }
+          ],
+          "transitions": ["0:enter:normal"]
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-content-whitespace",
+      "title": "A whitespace-only text is content: it renders, verbatim",
+      "$why": "JavaScript truthiness: \"   \" is truthy, so the tooltip element renders with its three spaces. A port that trims would leave the reference dangling.",
+      "props": {
+        "text": "   "
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        }
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "hover",
+            "selector": ".vf-tooltip__trigger"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          }
+        ],
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["tooltip"],
+          "tooltipStates": [
+            {
+              "location": "body",
+              "tag": "span",
+              "role": "tooltip",
+              "classes": ["vf-tooltip__content", "vf-tooltip__content--top"],
+              "arrowClasses": ["vf-tooltip__arrow", "vf-tooltip__arrow--top"],
+              "arrowLast": true,
+              "text": "   "
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-content-zero",
+      "title": "The text \"0\" is content",
+      "$why": "JavaScript truthiness again: \"0\" renders. PHP truthiness would drop it.",
+      "props": {
+        "text": "0"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        }
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "hover",
+            "selector": ".vf-tooltip__trigger"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          }
+        ],
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["tooltip"],
+          "tooltipStates": [
+            {
+              "location": "body",
+              "tag": "span",
+              "role": "tooltip",
+              "classes": ["vf-tooltip__content", "vf-tooltip__content--top"],
+              "arrowClasses": ["vf-tooltip__arrow", "vf-tooltip__arrow--top"],
+              "arrowLast": true,
+              "text": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-content-absent",
+      "title": "No text and no slot: open with a dangling aria-describedby, nothing rendered",
+      "$why": "aria-describedby follows the open state alone. The reference writes it after the delay and renders nothing it could name - the quirk is preserved, not normalized away.",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        }
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "hover",
+            "selector": ".vf-tooltip__trigger"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          }
+        ],
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["dangling"],
+          "openings": [
+            {
+              "instance": 0,
+              "via": "pointer",
+              "latency": "on-time"
+            }
+          ],
+          "bodyTooltips": [],
+          "transitions": []
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-content-empty",
+      "title": "An empty text is no text: the reference dangles",
+      "$why": "The empty string is falsy; the tooltip opens and renders nothing.",
+      "props": {
+        "text": ""
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        }
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "hover",
+            "selector": ".vf-tooltip__trigger"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          }
+        ],
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["dangling"],
+          "bodyTooltips": []
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-content-slot",
+      "title": "The content slot renders rich markup before the arrow",
+      "$why": "A slot with no text: the markup is the body, the arrow is the last child.",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        },
+        "body": "rich"
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "hover",
+            "selector": ".vf-tooltip__trigger"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          }
+        ],
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["tooltip"],
+          "tooltipStates": [
+            {
+              "location": "body",
+              "tag": "span",
+              "role": "tooltip",
+              "classes": ["vf-tooltip__content", "vf-tooltip__content--top"],
+              "arrowClasses": ["vf-tooltip__arrow", "vf-tooltip__arrow--top"],
+              "arrowLast": true,
+              "text": "Rich body"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-content-slot-beats-text",
+      "title": "The content slot wins over the text",
+      "$why": "The text is only the slot's fallback.",
+      "props": {
+        "text": "Ignored text"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        },
+        "body": "rich"
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "hover",
+            "selector": ".vf-tooltip__trigger"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          }
+        ],
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["tooltip"],
+          "tooltipStates": [
+            {
+              "location": "body",
+              "tag": "span",
+              "role": "tooltip",
+              "classes": ["vf-tooltip__content", "vf-tooltip__content--top"],
+              "arrowClasses": ["vf-tooltip__arrow", "vf-tooltip__arrow--top"],
+              "arrowLast": true,
+              "text": "Rich body"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-content-empty-slot",
+      "title": "A content slot that renders nothing still renders the tooltip, holding only the arrow",
+      "$why": "The slot's presence decides, not what it renders.",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        },
+        "body": "empty"
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "hover",
+            "selector": ".vf-tooltip__trigger"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          }
+        ],
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["tooltip"],
+          "tooltipStates": [
+            {
+              "location": "body",
+              "tag": "span",
+              "role": "tooltip",
+              "classes": ["vf-tooltip__content", "vf-tooltip__content--top"],
+              "arrowClasses": ["vf-tooltip__arrow", "vf-tooltip__arrow--top"],
+              "arrowLast": true,
+              "text": ""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-plain-text-trigger",
+      "title": "A plain-text trigger opens under the pointer",
+      "$why": "Hover needs no focusable element: the wrapper listens, not the consumer control.",
+      "props": {
+        "text": "Plain hint"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Just text"
+        }
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "hover",
+            "selector": ".vf-tooltip__trigger"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          }
+        ],
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["tooltip"],
+          "hoverStates": ["true"],
+          "openings": [
+            {
+              "instance": 0,
+              "via": "pointer",
+              "latency": "on-time"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-attrs-open",
+      "title": "An open tooltip with consumer attributes on the root",
+      "$why": "The forwarded attributes stay on the root while open; the tooltip carries only its own.",
+      "props": {
+        "text": "Helpful hint"
+      },
+      "attrs": {
+        "id": "parity-tooltip-consumer-open",
+        "class": "consumer-class",
+        "data-testid": "tip",
+        "aria-label": "Help"
+      },
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        }
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "hover",
+            "selector": ".vf-tooltip__trigger"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          }
+        ],
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["tooltip"],
+          "tooltipStates": [
+            {
+              "location": "body",
+              "tag": "span",
+              "role": "tooltip",
+              "classes": ["vf-tooltip__content", "vf-tooltip__content--top"],
+              "arrowClasses": ["vf-tooltip__arrow", "vf-tooltip__arrow--top"],
+              "arrowLast": true,
+              "text": "Helpful hint"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-focus-open",
+      "title": "Focus on the consumer control opens the tooltip after the delay",
+      "$why": "focusin is the second activation: the same timer, the same delay.",
+      "props": {
+        "text": "Helpful hint"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        }
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "unhover"
+          },
+          {
+            "action": "focusButton",
+            "selector": ".parity-trigger-control"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          }
+        ],
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["tooltip"],
+          "hoverStates": ["false"],
+          "focusRole": "control",
+          "openings": [
+            {
+              "instance": 0,
+              "via": "focus",
+              "latency": "on-time"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-tab-open",
+      "title": "A real Tab from the page onto the control opens the tooltip",
+      "$why": "Keyboard focus reaches the consumer control; the tooltip itself is never a tab stop.",
+      "props": {
+        "text": "Helpful hint"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        }
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "pressKey",
+            "key": "Tab"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          }
+        ],
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["tooltip"],
+          "focusRole": "control",
+          "openings": [
+            {
+              "instance": 0,
+              "via": "focus",
+              "latency": "on-time"
+            }
+          ],
+          "keydownPrevented": ["Tab:false"]
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-long-delay-open",
+      "title": "openDelay 600: the open comes on time, measured from the enter",
+      "$why": "The wide-margin half of the delay evidence: an immediate open is 0 ms from the enter, the reference about 600.",
+      "props": {
+        "text": "Slow hint",
+        "openDelay": 600
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        }
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "hover",
+            "selector": ".vf-tooltip__trigger"
+          },
+          {
+            "action": "wait",
+            "ms": 1100
+          }
+        ],
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["tooltip"],
+          "openings": [
+            {
+              "instance": 0,
+              "via": "pointer",
+              "latency": "on-time"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-pending-cancel-pointer",
+      "title": "A leave 200 ms into a 600 ms delay cancels the open for good",
+      "$why": "mouseleave clears the timer; nothing opens later. A timer that survived the leave would open at 600 ms, well inside the scenario.",
+      "props": {
+        "text": "Slow hint",
+        "openDelay": 600
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        }
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "hover",
+            "selector": ".vf-tooltip__trigger"
+          },
+          {
+            "action": "wait",
+            "ms": 200
+          },
+          {
+            "action": "unhover"
+          },
+          {
+            "action": "wait",
+            "ms": 1100
+          }
+        ],
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["none"],
+          "openings": [],
+          "closings": [],
+          "bodyTooltips": []
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-pending-cancel-focus",
+      "title": "A focusout 200 ms into a 600 ms delay cancels the open",
+      "$why": "focusout clears the timer as mouseleave does.",
+      "props": {
+        "text": "Slow hint",
+        "openDelay": 600
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        },
+        "after": true
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 2,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "unhover"
+          },
+          {
+            "action": "focusButton",
+            "selector": ".parity-trigger-control"
+          },
+          {
+            "action": "wait",
+            "ms": 200
+          },
+          {
+            "action": "focusButton",
+            "selector": ".parity-after-control"
+          },
+          {
+            "action": "wait",
+            "ms": 1100
+          }
+        ],
+        "consumerInteractive": 2,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["none"],
+          "openings": [],
+          "focusRole": "after-control"
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-reentry-restart",
+      "title": "A re-entry after a leave starts a fresh timer: on time from the re-entry",
+      "$why": "The leave at 500 ms cancels; the re-entry starts 600 ms again. A timer the leave failed to cancel would open about 100 ms after the re-entry - early.",
+      "props": {
+        "text": "Slow hint",
+        "openDelay": 600
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        }
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "hover",
+            "selector": ".vf-tooltip__trigger"
+          },
+          {
+            "action": "wait",
+            "ms": 500
+          },
+          {
+            "action": "unhover"
+          },
+          {
+            "action": "hover",
+            "selector": ".vf-tooltip__trigger"
+          },
+          {
+            "action": "wait",
+            "ms": 1100
+          }
+        ],
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["tooltip"],
+          "openings": [
+            {
+              "instance": 0,
+              "via": "pointer",
+              "latency": "on-time"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-activation-restart",
+      "title": "A focus 900 ms into a 1500 ms hover delay restarts the timer",
+      "$why": "Every activation clears the pending timer and starts a new one. A port that kept the pending timer would open about 600 ms after the focus - early against 1500.",
+      "props": {
+        "text": "Very slow hint",
+        "openDelay": 1500
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        }
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "hover",
+            "selector": ".vf-tooltip__trigger"
+          },
+          {
+            "action": "wait",
+            "ms": 900
+          },
+          {
+            "action": "focusButton",
+            "selector": ".parity-trigger-control"
+          },
+          {
+            "action": "wait",
+            "ms": 2000
+          }
+        ],
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["tooltip"],
+          "openings": [
+            {
+              "instance": 0,
+              "via": "focus",
+              "latency": "on-time"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-pointer-click",
+      "title": "A real click enters, focuses and leaves in one gesture: nothing opens",
+      "$why": "clickButton parks the pointer away at once. The leave clears the timer the focus restarted; focus stays on the control and the tooltip stays closed - the last event wins. Two flags, or a duplicate timer, would open it.",
+      "props": {
+        "text": "Helpful hint"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        }
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".parity-trigger-control"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          }
+        ],
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["none"],
+          "focusRole": "control",
+          "openings": []
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-pointer-click-long",
+      "title": "The same click against a 600 ms delay: nothing opens",
+      "$why": "The wide-margin form of the click scenario.",
+      "props": {
+        "text": "Slow hint",
+        "openDelay": 600
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        }
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".parity-trigger-control"
+          },
+          {
+            "action": "wait",
+            "ms": 1100
+          }
+        ],
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["none"],
+          "openings": []
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-duplicate-timer",
+      "title": "Hover, focus, leave: one timer, cancelled - nothing opens",
+      "$why": "The hover starts a timer, the focus clears it and starts another, the leave clears that. A port that did not clear before starting would leave the first one to open the tooltip at 600 ms.",
+      "props": {
+        "text": "Slow hint",
+        "openDelay": 600
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        }
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "hover",
+            "selector": ".vf-tooltip__trigger"
+          },
+          {
+            "action": "focusButton",
+            "selector": ".parity-trigger-control"
+          },
+          {
+            "action": "unhover"
+          },
+          {
+            "action": "wait",
+            "ms": 1100
+          }
+        ],
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["none"],
+          "focusRole": "control",
+          "openings": []
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-hover-while-focused",
+      "title": "A hover over an open, focused tooltip opens nothing new",
+      "$why": "mouseenter restarts a timer that sets an open tooltip open again: no new reference, no new node.",
+      "props": {
+        "text": "Helpful hint"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        }
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "unhover"
+          },
+          {
+            "action": "focusButton",
+            "selector": ".parity-trigger-control"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          },
+          {
+            "action": "hover",
+            "selector": ".vf-tooltip__trigger"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          }
+        ],
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["tooltip"],
+          "openings": [
+            {
+              "instance": 0,
+              "via": "focus",
+              "latency": "on-time"
+            }
+          ],
+          "transitions": ["0:enter:normal"]
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-hover-within",
+      "title": "The pointer moving between two controls in one wrapper does nothing",
+      "$why": "mouseenter and mouseleave fire on the wrapper only when the pointer crosses its edge. A port listening to the bubbling mouseover and mouseout would close and reopen.",
+      "props": {
+        "text": "Two controls"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["One", "Two"]
+        }
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 2,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "hover",
+            "selector": ".parity-trigger-control",
+            "index": 0
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          },
+          {
+            "action": "hover",
+            "selector": ".parity-trigger-control",
+            "index": 1
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          }
+        ],
+        "consumerInteractive": 2,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["tooltip"],
+          "openings": [
+            {
+              "instance": 0,
+              "via": "pointer",
+              "latency": "on-time"
+            }
+          ],
+          "closings": [],
+          "transitions": ["0:enter:normal"]
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-focus-then-mouseleave",
+      "title": "A mouseleave closes the tooltip while its control keeps focus",
+      "$why": "The last event wins: the pointer leaving closes, focus or not, and nothing reopens it.",
+      "props": {
+        "text": "Helpful hint"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        }
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "unhover"
+          },
+          {
+            "action": "focusButton",
+            "selector": ".parity-trigger-control"
+          },
+          {
+            "action": "hover",
+            "selector": ".vf-tooltip__trigger"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          },
+          {
+            "action": "unhover"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          }
+        ],
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["none"],
+          "focusRole": "control",
+          "hoverStates": ["false"],
+          "closings": [
+            {
+              "instance": 0,
+              "via": "pointer",
+              "lag": "immediate"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-hover-then-focusout",
+      "title": "A focusout closes the tooltip while the pointer stays inside",
+      "$why": "The last event wins the other way: focus leaving closes, hover or not.",
+      "props": {
+        "text": "Helpful hint"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        },
+        "after": true
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 2,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "hover",
+            "selector": ".vf-tooltip__trigger"
+          },
+          {
+            "action": "focusButton",
+            "selector": ".parity-trigger-control"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          },
+          {
+            "action": "focusButton",
+            "selector": ".parity-after-control"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          }
+        ],
+        "consumerInteractive": 2,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["none"],
+          "hoverStates": ["true"],
+          "focusRole": "after-control",
+          "closings": [
+            {
+              "instance": 0,
+              "via": "focus",
+              "lag": "immediate"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-descendant-focus-move",
+      "title": "Focus moving between two controls inside closes the tooltip and reopens it",
+      "$why": "focusout then focusin: the tooltip closes at once, the leaving node is replaced when the fresh timer fires, and the reference comes back with the same id.",
+      "props": {
+        "text": "Two controls"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["One", "Two"]
+        }
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 2,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "unhover"
+          },
+          {
+            "action": "focusButton",
+            "selector": ".parity-trigger-control",
+            "index": 0
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          },
+          {
+            "action": "focusButton",
+            "selector": ".parity-trigger-control",
+            "index": 1
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          }
+        ],
+        "consumerInteractive": 2,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["tooltip"],
+          "focusRole": "control",
+          "openings": [
+            {
+              "instance": 0,
+              "via": "focus",
+              "latency": "on-time"
+            },
+            {
+              "instance": 0,
+              "via": "focus",
+              "latency": "on-time"
+            }
+          ],
+          "closings": [
+            {
+              "instance": 0,
+              "via": "focus",
+              "lag": "immediate"
+            }
+          ],
+          "transitions": ["0:enter:normal", "0:leave:short", "0:enter:normal"]
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-unhover-close",
+      "title": "A real unhover closes at once: the reference goes, the tooltip leaves over 320 ms",
+      "$why": "mouseleave closes immediately. The lifecycle is enter, then a full leave; the case lands on its closed render.",
+      "props": {
+        "text": "Helpful hint"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        }
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "hover",
+            "selector": ".vf-tooltip__trigger"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          },
+          {
+            "action": "unhover"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          }
+        ],
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["none"],
+          "closings": [
+            {
+              "instance": 0,
+              "via": "pointer",
+              "lag": "immediate"
+            }
+          ],
+          "transitions": ["0:enter:normal", "0:leave:normal"],
+          "bodyTooltips": []
+        },
+        "matches": "tooltip/default"
+      }
+    },
+    {
+      "id": "tooltip/interaction-focusout-close",
+      "title": "Focus leaving the wrapper closes at once",
+      "$why": "focusout closes immediately, with a full leave.",
+      "props": {
+        "text": "Helpful hint"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        },
+        "after": true
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 2,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "unhover"
+          },
+          {
+            "action": "focusButton",
+            "selector": ".parity-trigger-control"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          },
+          {
+            "action": "focusButton",
+            "selector": ".parity-after-control"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          }
+        ],
+        "consumerInteractive": 2,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["none"],
+          "closings": [
+            {
+              "instance": 0,
+              "via": "focus",
+              "lag": "immediate"
+            }
+          ],
+          "transitions": ["0:enter:normal", "0:leave:normal"],
+          "bodyTooltips": []
+        },
+        "matches": "tooltip/with-after"
+      }
+    },
+    {
+      "id": "tooltip/interaction-tab-away-close",
+      "title": "A real Tab out of the wrapper closes the tooltip",
+      "$why": "Tab is not handled; the focus it moves is.",
+      "props": {
+        "text": "Helpful hint"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        },
+        "after": true
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 2,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "unhover"
+          },
+          {
+            "action": "focusButton",
+            "selector": ".parity-trigger-control"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          },
+          {
+            "action": "pressKey",
+            "key": "Tab"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          }
+        ],
+        "consumerInteractive": 2,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["none"],
+          "focusRole": "after-control",
+          "keydownPrevented": ["Tab:false"]
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-pointer-onto-teleported",
+      "title": "The pointer moving onto a teleported tooltip closes it",
+      "$why": "The tooltip is in <body>, outside the wrapper: reaching it is a mouseleave. Nothing makes a teleported tooltip hoverable.",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        },
+        "body": "rich"
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "hover",
+            "selector": ".vf-tooltip__trigger"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          },
+          {
+            "action": "hover",
+            "selector": "strong",
+            "through": {
+              "selector": ".vf-tooltip__trigger",
+              "attribute": "aria-describedby"
+            }
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          }
+        ],
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["none"],
+          "closings": [
+            {
+              "instance": 0,
+              "via": "pointer",
+              "lag": "immediate"
+            }
+          ],
+          "bodyTooltips": []
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-pointer-onto-in-place",
+      "title": "The pointer moving onto an in-place tooltip keeps it open",
+      "$why": "In place, the tooltip is inside the wrapper: there is no mouseleave, and the tooltip stays open.",
+      "props": {
+        "disableTeleport": true
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        },
+        "body": "rich"
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "hover",
+            "selector": ".vf-tooltip__trigger"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          },
+          {
+            "action": "hover",
+            "selector": ".vf-tooltip__content strong"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          }
+        ],
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["tooltip"],
+          "hoverStates": ["true"],
+          "closings": [],
+          "tooltipStates": [
+            {
+              "location": "in-place",
+              "tag": "span",
+              "role": "tooltip",
+              "classes": ["vf-tooltip__content", "vf-tooltip__content--top"],
+              "arrowClasses": ["vf-tooltip__arrow", "vf-tooltip__arrow--top"],
+              "arrowLast": true,
+              "text": "Rich body"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-teleport-false-open",
+      "title": "teleportTo false renders the open tooltip in place, after the trigger",
+      "$why": "false is the reference's spelling of in place, as disableTeleport is.",
+      "props": {
+        "text": "Inline hint",
+        "teleportTo": false
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        }
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "hover",
+            "selector": ".vf-tooltip__trigger"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          }
+        ],
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["tooltip"],
+          "tooltipStates": [
+            {
+              "location": "in-place",
+              "tag": "span",
+              "role": "tooltip",
+              "classes": ["vf-tooltip__content", "vf-tooltip__content--top"],
+              "arrowClasses": ["vf-tooltip__arrow", "vf-tooltip__arrow--top"],
+              "arrowLast": true,
+              "text": "Inline hint"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-selector-open",
+      "title": "A selector teleportTo renders the open tooltip into that element",
+      "$why": "The destination is a page-level element outside the case, found at mount; the tooltip is followed there through the reference.",
+      "props": {
+        "text": "Targeted hint",
+        "teleportTo": "#parity-tooltip-target-2"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        }
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "hover",
+            "selector": ".vf-tooltip__trigger"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          }
+        ],
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["tooltip"],
+          "tooltipStates": [
+            {
+              "location": "elsewhere",
+              "tag": "span",
+              "role": "tooltip",
+              "classes": ["vf-tooltip__content", "vf-tooltip__content--top"],
+              "arrowClasses": ["vf-tooltip__arrow", "vf-tooltip__arrow--top"],
+              "arrowLast": true,
+              "text": "Targeted hint"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-bottom-open",
+      "title": "placement bottom: below the trigger, both modifiers --bottom",
+      "$why": "The requested side is kept when it fits.",
+      "props": {
+        "text": "Below hint",
+        "placement": "bottom"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        }
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "hover",
+            "selector": ".vf-tooltip__trigger"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          }
+        ],
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["tooltip"],
+          "tooltipStates": [
+            {
+              "location": "body",
+              "tag": "span",
+              "role": "tooltip",
+              "classes": ["vf-tooltip__content", "vf-tooltip__content--bottom"],
+              "arrowClasses": ["vf-tooltip__arrow", "vf-tooltip__arrow--bottom"],
+              "arrowLast": true,
+              "text": "Below hint"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-flip-to-bottom",
+      "title": "A top tooltip at the viewport top flips to bottom",
+      "$why": "flip chooses between top and bottom for every placement.",
+      "props": {
+        "text": "Flipped hint"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        },
+        "layout": "top-edge"
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "hover",
+            "selector": ".vf-tooltip__trigger"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          }
+        ],
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["tooltip"],
+          "tooltipStates": [
+            {
+              "location": "body",
+              "tag": "span",
+              "role": "tooltip",
+              "classes": ["vf-tooltip__content", "vf-tooltip__content--bottom"],
+              "arrowClasses": ["vf-tooltip__arrow", "vf-tooltip__arrow--bottom"],
+              "arrowLast": true,
+              "text": "Flipped hint"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-flip-to-top",
+      "title": "A bottom tooltip at the viewport bottom flips to top",
+      "$why": "The same pair the other way round - never a start/end pair.",
+      "props": {
+        "text": "Flipped hint",
+        "placement": "bottom"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        },
+        "layout": "bottom-edge"
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "hover",
+            "selector": ".vf-tooltip__trigger"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          }
+        ],
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["tooltip"],
+          "tooltipStates": [
+            {
+              "location": "body",
+              "tag": "span",
+              "role": "tooltip",
+              "classes": ["vf-tooltip__content", "vf-tooltip__content--top"],
+              "arrowClasses": ["vf-tooltip__arrow", "vf-tooltip__arrow--top"],
+              "arrowLast": true,
+              "text": "Flipped hint"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-shift-left",
+      "title": "A long tooltip on a trigger at the left edge is shifted into the viewport",
+      "$why": "shift keeps the tooltip inside; the arrow stays over the trigger, not at the tooltip centre.",
+      "props": {
+        "text": "A much longer tooltip text that has to be shifted back inside the viewport"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        },
+        "layout": "left-edge"
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "hover",
+            "selector": ".vf-tooltip__trigger"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          }
+        ],
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["tooltip"]
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-shift-right",
+      "title": "A long tooltip on a trigger at the right edge is shifted into the viewport",
+      "$why": "The other edge.",
+      "props": {
+        "text": "A much longer tooltip text that has to be shifted back inside the viewport"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        },
+        "layout": "right-edge"
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "hover",
+            "selector": ".vf-tooltip__trigger"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          }
+        ],
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["tooltip"]
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-two-different-open",
+      "title": "Two tooltips open at once, different texts: each trigger names its own",
+      "$why": "Focus opens the first, a hover the second. Nothing points back from a tooltip, so the pairing is the reference graph, the texts and the positions.",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        }
+      },
+      "group": [
+        {
+          "text": "Alpha hint"
+        },
+        {
+          "text": "Beta hint"
+        }
+      ],
+      "componentInteractive": 0,
+      "consumerInteractive": 2,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "unhover"
+          },
+          {
+            "action": "focusButton",
+            "selector": ".parity-trigger-control",
+            "index": 0
+          },
+          {
+            "action": "hover",
+            "selector": ".vf-tooltip__trigger",
+            "index": 1
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          }
+        ],
+        "consumerInteractive": 2,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["tooltip", "tooltip"],
+          "describedTargets": [0, 1],
+          "hoverStates": ["false", "true"]
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-two-identical-open",
+      "title": "Two tooltips open at once with identical texts, at different places",
+      "$why": "The texts cannot tell a swap apart; the reference graph and the two positions can.",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        }
+      },
+      "group": [
+        {
+          "text": "Same hint"
+        },
+        {
+          "text": "Same hint"
+        }
+      ],
+      "componentInteractive": 0,
+      "consumerInteractive": 2,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "unhover"
+          },
+          {
+            "action": "focusButton",
+            "selector": ".parity-trigger-control",
+            "index": 0
+          },
+          {
+            "action": "hover",
+            "selector": ".vf-tooltip__trigger",
+            "index": 1
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          }
+        ],
+        "consumerInteractive": 2,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["tooltip", "tooltip"],
+          "describedTargets": [0, 1]
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-two-reverse-open",
+      "title": "The second tooltip opened first: <body> still holds them in mount order",
+      "$why": "Each instance's Teleport anchor is placed at mount; a tooltip opened later still lands before a later instance's.",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        }
+      },
+      "group": [
+        {
+          "text": "Alpha hint"
+        },
+        {
+          "text": "Beta hint"
+        }
+      ],
+      "componentInteractive": 0,
+      "consumerInteractive": 2,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "hover",
+            "selector": ".vf-tooltip__trigger",
+            "index": 1
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          },
+          {
+            "action": "focusButton",
+            "selector": ".parity-trigger-control",
+            "index": 0
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          }
+        ],
+        "consumerInteractive": 2,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["tooltip", "tooltip"],
+          "describedTargets": [0, 1]
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-popover-escape",
+      "title": "An Escape with a tooltip open beside an open VfPopover closes the popover, not the tooltip",
+      "$why": "The tooltip is not on the escape stack the popover and the dropdown share: the popover takes the Escape, prevents it and focuses its trigger; the hovered tooltip stays open.",
+      "props": {
+        "text": "Helpful hint"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        },
+        "popover": "beside"
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 2,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-popover__trigger"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          },
+          {
+            "action": "hover",
+            "selector": ".vf-tooltip__trigger"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          },
+          {
+            "action": "pressKey",
+            "key": "Escape"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          }
+        ],
+        "consumerInteractive": 2,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["false"],
+          "describedStates": ["tooltip"],
+          "keydownPrevented": ["Escape:true"],
+          "focusRole": "popover-trigger"
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-popover-dispose",
+      "title": "Closing a VfPopover removes the tooltip open in its content at once, without a leave",
+      "$why": "The tooltip in the popover content is unmounted with it: its node leaves <body> as the popover closes, with no leave of its own.",
+      "props": {
+        "text": "Helpful hint"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        },
+        "popover": "inside"
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 2,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-popover__trigger"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          },
+          {
+            "action": "hover",
+            "selector": ".vf-tooltip__trigger",
+            "through": {
+              "selector": ".vf-popover__trigger",
+              "attribute": "aria-controls"
+            }
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          },
+          {
+            "action": "pressKey",
+            "key": "Escape"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          }
+        ],
+        "consumerInteractive": 2,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["false"],
+          "describedStates": ["none"],
+          "openings": [
+            {
+              "instance": 1,
+              "via": "pointer",
+              "latency": "on-time"
+            }
+          ],
+          "transitions": ["1:enter:normal"],
+          "bodyTooltips": [],
+          "keydownPrevented": ["Escape:true"]
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-popover-dispose-pending",
+      "title": "Closing a VfPopover cancels the timer of a tooltip pending in its content",
+      "$why": "Unmount clears the timer: nothing opens after the popover is gone.",
+      "props": {
+        "text": "Helpful hint"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        },
+        "popover": "inside",
+        "popoverDelay": 600
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 2,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-popover__trigger"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          },
+          {
+            "action": "hover",
+            "selector": ".vf-tooltip__trigger",
+            "through": {
+              "selector": ".vf-popover__trigger",
+              "attribute": "aria-controls"
+            }
+          },
+          {
+            "action": "wait",
+            "ms": 100
+          },
+          {
+            "action": "pressKey",
+            "key": "Escape"
+          },
+          {
+            "action": "wait",
+            "ms": 1100
+          }
+        ],
+        "consumerInteractive": 2,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["false"],
+          "describedStates": ["none"],
+          "openings": [],
+          "bodyTooltips": []
+        }
+      }
+    },
+    {
+      "id": "tooltip/interaction-keys-unhandled",
+      "title": "Escape, Enter and Space on the focused control neither close nor get prevented",
+      "$why": "The tooltip handles no key at all.",
+      "props": {
+        "text": "Helpful hint"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "controls": ["Info"]
+        }
+      },
+      "componentInteractive": 0,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "unhover"
+          },
+          {
+            "action": "focusButton",
+            "selector": ".parity-trigger-control"
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          },
+          {
+            "action": "pressKey",
+            "key": "Escape"
+          },
+          {
+            "action": "pressKey",
+            "key": "Enter"
+          },
+          {
+            "action": "pressKey",
+            "key": " "
+          },
+          {
+            "action": "wait",
+            "ms": 600
+          }
+        ],
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "describedStates": ["tooltip"],
+          "keydownPrevented": ["Escape:false", "Enter:false", " :false"],
+          "closings": []
+        }
+      }
+    }
+  ]
+}
