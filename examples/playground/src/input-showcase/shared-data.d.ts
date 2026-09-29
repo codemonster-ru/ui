@@ -163,3 +163,8 @@ declare module '@vueforge/popover-cases' {
   const cases: { cases: unknown[] };
   export default cases;
 }
+
+declare module '@vueforge/tooltip-cases' {
+  const cases: { cases: unknown[] };
+  export default cases;
+}

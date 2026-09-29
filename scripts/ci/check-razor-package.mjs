@@ -203,6 +203,19 @@ check(
   js.split('// node_modules/@codemonster-ru/floater.js/dist/index.mjs').length === 2 &&
     js.split('[floater.js] flip middleware expects params.placements').length === 2,
 );
+// M31: the tooltip controller - once, on the same floater.js copy and the same
+// disposal registry, and never on the escape stack.
+check(
+  'the packaged controller carries the tooltip enhancement exactly once',
+  js.includes('data-vf-razor-tooltip-enhanced') && js.split('function enhanceVueForgeTooltips(').length === 2,
+);
+check(
+  'the packaged stylesheet carries the tooltip rules exactly once',
+  (css.match(/^\.vf-tooltip__content \{$/gm) ?? []).length === 1 &&
+    (css.match(/^\.vf-tooltip__trigger \{$/gm) ?? []).length === 1 &&
+    css.includes('.vf-floating-transition-enter-from.vf-tooltip__content') &&
+    css.includes('.vf-tooltip__arrow--bottom'),
+);
 check(
   'the packaged stylesheet carries the popover rules exactly once',
   (css.match(/^\.vf-popover__content \{$/gm) ?? []).length === 1 &&

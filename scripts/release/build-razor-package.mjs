@@ -136,6 +136,11 @@ export const requiredEntries = [
   // what a closing panel holds all travel inside dist/vueforge-razor.js.
   'src/Components/PopoverComponent.php',
   'src/Support/PopoverState.php',
+  // The M31 component: the third overlay. Its browser controller travels
+  // inside dist/vueforge-razor.js beside the popover's and shares its
+  // disposal, not its escape stack - the tooltip has no entry on it.
+  'src/Components/TooltipComponent.php',
+  'src/Support/TooltipState.php',
   'resources/icons/icon-registry.json',
   'dist/vueforge-razor.css',
   'dist/vueforge-razor.js',

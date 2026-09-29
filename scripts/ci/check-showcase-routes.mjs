@@ -185,6 +185,9 @@ const controlSelectors = {
   // The M30 component. The trigger wrapper, one per instance; the panel it
   // owns while open is outside the case, and the probe below reads it there.
   VfPopover: '.vf-popover__trigger',
+  // The M31 component. It owns no control; the trigger wrapper, one per
+  // instance, is what every case renders, and the probe below hovers it.
+  VfTooltip: '.vf-tooltip__trigger',
 };
 
 /**
@@ -228,6 +231,9 @@ const controlsPerCase = {
   // One trigger per instance; a panel is a control only while open, and it is
   // outside the case.
   VfPopover: (parityCase) => (Array.isArray(parityCase.group) ? parityCase.group.length : 1),
+  // One trigger wrapper per instance; a tooltip inside a closed popover waits
+  // in the popover's inert template and is not on the page.
+  VfTooltip: (parityCase) => (Array.isArray(parityCase.group) ? parityCase.group.length : 1),
 };
 
 /**
@@ -245,6 +251,8 @@ const rootsPerCase = {
   // One popover root per instance. A dropdown beside or inside it carries its
   // own marker and is not counted here.
   VfPopover: (parityCase) => (Array.isArray(parityCase.group) ? parityCase.group.length : 1),
+  // One tooltip root per instance; the one a popover holds is not live yet.
+  VfTooltip: (parityCase) => (Array.isArray(parityCase.group) ? parityCase.group.length : 1),
   // Every group box root carries the marker, static or not; a nested one is in
   // the DOM only while its parent shows its content - inside a closed parent
   // it waits in the parent's inert template.
@@ -294,6 +302,7 @@ const ownershipMarkers = {
   VfDropdown: { root: '[data-vf-razor="dropdown"]', enhanced: '[data-vf-razor-dropdown-enhanced]' },
   VfGroupBox: { root: '[data-vf-razor="group-box"]', enhanced: '[data-vf-razor-group-box-enhanced]' },
   VfPopover: { root: '[data-vf-razor="popover"]', enhanced: '[data-vf-razor-popover-enhanced]' },
+  VfTooltip: { root: '[data-vf-razor="tooltip"]', enhanced: '[data-vf-razor-tooltip-enhanced]' },
 };
 
 const components = showcaseIndex.components
@@ -374,6 +383,7 @@ check(
       'VfTabs',
       'VfTag',
       'VfTextarea',
+      'VfTooltip',
     ]),
   razorImplemented.join(', '),
 );
@@ -1353,6 +1363,162 @@ async function probePopoverBehaviour(origin, path) {
 }
 
 /**
+ * Drives the real tooltip on one platform with a real pointer that stays and
+ * real focus, and reads each tooltip where it is - in <body> or in place,
+ * through its trigger's aria-describedby (M31). Every hover starts from a
+ * neutral point checked to be outside every tooltip, and the page is scrolled
+ * to the target before the pointer moves: a scroll or a layout shift under a
+ * resting pointer makes Chrome hover whatever is there now. No unhandled key
+ * is pressed; the one Escape is the popover's.
+ */
+async function probeTooltipBehaviour(origin, path) {
+  const page = await openPage(chrome.endpoint);
+  const triggerOf = (caseId) => `document.querySelector('[data-showcase-case="${caseId}"] .vf-tooltip__trigger')`;
+  const state = (expression) => `(() => {
+    const trigger = ${expression};
+    const id = trigger.getAttribute('aria-describedby');
+    const tooltip = id ? document.getElementById(id) : null;
+    const box = tooltip?.getBoundingClientRect();
+    const own = trigger.getBoundingClientRect();
+    return {
+      described: id === null ? 'none' : tooltip ? 'tooltip' : 'dangling',
+      tooltip: tooltip ? {
+        place: tooltip.parentElement === document.body ? 'body' : tooltip.parentElement === trigger.parentElement ? 'in-place' : 'elsewhere',
+        tag: tooltip.tagName.toLowerCase(),
+        role: tooltip.getAttribute('role'),
+        text: [...tooltip.childNodes].filter((node) => node !== tooltip.lastElementChild).map((node) => node.textContent).join(''),
+        arrowLast: tooltip.lastElementChild?.classList.contains('vf-tooltip__arrow') ?? false,
+        classes: [...tooltip.classList].filter((name) => !name.startsWith('vf-floating-transition-')),
+        leaving: tooltip.classList.contains('vf-floating-transition-leave-active'),
+        side: box.top >= own.bottom ? 'below' : box.bottom <= own.top ? 'above' : 'overlapping',
+      } : null,
+      nodes: document.querySelectorAll('.vf-tooltip__content').length,
+    };
+  })()`;
+  const neutral = async () => {
+    const clear = await page.evaluate(
+      `!document.elementFromPoint(1275, 5)?.closest('.vf-tooltip, .vf-tooltip__content')`,
+    );
+    if (!clear) throw new Error('the neutral point is over a tooltip');
+    await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 1275, y: 5 });
+  };
+  const hover = async (expression) => {
+    await neutral();
+    await page.evaluate(`(${expression}).scrollIntoView({ block: 'center' })`);
+    await delay(150);
+    const point = await page.evaluate(`(() => {
+      const element = ${expression};
+      const rect = element.getBoundingClientRect();
+      const point = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+      if (!element.contains(document.elementFromPoint(point.x, point.y))) throw new Error('hover target is covered');
+      return point;
+    })()`);
+    await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...point });
+  };
+
+  try {
+    await page.send('Page.enable');
+    await page.send('Runtime.enable');
+    await page.send('Emulation.setDeviceMetricsOverride', { ...viewport, deviceScaleFactor: 1, mobile: false });
+    await page.send('Page.navigate', { url: `${origin}${path}` });
+    await page.waitFor(`Boolean(${triggerOf('tooltip/default')})`);
+    await delay(600);
+    await neutral();
+
+    const initial = await page.evaluate(`(() => ({
+      described: document.querySelectorAll('.vf-tooltip__trigger[aria-describedby]').length,
+      tooltips: document.querySelectorAll('.vf-tooltip__content').length,
+      inlineScripts: [...document.querySelectorAll('script:not([src])')].filter((script) => /tooltip|popover|floater/i.test(script.textContent)).length,
+    }))()`);
+
+    // A hover opens after the delay, not at once; a leave closes at once and
+    // the tooltip leaves before it goes.
+    await hover(triggerOf('tooltip/default'));
+    const hoverPending = await page.evaluate(state(triggerOf('tooltip/default')));
+    await delay(450);
+    const hoverOpen = await page.evaluate(state(triggerOf('tooltip/default')));
+    await neutral();
+    const unhovered = await page.evaluate(state(triggerOf('tooltip/default')));
+    await delay(450);
+    const unhoveredLater = await page.evaluate(state(triggerOf('tooltip/default')));
+
+    // Focus opens after the delay; focus leaving closes at once.
+    await page.evaluate(
+      `${triggerOf('tooltip/interaction-focus-open')}.querySelector('.parity-trigger-control').focus()`,
+    );
+    const focusPending = await page.evaluate(state(triggerOf('tooltip/interaction-focus-open')));
+    await delay(450);
+    const focusOpen = await page.evaluate(state(triggerOf('tooltip/interaction-focus-open')));
+    await page.evaluate('document.activeElement.blur()');
+    const blurred = await page.evaluate(state(triggerOf('tooltip/interaction-focus-open')));
+    await delay(450);
+
+    // Placement and destination.
+    await hover(triggerOf('tooltip/interaction-bottom-open'));
+    await delay(450);
+    const bottom = await page.evaluate(state(triggerOf('tooltip/interaction-bottom-open')));
+    await hover(triggerOf('tooltip/interaction-teleport-false-open'));
+    await delay(450);
+    const inPlace = await page.evaluate(state(triggerOf('tooltip/interaction-teleport-false-open')));
+    await neutral();
+    await delay(450);
+
+    // Disposal: a tooltip open inside a popover goes at once when the popover
+    // closes on Escape - the popover's Escape, not the tooltip's.
+    const host = `document.querySelector('[data-showcase-case="tooltip/interaction-popover-dispose"] .vf-popover__trigger')`;
+    const inside = `document.getElementById(${host}.getAttribute('aria-controls')).querySelector('.vf-tooltip__trigger')`;
+    await page.evaluate(`(${host}).scrollIntoView({ block: 'center' })`);
+    await delay(150);
+    const hostPoint = await page.evaluate(
+      `(() => { const rect = (${host}).getBoundingClientRect(); return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }; })()`,
+    );
+    await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...hostPoint });
+    await page.send('Input.dispatchMouseEvent', { type: 'mousePressed', ...hostPoint, button: 'left', clickCount: 1 });
+    await page.send('Input.dispatchMouseEvent', { type: 'mouseReleased', ...hostPoint, button: 'left', clickCount: 1 });
+    await delay(450);
+    await hover(inside);
+    await delay(450);
+    const insideOpen = await page.evaluate(state(inside));
+    await page.send('Input.dispatchKeyEvent', {
+      type: 'rawKeyDown',
+      key: 'Escape',
+      code: 'Escape',
+      windowsVirtualKeyCode: 27,
+      nativeVirtualKeyCode: 27,
+    });
+    await page.send('Input.dispatchKeyEvent', {
+      type: 'keyUp',
+      key: 'Escape',
+      code: 'Escape',
+      windowsVirtualKeyCode: 27,
+      nativeVirtualKeyCode: 27,
+    });
+    await delay(60);
+    const disposed = await page.evaluate(`({
+      expanded: (${host}).getAttribute('aria-expanded'),
+      tooltips: document.querySelectorAll('.vf-tooltip__content').length,
+    })`);
+
+    return {
+      initial,
+      hoverPending,
+      hoverOpen,
+      unhovered,
+      unhoveredLater,
+      focusPending,
+      focusOpen,
+      blurred,
+      bottom,
+      inPlace,
+      insideOpen,
+      disposed,
+    };
+  } finally {
+    await page.close();
+  }
+}
+
+/**
  * Drives the real dropdown on one platform with real pointer and key events
  * and reads each menu where it is - in <body>, found through its trigger's
  * aria-controls. Every step is chosen to mean the same on a page that also
@@ -1550,6 +1716,7 @@ try {
       'VfDropdown',
       'VfGroupBox',
       'VfPopover',
+      'VfTooltip',
     ].includes(name);
 
     for (const theme of themes) {
@@ -1846,6 +2013,69 @@ try {
         }
         check(
           `[${name}/${theme}] the Vue and Razor popover showcases read the same at every step`,
+          JSON.stringify(readings.vue) === JSON.stringify(readings.razor),
+          JSON.stringify(readings),
+        );
+      }
+
+      // --------------------------------- the tooltip on both real pages
+      //
+      // M31: the third overlay, driven by a real pointer that stays and real
+      // focus on both platforms; every reading must be the same on both.
+      if (name === 'VfTooltip') {
+        const readings = {};
+        for (const [platform, origin, route] of [
+          ['vue', vueOrigin, `${vueRoute}&theme=${theme}`],
+          ['razor', razorOrigin, `${razorRoute}&theme=${theme}`],
+        ]) {
+          const run = await probeTooltipBehaviour(origin, route);
+          readings[platform] = run;
+          check(
+            `[${name}/${theme}] the ${platform} showcase starts with every tooltip closed and no script of its own`,
+            run.initial.described === 0 && run.initial.tooltips === 0 && run.initial.inlineScripts === 0,
+            JSON.stringify(run.initial),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase opens a hovered tooltip after its delay, in <body>, a span[role=tooltip] with its text and the arrow last`,
+            run.hoverPending.described === 'none' &&
+              run.hoverOpen.described === 'tooltip' &&
+              run.hoverOpen.tooltip.place === 'body' &&
+              run.hoverOpen.tooltip.tag === 'span' &&
+              run.hoverOpen.tooltip.role === 'tooltip' &&
+              run.hoverOpen.tooltip.text === 'Helpful hint' &&
+              run.hoverOpen.tooltip.arrowLast,
+            JSON.stringify({ pending: run.hoverPending, open: run.hoverOpen }),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase closes on unhover at once, and the tooltip leaves before it goes`,
+            run.unhovered.described === 'none' && run.unhovered.nodes === 1 && run.unhoveredLater.nodes === 0,
+            JSON.stringify({ unhovered: run.unhovered, later: run.unhoveredLater }),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase opens on focus after the delay and closes on blur at once`,
+            run.focusPending.described === 'none' &&
+              run.focusOpen.described === 'tooltip' &&
+              run.blurred.described === 'none',
+            JSON.stringify({ pending: run.focusPending, open: run.focusOpen, blurred: run.blurred }),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase places a bottom tooltip below with both --bottom modifiers, and a teleportTo=false one in place`,
+            run.bottom.tooltip?.side === 'below' &&
+              run.bottom.tooltip.classes.includes('vf-tooltip__content--bottom') &&
+              run.inPlace.tooltip?.place === 'in-place',
+            JSON.stringify({ bottom: run.bottom, inPlace: run.inPlace }),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase removes a tooltip open inside a popover at once when the popover closes on Escape`,
+            run.insideOpen.described === 'tooltip' &&
+              run.insideOpen.tooltip.place === 'body' &&
+              run.disposed.expanded === 'false' &&
+              run.disposed.tooltips === 0,
+            JSON.stringify({ open: run.insideOpen, disposed: run.disposed }),
+          );
+        }
+        check(
+          `[${name}/${theme}] the Vue and Razor tooltip showcases read the same at every step`,
           JSON.stringify(readings.vue) === JSON.stringify(readings.razor),
           JSON.stringify(readings),
         );

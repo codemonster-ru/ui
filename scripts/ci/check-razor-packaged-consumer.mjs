@@ -196,6 +196,7 @@ $menuItem = $registry->resolve('vf-menu-item');
 $dropdown = $registry->resolve('vf-dropdown');
 $groupBox = $registry->resolve('vf-group-box');
 $popover = $registry->resolve('vf-popover');
+$tooltip = $registry->resolve('vf-tooltip');
 $assetPath = VueForgeRazorProvider::assetPath();
 $tabItems = [
     ['value' => 'overview', 'label' => 'Overview'],
@@ -244,6 +245,7 @@ echo json_encode([
         'vf-dropdown' => $registry->handles('vf-dropdown'),
         'vf-group-box' => $registry->handles('vf-group-box'),
         'vf-popover' => $registry->handles('vf-popover'),
+        'vf-tooltip' => $registry->handles('vf-tooltip'),
     ],
     'markup' => $input->render(new ComponentRenderContext(
         ['name' => 'workspace', 'value' => 'Acme', 'clearable' => true, 'password-reveal' => false],
@@ -879,6 +881,25 @@ echo json_encode([
         && preg_match_all('/^\\.vf-popover__content \\{/m', (string) file_get_contents($assetPath . '/vueforge-razor.css')) === 1
         && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-popover__arrow--top')
         && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-floating-transition-enter-from.vf-popover__content'),
+    // VfTooltip, M31: always closed on the server - the wrapper and trigger
+    // and the body waiting in an inert template; nothing for no content.
+    'tooltipClosed' => $tooltip->render(new ComponentRenderContext(
+        ['text' => 'Copy to clipboard'],
+        ['default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('<button type="button">Copy</button>')],
+    ))->value(),
+    'tooltipEmpty' => $tooltip->render(new ComponentRenderContext(
+        ['text' => '', 'open-delay' => 400, 'teleport-to' => false],
+        ['default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('<button type="button">Copy</button>')],
+    ))->value(),
+    'tooltipConstructorTakesNothing' => (new ReflectionClass($tooltip))->getConstructor() === null,
+    'tooltipBrowserCode' => str_contains($controllerSource, 'data-vf-razor-tooltip-enhanced')
+        && substr_count($controllerSource, 'function enhanceVueForgeTooltips(') === 1
+        && substr_count($controllerSource, 'function registerDisposal(') === 1
+        && substr_count($controllerSource, '[floater.js] flip middleware expects params.placements') === 1,
+    'tooltipCss' => is_file($assetPath . '/vueforge-razor.css')
+        && preg_match_all('/^\\.vf-tooltip__content \\{/m', (string) file_get_contents($assetPath . '/vueforge-razor.css')) === 1
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-tooltip__arrow--bottom')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-floating-transition-enter-from.vf-tooltip__content'),
     'dropdownClosed' => $dropdown->render(new ComponentRenderContext(
         [],
         [
@@ -2160,6 +2181,34 @@ echo json_encode([
     );
   }
   check('the popover component takes no constructor argument', rendered.popoverConstructorTakesNothing === true);
+  check('the registry resolves vf-tooltip', rendered.handles['vf-tooltip'] === true);
+  check(
+    'the consumer renders a closed tooltip: the wrapper and trigger, the body in an inert template, and no id, reference, role or title',
+    /^<span class="vf-tooltip" data-vf-razor="tooltip" data-vf-razor-tooltip-id="vf-tooltip-r-\d+" data-vf-razor-tooltip-placement="top" data-vf-razor-tooltip-open-delay="80" data-vf-razor-tooltip-teleport="body"><span class="vf-tooltip__trigger"><button type="button">Copy<\/button><\/span><template data-vf-razor-tooltip="content">Copy to clipboard<\/template><\/span>$/.test(
+      rendered.tooltipClosed,
+    ),
+    rendered.tooltipClosed,
+  );
+  check(
+    'the consumer renders an empty tooltip with no deferred body, its delay and in-place destination as adapter metadata',
+    rendered.tooltipEmpty.includes('data-vf-razor-tooltip-open-delay="400"') &&
+      rendered.tooltipEmpty.includes('data-vf-razor-tooltip-teleport="false"') &&
+      !rendered.tooltipEmpty.includes('<template') &&
+      !rendered.tooltipEmpty.includes('aria-describedby') &&
+      !rendered.tooltipEmpty.includes('<script'),
+    rendered.tooltipEmpty,
+  );
+  check('the tooltip component takes no constructor argument', rendered.tooltipConstructorTakesNothing === true);
+  check(
+    'the packaged controller carries the tooltip layer once, on the one disposal registry and the one floater.js copy',
+    rendered.tooltipBrowserCode === true,
+    'vueforge-razor.js lacks the tooltip layer, or carries a second disposal registry or floater.js copy',
+  );
+  check(
+    'the packaged stylesheet carries the tooltip rule once, both arrow sides and the floating transition',
+    rendered.tooltipCss === true,
+    'vueforge-razor.css is missing tooltip rules or duplicates them',
+  );
   check(
     'the packaged controller carries the popover layer on the one escape stack and the one floater.js copy',
     rendered.popoverBrowserCode === true,

@@ -1087,7 +1087,16 @@
           "status": "implemented"
         },
         "razor": {
-          "status": "not-implemented"
+          "status": "implemented",
+          "caseSource": "contracts/tooltip/cases.json"
+        }
+      },
+      "showcase": {
+        "caseSource": "contracts/tooltip/cases.json",
+        "caseIdField": "id",
+        "routes": {
+          "vue": "/tooltip",
+          "razor": "/"
         }
       }
     },
