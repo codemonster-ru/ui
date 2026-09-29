@@ -327,6 +327,52 @@ const readStepper = (caseName, label) => `(() => {
   };
 })()`;
 
+// ------------------------------------------------------------------ tooltip
+//
+// The M31 helpers. A tooltip is driven by a real pointer that stays - one CDP
+// mouseMoved onto the element, as the parity vocabulary's hover does - and by
+// real focus. `neutral` moves the pointer to the page's empty top-right corner.
+const tooltipRoot = (label) => `document.querySelector('.vf-tooltip[aria-label="${label}"]')`;
+const tooltipTrigger = (label) => `${tooltipRoot(label)}.querySelector(':scope > .vf-tooltip__trigger')`;
+
+/** One tooltip as the suite reads it, by the root's accessible name. */
+const readTooltip = (label) => `(() => {
+  const root = ${tooltipRoot(label)};
+  const trigger = root.querySelector(':scope > .vf-tooltip__trigger');
+  const describedBy = trigger.getAttribute('aria-describedby');
+  const tooltip = describedBy ? document.getElementById(describedBy) : null;
+  return {
+    enhanced: root.hasAttribute('data-vf-razor-tooltip-enhanced'),
+    describedBy,
+    resolved: describedBy === null ? 'none' : tooltip ? 'tooltip' : 'dangling',
+    parent: tooltip ? (tooltip.parentElement === document.body ? 'body' : tooltip.parentElement === root ? 'in-place' : tooltip.parentElement.id || tooltip.parentElement.tagName) : null,
+    tag: tooltip?.tagName.toLowerCase() ?? null,
+    role: tooltip?.getAttribute('role') ?? null,
+    classes: tooltip ? [...tooltip.classList] : null,
+    text: tooltip ? [...tooltip.childNodes].filter((node) => node !== tooltip.lastElementChild).map((node) => node.textContent).join('') : null,
+    arrowLast: tooltip ? tooltip.lastElementChild?.classList.contains('vf-tooltip__arrow') && tooltip.lastElementChild.getAttribute('aria-hidden') === 'true' : null,
+    style: tooltip?.getAttribute('style') ?? null,
+    nodes: document.querySelectorAll('.vf-tooltip__content').length,
+    templates: root.querySelectorAll(':scope > template[data-vf-razor-tooltip="content"]').length,
+    reverse: tooltip ? [tooltip, ...tooltip.querySelectorAll('*')].some((node) => node.getAttributeNames().some((name) => name.startsWith('aria-') && name !== 'aria-hidden')) : null,
+  };
+})()`;
+
+async function hoverAt(page, expression) {
+  const point = await page.evaluate(`(() => {
+    const element = ${expression};
+    element.scrollIntoView({ block: 'center' });
+    const rect = element.getBoundingClientRect();
+    const point = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+    const hit = document.elementFromPoint(point.x, point.y);
+    if (!element.contains(hit)) throw new Error('hover target is covered by ' + hit?.outerHTML.slice(0, 120));
+    return point;
+  })()`);
+  await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...point });
+}
+
+const neutral = (page) => page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 900, y: 1 });
+
 mkdirSync(distDirectory, { recursive: true });
 process.stdout.write('Building Razor assets and rendering the PHP fixtures\n');
 buildAssets();
@@ -3468,6 +3514,383 @@ try {
       page.diagnostics.pageErrors.join('; '),
     );
   });
+  // ------------------------------------------------------------------ tooltip
+  await withPage(chrome, server.origin, 'fixture-enhanced.html', async (page) => {
+    await page.waitFor(`Boolean(document.querySelector('[data-vf-razor-tooltip-enhanced]'))`);
+    await neutral(page);
+    const mounted = await page.evaluate(`({
+      owned: document.querySelectorAll('[data-vf-razor="tooltip"]').length,
+      enhanced: document.querySelectorAll('[data-vf-razor="tooltip"][data-vf-razor-tooltip-enhanced]').length,
+      unowned: document.querySelectorAll('[data-case="tooltip-unowned"] .vf-tooltip[data-vf-razor-tooltip-enhanced]').length,
+      describedBy: document.querySelectorAll('.vf-tooltip__trigger[aria-describedby]').length,
+      tooltips: document.querySelectorAll('.vf-tooltip__content').length,
+      scripts: [...document.querySelectorAll('[data-case^="tooltip"] script, [data-case^="tooltip"] [onmouseenter], [data-case^="tooltip"] [onfocus]')].length,
+    })`);
+    check(
+      'every Razor tooltip is enhanced, the unowned copy is not, and all start closed',
+      mounted.owned === 6 &&
+        mounted.enhanced === 6 &&
+        mounted.unowned === 0 &&
+        mounted.describedBy === 0 &&
+        mounted.tooltips === 0 &&
+        mounted.scripts === 0,
+      JSON.stringify(mounted),
+    );
+
+    // A real hover opens after the delay: nothing at once, the tooltip later.
+    await hoverAt(page, tooltipTrigger('TipDefault'));
+    const pending = await page.evaluate(readTooltip('TipDefault'));
+    await delay(200);
+    const entering = await page.evaluate(readTooltip('TipDefault'));
+    await delay(400);
+    const opened = await page.evaluate(readTooltip('TipDefault'));
+    check(
+      'a real hover opens nothing at once: the timer is pending',
+      pending.describedBy === null && pending.nodes === 0,
+      JSON.stringify(pending),
+    );
+    check(
+      'a real hover opens the tooltip after the delay, teleported to body, entering',
+      entering.resolved === 'tooltip' &&
+        entering.parent === 'body' &&
+        entering.classes.includes('vf-floating-transition-enter-active'),
+      JSON.stringify(entering),
+    );
+    check(
+      'the open tooltip is the historical span[role=tooltip] with its text, the arrow last and no reverse relationship',
+      opened.tag === 'span' &&
+        opened.role === 'tooltip' &&
+        opened.text === 'Helpful hint' &&
+        opened.arrowLast === true &&
+        opened.reverse === false &&
+        opened.nodes === 1 &&
+        // The side is floater.js's, judged three-way by the parity catalog;
+        // here only that it is exactly one of the two, with no transition left.
+        [
+          '["vf-tooltip__content","vf-tooltip__content--top"]',
+          '["vf-tooltip__content","vf-tooltip__content--bottom"]',
+        ].includes(JSON.stringify(opened.classes)) &&
+        /^left: [-\d.]+px; top: [-\d.]+px;$/.test(opened.style) &&
+        opened.templates === 1,
+      JSON.stringify(opened),
+    );
+
+    // Leaving closes at once: the reference goes, the node leaves for 320 ms.
+    await page.evaluate(`window.__leavingTooltip = document.querySelector('.vf-tooltip__content'); true`);
+    await neutral(page);
+    const left = await page.evaluate(
+      `({ ...${readTooltip('TipDefault')}, leaving: [...window.__leavingTooltip.classList], connected: window.__leavingTooltip.isConnected })`,
+    );
+    await delay(450);
+    const gone = await page.evaluate(
+      `({ ...${readTooltip('TipDefault')}, connected: window.__leavingTooltip.isConnected })`,
+    );
+    check(
+      'a real unhover removes aria-describedby at once and the tooltip leaves, then goes',
+      left.describedBy === null &&
+        left.connected &&
+        left.leaving.includes('vf-floating-transition-leave-active') &&
+        gone.connected === false &&
+        gone.nodes === 0,
+      JSON.stringify({ left, gone }),
+    );
+
+    // A leave before the delay cancels the open for good.
+    await hoverAt(page, tooltipTrigger('TipDelay'));
+    await delay(150);
+    await neutral(page);
+    await delay(700);
+    const cancelled = await page.evaluate(readTooltip('TipDelay'));
+    check(
+      'a leave before openDelay cancels the pending open: nothing opens later',
+      cancelled.describedBy === null && cancelled.nodes === 0,
+      JSON.stringify(cancelled),
+    );
+
+    // Re-entry starts a fresh timer, measured against the 400 ms delay.
+    await hoverAt(page, tooltipTrigger('TipDelay'));
+    await delay(250);
+    await neutral(page);
+    await hoverAt(page, tooltipTrigger('TipDelay'));
+    await delay(250);
+    const reentered = await page.evaluate(readTooltip('TipDelay'));
+    await delay(400);
+    const reopened = await page.evaluate(readTooltip('TipDelay'));
+    check(
+      're-entry after a leave starts a fresh timer: closed 250 ms after re-entry, open 650 ms after it',
+      reentered.describedBy === null && reopened.resolved === 'tooltip' && reopened.text === 'Slow hint',
+      JSON.stringify({ reentered, reopened }),
+    );
+    await neutral(page);
+    await delay(450);
+
+    // Focus opens after the delay; focusout closes at once.
+    await page.evaluate(`document.querySelector('.tip-default').focus()`);
+    const focusPending = await page.evaluate(readTooltip('TipDefault'));
+    await delay(200);
+    const focusOpened = await page.evaluate(readTooltip('TipDefault'));
+    await page.evaluate(`document.activeElement.blur()`);
+    const blurred = await page.evaluate(readTooltip('TipDefault'));
+    check(
+      'focus opens the tooltip after the delay and a focusout closes it at once',
+      focusPending.describedBy === null && focusOpened.resolved === 'tooltip' && blurred.describedBy === null,
+      JSON.stringify({ focusPending, focusOpened, blurred }),
+    );
+    await delay(450);
+
+    // The last event wins: a leave closes a focused tooltip, a blur a hovered one.
+    await page.evaluate(`document.querySelector('.tip-default').focus()`);
+    await hoverAt(page, tooltipTrigger('TipDefault'));
+    await delay(250);
+    await neutral(page);
+    await delay(450);
+    const leftFocused = await page.evaluate(
+      `({ ...${readTooltip('TipDefault')}, focused: document.activeElement === document.querySelector('.tip-default') })`,
+    );
+    check(
+      'a mouseleave closes the tooltip while its control keeps focus, and it stays closed',
+      leftFocused.focused === true && leftFocused.describedBy === null && leftFocused.nodes === 0,
+      JSON.stringify(leftFocused),
+    );
+    await page.evaluate(`document.activeElement.blur()`);
+    await hoverAt(page, tooltipTrigger('TipDefault'));
+    await page.evaluate(`document.querySelector('.tip-default').focus()`);
+    await delay(250);
+    await page.evaluate(`document.activeElement.blur()`);
+    await delay(450);
+    const blurredHovered = await page.evaluate(
+      `({ ...${readTooltip('TipDefault')}, hovered: ${tooltipRoot('TipDefault')}.matches(':hover') })`,
+    );
+    check(
+      'a focusout closes the tooltip while the pointer stays inside, and it stays closed',
+      blurredHovered.hovered === true && blurredHovered.describedBy === null && blurredHovered.nodes === 0,
+      JSON.stringify(blurredHovered),
+    );
+    await neutral(page);
+
+    // Focus moving between two controls inside one wrapper: close, then reopen.
+    await page.evaluate(`document.querySelector('.tip-one').focus()`);
+    await delay(200);
+    const firstFocus = await page.evaluate(readTooltip('TipTwo'));
+    await page.evaluate(`document.querySelector('.tip-two').focus()`);
+    const moved = await page.evaluate(readTooltip('TipTwo'));
+    await delay(200);
+    const refocused = await page.evaluate(readTooltip('TipTwo'));
+    check(
+      'focus moving between two controls inside closes the tooltip and reopens it after the delay, one node, same id',
+      firstFocus.resolved === 'tooltip' &&
+        moved.describedBy === null &&
+        refocused.describedBy === firstFocus.describedBy &&
+        refocused.nodes === 1,
+      JSON.stringify({ firstFocus, moved, refocused }),
+    );
+
+    // No key is handled while open. Recorded after every product handler, then
+    // swallowed: an unhandled key hides headless Chrome's tab for good, with no
+    // animation frames after it (see installPopoverLog).
+    await page.evaluate(`(() => {
+      window.__tipKeys = [];
+      window.addEventListener('keydown', (event) => {
+        window.__tipKeys.push(event.key + ':' + event.defaultPrevented);
+        event.preventDefault();
+      });
+      return true;
+    })()`);
+    for (const key of ['Escape', 'Enter', ' ']) await pressKey(page, key);
+    await delay(100);
+    const keyed = await page.evaluate(`({ ...${readTooltip('TipTwo')}, keys: window.__tipKeys })`);
+    check(
+      'Escape, Enter and Space neither close an open tooltip nor get prevented',
+      keyed.resolved === 'tooltip' && JSON.stringify(keyed.keys) === '["Escape:false","Enter:false"," :false"]',
+      JSON.stringify(keyed),
+    );
+    await page.evaluate(`document.activeElement.blur()`);
+    await delay(450);
+
+    // No content: the open reference dangles and nothing renders.
+    await hoverAt(page, tooltipTrigger('TipEmpty'));
+    await delay(200);
+    const empty = await page.evaluate(readTooltip('TipEmpty'));
+    check(
+      'an empty tooltip opens with a dangling aria-describedby and renders nothing',
+      empty.resolved === 'dangling' && empty.nodes === 0 && empty.templates === 0,
+      JSON.stringify(empty),
+    );
+    await neutral(page);
+
+    // In place: the tooltip is inside the root, so the pointer may rest on it.
+    await hoverAt(page, tooltipTrigger('TipInline'));
+    await delay(450);
+    const inline = await page.evaluate(readTooltip('TipInline'));
+    if (inline.resolved === 'tooltip') {
+      await hoverAt(page, `document.getElementById(${tooltipTrigger('TipInline')}.getAttribute('aria-describedby'))`);
+    }
+    await delay(200);
+    const onInline = await page.evaluate(readTooltip('TipInline'));
+    check(
+      'an in-place tooltip renders after the trigger inside the root and stays open under the pointer',
+      inline.parent === 'in-place' && onInline.resolved === 'tooltip',
+      JSON.stringify({ inline, onInline }),
+    );
+    await neutral(page);
+    await delay(450);
+
+    // Teleported: the pointer on the tooltip has left the root, so it closes.
+    await hoverAt(page, tooltipTrigger('TipTarget'));
+    await delay(450);
+    const targeted = await page.evaluate(readTooltip('TipTarget'));
+    if (targeted.resolved === 'tooltip') {
+      await hoverAt(page, `document.getElementById(${tooltipTrigger('TipTarget')}.getAttribute('aria-describedby'))`);
+    }
+    await delay(50);
+    const onTargeted = await page.evaluate(readTooltip('TipTarget'));
+    check(
+      'a teleported tooltip renders into its selector target and closes when the pointer moves onto it',
+      targeted.parent === 'razor-overlay-root' && onTargeted.describedBy === null,
+      JSON.stringify({ targeted, onTargeted }),
+    );
+    await neutral(page);
+    await delay(450);
+
+    // Beside a popover: an Escape is the popover's, not the tooltip's. Both
+    // host cases are appended now and mounted as enhanceAll would mount them.
+    await page.evaluate(`(async () => {
+      const razor = await import('./vueforge-razor.js');
+      const mount = (node) => {
+        razor.enhanceVueForgePopovers(node, mount);
+        razor.enhanceVueForgeTooltips(node, mount);
+      };
+      for (const [name, source] of [['tooltip-beside-popover', 'tooltip-beside-source'], ['tooltip-in-popover', 'tooltip-inside-source']]) {
+        const section = document.querySelector('[data-case="' + name + '"]');
+        section.append(document.getElementById(source).content.cloneNode(true));
+        mount(section);
+      }
+      return true;
+    })()`);
+    await clickAt(page, '.tip-host-beside > .vf-popover__trigger');
+    await delay(400);
+    await hoverAt(page, tooltipTrigger('TipBeside'));
+    await delay(450);
+    const beforeEscape = await page.evaluate(
+      `({ ...${readTooltip('TipBeside')}, popover: document.querySelector('.tip-host-beside > .vf-popover__trigger').getAttribute('aria-expanded') })`,
+    );
+    await pressKey(page, 'Escape');
+    await delay(100);
+    const afterEscape = await page.evaluate(
+      `({ ...${readTooltip('TipBeside')}, popover: document.querySelector('.tip-host-beside > .vf-popover__trigger').getAttribute('aria-expanded') })`,
+    );
+    check(
+      'an Escape with a tooltip open beside an open popover closes the popover and leaves the tooltip open: the tooltip is not on the escape stack',
+      beforeEscape.popover === 'true' &&
+        beforeEscape.resolved === 'tooltip' &&
+        afterEscape.popover === 'false' &&
+        afterEscape.resolved === 'tooltip',
+      JSON.stringify({ beforeEscape, afterEscape }),
+    );
+    await neutral(page);
+    await delay(450);
+
+    // Inside a popover: closing the popover takes the open tooltip at once.
+    await clickAt(page, '.tip-host-inside > .vf-popover__trigger');
+    await delay(400);
+    const insideMounted = await page.evaluate(
+      `Boolean(${tooltipRoot('TipInside')}?.hasAttribute('data-vf-razor-tooltip-enhanced'))`,
+    );
+    await hoverAt(page, tooltipTrigger('TipInside'));
+    await delay(450);
+    const insideOpen = await page.evaluate(readTooltip('TipInside'));
+    await pressKey(page, 'Escape');
+    const insideClosed = await page.evaluate(
+      `({ tooltips: document.querySelectorAll('.vf-tooltip__content').length, popover: document.querySelector('.tip-host-inside > .vf-popover__trigger').getAttribute('aria-expanded') })`,
+    );
+    await delay(700);
+    const insideLater = await page.evaluate(`document.querySelectorAll('.vf-tooltip__content').length`);
+    check(
+      'a tooltip inside a popover mounts with each fresh panel, and closing the popover removes the open tooltip at once, without a leave',
+      insideMounted &&
+        insideOpen.resolved === 'tooltip' &&
+        insideOpen.parent === 'body' &&
+        insideClosed.popover === 'false' &&
+        insideClosed.tooltips === 0 &&
+        insideLater === 0,
+      JSON.stringify({ insideMounted, insideOpen, insideClosed, insideLater }),
+    );
+    await neutral(page);
+
+    // A timer pending inside a popover when it closes never fires.
+    await clickAt(page, '.tip-host-inside > .vf-popover__trigger');
+    await delay(400);
+    await hoverAt(page, tooltipTrigger('TipInside'));
+    await delay(20);
+    await pressKey(page, 'Escape');
+    await delay(500);
+    const pendingDisposed = await page.evaluate(`document.querySelectorAll('.vf-tooltip__content').length`);
+    check(
+      'a tooltip timer pending inside a popover is cancelled when the popover closes',
+      pendingDisposed === 0,
+      `tooltips=${pendingDisposed}`,
+    );
+    check(
+      'the tooltip page produced no script errors',
+      page.diagnostics.pageErrors.length === 0,
+      page.diagnostics.pageErrors.join('; '),
+    );
+  });
+
+  // -------------------------------------------------------- tooltip, no-js
+  await withPage(chrome, server.origin, 'fixture-no-js.html', async (page) => {
+    await hoverAt(page, tooltipTrigger('TipDefault'));
+    await page.evaluate(`document.querySelector('.tip-default').focus()`);
+    await delay(300);
+    const noJs = await page.evaluate(`({
+      enhanced: document.querySelectorAll('[data-vf-razor-tooltip-enhanced]').length,
+      describedBy: document.querySelectorAll('.vf-tooltip__trigger[aria-describedby]').length,
+      tooltips: document.querySelectorAll('.vf-tooltip__content, [role="tooltip"]').length,
+      inert: document.querySelectorAll('[data-case="tooltip-default"] template[data-vf-razor-tooltip="content"]').length,
+      titles: document.querySelectorAll('[data-case^="tooltip"] [title]').length,
+      focused: document.activeElement === document.querySelector('.tip-default'),
+    })`);
+    check(
+      'without javascript a hovered and focused tooltip stays closed: no reference, no tooltip, no title, the control still focusable',
+      noJs.enhanced === 0 &&
+        noJs.describedBy === 0 &&
+        noJs.tooltips === 0 &&
+        noJs.inert === 1 &&
+        noJs.titles === 0 &&
+        noJs.focused === true,
+      JSON.stringify(noJs),
+    );
+  });
+
+  // ------------------------------------------------ tooltip, double bootstrap
+  await withPage(chrome, server.origin, 'fixture-enhanced.html', async (page) => {
+    await page.waitFor(`Boolean(document.querySelector('[data-vf-razor-tooltip-enhanced]'))`);
+    await neutral(page);
+    const anchorsBefore = await page.evaluate(
+      `[...document.body.childNodes].filter((node) => node.nodeType === Node.TEXT_NODE && node.textContent === '').length`,
+    );
+    await page.evaluate(`import('./vueforge-razor.js?bootstrap=tooltip').then(() => true)`);
+    await delay(250);
+    const anchorsAfter = await page.evaluate(
+      `[...document.body.childNodes].filter((node) => node.nodeType === Node.TEXT_NODE && node.textContent === '').length`,
+    );
+    await page.evaluate(
+      `window.__timeouts = 0; const set = window.setTimeout; window.setTimeout = (fn, ms, ...rest) => { if (ms === 80) window.__timeouts += 1; return set(fn, ms, ...rest); }; true`,
+    );
+    await hoverAt(page, tooltipTrigger('TipDefault'));
+    await delay(450);
+    const twice = await page.evaluate(`({ ...${readTooltip('TipDefault')}, timeouts: window.__timeouts })`);
+    check(
+      'after a second bootstrap one hover starts one timer and opens one tooltip, with no second anchor',
+      twice.resolved === 'tooltip' && twice.nodes === 1 && twice.timeouts === 1 && anchorsAfter === anchorsBefore,
+      JSON.stringify({ twice, anchorsBefore, anchorsAfter }),
+    );
+    check(
+      'the double-bootstrapped tooltip page produced no script errors',
+      page.diagnostics.pageErrors.length === 0,
+      page.diagnostics.pageErrors.join('; '),
+    );
+  });
 } finally {
   await chrome.close();
   await server.close();
@@ -3484,5 +3907,5 @@ if (failures.length > 0) {
 }
 
 process.stdout.write(
-  '[razor-browser] OK: enhanced interactions, no-JS fallback, mixed Vue/Razor ownership and the accordion, stepper, tabs, dropdown, group box and popover controllers.\n',
+  '[razor-browser] OK: enhanced interactions, no-JS fallback, mixed Vue/Razor ownership and the accordion, stepper, tabs, dropdown, group box, popover and tooltip controllers.\n',
 );

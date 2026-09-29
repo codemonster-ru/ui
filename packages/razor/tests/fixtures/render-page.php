@@ -453,6 +453,59 @@ foreach ($popoverCases as $name => $markup) {
     $sections .= '<section class="case case--popover" data-case="' . $name . '"><h2>' . $name . '</h2>' . $markup . '</section>';
 }
 
+// ------------------------------------------------------------------ tooltip
+//
+// The M31 sections. Real vf-tooltip renders the browser suite drives with a
+// real pointer and real focus: the default text, a long delay for the
+// cancellation windows, two controls for focus moving inside one wrapper, no
+// content at all (the dangling reference), in place, into the named overlay
+// root, beside and inside a popover (both held in templates until the suite
+// needs them), and a copy with the ownership marker stripped.
+$tooltip = $registry->resolve('vf-tooltip');
+if ($tooltip === null) {
+    fwrite(STDERR, "vf-tooltip must be registered.\n");
+    exit(1);
+}
+$renderTooltip = static function (array $props, string $trigger) use ($tooltip): string {
+    return $tooltip->render(new ComponentRenderContext($props, [
+        'default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString($trigger),
+    ]))->value();
+};
+$tipButton = static fn (string $class, string $label): string => '<button type="button" class="' . $class . '">' . $label . '</button>';
+$tooltipCases = [
+    'tooltip-default' => $renderTooltip(['aria-label' => 'TipDefault', 'text' => 'Helpful hint'], $tipButton('tip-default', 'Info')),
+    'tooltip-delay' => $renderTooltip(['aria-label' => 'TipDelay', 'text' => 'Slow hint', 'open-delay' => 400], $tipButton('tip-delay', 'Slow')),
+    'tooltip-two' => $renderTooltip(
+        ['aria-label' => 'TipTwo', 'text' => 'Two controls'],
+        $tipButton('tip-one', 'One') . $tipButton('tip-two', 'Two'),
+    ),
+    'tooltip-empty' => $renderTooltip(['aria-label' => 'TipEmpty', 'text' => ''], $tipButton('tip-empty', 'Empty')),
+    'tooltip-inline' => $renderTooltip(['aria-label' => 'TipInline', 'text' => 'Inline hint', 'teleport-to' => false], $tipButton('tip-inline', 'Inline')),
+    'tooltip-target' => $renderTooltip(['aria-label' => 'TipTarget', 'text' => 'Targeted hint', 'teleport-to' => '#razor-overlay-root'], $tipButton('tip-target', 'Target')),
+    // Held in templates until the tooltip suite appends them, so the popover
+    // suite's counts of live popovers are not changed by them.
+    'tooltip-beside-popover' => '<template id="tooltip-beside-source">'
+        . $renderPopover(['class' => 'tip-host-beside'], '<span>Host</span>', '<p>Host body</p>')
+        . $renderTooltip(['aria-label' => 'TipBeside', 'text' => 'Beside hint', 'placement' => 'bottom'], $tipButton('tip-beside', 'Beside'))
+        . '</template>',
+    'tooltip-in-popover' => '<template id="tooltip-inside-source">'
+        . $renderPopover(
+            ['class' => 'tip-host-inside'],
+            '<span>Holder</span>',
+            $renderTooltip(['aria-label' => 'TipInside', 'text' => 'Inside hint'], $tipButton('tip-inside', 'Inside')),
+        )
+        . '</template>',
+    // The same markup with the marker stripped: not Razor-owned, must not mount.
+    'tooltip-unowned' => str_replace(
+        ' data-vf-razor="tooltip"',
+        '',
+        $renderTooltip(['aria-label' => 'TipUnowned', 'text' => 'No.'], $tipButton('tip-unowned', 'Unowned')),
+    ),
+];
+foreach ($tooltipCases as $name => $markup) {
+    $sections .= '<section class="case case--tooltip" data-case="' . $name . '"><h2>' . $name . '</h2>' . $markup . '</section>';
+}
+
 $withVue = ($argv[2] ?? '') === '--with-vue';
 $vueSection = $withVue
     ? '<section class="case" data-case="vue"><h2>vue</h2><div id="vue-input"></div></section>'
@@ -476,6 +529,7 @@ body { margin: 0; padding: 24px; background: var(--vf-color-background-canvas); 
 .case--tabs { width: 360px; }
 .case--dropdown { width: 360px; }
 .case--popover { width: 360px; }
+.case--tooltip { width: 360px; padding-top: 48px; }
 .case h2 { font-size: 12px; margin: 0 0 6px; color: var(--vf-color-text-secondary); font-weight: 400; }
 </style>
 </head>

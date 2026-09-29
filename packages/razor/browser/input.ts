@@ -28,6 +28,7 @@ import { enhanceVueForgeTabs } from './tabs.js';
 import { enhanceVueForgeDropdowns } from './dropdown.js';
 import { enhanceVueForgeGroupBoxes } from './group-box.js';
 import { enhanceVueForgePopovers } from './popover.js';
+import { enhanceVueForgeTooltips } from './tooltip.js';
 
 const ROOT_SELECTOR = '[data-vf-razor="input"]';
 const ENHANCED_ATTRIBUTE = 'data-vf-razor-enhanced';
@@ -268,6 +269,11 @@ function enhanceAll(root: ParentNode = document): void {
   // else inside it are. It is handed this function so that whatever its
   // content holds mounts in every fresh panel.
   enhanceVueForgePopovers(root, enhanceAll);
+  // Tooltips after the popovers: a tooltip inside a closed popover waits in
+  // the popover's inert template and mounts with each fresh panel. It reads
+  // its own pristine body when it is enhanced, and is handed this function so
+  // that whatever that body holds mounts in every fresh tooltip.
+  enhanceVueForgeTooltips(root, enhanceAll);
   enhanceVueForgeInputs(root);
   // Textareas before fields: the field reads the control's current value when
   // it attaches, and the textarea's own marker should already be correct.
@@ -297,6 +303,7 @@ export {
   enhanceVueForgeSteppers,
   enhanceVueForgeTabs,
   enhanceVueForgeTextareas,
+  enhanceVueForgeTooltips,
 };
 
 if (typeof document !== 'undefined') {
