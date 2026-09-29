@@ -580,6 +580,9 @@ export async function driveInteraction(page, caseId, steps, activationSelector =
       requestAnimationFrame(() => requestAnimationFrame(finish));
       setTimeout(finish, 500);
     })`);
+  // M31: a scroll under a held pointer makes Chrome re-hit-test and move the
+  // hover by itself, so a scenario must release a hover before it scrolls.
+  let hovering = false;
   for (const step of steps) {
     if (step.action === 'type') {
       await page.evaluate(`(() => {
@@ -659,7 +662,12 @@ export async function driveInteraction(page, caseId, steps, activationSelector =
       // reference names - a menu teleported out of the case root.
       await pointerClick(page, selector, step.selector ?? '.vf-icon-button', step.index ?? 0, step.through);
     } else if (step.action === 'scrollWindow') {
+      if (hovering) throw new Error('scrollWindow while a hover is held; unhover first');
       await page.evaluate(`window.scrollBy(0, ${Number(step.y)})`);
+    } else if (step.action === 'hover' || step.action === 'unhover') {
+      hovering = step.action === 'hover';
+      const target = `${scopeExpression(selector, step.through)}.querySelectorAll(${JSON.stringify(step.selector)})[${step.index ?? 0}]`;
+      await pointerRest(page, hovering ? target : null);
     } else if (step.action === 'wait') {
       await page.evaluate(`new Promise((done) => setTimeout(done, ${Number(step.ms)}))`);
     } else if (step.action === 'pressKey') {
@@ -719,6 +727,35 @@ async function pointerClick(page, caseSelector, targetSelector, index = 0, throu
   await page.send('Input.dispatchMouseEvent', { type: 'mouseReleased', ...point, button: 'left', clickCount: 1 });
   // Native hover would otherwise change only the clicked action's state.
   await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 900, y: 1 });
+}
+
+/**
+ * A real pointer resting on an element, or taken away again (M31).
+ *
+ * VfTooltip is the first component whose contract is a pointer that stays:
+ * clickButton enters, presses, releases and parks at (900, 1) within a few
+ * milliseconds, so it can never show what a held hover does. `hover` is one CDP
+ * mouseMoved to the target's centre and nothing else - no button, no click -
+ * and the pointer stays there; `unhover` (target null) is one mouseMoved to
+ * clickButton's neutral point. Both fail closed rather than drive the wrong
+ * element: Chrome's hit test at the point must find the target (an open
+ * overlay can cover it) or, for the neutral point, the page itself; and
+ * afterwards the target must match :hover, or nothing inside body may.
+ */
+async function pointerRest(page, target) {
+  const point = await page.evaluate(`(() => {
+    const target = ${target};
+    target?.scrollIntoView({ block: 'center' });
+    const rect = target?.getBoundingClientRect();
+    if (${target !== null} && !(rect?.width && rect.height && getComputedStyle(target).visibility === 'visible')) throw new Error('hover target is missing or not visible');
+    const point = target ? { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 } : { x: 900, y: 1 };
+    const hit = document.elementFromPoint(point.x, point.y);
+    if (target ? !target.contains(hit) : hit !== document.body && hit !== document.documentElement) throw new Error((target ? 'hover target is covered by ' : 'the neutral point is occupied by ') + hit?.outerHTML.slice(0, 80));
+    return point;
+  })()`);
+  await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...point });
+  const rests = target ? `${target}.matches(':hover')` : `!document.querySelector('body :hover')`;
+  if (!(await page.evaluate(rests))) throw new Error(target ? 'hover target is not :hover' : 'unhover left a :hover');
 }
 
 /**
