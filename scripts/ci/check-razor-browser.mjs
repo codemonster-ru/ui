@@ -3980,6 +3980,24 @@ try {
     await page.waitFor(`Boolean(document.querySelector('[data-vf-razor-select-enhanced]'))`);
     await page.evaluate(installSelectLog);
     const read = (label) => page.evaluate(readSelect(label));
+    // Animation frames and timeouts are two id spaces. Every id the page
+    // clears is recorded against the ids each kind handed out, so a frame id
+    // passed to clearTimeout - which cancels an unrelated timer that shares
+    // the number, the defect the parity harness found in M32 - is visible.
+    await page.evaluate(`(() => {
+      const timeouts = new Set();
+      const frames = new Set();
+      window.__timerMisuse = [];
+      const setTimeoutNative = window.setTimeout.bind(window);
+      const clearTimeoutNative = window.clearTimeout.bind(window);
+      const rafNative = window.requestAnimationFrame.bind(window);
+      const cancelNative = window.cancelAnimationFrame.bind(window);
+      window.setTimeout = (...args) => { const id = setTimeoutNative(...args); timeouts.add(id); return id; };
+      window.requestAnimationFrame = (callback) => { const id = rafNative(callback); frames.add(id); return id; };
+      window.clearTimeout = (id) => { if (id !== undefined && !timeouts.has(id)) window.__timerMisuse.push('clearTimeout:' + id); return clearTimeoutNative(id); };
+      window.cancelAnimationFrame = (id) => { if (id !== undefined && !frames.has(id)) window.__timerMisuse.push('cancelAnimationFrame:' + id); return cancelNative(id); };
+      return true;
+    })()`);
 
     const all = await page.evaluate(`(() => {
       const roots = [...document.querySelectorAll('[data-vf-razor="select"]')];
@@ -4231,6 +4249,13 @@ try {
       'a form reset changes nothing',
       reset.label === 'Pro' && reset.hidden?.value === 'pro',
       JSON.stringify(reset),
+    );
+
+    const timerMisuse = await page.evaluate(`window.__timerMisuse`);
+    check(
+      'opening, selecting, clearing and closing never clears a timer or frame id of the other kind',
+      timerMisuse.length === 0,
+      JSON.stringify(timerMisuse),
     );
 
     // The unowned copy: nothing mounts, a click opens nothing.

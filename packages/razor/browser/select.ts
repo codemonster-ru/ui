@@ -93,19 +93,25 @@ const FIELD_FILLED_EVENT = 'vf-field:filled-change';
 const TRANSITION = 'vf-floating-transition';
 const DURATION = vfMotionDurationsMs.normal;
 
-/** Vue's nextFrame: the callback runs in the frame after the next one. */
-function nextFrame(callback: () => void): number {
-  let id = requestAnimationFrame(() => {
-    id = requestAnimationFrame(callback);
-  });
-  return id;
-}
-
 interface LiveListbox {
   element: HTMLElement;
   transition: string[];
-  timers: number[];
+  // Animation frames and timeouts are two id spaces: a frame id handed to
+  // clearTimeout cancels whichever unrelated timer of the page happens to
+  // share the number. Found by the parity harness, whose own settle timer a
+  // leaving listbox cancelled that way.
+  frames: number[];
+  timeouts: number[];
   phase: 'entering' | 'open' | 'leaving';
+}
+
+/** Vue's nextFrame: the callback runs in the frame after the next one. Both frames are recorded. */
+function nextFrame(listbox: LiveListbox, callback: () => void): void {
+  listbox.frames.push(
+    requestAnimationFrame(() => {
+      listbox.frames.push(requestAnimationFrame(callback));
+    }),
+  );
 }
 
 /** Writes a class list or a style property only when it changes, as Vue's patch does. */
@@ -343,27 +349,24 @@ function enhanceRoot(root: HTMLElement): void {
   function enter(listbox: LiveListbox): void {
     listbox.phase = 'entering';
     setTransition(listbox, [`${TRANSITION}-enter-from`, `${TRANSITION}-enter-active`]);
-    listbox.timers.push(
-      nextFrame(() => {
-        if (listbox.phase !== 'entering') return;
-        setTransition(listbox, [`${TRANSITION}-enter-active`, `${TRANSITION}-enter-to`]);
-        listbox.timers.push(
-          window.setTimeout(() => {
-            if (listbox.phase !== 'entering') return;
-            listbox.phase = 'open';
-            setTransition(listbox, []);
-          }, DURATION),
-        );
-      }),
-    );
+    nextFrame(listbox, () => {
+      if (listbox.phase !== 'entering') return;
+      setTransition(listbox, [`${TRANSITION}-enter-active`, `${TRANSITION}-enter-to`]);
+      listbox.timeouts.push(
+        window.setTimeout(() => {
+          if (listbox.phase !== 'entering') return;
+          listbox.phase = 'open';
+          setTransition(listbox, []);
+        }, DURATION),
+      );
+    });
   }
 
   function clearTimers(listbox: LiveListbox): void {
-    for (const id of listbox.timers) {
-      cancelAnimationFrame(id);
-      clearTimeout(id);
-    }
-    listbox.timers = [];
+    for (const id of listbox.frames) cancelAnimationFrame(id);
+    for (const id of listbox.timeouts) clearTimeout(id);
+    listbox.frames = [];
+    listbox.timeouts = [];
   }
 
   function leave(listbox: LiveListbox): void {
@@ -373,18 +376,16 @@ function enhanceRoot(root: HTMLElement): void {
     // Vue forces a reflow between the two classes.
     void document.body.offsetHeight;
     setTransition(listbox, [`${TRANSITION}-leave-from`, `${TRANSITION}-leave-active`]);
-    listbox.timers.push(
-      nextFrame(() => {
-        if (!listbox.element.isConnected) return;
-        setTransition(listbox, [`${TRANSITION}-leave-active`, `${TRANSITION}-leave-to`]);
-        listbox.timers.push(
-          window.setTimeout(() => {
-            clearTimers(listbox);
-            listbox.element.remove();
-          }, DURATION),
-        );
-      }),
-    );
+    nextFrame(listbox, () => {
+      if (!listbox.element.isConnected) return;
+      setTransition(listbox, [`${TRANSITION}-leave-active`, `${TRANSITION}-leave-to`]);
+      listbox.timeouts.push(
+        window.setTimeout(() => {
+          clearTimers(listbox);
+          listbox.element.remove();
+        }, DURATION),
+      );
+    });
   }
 
   // --------------------------------------------------------------- listbox
@@ -405,7 +406,7 @@ function enhanceRoot(root: HTMLElement): void {
       option.setAttribute('aria-selected', selected ? 'true' : 'false');
     }
     element.append(fragment);
-    const listbox: LiveListbox = { element, transition: [], timers: [], phase: 'entering' };
+    const listbox: LiveListbox = { element, transition: [], frames: [], timeouts: [], phase: 'entering' };
     paint(listbox);
     attachListboxListeners(listbox);
     return listbox;
