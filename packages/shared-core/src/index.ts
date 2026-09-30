@@ -215,3 +215,29 @@ export {
   resolveTooltipHasContent,
   resolveTooltipTeleport,
 } from './tooltip/state.js';
+// VfSelect. Values in, values out: focus, the listeners, the escape stack,
+// floater.js, the transition and the field report stay in each adapter.
+// Deliberately not the dropdown's rules under another name - see
+// select/state.ts.
+export {
+  SELECT_OFFSET,
+  SELECT_SCROLL_PADDING,
+  SELECT_STRATEGY,
+  SELECT_TRIGGER_OPEN_KEYS,
+  resolveSelectDisplayLabel,
+  resolveSelectFieldFilled,
+  resolveSelectFlipPlacements,
+  resolveSelectFocusIndex,
+  resolveSelectForwardsAttribute,
+  resolveSelectHasClearControl,
+  resolveSelectHasValue,
+  resolveSelectMenuClasses,
+  resolveSelectMenuNavigation,
+  resolveSelectRendersHiddenInput,
+  resolveSelectScrollTop,
+  resolveSelectSelectedOption,
+  resolveSelectTeleport,
+  resolveSelectTriggerClasses,
+  resolveSelectWrapperClasses,
+} from './select/state.js';
+export type { VfSelectClassState, VfSelectOptionLike } from './select/state.js';

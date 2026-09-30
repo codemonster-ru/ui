@@ -1,0 +1,323 @@
+{
+  "$comment": "Shared input/expected vectors for VfSelect. The TypeScript rules in select/state.ts run every section; the PHP mirror in packages/razor/src/Support/SelectState.php runs the sections a server can decide (listed in $serverRules) and deliberately has no method for the others - the walk, the focus target, the flip pair, the menu classes (the computed placement) and the scroll are browser decisions a server never makes. The contract of the reference at fd793696, quirks included: an option with value '' is selected but not filled; a model no option has is filled but unselected; the first duplicate wins the label; --placeholder needs a truthy placeholder and is kept under a floating label whose text is suppressed; the clear button needs clearable, a value and no disabled; only aria-*, data-*, title and tabindex are forwarded; the hidden input renders for a string name only; the walk is over enabled options and starts from -1; the focus target falls back to the first enabled option; teleportTo false or null renders in place and anything that is not a string means body. `null` is JSON null; an absent key is `undefined`.",
+  "$serverRules": [
+    "resolveSelectDisplayLabel",
+    "resolveSelectFieldFilled",
+    "resolveSelectForwardsAttribute",
+    "resolveSelectHasClearControl",
+    "resolveSelectHasValue",
+    "resolveSelectRendersHiddenInput",
+    "resolveSelectSelectedOption",
+    "resolveSelectTeleport",
+    "resolveSelectTriggerClasses",
+    "resolveSelectWrapperClasses"
+  ],
+  "constants": {
+    "SELECT_OFFSET": 2,
+    "SELECT_SCROLL_PADDING": 8,
+    "SELECT_STRATEGY": "fixed",
+    "SELECT_TRIGGER_OPEN_KEYS": ["ArrowDown", "ArrowUp", "Enter", " "]
+  },
+  "resolveSelectHasValue": [
+    { "modelValue": "pro", "expected": true },
+    { "modelValue": "", "expected": false },
+    { "$why": "null reads as ''.", "modelValue": null, "expected": false },
+    { "$why": "A space is a value.", "modelValue": " ", "expected": true }
+  ],
+  "resolveSelectSelectedOption": [
+    {
+      "options": [
+        { "value": "a", "label": "A" },
+        { "value": "b", "label": "B" }
+      ],
+      "modelValue": "b",
+      "expected": { "value": "b", "label": "B" }
+    },
+    {
+      "$why": "A disabled option is still selected.",
+      "options": [{ "value": "a", "label": "A", "disabled": true }],
+      "modelValue": "a",
+      "expected": { "value": "a", "label": "A", "disabled": true }
+    },
+    {
+      "$why": "The first duplicate wins.",
+      "options": [
+        { "value": "x", "label": "First" },
+        { "value": "x", "label": "Second" }
+      ],
+      "modelValue": "x",
+      "expected": { "value": "x", "label": "First" }
+    },
+    {
+      "$why": "An option with value '' is selected by the empty model.",
+      "options": [{ "value": "", "label": "None" }],
+      "modelValue": "",
+      "expected": { "value": "", "label": "None" }
+    },
+    { "options": [{ "value": "a", "label": "A" }], "modelValue": "ghost", "expected": null },
+    { "options": [], "modelValue": "", "expected": null }
+  ],
+  "resolveSelectDisplayLabel": [
+    { "selectedLabel": "Pro", "floating": false, "placeholder": "Pick", "expected": "Pro" },
+    { "selectedLabel": "Pro", "floating": true, "placeholder": "Pick", "expected": "Pro" },
+    { "floating": false, "placeholder": "Pick", "expected": "Pick" },
+    { "$why": "A floating label suppresses the placeholder.", "floating": true, "placeholder": "Pick", "expected": "" },
+    { "floating": false, "expected": "" },
+    {
+      "$why": "An empty selected label is still the selected label.",
+      "selectedLabel": "",
+      "floating": false,
+      "placeholder": "Pick",
+      "expected": ""
+    }
+  ],
+  "resolveSelectHasClearControl": [
+    { "clearable": true, "hasValue": true, "disabled": false, "expected": true },
+    { "clearable": false, "hasValue": true, "disabled": false, "expected": false },
+    { "clearable": true, "hasValue": false, "disabled": false, "expected": false },
+    { "clearable": true, "hasValue": true, "disabled": true, "expected": false }
+  ],
+  "resolveSelectRendersHiddenInput": [
+    { "name": "plan", "expected": true },
+    { "$why": "An empty string is still a string.", "name": "", "expected": true },
+    { "$why": "Absent.", "expected": false },
+    { "name": 7, "expected": false },
+    { "name": null, "expected": false }
+  ],
+  "resolveSelectForwardsAttribute": [
+    { "name": "aria-label", "expected": true },
+    { "name": "aria-describedby", "expected": true },
+    { "name": "data-testid", "expected": true },
+    { "name": "title", "expected": true },
+    { "name": "tabindex", "expected": true },
+    { "$why": "Dropped: no native validation reaches any element.", "name": "required", "expected": false },
+    { "name": "autofocus", "expected": false },
+    { "name": "form", "expected": false },
+    { "name": "role", "expected": false },
+    { "name": "onFocus", "expected": false },
+    { "$why": "id, name, class and style are routed elsewhere, never forwarded.", "name": "id", "expected": false },
+    { "name": "name", "expected": false },
+    { "name": "class", "expected": false },
+    { "name": "style", "expected": false }
+  ],
+  "resolveSelectWrapperClasses": [
+    {
+      "state": { "size": "md", "hasLeading": false, "hasTrailing": false, "hasClear": false, "floating": false },
+      "expected": ["vf-select-wrap"]
+    },
+    {
+      "state": { "size": "sm", "hasLeading": true, "hasTrailing": true, "hasClear": true, "floating": true },
+      "expected": [
+        "vf-select-wrap",
+        "vf-select-wrap--sm",
+        "vf-select-wrap--with-leading",
+        "vf-select-wrap--with-trailing",
+        "vf-select-wrap--with-clear",
+        "vf-select-wrap--floating"
+      ]
+    },
+    {
+      "$why": "The size is written through unvalidated.",
+      "state": { "size": "xl", "hasLeading": false, "hasTrailing": false, "hasClear": false, "floating": false },
+      "expected": ["vf-select-wrap", "vf-select-wrap--xl"]
+    }
+  ],
+  "resolveSelectTriggerClasses": [
+    {
+      "state": {
+        "size": "md",
+        "hasLeading": false,
+        "hasTrailing": false,
+        "hasClear": false,
+        "floating": false,
+        "invalid": false,
+        "open": false,
+        "hasSelection": true
+      },
+      "expected": ["vf-select"]
+    },
+    {
+      "state": {
+        "size": "lg",
+        "hasLeading": true,
+        "hasTrailing": true,
+        "hasClear": true,
+        "floating": true,
+        "invalid": true,
+        "open": true,
+        "hasSelection": false,
+        "placeholder": "Pick"
+      },
+      "expected": [
+        "vf-select",
+        "vf-select--lg",
+        "vf-select--invalid",
+        "vf-select--open",
+        "vf-select--placeholder",
+        "vf-select--with-leading",
+        "vf-select--with-trailing",
+        "vf-select--with-clear",
+        "vf-select--floating"
+      ]
+    },
+    {
+      "$why": "No placeholder, no --placeholder.",
+      "state": {
+        "size": "md",
+        "hasLeading": false,
+        "hasTrailing": false,
+        "hasClear": false,
+        "floating": false,
+        "invalid": false,
+        "open": false,
+        "hasSelection": false
+      },
+      "expected": ["vf-select"]
+    },
+    {
+      "$why": "An empty placeholder is falsy.",
+      "state": {
+        "size": "md",
+        "hasLeading": false,
+        "hasTrailing": false,
+        "hasClear": false,
+        "floating": false,
+        "invalid": false,
+        "open": false,
+        "hasSelection": false,
+        "placeholder": ""
+      },
+      "expected": ["vf-select"]
+    },
+    {
+      "$why": "A selection wins over the placeholder.",
+      "state": {
+        "size": "md",
+        "hasLeading": false,
+        "hasTrailing": false,
+        "hasClear": false,
+        "floating": false,
+        "invalid": false,
+        "open": false,
+        "hasSelection": true,
+        "placeholder": "Pick"
+      },
+      "expected": ["vf-select"]
+    }
+  ],
+  "resolveSelectMenuClasses": [
+    { "placement": "bottom-start", "expected": ["vf-dropdown__menu", "vf-select__menu"] },
+    { "placement": "bottom-end", "expected": ["vf-dropdown__menu", "vf-select__menu"] },
+    {
+      "$why": "The computed placement decides --top.",
+      "placement": "top-start",
+      "expected": ["vf-dropdown__menu", "vf-select__menu", "vf-dropdown__menu--top"]
+    },
+    { "placement": "top-end", "expected": ["vf-dropdown__menu", "vf-select__menu", "vf-dropdown__menu--top"] }
+  ],
+  "resolveSelectFlipPlacements": [
+    { "placement": "bottom-start", "expected": ["bottom-start", "top-start"] },
+    { "placement": "bottom-end", "expected": ["bottom-end", "top-end"] },
+    {
+      "$why": "Only bottom-end selects the end pair.",
+      "placement": "top-end",
+      "expected": ["bottom-start", "top-start"]
+    }
+  ],
+  "resolveSelectTeleport": [
+    {
+      "$why": "Absent teleportTo means body.",
+      "disableTeleport": false,
+      "expected": { "disabled": false, "target": "body" }
+    },
+    {
+      "teleportTo": "#overlay-root",
+      "disableTeleport": false,
+      "expected": { "disabled": false, "target": "#overlay-root" }
+    },
+    { "teleportTo": false, "disableTeleport": false, "expected": { "disabled": true, "target": "body" } },
+    {
+      "$why": "Explicit null renders in place in Vue. Razor reads a null attribute as not given (its adapter convention) and spells this `false`, so the PHP mirror skips this one vector.",
+      "$vueOnly": true,
+      "teleportTo": null,
+      "disableTeleport": false,
+      "expected": { "disabled": true, "target": "body" }
+    },
+    {
+      "$why": "disableTeleport wins over a selector, which is still resolved.",
+      "teleportTo": "#overlay-root",
+      "disableTeleport": true,
+      "expected": { "disabled": true, "target": "#overlay-root" }
+    }
+  ],
+  "resolveSelectFocusIndex": [
+    {
+      "$why": "The selected option, counted among enabled options.",
+      "options": [
+        { "value": "a", "label": "A" },
+        { "value": "b", "label": "B", "disabled": true },
+        { "value": "c", "label": "C" }
+      ],
+      "modelValue": "c",
+      "expected": 1
+    },
+    {
+      "$why": "A disabled selection falls back to the first enabled option.",
+      "options": [
+        { "value": "a", "label": "A" },
+        { "value": "b", "label": "B", "disabled": true }
+      ],
+      "modelValue": "b",
+      "expected": 0
+    },
+    { "options": [{ "value": "a", "label": "A" }], "modelValue": "", "expected": 0 },
+    { "options": [], "modelValue": "", "expected": 0 }
+  ],
+  "resolveSelectMenuNavigation": [
+    { "key": "ArrowDown", "currentIndex": 0, "count": 3, "expected": 1 },
+    { "key": "ArrowDown", "currentIndex": 2, "count": 3, "expected": 0 },
+    { "key": "ArrowUp", "currentIndex": 0, "count": 3, "expected": 2 },
+    {
+      "$why": "From no option ArrowUp lands on the second to last.",
+      "key": "ArrowUp",
+      "currentIndex": -1,
+      "count": 3,
+      "expected": 1
+    },
+    { "key": "ArrowDown", "currentIndex": -1, "count": 3, "expected": 0 },
+    { "key": "Home", "currentIndex": 2, "count": 3, "expected": 0 },
+    { "key": "End", "currentIndex": 0, "count": 3, "expected": 2 },
+    { "$why": "Keys the walk leaves alone.", "key": "Tab", "currentIndex": 0, "count": 3 },
+    { "key": "Enter", "currentIndex": 0, "count": 3 },
+    { "key": " ", "currentIndex": 0, "count": 3 },
+    { "key": "Escape", "currentIndex": 0, "count": 3 },
+    { "key": "t", "currentIndex": 0, "count": 3 }
+  ],
+  "resolveSelectFieldFilled": [
+    { "hasValue": false, "open": false, "expected": false },
+    { "hasValue": false, "open": true, "expected": true },
+    { "hasValue": true, "open": false, "expected": true },
+    { "hasValue": true, "open": true, "expected": true }
+  ],
+  "resolveSelectScrollTop": [
+    {
+      "$why": "Below the view: bottom plus padding.",
+      "item": { "top": 300, "height": 32, "scrollTop": 0, "clientHeight": 200 },
+      "expected": 140
+    },
+    {
+      "$why": "Above the view: top less padding, not below 0.",
+      "item": { "top": 4, "height": 32, "scrollTop": 50, "clientHeight": 200 },
+      "expected": 0
+    },
+    { "item": { "top": 100, "height": 32, "scrollTop": 150, "clientHeight": 200 }, "expected": 92 },
+    {
+      "$why": "Fits with its padding: left alone.",
+      "item": { "top": 40, "height": 32, "scrollTop": 0, "clientHeight": 200 }
+    },
+    {
+      "$why": "Exactly the padding above still fits.",
+      "item": { "top": 8, "height": 32, "scrollTop": 0, "clientHeight": 200 }
+    }
+  ]
+}

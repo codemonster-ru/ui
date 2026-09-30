@@ -110,6 +110,7 @@ export default defineConfig({
       'src/components/dropdown/VfDropdown.characterization.spec.ts',
       'src/components/popover/VfPopover.characterization.spec.ts',
       'src/components/tooltip/VfTooltip.characterization.spec.ts',
+      'src/components/select/VfSelect.characterization.spec.ts',
       'src/components/group-box/VfGroupBox.characterization.spec.ts',
       'src/components/skeleton-gate/VfSkeletonGate.characterization.spec.ts',
       'src/__tests__/fixtures/historical-input-consumer.spec.ts',

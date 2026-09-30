@@ -1,6 +1,26 @@
 <script setup lang="ts">
 import { computed, inject, nextTick, onBeforeUnmount, ref, useAttrs, useSlots, watch, type StyleValue } from 'vue';
 import { flip, offset, shift, type MiddlewareType, type PlacementType } from '@codemonster-ru/floater.js';
+import {
+  SELECT_OFFSET,
+  SELECT_STRATEGY,
+  SELECT_TRIGGER_OPEN_KEYS,
+  resolveSelectDisplayLabel,
+  resolveSelectFieldFilled,
+  resolveSelectFlipPlacements,
+  resolveSelectFocusIndex,
+  resolveSelectForwardsAttribute,
+  resolveSelectHasClearControl,
+  resolveSelectHasValue,
+  resolveSelectMenuClasses,
+  resolveSelectMenuNavigation,
+  resolveSelectRendersHiddenInput,
+  resolveSelectScrollTop,
+  resolveSelectSelectedOption,
+  resolveSelectTeleport,
+  resolveSelectTriggerClasses,
+  resolveSelectWrapperClasses,
+} from '@codemonster-ru/vueforge-shared-core';
 import { VueIconify, icons, type IconName } from '@codemonster-ru/vueforge-icons';
 import VfIconButton from '@/components/icon-button/VfIconButton.vue';
 import { useClickOutside, useDisclosure, useEscapeKey, useFloating, useId } from '@/composables';
@@ -66,64 +86,49 @@ const isOpen = disclosure.isOpen;
 
 useFocusScopeBranch(menuRef, isOpen);
 
-const selectedOption = computed(() => props.options.find((option) => option.value === props.modelValue));
+const selectedOption = computed(() => resolveSelectSelectedOption(props.options, props.modelValue));
 
-const hasValue = computed(() => String(props.modelValue ?? '').length > 0);
+const hasValue = computed(() => resolveSelectHasValue(props.modelValue));
 const hasLeadingAdornment = computed(() => Boolean(props.leadingIcon) || Boolean(slots.leading));
 const hasTrailingAdornment = computed(() => Boolean(props.trailingIcon) || Boolean(slots.trailing));
-const hasClearControl = computed(() => Boolean(props.clearable) && hasValue.value && !props.disabled);
+const hasClearControl = computed(() => resolveSelectHasClearControl(props.clearable, hasValue.value, props.disabled));
 const isFloatingLabel = computed(() => fieldContext?.labelPlacement.value === 'floating');
 const externalClass = computed(() => attrs.class as string | undefined);
 const externalStyle = computed<StyleValue>(() => attrs.style as StyleValue);
 const triggerAttrs = computed(() =>
-  Object.fromEntries(
-    Object.entries(attrs).filter(
-      ([key]) => key.startsWith('aria-') || key.startsWith('data-') || key === 'title' || key === 'tabindex',
-    ),
-  ),
+  Object.fromEntries(Object.entries(attrs).filter(([key]) => resolveSelectForwardsAttribute(key))),
 );
+
+const classState = computed(() => ({
+  size: props.size,
+  hasLeading: hasLeadingAdornment.value,
+  hasTrailing: hasTrailingAdornment.value,
+  hasClear: hasClearControl.value,
+  floating: isFloatingLabel.value,
+}));
 
 const triggerClasses = computed(() =>
   cx(
-    'vf-select',
-    props.size !== 'md' && `vf-select--${props.size}`,
-    props.invalid && 'vf-select--invalid',
-    isOpen.value && 'vf-select--open',
-    !selectedOption.value && props.placeholder && 'vf-select--placeholder',
-    hasLeadingAdornment.value && 'vf-select--with-leading',
-    hasTrailingAdornment.value && 'vf-select--with-trailing',
-    hasClearControl.value && 'vf-select--with-clear',
-    isFloatingLabel.value && 'vf-select--floating',
+    ...resolveSelectTriggerClasses({
+      ...classState.value,
+      invalid: props.invalid,
+      open: isOpen.value,
+      hasSelection: Boolean(selectedOption.value),
+      placeholder: props.placeholder,
+    }),
   ),
 );
 
-const wrapperClasses = computed(() =>
-  cx(
-    'vf-select-wrap',
-    props.size !== 'md' && `vf-select-wrap--${props.size}`,
-    hasLeadingAdornment.value && 'vf-select-wrap--with-leading',
-    hasTrailingAdornment.value && 'vf-select-wrap--with-trailing',
-    hasClearControl.value && 'vf-select-wrap--with-clear',
-    isFloatingLabel.value && 'vf-select-wrap--floating',
-  ),
+const wrapperClasses = computed(() => cx(...resolveSelectWrapperClasses(classState.value)));
+
+const displayLabel = computed(() =>
+  resolveSelectDisplayLabel(selectedOption.value?.label, isFloatingLabel.value, props.placeholder),
 );
-
-const displayLabel = computed(() => {
-  if (selectedOption.value) {
-    return selectedOption.value.label;
-  }
-
-  if (isFloatingLabel.value) {
-    return '';
-  }
-
-  return props.placeholder ?? '';
-});
 
 watch(
   [hasValue, isOpen],
   ([value, open]) => {
-    fieldContext?.setFilled(value || open);
+    fieldContext?.setFilled(resolveSelectFieldFilled(value, open));
   },
   { immediate: true },
 );
@@ -133,38 +138,27 @@ onBeforeUnmount(() => {
   fieldContext?.setFilled(false);
 });
 
-const teleportDisabled = computed(
-  () => props.disableTeleport || props.teleportTo === false || props.teleportTo === null,
+// The element case is this adapter's own: no other adapter can pass one.
+const teleport = computed(() =>
+  resolveSelectTeleport(
+    props.teleportTo,
+    props.disableTeleport,
+    (value): value is HTMLElement => typeof HTMLElement !== 'undefined' && value instanceof HTMLElement,
+  ),
 );
 
-const teleportTarget = computed(() => {
-  if (typeof props.teleportTo === 'string') {
-    return props.teleportTo;
-  }
-
-  if (typeof HTMLElement !== 'undefined' && props.teleportTo instanceof HTMLElement) {
-    return props.teleportTo;
-  }
-
-  return 'body';
-});
-
-const allowedPlacements = computed<PlacementType[]>(() =>
-  props.placement === 'bottom-end' ? ['bottom-end', 'top-end'] : ['bottom-start', 'top-start'],
-);
+const allowedPlacements = computed(() => resolveSelectFlipPlacements(props.placement) as PlacementType[]);
 
 const { placement: floatingPlacement, styles: floatingStyles } = useFloating(triggerRef, menuRef, {
   enabled: isOpen,
   placement: computed(() => props.placement),
-  middleware: computed(() => [offset(2), flip({ placements: allowedPlacements.value }), shift()] as MiddlewareType[]),
-  strategy: 'fixed',
+  middleware: computed(
+    () => [offset(SELECT_OFFSET), flip({ placements: allowedPlacements.value }), shift()] as MiddlewareType[],
+  ),
+  strategy: SELECT_STRATEGY,
 });
 
-const menuClasses = computed(() => [
-  'vf-dropdown__menu',
-  'vf-select__menu',
-  floatingPlacement.value.startsWith('top') && 'vf-dropdown__menu--top',
-]);
+const menuClasses = computed(() => resolveSelectMenuClasses(floatingPlacement.value));
 
 const menuStyles = computed(() => ({
   ...floatingStyles.value,
@@ -182,11 +176,7 @@ async function syncSelectedIntoView(options: { focus?: boolean } = {}) {
   });
 
   const items = getItems();
-  const selectedIndex = props.options
-    .filter((option) => !option.disabled)
-    .findIndex((option) => option.value === props.modelValue);
-
-  const targetItem = items[Math.max(selectedIndex, 0)];
+  const targetItem = items[resolveSelectFocusIndex(props.options, props.modelValue)];
 
   if (!targetItem) {
     return;
@@ -195,16 +185,15 @@ async function syncSelectedIntoView(options: { focus?: boolean } = {}) {
   const menuElement = menuRef.value;
 
   if (menuElement) {
-    const itemTop = targetItem.offsetTop;
-    const itemBottom = itemTop + targetItem.offsetHeight;
-    const viewPadding = 8;
-    const viewTop = menuElement.scrollTop;
-    const viewBottom = viewTop + menuElement.clientHeight;
+    const scrollTop = resolveSelectScrollTop({
+      top: targetItem.offsetTop,
+      height: targetItem.offsetHeight,
+      scrollTop: menuElement.scrollTop,
+      clientHeight: menuElement.clientHeight,
+    });
 
-    if (itemTop - viewPadding < viewTop) {
-      menuElement.scrollTop = Math.max(itemTop - viewPadding, 0);
-    } else if (itemBottom + viewPadding > viewBottom) {
-      menuElement.scrollTop = itemBottom - menuElement.clientHeight + viewPadding;
+    if (scrollTop !== undefined) {
+      menuElement.scrollTop = scrollTop;
     }
   }
 
@@ -270,7 +259,7 @@ function onTriggerKeydown(event: KeyboardEvent) {
     return;
   }
 
-  if (event.key === 'ArrowDown' || event.key === 'ArrowUp' || event.key === 'Enter' || event.key === ' ') {
+  if (SELECT_TRIGGER_OPEN_KEYS.includes(event.key)) {
     event.preventDefault();
     openMenu({ focusSelected: true });
   }
@@ -279,28 +268,11 @@ function onTriggerKeydown(event: KeyboardEvent) {
 function onMenuKeydown(event: KeyboardEvent) {
   const items = getItems();
   const currentIndex = items.findIndex((item) => item === document.activeElement);
+  const target = resolveSelectMenuNavigation(event.key, currentIndex, items.length);
 
-  if (event.key === 'ArrowDown') {
+  if (target !== undefined) {
     event.preventDefault();
-    items[(currentIndex + 1 + items.length) % items.length]?.focus();
-    return;
-  }
-
-  if (event.key === 'ArrowUp') {
-    event.preventDefault();
-    items[(currentIndex - 1 + items.length) % items.length]?.focus();
-    return;
-  }
-
-  if (event.key === 'Home') {
-    event.preventDefault();
-    items[0]?.focus();
-    return;
-  }
-
-  if (event.key === 'End') {
-    event.preventDefault();
-    items[items.length - 1]?.focus();
+    items[target]?.focus();
     return;
   }
 
@@ -353,7 +325,7 @@ useEscapeKey(
 <template>
   <div :class="[wrapperClasses, externalClass]" :style="externalStyle">
     <input
-      v-if="typeof attrs.name === 'string'"
+      v-if="resolveSelectRendersHiddenInput(attrs.name)"
       type="hidden"
       :name="attrs.name"
       :value="props.modelValue"
@@ -405,7 +377,7 @@ useEscapeKey(
       @click="clearValue"
     />
 
-    <Teleport :to="teleportTarget" :disabled="teleportDisabled">
+    <Teleport :to="teleport.target" :disabled="teleport.disabled">
       <Transition name="vf-floating-transition" appear :duration="transitionDuration">
         <div
           v-if="isOpen"
