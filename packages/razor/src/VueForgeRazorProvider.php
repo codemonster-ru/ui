@@ -27,6 +27,7 @@ use Codemonster\VueForge\Razor\Components\PopoverComponent;
 use Codemonster\VueForge\Razor\Components\ProgressBarComponent;
 use Codemonster\VueForge\Razor\Components\ProgressSpinnerComponent;
 use Codemonster\VueForge\Razor\Components\RadioComponent;
+use Codemonster\VueForge\Razor\Components\SelectComponent;
 use Codemonster\VueForge\Razor\Components\SkeletonComponent;
 use Codemonster\VueForge\Razor\Components\SkeletonGateComponent;
 use Codemonster\VueForge\Razor\Components\StepperComponent;
@@ -135,6 +136,13 @@ final class VueForgeRazorProvider implements ComponentProviderInterface
             'progress-bar' => new ProgressBarComponent(),
             'progress-spinner' => $progressSpinner,
             'radio' => new RadioComponent(),
+            // The fourth overlay, registered beside vf-dropdown and never
+            // through it: its listbox borrows the dropdown's classes and no
+            // server code, and it shares only the page's escape stack at
+            // runtime. Its browser enhancement lives in browser/select.ts, and
+            // inside a vf-field it reports through the render-time field
+            // context as vf-input does. See SelectComponent.
+            'select' => new SelectComponent(),
             'skeleton' => $skeleton,
             'skeleton-gate' => new SkeletonGateComponent($skeleton),
             // The second component that owns controls - one native button per

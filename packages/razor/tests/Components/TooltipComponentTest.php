@@ -212,6 +212,6 @@ final class TooltipComponentTest extends TestCase
         self::assertInstanceOf(TooltipComponent::class, $components['tooltip']);
         self::assertNotSame($components['popover'], $components['tooltip']);
         self::assertNull((new \ReflectionClass(TooltipComponent::class))->getConstructor());
-        self::assertCount(30, $components);
+        self::assertCount(31, $components);
     }
 }
