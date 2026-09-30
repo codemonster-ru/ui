@@ -161,9 +161,11 @@ final class SelectComponent implements ComponentInterface
             // Component attributes the consumer forwarded over: the reference
             // binds them after its own on every render, so the controller
             // must never rewrite them.
-            'data-vf-razor-select-forwarded' => implode(' ', array_values(array_filter(
-                array_keys($this->forwardedAttributes($context)),
-                static fn (string $name): bool => in_array($name, ['aria-expanded', 'data-vf-filled'], true),
+            'data-vf-razor-select-forwarded' => implode(' ', array_keys(array_filter(
+                $this->forwardedAttributes($context),
+                static fn (mixed $value, string $name): bool => $value !== null && $value !== false
+                    && in_array($name, ['aria-expanded', 'data-vf-filled'], true),
+                ARRAY_FILTER_USE_BOTH,
             ))) ?: null,
         ];
 

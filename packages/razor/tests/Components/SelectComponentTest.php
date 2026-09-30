@@ -197,6 +197,11 @@ final class SelectComponentTest extends TestCase
         // The controller is told which of its own attributes it must never rewrite.
         self::assertStringContainsString('data-vf-razor-select-forwarded="aria-expanded"', $html);
         self::assertStringNotContainsString('data-vf-razor-select-forwarded', $this->render());
+        // A null attribute is "not given" and overrides nothing.
+        self::assertStringNotContainsString(
+            'data-vf-razor-select-forwarded',
+            $this->render(['aria-expanded' => null, 'data-vf-filled' => null]),
+        );
     }
 
     public function testClassAndStyleGoToTheWrapperAndAStringIdToTheTrigger(): void
