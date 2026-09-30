@@ -739,9 +739,11 @@ try {
         actionsUnrendered: buttons.every((b) => getComputedStyle(b).display === 'none'),
         actionsDisabled: buttons.every((b) => b.disabled),
         focusableActions: buttons.filter((b) => !b.disabled).length,
-        floatingApplied: document.querySelectorAll('.vf-field--floating').length,
+        // The input fields' composition. Since M32 the page also holds select
+        // fields, whose no-JS state is checked in the select section.
+        floatingApplied: document.querySelectorAll('.vf-field--floating:has(.vf-input)').length,
         floatingLabelInsideControl: document.querySelectorAll(
-          '.vf-field__control > .vf-field__label--floating',
+          '.vf-field:has(.vf-input) .vf-field__control > .vf-field__label--floating',
         ).length,
         labelAssociations: [...document.querySelectorAll('.vf-field__label')].filter((label) => {
           const target = document.getElementById(label.getAttribute('for') ?? '');
@@ -3890,6 +3892,75 @@ try {
       page.diagnostics.pageErrors.length === 0,
       page.diagnostics.pageErrors.join('; '),
     );
+  });
+
+  // ------------------------------------------- select inside a field (M32)
+  //
+  // The field controller owns vf-field__control--filled and follows the one
+  // control it owns. A select's control is its trigger; the hidden input it
+  // renders for a name is form plumbing no user touches. So the hidden input
+  // must never drive the field, and a select without a name - no <input> at
+  // all - must still have its field enhanced.
+  await withPage(chrome, server.origin, 'fixture-enhanced.html', async (page) => {
+    await page.waitFor(`Boolean(document.querySelector('[data-vf-razor-field-enhanced]'))`);
+    const ownership = await page.evaluate(`(() => {
+      const field = (id) => document.querySelector('[data-testid="field-' + id + '"]');
+      const filled = (id) => field(id).querySelector('.vf-field__control').classList.contains('vf-field__control--filled');
+      const named = field('select-field-named');
+      const hidden = named.querySelector('input[type="hidden"]');
+      const before = filled('select-field-named');
+      hidden.value = 'forged';
+      hidden.dispatchEvent(new Event('input', { bubbles: true }));
+      hidden.dispatchEvent(new Event('change', { bubbles: true }));
+      const afterForgedInput = filled('select-field-named');
+      return {
+        before,
+        afterForgedInput,
+        namedEnhanced: named.hasAttribute('data-vf-razor-field-enhanced'),
+        unnamedEnhanced: field('select-field-unnamed').hasAttribute('data-vf-razor-field-enhanced'),
+        filledServer: filled('select-field-filled'),
+      };
+    })()`);
+    check('an empty select leaves its field unfilled', ownership.before === false, JSON.stringify(ownership));
+    check(
+      "the select's hidden input never drives the field: a forged input event on it changes nothing",
+      ownership.afterForgedInput === false,
+      JSON.stringify(ownership),
+    );
+    check('a field over a named select is enhanced', ownership.namedEnhanced === true, JSON.stringify(ownership));
+    check(
+      'a field over an unnamed select - no <input> at all - is enhanced',
+      ownership.unnamedEnhanced === true,
+      JSON.stringify(ownership),
+    );
+    check('a server-filled select leaves its field filled', ownership.filledServer === true, JSON.stringify(ownership));
+
+    // The seam itself: the declared control's report drives its own field and
+    // no other, and a report from a nested element that is not the declared
+    // control is not listened for.
+    const seam = await page.evaluate(`(() => {
+      const field = (id) => document.querySelector('[data-testid="field-' + id + '"]');
+      const filled = (id) => field(id).querySelector('.vf-field__control').classList.contains('vf-field__control--filled');
+      const report = (element, value) => element.dispatchEvent(new CustomEvent('vf-field:filled-change', { detail: { filled: value } }));
+      const trigger = field('select-field-unnamed').querySelector('[data-vf-razor-field-control]');
+      report(trigger, true);
+      const reported = { unnamed: filled('select-field-unnamed'), named: filled('select-field-named') };
+      report(field('select-field-unnamed').querySelector('.vf-select__value'), false);
+      const fromOther = filled('select-field-unnamed');
+      report(trigger, false);
+      return { reported, fromOther, cleared: filled('select-field-unnamed') };
+    })()`);
+    check(
+      "a select's report fills its own field and no other",
+      seam.reported.unnamed === true && seam.reported.named === false,
+      JSON.stringify(seam),
+    );
+    check(
+      'a report from an element that is not the declared control is ignored',
+      seam.fromOther === true,
+      JSON.stringify(seam),
+    );
+    check('a report of empty clears the field', seam.cleared === false, JSON.stringify(seam));
   });
 } finally {
   await chrome.close();

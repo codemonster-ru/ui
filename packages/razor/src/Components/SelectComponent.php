@@ -197,6 +197,12 @@ final class SelectComponent implements ComponentInterface
             $trigger[$attribute] = $value;
         }
         $trigger['data-vf-razor-select'] = 'trigger';
+        // The trigger is the field's control: the field controller follows
+        // what the select reports, never the hidden input. See
+        // packages/razor/browser/field.ts.
+        if ($field !== null) {
+            $trigger['data-vf-razor-field-control'] = '';
+        }
 
         $markup .= '<button' . Html::attributes($trigger) . '>';
 

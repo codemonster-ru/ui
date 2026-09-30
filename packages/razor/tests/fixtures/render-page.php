@@ -506,6 +506,47 @@ foreach ($tooltipCases as $name => $markup) {
     $sections .= '<section class="case case--tooltip" data-case="' . $name . '"><h2>' . $name . '</h2>' . $markup . '</section>';
 }
 
+// ------------------------------------------------------------------- select
+//
+// The M32 sections. Real vf-select renders the browser suite drives with real
+// keys and a real pointer, and the vf-field compositions whose ownership the
+// field controller must get right: a named select (the hidden input is the
+// first <input> in the field) and an unnamed one (no <input> at all).
+$select = $registry->resolve('vf-select');
+if ($select === null) {
+    fwrite(STDERR, "vf-select must be registered.\n");
+    exit(1);
+}
+$selectOptions = [
+    ['value' => 'starter', 'label' => 'Starter'],
+    ['value' => 'legacy', 'label' => 'Legacy', 'disabled' => true],
+    ['value' => 'pro', 'label' => 'Pro'],
+    ['value' => 'team', 'label' => 'Team'],
+];
+$renderSelect = static function (array $props) use ($select, $selectOptions): string {
+    return $select->render(new ComponentRenderContext(['options' => $selectOptions] + $props, []))->value();
+};
+$selectField = static function (string $id, array $selectProps) use ($field, $select, $selectOptions): string {
+    return $field->render(new ComponentRenderContext([
+        'label' => 'Plan',
+        'control-id' => $id,
+        'label-placement' => 'floating',
+        'data-testid' => 'field-' . $id,
+    ], [
+        'default' => static fn (): RenderedHtml => $select->render(
+            new ComponentRenderContext(['options' => $selectOptions] + $selectProps, []),
+        ),
+    ]))->value();
+};
+$selectCases = [
+    'select-field-named' => $selectField('select-field-named', ['name' => 'plan-field']),
+    'select-field-unnamed' => $selectField('select-field-unnamed', []),
+    'select-field-filled' => $selectField('select-field-filled', ['name' => 'plan-filled', 'model-value' => 'pro', 'clearable' => true]),
+];
+foreach ($selectCases as $name => $markup) {
+    $sections .= '<section class="case case--select" data-case="' . $name . '"><h2>' . $name . '</h2>' . $markup . '</section>';
+}
+
 $withVue = ($argv[2] ?? '') === '--with-vue';
 $vueSection = $withVue
     ? '<section class="case" data-case="vue"><h2>vue</h2><div id="vue-input"></div></section>'
@@ -530,6 +571,7 @@ body { margin: 0; padding: 24px; background: var(--vf-color-background-canvas); 
 .case--dropdown { width: 360px; }
 .case--popover { width: 360px; }
 .case--tooltip { width: 360px; padding-top: 48px; }
+.case--select { width: 360px; }
 .case h2 { font-size: 12px; margin: 0 0 6px; color: var(--vf-color-text-secondary); font-weight: 400; }
 </style>
 </head>

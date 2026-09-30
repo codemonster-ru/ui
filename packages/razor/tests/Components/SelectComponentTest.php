@@ -305,6 +305,14 @@ final class SelectComponentTest extends TestCase
         self::assertStringContainsString('<div class="vf-select-wrap vf-select-wrap--floating"', $html);
         self::assertStringContainsString('<button id="plan-control" type="button" class="vf-select vf-select--floating"', $html);
         self::assertMatchesRegularExpression('/aria-describedby="vf-field-description-r-\d+"/', $html);
+        // The trigger declares itself the field's control; the hidden input never does.
+        self::assertStringContainsString('data-vf-razor-select="trigger" data-vf-razor-field-control="">', $html);
+        self::assertSame(1, substr_count($html, 'data-vf-razor-field-control'));
+    }
+
+    public function testOutsideAFieldTheTriggerDeclaresNoFieldControl(): void
+    {
+        self::assertStringNotContainsString('data-vf-razor-field-control', $this->render(['name' => 'plan']));
     }
 
     public function testAFloatingFieldSuppressesThePlaceholderAndAnEmptySelectIsUnfilled(): void

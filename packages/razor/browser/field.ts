@@ -22,6 +22,15 @@ import { isInputFilled } from '@codemonster-ru/vueforge-shared-core';
 const ROOT_SELECTOR = '[data-vf-razor="field"]';
 const ENHANCED_ATTRIBUTE = 'data-vf-razor-field-enhanced';
 
+// M32. A control that is not a text box declares itself instead of being
+// guessed: the element carrying this marker is the control, and it reports
+// its filled state with FILLED_CHANGE_EVENT (`detail.filled`). VfSelect puts
+// the marker on its trigger - the select's filled is `value || open`, which
+// no input's value says - so the hidden input it renders for a form name,
+// the first <input> in the field, is never taken for the control.
+const DECLARED_CONTROL_ATTRIBUTE = 'data-vf-razor-field-control';
+const FILLED_CHANGE_EVENT = 'vf-field:filled-change';
+
 /**
  * The control element this field owns.
  *
@@ -34,6 +43,16 @@ function ownControl(root: HTMLElement): HTMLInputElement | HTMLTextAreaElement |
   // field wrapped a textarea: the field would have kept the filled state the
   // server rendered and never updated it.
   for (const candidate of root.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input, textarea')) {
+    if (candidate.closest(ROOT_SELECTOR) === root) {
+      return candidate;
+    }
+  }
+
+  return null;
+}
+
+function ownDeclaredControl(root: HTMLElement): HTMLElement | null {
+  for (const candidate of root.querySelectorAll<HTMLElement>(`[${DECLARED_CONTROL_ATTRIBUTE}]`)) {
     if (candidate.closest(ROOT_SELECTOR) === root) {
       return candidate;
     }
@@ -57,8 +76,19 @@ function enhanceRoot(root: HTMLElement): void {
     return;
   }
 
-  const control = ownControl(root);
+  const declared = ownDeclaredControl(root);
   const wrapper = ownControlWrapper(root);
+
+  // The declared control reports; the server rendered the initial class.
+  if (declared && wrapper) {
+    root.setAttribute(ENHANCED_ATTRIBUTE, '');
+    declared.addEventListener(FILLED_CHANGE_EVENT, (event) => {
+      wrapper.classList.toggle('vf-field__control--filled', (event as CustomEvent<{ filled: boolean }>).detail.filled);
+    });
+    return;
+  }
+
+  const control = ownControl(root);
 
   if (!control || !wrapper) {
     return;
