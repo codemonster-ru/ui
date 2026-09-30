@@ -2953,6 +2953,266 @@ function tooltipInteractionExpression(caseId, controlOwnership = {}) {
  * attribute the nav forwards are compared by the ordinary DOM comparison and
  * are not repeated here.
  */
+/**
+ * What a VfSelect case reports, before and after a scenario (M32).
+ *
+ * Component-specific and named so, like the dropdown's, whose shape it keeps
+ * for the listbox. The select owns its trigger, its clear button and, while
+ * open, every option of its listbox - the profile's rules, found in the case
+ * and in the listboxes its triggers' aria-controls reach. A hidden form input
+ * is not focusable and is not counted. The listbox container is the select's
+ * structural overlay node, as the dropdown's role=menu is: its composite role
+ * is not counted among the explicit interactive roles (the options are, by
+ * the profile's declared role), and it is compared by the DOM and the tree.
+ * What it records, each compared as its own dimension:
+ *
+ *   - ownership: the owned controls and every other focusable element in the
+ *     case and its open listboxes;
+ *   - state: per instance aria-expanded, the trigger's label and classes, the
+ *     listbox's place, classes, role and options, its geometry against its
+ *     trigger before and after one resize, its scroll, the hidden input, the
+ *     field around it, a popover around it, and every listbox node in <body>
+ *     by what names it (an orphan is one no live trigger of the case names);
+ *   - forms: the entries of the form around the case and its validity;
+ *   - relationships: per instance, where aria-controls resolves and whether
+ *     the listbox is labelled by its own trigger;
+ *   - focus, the value-change log, the keydown log and the transitions.
+ *
+ * Asynchronous: it waits, bounded, until no listbox carries a
+ * vf-floating-transition class, and records whether it got there.
+ */
+function selectInteractionExpression(caseId, controlOwnership = {}) {
+  return `(async () => {
+    const root = document.querySelector('[data-parity-case="${caseId}"]');
+    if (!root) throw new Error('missing case ${caseId}');
+
+    const OWNED = ${JSON.stringify(controlOwnership)};
+    const FOCUSABLE = 'a[href], button, input:not([type="hidden"]), select, textarea, [tabindex], [contenteditable=""], [contenteditable="true"]';
+    const INTERACTIVE_ROLES = new Set([
+      'button', 'link', 'checkbox', 'radio', 'switch', 'textbox', 'combobox',
+      'menuitem', 'option', 'slider', 'spinbutton', 'tab',
+    ]);
+    const vfClasses = (element) => [...element.classList].filter((name) => name.startsWith('vf-')).sort();
+    const nameOf = (element) => (element.textContent ?? '').replace(/\\s+/g, ' ').trim();
+    const round = (value) => Math.round(value * 1000) / 1000;
+
+    const selects = [...root.querySelectorAll('.vf-select-wrap')];
+    const triggerOf = (select) => select.querySelector(':scope > button.vf-select');
+    const listboxOf = (select) => {
+      const id = triggerOf(select)?.getAttribute('aria-controls');
+      return id ? document.getElementById(id) : null;
+    };
+    const transitionOf = (listbox) => [...listbox.classList].filter((name) => name.startsWith('vf-floating-transition-')).join(' ');
+
+    const deadline = performance.now() + 2000;
+    const unsettled = () => selects.some((select) => { const listbox = listboxOf(select); return listbox !== null && transitionOf(listbox) !== ''; });
+    while (unsettled() && performance.now() < deadline) {
+      await new Promise((tick) => setTimeout(tick, 20));
+    }
+    const settled = !unsettled();
+
+    const listboxes = selects.map(listboxOf);
+    const outside = listboxes.filter((listbox) => listbox !== null && !root.contains(listbox));
+    const scope = [root, ...outside];
+    const inScope = (selector) => scope.flatMap((node) => [...node.querySelectorAll(selector)]);
+    const focusable = inScope(FOCUSABLE);
+    const owned = [];
+    for (const [role, rule] of Object.entries(OWNED)) {
+      for (const element of inScope(rule.selector)) {
+        owned.push({
+          element,
+          record: {
+            role,
+            tag: element.tagName.toLowerCase(),
+            ariaRole: element.getAttribute('role'),
+            expanded: element.getAttribute('aria-expanded'),
+            hasPopup: element.getAttribute('aria-haspopup'),
+            selected: element.getAttribute('aria-selected'),
+            disabled: element.disabled === true,
+            tabindex: element.getAttribute('tabindex'),
+            focusable: focusable.includes(element),
+            name: nameOf(element) || element.getAttribute('aria-label') || '',
+          },
+        });
+      }
+    }
+    const ownedElements = owned.map((entry) => entry.element);
+    const consumer = focusable.filter((element) => !ownedElements.includes(element));
+
+    const location = (select, listbox) =>
+      listbox.parentElement === document.body ? 'body' : select.contains(listbox) ? 'in-place' : root.contains(listbox) ? 'in-case' : listbox.parentElement?.id ? 'target:' + listbox.parentElement.id : 'elsewhere';
+    const triggerStates = selects.map((select) => {
+      const trigger = triggerOf(select);
+      return {
+        label: trigger.querySelector(':scope > .vf-select__value')?.textContent ?? null,
+        classes: vfClasses(trigger),
+        wrapperClasses: vfClasses(select),
+        filled: trigger.getAttribute('data-vf-filled'),
+        clear: select.querySelector(':scope > .vf-select-wrap__clear') !== null,
+        chevron: trigger.querySelector(':scope > .vf-select__icon--chevron') !== null,
+      };
+    });
+    const listboxStates = selects.map((select, index) => {
+      const listbox = listboxes[index];
+      if (!listbox) return null;
+      return {
+        location: location(select, listbox),
+        classes: vfClasses(listbox),
+        role: listbox.getAttribute('role'),
+        options: [...listbox.children].map((option) => ({
+          tag: option.tagName.toLowerCase(),
+          role: option.getAttribute('role'),
+          label: nameOf(option),
+          selected: option.getAttribute('aria-selected'),
+          selectedClass: option.classList.contains('vf-select__option--selected'),
+          disabled: option.disabled === true,
+          tabindex: option.getAttribute('tabindex'),
+        })),
+      };
+    });
+    const geometry = () => selects.map((select, index) => {
+      const listbox = listboxes[index];
+      if (!listbox) return null;
+      const trigger = triggerOf(select);
+      const edge = trigger.getBoundingClientRect();
+      const box = listbox.getBoundingClientRect();
+      return {
+        side: box.top >= edge.bottom ? 'below' : box.bottom <= edge.top ? 'above' : 'overlapping',
+        left: round(box.left - edge.left),
+        right: round(box.right - edge.right),
+        gap: round(box.top >= edge.bottom ? box.top - edge.bottom : edge.top - box.bottom),
+        minWidth: listbox.style.minWidth,
+        triggerWidth: trigger.offsetWidth + 'px',
+        withinViewport: box.left >= 0 && box.right <= window.innerWidth,
+      };
+    });
+    const listboxGeometry = geometry();
+    window.dispatchEvent(new Event('resize'));
+    await new Promise((done) => {
+      requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(done)));
+      setTimeout(done, 500);
+    });
+    const listboxGeometryAfterResize = geometry();
+    // One full repaint, as the dropdown's snapshot does, so a moved listbox is
+    // rasterised afresh before anything is captured. Each wait has the settle
+    // fallback: headless Chrome may produce no frame at all, and a bare double
+    // rAF would then hang the evaluate until the DevTools request timed out.
+    const frames = () => new Promise((done) => {
+      let finished = false;
+      const finish = () => { if (!finished) { finished = true; done(); } };
+      requestAnimationFrame(() => requestAnimationFrame(finish));
+      setTimeout(finish, 500);
+    });
+    const bodyStyle = document.body.getAttribute('style');
+    document.body.style.opacity = '0.999';
+    await frames();
+    if (bodyStyle === null) document.body.removeAttribute('style');
+    else document.body.setAttribute('style', bodyStyle);
+    await frames();
+
+    const active = document.activeElement;
+    const listboxScroll = listboxes.map((listbox) => {
+      if (!listbox) return null;
+      const box = listbox.getBoundingClientRect();
+      const focused = listbox.contains(active) && active !== listbox ? active.getBoundingClientRect() : null;
+      return {
+        scrollTop: Math.round(listbox.scrollTop),
+        scrollable: listbox.scrollHeight > listbox.clientHeight,
+        focusedInView: focused ? focused.top >= box.top - 0.5 && focused.bottom <= box.bottom + 0.5 : null,
+      };
+    });
+    const listboxRelationships = selects.map((select, index) => {
+      const trigger = triggerOf(select);
+      const controls = trigger.getAttribute('aria-controls');
+      const listbox = listboxes[index];
+      return {
+        controls: !controls ? 'none' : !listbox ? 'dangling' : listbox.getAttribute('role') === 'listbox' ? 'listbox' : 'other',
+        labelledBy: !listbox ? null : listbox.getAttribute('aria-labelledby') === trigger.id ? 'own-trigger' : 'other',
+        activedescendant: trigger.hasAttribute('aria-activedescendant') || (listbox?.hasAttribute('aria-activedescendant') ?? false),
+      };
+    });
+    const liveIds = new Set(listboxes.filter(Boolean).map((listbox) => listbox.id));
+    const bodyListboxes = [...document.body.children]
+      .filter((node) => node.classList.contains('vf-select__menu'))
+      .map((node) => (liveIds.has(node.id) ? 'listbox:' + listboxes.findIndex((listbox) => listbox === node) : 'orphan'));
+    const hiddenInputs = selects.map((select) => {
+      const input = select.querySelector(':scope > input[type="hidden"]');
+      return input ? { name: input.getAttribute('name'), value: input.value, disabled: input.disabled, first: select.firstElementChild === input } : null;
+    });
+    const form = root.querySelector('form');
+    const formData = form ? [...new FormData(form).entries()].map(([name, value]) => [name, String(value)]) : null;
+    const formValid = form ? form.checkValidity() : null;
+    const fieldStates = [...root.querySelectorAll('.vf-field')].map((field) => {
+      const control = field.querySelector('.vf-field__control');
+      const label = field.querySelector('label.vf-field__label');
+      const trigger = field.querySelector('button.vf-select');
+      return {
+        classes: vfClasses(field),
+        controlClasses: control ? vfClasses(control) : null,
+        labelTargetsTrigger: Boolean(label && trigger && label.getAttribute('for') === trigger.id),
+      };
+    });
+    const popoverStates = [...root.querySelectorAll('.vf-popover')].map((popover) => popover.querySelector(':scope > .vf-popover__trigger')?.getAttribute('aria-expanded') ?? null);
+
+    const owner = selects.findIndex((select, index) => select.contains(active) || (listboxes[index] !== null && listboxes[index].contains(active)));
+    const focusRole = active === document.body
+      ? 'body'
+      : owner < 0
+        ? root.contains(active) ? 'other-inside-case' : 'outside-case'
+        : active === triggerOf(selects[owner])
+          ? 'trigger'
+          : active.classList.contains('vf-select-wrap__clear')
+            ? 'clear'
+            : active.getAttribute('role') === 'option' ? 'option' : 'other-inside-select';
+
+    const bucket = (ms) => ms < 300 ? 'short' : ms < 480 ? 'normal' : 'long';
+    const transitions = selects.map((select) => {
+      const id = triggerOf(select).getAttribute('aria-controls');
+      return (window.__paritySelectTransitions?.[id] ?? []).map((entry) => entry.kind + ':' + (entry.ms === null ? 'unfinished' : bucket(entry.ms)));
+    });
+
+    const caseRect = root.getBoundingClientRect();
+    const boxes = [caseRect, ...listboxes.filter(Boolean).map((listbox) => listbox.getBoundingClientRect())];
+    const left = Math.min(...boxes.map((box) => box.left));
+    const top = Math.min(...boxes.map((box) => box.top));
+
+    return {
+      clip: {
+        x: Math.round(left + window.scrollX),
+        y: Math.round(top + window.scrollY),
+        width: Math.round(Math.max(...boxes.map((box) => box.right)) - left),
+        height: Math.round(Math.max(...boxes.map((box) => box.bottom)) - top),
+      },
+      ownershipPosture: 'component',
+      componentControls: owned.map((entry) => entry.record),
+      consumerControlCount: consumer.length,
+      focusableTotal: focusable.length,
+      interactiveRoleTotal: inScope('*').filter((element) => INTERACTIVE_ROLES.has(element.getAttribute('role') ?? '')).length,
+      instanceCount: selects.length,
+      expandedStates: selects.map((select) => triggerOf(select).getAttribute('aria-expanded')),
+      triggerStates,
+      listboxStates,
+      listboxGeometry,
+      listboxGeometryAfterResize,
+      listboxScroll,
+      listboxRelationships,
+      bodyListboxes,
+      hiddenInputs,
+      formData,
+      formValid,
+      fieldStates,
+      popoverStates,
+      settled,
+      transitions,
+      focusRole,
+      focusInstance: owner < 0 ? null : owner,
+      focusOption: focusRole === 'option' ? nameOf(active) : null,
+      events: window.__paritySelectEvents?.[${JSON.stringify(caseId)}] ?? [],
+      keydownPrevented: (window.__paritySelectKeys ?? []).map((entry) => entry.key + ':' + entry.prevented),
+    };
+  })()`;
+}
+
 function breadcrumbsInteractionExpression(caseId, controlOwnership = {}) {
   return `(() => {
     const root = document.querySelector('[data-parity-case="${caseId}"]');
@@ -3078,6 +3338,9 @@ export function interactionExpression(caseId, snapshot = 'input', controlOwnersh
   }
   if (snapshot === 'tooltip') {
     return tooltipInteractionExpression(caseId, controlOwnership);
+  }
+  if (snapshot === 'select') {
+    return selectInteractionExpression(caseId, controlOwnership);
   }
 
   if (snapshot === 'checkable') {

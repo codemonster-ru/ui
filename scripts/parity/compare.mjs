@@ -789,6 +789,25 @@ const INTERACTION_FIELDS = {
   hoverStates: { dimension: 'interaction.state', format: 'json' },
   openings: { dimension: 'interaction.state', format: 'json' },
   closings: { dimension: 'interaction.state', format: 'json' },
+  // The VfSelect snapshot (M32): per instance the trigger's label and classes,
+  // the listbox's place, classes, role and options, its geometry and scroll,
+  // the hidden input, and every listbox node in <body> by what names it; the
+  // form around the case, the field around the select and a popover around
+  // it. The ownership, instance, expanded, transition, focus, event and
+  // keydown fields are the ones above, shared.
+  triggerStates: { dimension: 'interaction.state', format: 'json' },
+  listboxStates: { dimension: 'interaction.state', format: 'json' },
+  listboxGeometry: { dimension: 'interaction.state', format: 'json' },
+  listboxGeometryAfterResize: { dimension: 'interaction.state', format: 'json' },
+  listboxScroll: { dimension: 'interaction.state', format: 'json' },
+  listboxRelationships: { dimension: 'interaction.relationships', format: 'json' },
+  bodyListboxes: { dimension: 'interaction.state', format: 'json' },
+  hiddenInputs: { dimension: 'interaction.value', format: 'json' },
+  formData: { dimension: 'interaction.value', format: 'json' },
+  formValid: { dimension: 'interaction.value' },
+  fieldStates: { dimension: 'interaction.state', format: 'json' },
+  popoverStates: { dimension: 'interaction.state', format: 'json' },
+  focusOption: { dimension: 'interaction.focus' },
 };
 
 /**

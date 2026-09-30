@@ -327,11 +327,23 @@ test('every shipped accordion case passes with the snapshot its declarations des
   }
 });
 
-test('only the accordion, the stepper, the tabs, the link, the breadcrumbs, the menu item, the dropdown, the group box, the popover and the tooltip declare component-owned controls, and none of the static ones can', () => {
+test('only the accordion, the stepper, the tabs, the link, the breadcrumbs, the menu item, the dropdown, the group box, the popover, the tooltip and the select declare component-owned controls, and none of the static ones can', () => {
   const owning = Object.values(profiles).filter((entry) => entry.controlOwnership !== undefined);
   assert.deepEqual(
     owning.map((entry) => entry.id),
-    ['accordion', 'stepper', 'tabs', 'link', 'breadcrumbs', 'menuItem', 'dropdown', 'group-box', 'popover', 'tooltip'],
+    [
+      'accordion',
+      'stepper',
+      'tabs',
+      'link',
+      'breadcrumbs',
+      'menuItem',
+      'dropdown',
+      'group-box',
+      'popover',
+      'tooltip',
+      'select',
+    ],
   );
   for (const entry of Object.values(profiles)) {
     assert.ok(!(entry.staticOwnership && entry.controlOwnership), `${entry.id} declares both ownership models`);
@@ -363,6 +375,45 @@ test('the tooltip declares its two elements as rules and owns zero controls in e
       profiles.tooltip,
     ).length,
     1,
+  );
+});
+
+test('the select owns its trigger, its clear button and every option of an open listbox (M32)', () => {
+  // The first overlay whose panel holds controls of the component's own: the
+  // options are native buttons with role=option, declared so that a missing
+  // or substituted role fails by identity, and every case budgets them.
+  const selectCases = JSON.parse(readFileSync(resolve(repositoryRoot, 'contracts/select/cases.json'), 'utf8')).cases;
+  assert.deepEqual(profiles.select.controlOwnership, {
+    trigger: { selector: 'button.vf-select', tag: 'button' },
+    clear: { selector: '.vf-select-wrap__clear', tag: 'button' },
+    option: { selector: '.vf-select__option', tag: 'button', ariaRole: 'option' },
+  });
+  assert.ok(selectCases.every((entry) => entry.componentInteractive >= 1));
+  // An option rendered as a <div role=option> is refused by its tag, and a
+  // button without its role by the declared role.
+  const violations = controlOwnershipViolations(
+    selectCases[0],
+    {
+      ownershipPosture: 'component',
+      componentControls: [
+        { role: 'trigger', tag: 'button', ariaRole: null },
+        { role: 'option', tag: 'div', ariaRole: 'option' },
+        { role: 'option', tag: 'button', ariaRole: null },
+      ],
+      consumerControlCount: 0,
+      focusableTotal: 3,
+      interactiveRoleTotal: 1,
+    },
+    profiles.select,
+    { componentInteractive: 3 },
+  );
+  assert.ok(
+    violations.some((violation) => violation.includes('not the declared <button>')),
+    violations.join('\n'),
+  );
+  assert.ok(
+    violations.some((violation) => violation.includes('not the declared role="option"')),
+    violations.join('\n'),
   );
 });
 

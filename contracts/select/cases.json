@@ -1,0 +1,6541 @@
+{
+  "$comment": "Shared VfSelect cases, rendered by the Vue adapter at the reference commit, by the current Vue adapter, and by the real Razor adapter with its browser controller. The fourth overlay catalog: every listbox is found through its trigger's aria-controls - the one declared edge the extractor follows - and compared where it is. No case is open initially: the select has no open prop. Every Vue select is a v-model consumer; the Razor adapter applies selections itself (platform divergence razor-has-no-controlled-mode). Closed end states converge on the static case of the same content that the gesture has to land on.",
+  "component": "select",
+  "propVocabulary": {
+    "options": "The options, { value, label, disabled? }. Static on every target.",
+    "modelValue": "string, default ''. The model. The Vue fixture writes update:modelValue back, as v-model does; the Razor adapter reads it as the initial value and applies a selection or a clear itself.",
+    "placeholder": "string. Shown while no option is selected, unless a floating field suppresses it.",
+    "size": "'sm' | 'md' | 'lg', default 'md'.",
+    "invalid": "boolean, default false.",
+    "leadingIcon": "Icon name for the leading adornment.",
+    "trailingIcon": "Icon name for the trailing adornment.",
+    "clearable": "boolean, default false. The clear button replaces the chevron while the select is filled and enabled.",
+    "disabled": "boolean, default false. The native disabled trigger and hidden input.",
+    "placement": "'bottom-start' | 'bottom-end', default 'bottom-start'. floater.js flips within the pair of the same side.",
+    "disableTeleport": "boolean, default false. Renders the listbox in place, last in the wrapper.",
+    "teleportTo": "Not in the catalog: every case teleports to <body> or renders in place. A named destination is exercised by the Razor browser gate and the characterization suite."
+  },
+  "contentVocabulary": {
+    "field": "A real VfField around the one select, { label, placement, description?, error? }; the Vue select is bound to its slot scope (id, aria-describedby, invalid), the Razor select takes them from the render-time field context.",
+    "form": "A form around the case, { reset? } adding a native reset button.",
+    "popover": "A select beside a real VfPopover rendered in place, and a second select inside it; { trigger } is the popover's trigger text. The select beside keeps the declared edge - a select trigger - rendered in every state.",
+    "after": "A consumer control after the roots: `control` is a real consumer button, the target of an outside click.",
+    "leading": "The leading slot: `text` in a plain span.",
+    "trailing": "The trailing slot: `text` in a plain span."
+  },
+  "groupVocabulary": "A list of sibling selects rendered side by side in one case, each with its own props; the case-level props are ignored, the attrs and content apply to each.",
+  "ownershipVocabulary": {
+    "componentInteractive": "The exact number of controls the component itself renders: one <button> trigger per instance, the clear button while shown, and every <button role=option> of an open listbox, disabled ones included.",
+    "consumerInteractive": "The exact number of consumer focusable elements in the case and in its open listboxes: an after control, a reset button, a popover trigger and an open popover panel. A hidden input is not focusable.",
+    "consumerInteractiveRoles": "The exact number of consumer elements carrying an explicit interactive role: none. The options carry role=option and are the component's own, counted by the profile's declared role; the listbox container is the select's structural overlay node, as the dropdown's role=menu is."
+  },
+  "interactionVocabulary": {
+    "$comment": "A case with an `interaction` is driven with real pointer and key events, alone on the page with its followed targets, then re-measured: snapshot, DOM (with the followed listbox) and accessibility tree. The snapshot waits, bounded, for every enter or leave to finish.",
+    "steps": "clickButton (a real pointer click at the element's centre; `selector` is button.vf-select, .vf-select-wrap__clear, .vf-popover__trigger, .parity-after-control or .parity-reset-control, `index` picks a match; with `through`, the search is inside the listbox the trigger's aria-controls reaches), focusButton (likewise), pressKey with ArrowDown, ArrowUp, Home, End, Enter, Space, Escape or Tab, wait (`ms`). Tab never leaves the document, and every fixture swallows the browser default of a navigation key or Escape the product left unhandled - after recording that it did.",
+    "expect": "Claims about the snapshot fields of the same name, or `a11y:<role>.<state>` about the tree read after the gesture. `transitions` lists every enter and leave completed since the first input, bucketed: short under 300 ms, normal under 480 ms.",
+    "matches": "The closed case of the same content whose fresh render the gesture has to land on."
+  },
+  "cases": [
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/default",
+      "title": "Closed, nothing selected: the trigger alone, aria-controls naming a listbox that does not exist",
+      "$why": "The closed half of the relationship contract: aria-controls dangles on every target and no listbox is anywhere in the document. No name, so no hidden input.",
+      "visual": true,
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "placeholder": "Choose a plan"
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/placeholder",
+      "title": "Nothing selected with a placeholder: the text and the --placeholder modifier",
+      "visual": true,
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "pro",
+        "placeholder": "Choose a plan"
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/selected",
+      "title": "The label of the option whose value is the model, data-vf-filled on the trigger",
+      "visual": true,
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "team"
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/selected-team",
+      "title": "The last option selected: the closed state a keyboard or pointer selection of Team lands on",
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "starter"
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/selected-starter",
+      "title": "The first option selected",
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "legacy"
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/selected-disabled",
+      "title": "A disabled option selected is still displayed",
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "ghost",
+        "placeholder": "Choose a plan"
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/unknown-value",
+      "title": "A model no option has: filled, but the placeholder and --placeholder are shown",
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "",
+            "label": "None"
+          },
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "",
+        "clearable": true
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/empty-value-option",
+      "title": "An option with value '': selected by the empty model, not filled, so no clear button",
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": []
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/no-options",
+      "title": "No options at all",
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "pro",
+        "disabled": true
+      },
+      "attrs": {
+        "name": "plan"
+      },
+      "content": {},
+      "id": "select/disabled",
+      "title": "Disabled: the native disabled trigger and hidden input",
+      "visual": true,
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "pro",
+        "clearable": true
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/clearable",
+      "title": "Clearable and filled: the clear button replaces the chevron",
+      "componentInteractive": 2,
+      "visual": true,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "clearable": true
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/clearable-empty",
+      "title": "Clearable and empty: the chevron, no clear button",
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "pro",
+        "clearable": true,
+        "disabled": true
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/clearable-disabled",
+      "title": "Clearable, filled and disabled: no clear button",
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {},
+      "attrs": {},
+      "content": {},
+      "id": "select/sizes",
+      "title": "The sm and lg sizes side by side: the modifier on the wrapper and on the trigger",
+      "group": [
+        {
+          "options": [
+            {
+              "value": "starter",
+              "label": "Starter"
+            },
+            {
+              "value": "legacy",
+              "label": "Legacy",
+              "disabled": true
+            },
+            {
+              "value": "pro",
+              "label": "Pro"
+            },
+            {
+              "value": "team",
+              "label": "Team"
+            }
+          ],
+          "size": "sm",
+          "modelValue": "pro"
+        },
+        {
+          "options": [
+            {
+              "value": "starter",
+              "label": "Starter"
+            },
+            {
+              "value": "legacy",
+              "label": "Legacy",
+              "disabled": true
+            },
+            {
+              "value": "pro",
+              "label": "Pro"
+            },
+            {
+              "value": "team",
+              "label": "Team"
+            }
+          ],
+          "size": "lg",
+          "modelValue": "pro"
+        }
+      ],
+      "componentInteractive": 2,
+      "visual": true,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "invalid": true
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/invalid",
+      "title": "Invalid: the modifier and aria-invalid=\"true\"",
+      "visual": true,
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "pro",
+        "leadingIcon": "star",
+        "trailingIcon": "eye"
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/icons",
+      "title": "Leading and trailing icons: two adornments and their modifiers, the chevron last",
+      "visual": true,
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "leading": {
+          "text": "L"
+        },
+        "trailing": {
+          "text": "T"
+        }
+      },
+      "id": "select/slots",
+      "title": "Leading and trailing slots in place of the icons",
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "pro"
+      },
+      "attrs": {
+        "id": "plan-select",
+        "class": "consumer-select",
+        "style": "margin-top: 4px;",
+        "aria-label": "Plan",
+        "data-testid": "plan",
+        "tabindex": "3",
+        "required": true,
+        "autofocus": true,
+        "role": "combobox",
+        "name": "plan"
+      },
+      "content": {},
+      "id": "select/attrs",
+      "title": "Attributes: aria-*, data-* and tabindex reach the trigger, class and style the wrapper, id the trigger id; required, autofocus and role reach nothing",
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "pro"
+      },
+      "attrs": {
+        "aria-haspopup": "true",
+        "data-vf-filled": "no"
+      },
+      "content": {},
+      "id": "select/override",
+      "title": "A forwarded aria-haspopup and data-vf-filled override the component’s own",
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "pro"
+      },
+      "attrs": {
+        "name": "plan"
+      },
+      "content": {
+        "form": {}
+      },
+      "id": "select/named",
+      "title": "A string name: the hidden input first in the wrapper, carrying the model",
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "placeholder": "Choose a plan"
+      },
+      "attrs": {},
+      "content": {
+        "field": {
+          "label": "Plan",
+          "placement": "top",
+          "description": "Billed monthly",
+          "error": "Pick a plan"
+        }
+      },
+      "id": "select/field-top",
+      "title": "Inside a top-label field: the label for the trigger, described by the description and the error, invalid from the field",
+      "visual": true,
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "placeholder": "Choose a plan"
+      },
+      "attrs": {},
+      "content": {
+        "field": {
+          "label": "Plan",
+          "placement": "floating"
+        }
+      },
+      "id": "select/field-floating",
+      "title": "Inside a floating field, empty: floating, not filled, the placeholder suppressed",
+      "visual": true,
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "pro"
+      },
+      "attrs": {},
+      "content": {
+        "field": {
+          "label": "Plan",
+          "placement": "floating"
+        }
+      },
+      "id": "select/field-floating-filled",
+      "title": "Inside a floating field, filled: the field filled, the label shown",
+      "visual": true,
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "disableTeleport": true
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/in-place",
+      "title": "disableTeleport, closed",
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "placement": "bottom-end"
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/bottom-end",
+      "title": "placement bottom-end, closed",
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "o01",
+            "label": "Option 01"
+          },
+          {
+            "value": "o02",
+            "label": "Option 02"
+          },
+          {
+            "value": "o03",
+            "label": "Option 03"
+          },
+          {
+            "value": "o04",
+            "label": "Option 04"
+          },
+          {
+            "value": "o05",
+            "label": "Option 05"
+          },
+          {
+            "value": "o06",
+            "label": "Option 06"
+          },
+          {
+            "value": "o07",
+            "label": "Option 07"
+          },
+          {
+            "value": "o08",
+            "label": "Option 08"
+          },
+          {
+            "value": "o09",
+            "label": "Option 09"
+          },
+          {
+            "value": "o10",
+            "label": "Option 10"
+          },
+          {
+            "value": "o11",
+            "label": "Option 11"
+          },
+          {
+            "value": "o12",
+            "label": "Option 12"
+          }
+        ],
+        "modelValue": "o11"
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/many",
+      "title": "Twelve options with the eleventh selected, closed",
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "after": {
+          "control": {
+            "text": "Outside"
+          }
+        }
+      },
+      "id": "select/with-outside",
+      "title": "A select with a consumer button after it",
+      "consumerInteractive": 1,
+      "componentInteractive": 1,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "popover": {
+          "trigger": "Filters"
+        }
+      },
+      "id": "select/in-popover",
+      "title": "A select beside an in-place popover holding a second select, closed",
+      "componentInteractive": 1,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {},
+      "attrs": {},
+      "content": {},
+      "id": "select/two",
+      "title": "Two selects with the same options side by side, closed",
+      "group": [
+        {
+          "options": [
+            {
+              "value": "starter",
+              "label": "Starter"
+            },
+            {
+              "value": "legacy",
+              "label": "Legacy",
+              "disabled": true
+            },
+            {
+              "value": "pro",
+              "label": "Pro"
+            },
+            {
+              "value": "team",
+              "label": "Team"
+            }
+          ],
+          "modelValue": "pro"
+        },
+        {
+          "options": [
+            {
+              "value": "starter",
+              "label": "Starter"
+            },
+            {
+              "value": "legacy",
+              "label": "Legacy",
+              "disabled": true
+            },
+            {
+              "value": "pro",
+              "label": "Pro"
+            },
+            {
+              "value": "team",
+              "label": "Team"
+            }
+          ],
+          "modelValue": "team"
+        }
+      ],
+      "componentInteractive": 2,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "starter"
+      },
+      "attrs": {
+        "name": "plan"
+      },
+      "content": {
+        "form": {
+          "reset": true
+        }
+      },
+      "id": "select/form-reset",
+      "title": "A named select in a form with a reset button, Starter selected",
+      "consumerInteractive": 1,
+      "componentInteractive": 1,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "pro",
+        "clearable": true
+      },
+      "attrs": {
+        "name": "plan"
+      },
+      "content": {
+        "form": {}
+      },
+      "id": "select/form-clear",
+      "title": "A named clearable select in a form, filled",
+      "componentInteractive": 2,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "clearable": true
+      },
+      "attrs": {
+        "name": "plan"
+      },
+      "content": {
+        "form": {}
+      },
+      "id": "select/form-clear-empty",
+      "title": "A named clearable select in a form, empty: what a clear lands on",
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "pro",
+        "disabled": true
+      },
+      "attrs": {
+        "name": "plan"
+      },
+      "content": {
+        "form": {},
+        "after": {
+          "control": {
+            "text": "Outside"
+          }
+        }
+      },
+      "id": "select/form-disabled",
+      "title": "A named disabled select in a form with an outside button: nothing is submitted",
+      "consumerInteractive": 1,
+      "componentInteractive": 1,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ]
+      },
+      "attrs": {
+        "name": "plan",
+        "required": true
+      },
+      "content": {
+        "form": {},
+        "after": {
+          "control": {
+            "text": "Outside"
+          }
+        }
+      },
+      "id": "select/form-required",
+      "title": "required on a named select in a form: dropped, the form stays valid",
+      "consumerInteractive": 1,
+      "componentInteractive": 1,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "pro"
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/interaction-click-open",
+      "title": "A click opens the listbox in <body>: no focus move beyond the clicked trigger, the selected option marked",
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": "button.vf-select"
+          }
+        ],
+        "componentInteractive": 5,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "trigger",
+          "events": [],
+          "triggerStates": [
+            {
+              "label": "Pro",
+              "classes": ["vf-select", "vf-select--open"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": "true",
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "listbox",
+              "labelledBy": "own-trigger",
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": ["listbox:0"],
+          "listboxStates": [
+            {
+              "location": "body",
+              "classes": ["vf-dropdown__menu", "vf-select__menu"],
+              "role": "listbox",
+              "options": [
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Starter",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Legacy",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": true,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Pro",
+                  "selected": "true",
+                  "selectedClass": true,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Team",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                }
+              ]
+            }
+          ],
+          "listboxGeometryAfterResize": [
+            {
+              "side": "below",
+              "left": 0,
+              "right": 0,
+              "gap": 2,
+              "minWidth": "360px",
+              "triggerWidth": "360px",
+              "withinViewport": true
+            }
+          ],
+          "settled": true
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "pro"
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/interaction-click-close",
+      "title": "A second click closes it and focuses the trigger",
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": "button.vf-select"
+          },
+          {
+            "action": "wait",
+            "ms": 450
+          },
+          {
+            "action": "clickButton",
+            "selector": "button.vf-select"
+          }
+        ],
+        "componentInteractive": 1,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["false"],
+          "focusRole": "trigger",
+          "events": [],
+          "triggerStates": [
+            {
+              "label": "Pro",
+              "classes": ["vf-select"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": "true",
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "dangling",
+              "labelledBy": null,
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": [],
+          "transitions": [["enter:normal", "leave:normal"]],
+          "settled": true
+        }
+      },
+      "matches": "select/selected",
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "pro"
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/interaction-arrowdown-open",
+      "title": "ArrowDown on the trigger opens, prevented, and focuses the selected option",
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": "button.vf-select",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          }
+        ],
+        "componentInteractive": 5,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "option",
+          "events": [],
+          "triggerStates": [
+            {
+              "label": "Pro",
+              "classes": ["vf-select", "vf-select--open"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": "true",
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "listbox",
+              "labelledBy": "own-trigger",
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": ["listbox:0"],
+          "focusOption": "Pro",
+          "keydownPrevented": ["ArrowDown:true"],
+          "listboxStates": [
+            {
+              "location": "body",
+              "classes": ["vf-dropdown__menu", "vf-select__menu"],
+              "role": "listbox",
+              "options": [
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Starter",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Legacy",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": true,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Pro",
+                  "selected": "true",
+                  "selectedClass": true,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Team",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                }
+              ]
+            }
+          ],
+          "listboxGeometryAfterResize": [
+            {
+              "side": "below",
+              "left": 0,
+              "right": 0,
+              "gap": 2,
+              "minWidth": "360px",
+              "triggerWidth": "360px",
+              "withinViewport": true
+            }
+          ],
+          "settled": true
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/interaction-arrowup-open",
+      "title": "ArrowUp opens too, and without a selection focuses the first enabled option",
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": "button.vf-select",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowUp"
+          }
+        ],
+        "componentInteractive": 5,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "option",
+          "events": [],
+          "triggerStates": [
+            {
+              "label": "",
+              "classes": ["vf-select", "vf-select--open"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": null,
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "listbox",
+              "labelledBy": "own-trigger",
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": ["listbox:0"],
+          "focusOption": "Starter",
+          "keydownPrevented": ["ArrowUp:true"],
+          "listboxStates": [
+            {
+              "location": "body",
+              "classes": ["vf-dropdown__menu", "vf-select__menu"],
+              "role": "listbox",
+              "options": [
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Starter",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Legacy",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": true,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Pro",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Team",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                }
+              ]
+            }
+          ],
+          "settled": true
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "team"
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/interaction-enter-open",
+      "title": "Enter on the trigger opens, prevented: no native click toggles it shut",
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": "button.vf-select",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "Enter"
+          }
+        ],
+        "componentInteractive": 5,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "option",
+          "events": [],
+          "triggerStates": [
+            {
+              "label": "Team",
+              "classes": ["vf-select", "vf-select--open"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": "true",
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "listbox",
+              "labelledBy": "own-trigger",
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": ["listbox:0"],
+          "focusOption": "Team",
+          "keydownPrevented": ["Enter:true"],
+          "listboxStates": [
+            {
+              "location": "body",
+              "classes": ["vf-dropdown__menu", "vf-select__menu"],
+              "role": "listbox",
+              "options": [
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Starter",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Legacy",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": true,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Pro",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Team",
+                  "selected": "true",
+                  "selectedClass": true,
+                  "disabled": false,
+                  "tabindex": "-1"
+                }
+              ]
+            }
+          ],
+          "settled": true
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "team"
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/interaction-space-open",
+      "title": "Space on the trigger opens, prevented",
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": "button.vf-select",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": " "
+          }
+        ],
+        "componentInteractive": 5,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "option",
+          "events": [],
+          "triggerStates": [
+            {
+              "label": "Team",
+              "classes": ["vf-select", "vf-select--open"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": "true",
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "listbox",
+              "labelledBy": "own-trigger",
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": ["listbox:0"],
+          "focusOption": "Team",
+          "keydownPrevented": [" :true"],
+          "listboxStates": [
+            {
+              "location": "body",
+              "classes": ["vf-dropdown__menu", "vf-select__menu"],
+              "role": "listbox",
+              "options": [
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Starter",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Legacy",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": true,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Pro",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Team",
+                  "selected": "true",
+                  "selectedClass": true,
+                  "disabled": false,
+                  "tabindex": "-1"
+                }
+              ]
+            }
+          ],
+          "settled": true
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/interaction-home-end-closed",
+      "title": "Home and End on a closed trigger do nothing and are not prevented",
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": "button.vf-select",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "Home"
+          },
+          {
+            "action": "pressKey",
+            "key": "End"
+          }
+        ],
+        "componentInteractive": 1,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["false"],
+          "focusRole": "trigger",
+          "events": [],
+          "triggerStates": [
+            {
+              "label": "",
+              "classes": ["vf-select"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": null,
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "dangling",
+              "labelledBy": null,
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": [],
+          "keydownPrevented": ["Home:false", "End:false"],
+          "transitions": [[]],
+          "settled": true
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/interaction-escape-closed",
+      "title": "Escape on a closed trigger does nothing and is not prevented",
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": "button.vf-select",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "Escape"
+          }
+        ],
+        "componentInteractive": 1,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["false"],
+          "focusRole": "trigger",
+          "events": [],
+          "triggerStates": [
+            {
+              "label": "",
+              "classes": ["vf-select"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": null,
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "dangling",
+              "labelledBy": null,
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": [],
+          "keydownPrevented": ["Escape:false"],
+          "transitions": [[]],
+          "settled": true
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "legacy"
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/interaction-disabled-selected-focus",
+      "title": "A disabled selected option is skipped: a keyboard open focuses the first enabled option",
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": "button.vf-select",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          }
+        ],
+        "componentInteractive": 5,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "option",
+          "events": [],
+          "triggerStates": [
+            {
+              "label": "Legacy",
+              "classes": ["vf-select", "vf-select--open"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": "true",
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "listbox",
+              "labelledBy": "own-trigger",
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": ["listbox:0"],
+          "focusOption": "Starter",
+          "keydownPrevented": ["ArrowDown:true"],
+          "listboxStates": [
+            {
+              "location": "body",
+              "classes": ["vf-dropdown__menu", "vf-select__menu"],
+              "role": "listbox",
+              "options": [
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Starter",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Legacy",
+                  "selected": "true",
+                  "selectedClass": true,
+                  "disabled": true,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Pro",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Team",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                }
+              ]
+            }
+          ],
+          "settled": true
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "starter"
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/interaction-walk",
+      "title": "The arrows walk the enabled options - Legacy is skipped - and wrap past the end",
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": "button.vf-select",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          }
+        ],
+        "componentInteractive": 5,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "option",
+          "events": [],
+          "triggerStates": [
+            {
+              "label": "Starter",
+              "classes": ["vf-select", "vf-select--open"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": "true",
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "listbox",
+              "labelledBy": "own-trigger",
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": ["listbox:0"],
+          "focusOption": "Starter",
+          "keydownPrevented": ["ArrowDown:true", "ArrowDown:true", "ArrowDown:true", "ArrowDown:true"],
+          "listboxStates": [
+            {
+              "location": "body",
+              "classes": ["vf-dropdown__menu", "vf-select__menu"],
+              "role": "listbox",
+              "options": [
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Starter",
+                  "selected": "true",
+                  "selectedClass": true,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Legacy",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": true,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Pro",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Team",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                }
+              ]
+            }
+          ],
+          "settled": true
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "starter"
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/interaction-skip-disabled",
+      "title": "ArrowDown from Starter lands on Pro: the disabled Legacy between them is not an item",
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": "button.vf-select",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          }
+        ],
+        "componentInteractive": 5,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "option",
+          "events": [],
+          "triggerStates": [
+            {
+              "label": "Starter",
+              "classes": ["vf-select", "vf-select--open"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": "true",
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "listbox",
+              "labelledBy": "own-trigger",
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": ["listbox:0"],
+          "focusOption": "Pro",
+          "keydownPrevented": ["ArrowDown:true", "ArrowDown:true"],
+          "listboxStates": [
+            {
+              "location": "body",
+              "classes": ["vf-dropdown__menu", "vf-select__menu"],
+              "role": "listbox",
+              "options": [
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Starter",
+                  "selected": "true",
+                  "selectedClass": true,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Legacy",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": true,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Pro",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Team",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                }
+              ]
+            }
+          ],
+          "settled": true
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "starter"
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/interaction-end",
+      "title": "End goes to the last enabled option, prevented",
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": "button.vf-select",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "pressKey",
+            "key": "End"
+          }
+        ],
+        "componentInteractive": 5,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "option",
+          "events": [],
+          "triggerStates": [
+            {
+              "label": "Starter",
+              "classes": ["vf-select", "vf-select--open"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": "true",
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "listbox",
+              "labelledBy": "own-trigger",
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": ["listbox:0"],
+          "focusOption": "Team",
+          "keydownPrevented": ["ArrowDown:true", "End:true"],
+          "listboxStates": [
+            {
+              "location": "body",
+              "classes": ["vf-dropdown__menu", "vf-select__menu"],
+              "role": "listbox",
+              "options": [
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Starter",
+                  "selected": "true",
+                  "selectedClass": true,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Legacy",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": true,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Pro",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Team",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                }
+              ]
+            }
+          ],
+          "settled": true
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "starter"
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/interaction-arrowup-wrap",
+      "title": "ArrowUp from the first enabled option wraps to the last",
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": "button.vf-select",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowUp"
+          }
+        ],
+        "componentInteractive": 5,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "option",
+          "events": [],
+          "triggerStates": [
+            {
+              "label": "Starter",
+              "classes": ["vf-select", "vf-select--open"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": "true",
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "listbox",
+              "labelledBy": "own-trigger",
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": ["listbox:0"],
+          "focusOption": "Team",
+          "keydownPrevented": ["ArrowDown:true", "ArrowUp:true"],
+          "listboxStates": [
+            {
+              "location": "body",
+              "classes": ["vf-dropdown__menu", "vf-select__menu"],
+              "role": "listbox",
+              "options": [
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Starter",
+                  "selected": "true",
+                  "selectedClass": true,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Legacy",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": true,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Pro",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Team",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                }
+              ]
+            }
+          ],
+          "settled": true
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "pro"
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/interaction-home-end",
+      "title": "End and Home go to the last and the first enabled options, prevented",
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": "button.vf-select",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "pressKey",
+            "key": "End"
+          },
+          {
+            "action": "pressKey",
+            "key": "Home"
+          }
+        ],
+        "componentInteractive": 5,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "option",
+          "events": [],
+          "triggerStates": [
+            {
+              "label": "Pro",
+              "classes": ["vf-select", "vf-select--open"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": "true",
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "listbox",
+              "labelledBy": "own-trigger",
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": ["listbox:0"],
+          "focusOption": "Starter",
+          "keydownPrevented": ["ArrowDown:true", "End:true", "Home:true"],
+          "listboxStates": [
+            {
+              "location": "body",
+              "classes": ["vf-dropdown__menu", "vf-select__menu"],
+              "role": "listbox",
+              "options": [
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Starter",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Legacy",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": true,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Pro",
+                  "selected": "true",
+                  "selectedClass": true,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Team",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                }
+              ]
+            }
+          ],
+          "settled": true
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "starter"
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/interaction-enter-select",
+      "title": "Enter on an option selects it, closes, focuses the trigger and emits the value",
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": "button.vf-select",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "pressKey",
+            "key": "Enter"
+          }
+        ],
+        "componentInteractive": 1,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["false"],
+          "focusRole": "trigger",
+          "events": [
+            {
+              "instance": 0,
+              "value": "team"
+            }
+          ],
+          "triggerStates": [
+            {
+              "label": "Team",
+              "classes": ["vf-select"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": "true",
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "dangling",
+              "labelledBy": null,
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": [],
+          "keydownPrevented": ["ArrowDown:true", "ArrowDown:true", "ArrowDown:true", "Enter:true"],
+          "transitions": [["enter:short", "leave:normal"]],
+          "settled": true
+        }
+      },
+      "matches": "select/selected-team",
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "team"
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/interaction-space-select",
+      "title": "Space on an option selects it too",
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": "button.vf-select",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "pressKey",
+            "key": "Home"
+          },
+          {
+            "action": "pressKey",
+            "key": " "
+          }
+        ],
+        "componentInteractive": 1,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["false"],
+          "focusRole": "trigger",
+          "events": [
+            {
+              "instance": 0,
+              "value": "starter"
+            }
+          ],
+          "triggerStates": [
+            {
+              "label": "Starter",
+              "classes": ["vf-select"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": "true",
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "dangling",
+              "labelledBy": null,
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": [],
+          "keydownPrevented": ["ArrowDown:true", "Home:true", " :true"],
+          "transitions": [["enter:short", "leave:normal"]],
+          "settled": true
+        }
+      },
+      "matches": "select/selected-starter",
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "team"
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/interaction-reselect",
+      "title": "Selecting the already selected option emits again",
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": "button.vf-select",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "pressKey",
+            "key": "Enter"
+          }
+        ],
+        "componentInteractive": 1,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["false"],
+          "focusRole": "trigger",
+          "events": [
+            {
+              "instance": 0,
+              "value": "team"
+            }
+          ],
+          "triggerStates": [
+            {
+              "label": "Team",
+              "classes": ["vf-select"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": "true",
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "dangling",
+              "labelledBy": null,
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": [],
+          "keydownPrevented": ["ArrowDown:true", "Enter:true"],
+          "transitions": [["enter:short", "leave:normal"]],
+          "settled": true
+        }
+      },
+      "matches": "select/selected-team",
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "pro",
+        "disableTeleport": true
+      },
+      "attrs": {},
+      "content": {
+        "after": {
+          "control": {
+            "text": "Outside"
+          }
+        }
+      },
+      "id": "select/interaction-tab-open",
+      "title": "Tab from an option is not handled: focus moves on to the next control and the listbox stays open",
+      "$why": "In place, so the next tabbable element after the listbox is the consumer button inside the case: a teleported listbox is last in <body> and Tab would leave the document.",
+      "consumerInteractive": 1,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": "button.vf-select",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "pressKey",
+            "key": "Tab"
+          }
+        ],
+        "componentInteractive": 5,
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "other-inside-case",
+          "events": [],
+          "triggerStates": [
+            {
+              "label": "Pro",
+              "classes": ["vf-select", "vf-select--open"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": "true",
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "listbox",
+              "labelledBy": "own-trigger",
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": [],
+          "keydownPrevented": ["ArrowDown:true", "Tab:false"],
+          "listboxStates": [
+            {
+              "location": "in-place",
+              "classes": ["vf-dropdown__menu", "vf-select__menu"],
+              "role": "listbox",
+              "options": [
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Starter",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Legacy",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": true,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Pro",
+                  "selected": "true",
+                  "selectedClass": true,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Team",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                }
+              ]
+            }
+          ],
+          "listboxGeometryAfterResize": [
+            {
+              "side": "below",
+              "left": 0,
+              "right": 0.453,
+              "gap": 2,
+              "minWidth": "272px",
+              "triggerWidth": "272px",
+              "withinViewport": true
+            }
+          ],
+          "settled": true
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "pro"
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/interaction-escape-option",
+      "title": "Escape from an option closes, is prevented by the listbox, and focuses the trigger",
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": "button.vf-select",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "pressKey",
+            "key": "Escape"
+          }
+        ],
+        "componentInteractive": 1,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["false"],
+          "focusRole": "trigger",
+          "events": [],
+          "triggerStates": [
+            {
+              "label": "Pro",
+              "classes": ["vf-select"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": "true",
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "dangling",
+              "labelledBy": null,
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": [],
+          "keydownPrevented": ["ArrowDown:true", "Escape:true"],
+          "transitions": [["enter:short", "leave:normal"]],
+          "settled": true
+        }
+      },
+      "matches": "select/selected",
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "pro"
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/interaction-escape-stack",
+      "title": "Escape with focus on the trigger closes through the shared stack, prevented",
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": "button.vf-select"
+          },
+          {
+            "action": "wait",
+            "ms": 450
+          },
+          {
+            "action": "pressKey",
+            "key": "Escape"
+          }
+        ],
+        "componentInteractive": 1,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["false"],
+          "focusRole": "trigger",
+          "events": [],
+          "triggerStates": [
+            {
+              "label": "Pro",
+              "classes": ["vf-select"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": "true",
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "dangling",
+              "labelledBy": null,
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": [],
+          "keydownPrevented": ["Escape:true"],
+          "transitions": [["enter:normal", "leave:normal"]],
+          "settled": true
+        }
+      },
+      "matches": "select/selected",
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "pro"
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/interaction-option-click",
+      "title": "An option click selects without focusing the trigger",
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": "button.vf-select"
+          },
+          {
+            "action": "wait",
+            "ms": 450
+          },
+          {
+            "action": "clickButton",
+            "selector": "[role=\"option\"]",
+            "index": 3,
+            "through": {
+              "selector": "button.vf-select",
+              "attribute": "aria-controls"
+            }
+          }
+        ],
+        "componentInteractive": 1,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["false"],
+          "focusRole": "body",
+          "events": [
+            {
+              "instance": 0,
+              "value": "team"
+            }
+          ],
+          "triggerStates": [
+            {
+              "label": "Team",
+              "classes": ["vf-select"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": "true",
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "dangling",
+              "labelledBy": null,
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": [],
+          "transitions": [["enter:normal", "leave:normal"]],
+          "settled": true
+        }
+      },
+      "matches": "select/selected-team",
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "after": {
+          "control": {
+            "text": "Outside"
+          }
+        }
+      },
+      "id": "select/interaction-outside-click",
+      "title": "An outside click closes without focusing the trigger",
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": "button.vf-select"
+          },
+          {
+            "action": "wait",
+            "ms": 450
+          },
+          {
+            "action": "clickButton",
+            "selector": ".parity-after-control"
+          }
+        ],
+        "componentInteractive": 1,
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["false"],
+          "focusRole": "other-inside-case",
+          "events": [],
+          "triggerStates": [
+            {
+              "label": "",
+              "classes": ["vf-select"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": null,
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "dangling",
+              "labelledBy": null,
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": [],
+          "transitions": [["enter:normal", "leave:normal"]],
+          "settled": true
+        }
+      },
+      "matches": "select/with-outside",
+      "componentInteractive": 1,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "pro",
+        "clearable": true
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/interaction-clear",
+      "title": "The clear button empties the value, swaps back to the chevron and focuses the trigger",
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-select-wrap__clear"
+          }
+        ],
+        "componentInteractive": 1,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["false"],
+          "focusRole": "trigger",
+          "events": [
+            {
+              "instance": 0,
+              "value": ""
+            }
+          ],
+          "triggerStates": [
+            {
+              "label": "",
+              "classes": ["vf-select"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": null,
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "dangling",
+              "labelledBy": null,
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": [],
+          "transitions": [[]],
+          "settled": true
+        }
+      },
+      "matches": "select/clearable-empty",
+      "componentInteractive": 2,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "pro",
+        "clearable": true
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/interaction-clear-open",
+      "title": "The clear button closes an open listbox too",
+      "componentInteractive": 2,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": "button.vf-select"
+          },
+          {
+            "action": "wait",
+            "ms": 450
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-select-wrap__clear"
+          }
+        ],
+        "componentInteractive": 1,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["false"],
+          "focusRole": "trigger",
+          "events": [
+            {
+              "instance": 0,
+              "value": ""
+            }
+          ],
+          "triggerStates": [
+            {
+              "label": "",
+              "classes": ["vf-select"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": null,
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "dangling",
+              "labelledBy": null,
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": [],
+          "transitions": [["enter:normal", "leave:normal"]],
+          "settled": true
+        }
+      },
+      "matches": "select/clearable-empty",
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "disableTeleport": true
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/interaction-in-place-open",
+      "title": "disableTeleport: the listbox opens last in the wrapper",
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": "button.vf-select"
+          }
+        ],
+        "componentInteractive": 5,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "trigger",
+          "events": [],
+          "triggerStates": [
+            {
+              "label": "",
+              "classes": ["vf-select", "vf-select--open"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": null,
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "listbox",
+              "labelledBy": "own-trigger",
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": [],
+          "listboxStates": [
+            {
+              "location": "in-place",
+              "classes": ["vf-dropdown__menu", "vf-select__menu"],
+              "role": "listbox",
+              "options": [
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Starter",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Legacy",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": true,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Pro",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Team",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                }
+              ]
+            }
+          ],
+          "listboxGeometryAfterResize": [
+            {
+              "side": "below",
+              "left": 0,
+              "right": 0,
+              "gap": 2,
+              "minWidth": "360px",
+              "triggerWidth": "360px",
+              "withinViewport": true
+            }
+          ],
+          "settled": true
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "annual",
+            "label": "Enterprise annual plan with priority support"
+          },
+          {
+            "value": "monthly",
+            "label": "Enterprise monthly plan"
+          }
+        ],
+        "placement": "bottom-end"
+      },
+      "attrs": {
+        "style": "margin-left: 400px; width: 120px;"
+      },
+      "content": {},
+      "id": "select/interaction-bottom-end-open",
+      "title": "bottom-end: the listbox’s right edge on the trigger’s",
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": "button.vf-select"
+          }
+        ],
+        "componentInteractive": 3,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "trigger",
+          "events": [],
+          "triggerStates": [
+            {
+              "label": "",
+              "classes": ["vf-select", "vf-select--open"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": null,
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "listbox",
+              "labelledBy": "own-trigger",
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": ["listbox:0"],
+          "listboxStates": [
+            {
+              "location": "body",
+              "classes": ["vf-dropdown__menu", "vf-select__menu"],
+              "role": "listbox",
+              "options": [
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Enterprise annual plan with priority support",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Enterprise monthly plan",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                }
+              ]
+            }
+          ],
+          "listboxGeometryAfterResize": [
+            {
+              "side": "below",
+              "left": -293.672,
+              "right": 0,
+              "gap": 2,
+              "minWidth": "54px",
+              "triggerWidth": "54px",
+              "withinViewport": true
+            }
+          ],
+          "settled": true
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ]
+      },
+      "attrs": {
+        "style": "margin-top: 760px;"
+      },
+      "content": {},
+      "id": "select/interaction-flip-top",
+      "title": "Near the bottom of the viewport the listbox flips above the trigger, with --top",
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": "button.vf-select",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          }
+        ],
+        "componentInteractive": 5,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "option",
+          "events": [],
+          "triggerStates": [
+            {
+              "label": "",
+              "classes": ["vf-select", "vf-select--open"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": null,
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "listbox",
+              "labelledBy": "own-trigger",
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": ["listbox:0"],
+          "focusOption": "Starter",
+          "keydownPrevented": ["ArrowDown:true"],
+          "listboxStates": [
+            {
+              "location": "body",
+              "classes": ["vf-dropdown__menu", "vf-dropdown__menu--top", "vf-select__menu"],
+              "role": "listbox",
+              "options": [
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Starter",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Legacy",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": true,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Pro",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Team",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                }
+              ]
+            }
+          ],
+          "listboxGeometryAfterResize": [
+            {
+              "side": "above",
+              "left": 0,
+              "right": 0,
+              "gap": 2,
+              "minWidth": "360px",
+              "triggerWidth": "360px",
+              "withinViewport": true
+            }
+          ],
+          "settled": true
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "annual",
+            "label": "Enterprise annual plan with priority support"
+          },
+          {
+            "value": "monthly",
+            "label": "Enterprise monthly plan"
+          }
+        ]
+      },
+      "attrs": {
+        "style": "margin-left: 850px; width: 100px;"
+      },
+      "content": {},
+      "id": "select/interaction-shift",
+      "title": "A listbox wider than the room to the right is shifted back into the viewport",
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": "button.vf-select"
+          }
+        ],
+        "componentInteractive": 3,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "trigger",
+          "events": [],
+          "triggerStates": [
+            {
+              "label": "",
+              "classes": ["vf-select", "vf-select--open"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": null,
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "listbox",
+              "labelledBy": "own-trigger",
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": ["listbox:0"],
+          "listboxStates": [
+            {
+              "location": "body",
+              "classes": ["vf-dropdown__menu", "vf-select__menu"],
+              "role": "listbox",
+              "options": [
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Enterprise annual plan with priority support",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Enterprise monthly plan",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                }
+              ]
+            }
+          ],
+          "listboxGeometryAfterResize": [
+            {
+              "side": "below",
+              "left": -222,
+              "right": 71.672,
+              "gap": 2,
+              "minWidth": "54px",
+              "triggerWidth": "54px",
+              "withinViewport": true
+            }
+          ],
+          "settled": true
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "pro"
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/interaction-min-width",
+      "title": "A listbox narrower than a wide trigger takes the trigger’s width as min-width",
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": "button.vf-select"
+          }
+        ],
+        "componentInteractive": 5,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "trigger",
+          "events": [],
+          "triggerStates": [
+            {
+              "label": "Pro",
+              "classes": ["vf-select", "vf-select--open"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": "true",
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "listbox",
+              "labelledBy": "own-trigger",
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": ["listbox:0"],
+          "listboxStates": [
+            {
+              "location": "body",
+              "classes": ["vf-dropdown__menu", "vf-select__menu"],
+              "role": "listbox",
+              "options": [
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Starter",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Legacy",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": true,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Pro",
+                  "selected": "true",
+                  "selectedClass": true,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Team",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                }
+              ]
+            }
+          ],
+          "listboxGeometryAfterResize": [
+            {
+              "side": "below",
+              "left": 0,
+              "right": 0,
+              "gap": 2,
+              "minWidth": "360px",
+              "triggerWidth": "360px",
+              "withinViewport": true
+            }
+          ],
+          "settled": true
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "o01",
+            "label": "Option 01"
+          },
+          {
+            "value": "o02",
+            "label": "Option 02"
+          },
+          {
+            "value": "o03",
+            "label": "Option 03"
+          },
+          {
+            "value": "o04",
+            "label": "Option 04"
+          },
+          {
+            "value": "o05",
+            "label": "Option 05"
+          },
+          {
+            "value": "o06",
+            "label": "Option 06"
+          },
+          {
+            "value": "o07",
+            "label": "Option 07"
+          },
+          {
+            "value": "o08",
+            "label": "Option 08"
+          },
+          {
+            "value": "o09",
+            "label": "Option 09"
+          },
+          {
+            "value": "o10",
+            "label": "Option 10"
+          },
+          {
+            "value": "o11",
+            "label": "Option 11"
+          },
+          {
+            "value": "o12",
+            "label": "Option 12"
+          }
+        ],
+        "modelValue": "o11"
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/interaction-scroll-into-view",
+      "title": "Opening scrolls the selected option into view inside the listbox’s own max-height",
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": "button.vf-select",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          }
+        ],
+        "componentInteractive": 13,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "option",
+          "events": [],
+          "triggerStates": [
+            {
+              "label": "Option 11",
+              "classes": ["vf-select", "vf-select--open"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": "true",
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "listbox",
+              "labelledBy": "own-trigger",
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": ["listbox:0"],
+          "focusOption": "Option 11",
+          "keydownPrevented": ["ArrowDown:true"],
+          "listboxStates": [
+            {
+              "location": "body",
+              "classes": ["vf-dropdown__menu", "vf-select__menu"],
+              "role": "listbox",
+              "options": [
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Option 01",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Option 02",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Option 03",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Option 04",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Option 05",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Option 06",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Option 07",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Option 08",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Option 09",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Option 10",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Option 11",
+                  "selected": "true",
+                  "selectedClass": true,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Option 12",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                }
+              ]
+            }
+          ],
+          "listboxScroll": [
+            {
+              "scrollTop": 158,
+              "scrollable": true,
+              "focusedInView": true
+            }
+          ],
+          "settled": true
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "o01",
+            "label": "Option 01"
+          },
+          {
+            "value": "o02",
+            "label": "Option 02"
+          },
+          {
+            "value": "o03",
+            "label": "Option 03"
+          },
+          {
+            "value": "o04",
+            "label": "Option 04"
+          },
+          {
+            "value": "o05",
+            "label": "Option 05"
+          },
+          {
+            "value": "o06",
+            "label": "Option 06"
+          },
+          {
+            "value": "o07",
+            "label": "Option 07"
+          },
+          {
+            "value": "o08",
+            "label": "Option 08"
+          },
+          {
+            "value": "o09",
+            "label": "Option 09"
+          },
+          {
+            "value": "o10",
+            "label": "Option 10"
+          },
+          {
+            "value": "o11",
+            "label": "Option 11"
+          },
+          {
+            "value": "o12",
+            "label": "Option 12"
+          }
+        ],
+        "modelValue": "o11"
+      },
+      "attrs": {},
+      "content": {},
+      "id": "select/interaction-scroll-on-click",
+      "title": "A click open scrolls too, without moving focus into the listbox",
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": "button.vf-select"
+          }
+        ],
+        "componentInteractive": 13,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "trigger",
+          "events": [],
+          "triggerStates": [
+            {
+              "label": "Option 11",
+              "classes": ["vf-select", "vf-select--open"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": "true",
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "listbox",
+              "labelledBy": "own-trigger",
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": ["listbox:0"],
+          "listboxStates": [
+            {
+              "location": "body",
+              "classes": ["vf-dropdown__menu", "vf-select__menu"],
+              "role": "listbox",
+              "options": [
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Option 01",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Option 02",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Option 03",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Option 04",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Option 05",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Option 06",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Option 07",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Option 08",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Option 09",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Option 10",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Option 11",
+                  "selected": "true",
+                  "selectedClass": true,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Option 12",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                }
+              ]
+            }
+          ],
+          "listboxScroll": [
+            {
+              "scrollTop": 158,
+              "scrollable": true,
+              "focusedInView": null
+            }
+          ],
+          "settled": true
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {},
+      "attrs": {},
+      "content": {},
+      "id": "select/interaction-two-keyboard-open",
+      "title": "Two keyboard-opened selects stay open at once, each wired to its own listbox",
+      "group": [
+        {
+          "options": [
+            {
+              "value": "starter",
+              "label": "Starter"
+            },
+            {
+              "value": "legacy",
+              "label": "Legacy",
+              "disabled": true
+            },
+            {
+              "value": "pro",
+              "label": "Pro"
+            },
+            {
+              "value": "team",
+              "label": "Team"
+            }
+          ],
+          "modelValue": "pro"
+        },
+        {
+          "options": [
+            {
+              "value": "starter",
+              "label": "Starter"
+            },
+            {
+              "value": "legacy",
+              "label": "Legacy",
+              "disabled": true
+            },
+            {
+              "value": "pro",
+              "label": "Pro"
+            },
+            {
+              "value": "team",
+              "label": "Team"
+            }
+          ],
+          "modelValue": "team"
+        }
+      ],
+      "componentInteractive": 2,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": "button.vf-select",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "wait",
+            "ms": 450
+          },
+          {
+            "action": "focusButton",
+            "selector": "button.vf-select",
+            "index": 1
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          }
+        ],
+        "componentInteractive": 10,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["true", "true"],
+          "focusRole": "option",
+          "events": [],
+          "triggerStates": [
+            {
+              "label": "Pro",
+              "classes": ["vf-select", "vf-select--open"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": "true",
+              "clear": false,
+              "chevron": true
+            },
+            {
+              "label": "Team",
+              "classes": ["vf-select", "vf-select--open"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": "true",
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "listbox",
+              "labelledBy": "own-trigger",
+              "activedescendant": false
+            },
+            {
+              "controls": "listbox",
+              "labelledBy": "own-trigger",
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": ["listbox:0", "listbox:1"],
+          "focusOption": "Team",
+          "keydownPrevented": ["ArrowDown:true", "ArrowDown:true"],
+          "listboxStates": [
+            {
+              "location": "body",
+              "classes": ["vf-dropdown__menu", "vf-select__menu"],
+              "role": "listbox",
+              "options": [
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Starter",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Legacy",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": true,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Pro",
+                  "selected": "true",
+                  "selectedClass": true,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Team",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                }
+              ]
+            },
+            {
+              "location": "body",
+              "classes": ["vf-dropdown__menu", "vf-select__menu"],
+              "role": "listbox",
+              "options": [
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Starter",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Legacy",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": true,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Pro",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Team",
+                  "selected": "true",
+                  "selectedClass": true,
+                  "disabled": false,
+                  "tabindex": "-1"
+                }
+              ]
+            }
+          ],
+          "listboxGeometryAfterResize": [
+            {
+              "side": "below",
+              "left": 0,
+              "right": 0,
+              "gap": 2,
+              "minWidth": "172px",
+              "triggerWidth": "172px",
+              "withinViewport": true
+            },
+            {
+              "side": "below",
+              "left": 0,
+              "right": 0,
+              "gap": 2,
+              "minWidth": "172px",
+              "triggerWidth": "172px",
+              "withinViewport": true
+            }
+          ],
+          "settled": true
+        }
+      },
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {},
+      "attrs": {},
+      "content": {},
+      "id": "select/interaction-escape-lifo",
+      "title": "With two open, Escape from the trigger closes the later one first",
+      "group": [
+        {
+          "options": [
+            {
+              "value": "starter",
+              "label": "Starter"
+            },
+            {
+              "value": "legacy",
+              "label": "Legacy",
+              "disabled": true
+            },
+            {
+              "value": "pro",
+              "label": "Pro"
+            },
+            {
+              "value": "team",
+              "label": "Team"
+            }
+          ],
+          "modelValue": "pro"
+        },
+        {
+          "options": [
+            {
+              "value": "starter",
+              "label": "Starter"
+            },
+            {
+              "value": "legacy",
+              "label": "Legacy",
+              "disabled": true
+            },
+            {
+              "value": "pro",
+              "label": "Pro"
+            },
+            {
+              "value": "team",
+              "label": "Team"
+            }
+          ],
+          "modelValue": "team"
+        }
+      ],
+      "componentInteractive": 2,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": "button.vf-select",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "wait",
+            "ms": 450
+          },
+          {
+            "action": "focusButton",
+            "selector": "button.vf-select",
+            "index": 1
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "wait",
+            "ms": 450
+          },
+          {
+            "action": "focusButton",
+            "selector": "button.vf-select",
+            "index": 1
+          },
+          {
+            "action": "pressKey",
+            "key": "Escape"
+          }
+        ],
+        "componentInteractive": 6,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["true", "false"],
+          "focusRole": "trigger",
+          "events": [],
+          "triggerStates": [
+            {
+              "label": "Pro",
+              "classes": ["vf-select", "vf-select--open"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": "true",
+              "clear": false,
+              "chevron": true
+            },
+            {
+              "label": "Team",
+              "classes": ["vf-select"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": "true",
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "listbox",
+              "labelledBy": "own-trigger",
+              "activedescendant": false
+            },
+            {
+              "controls": "dangling",
+              "labelledBy": null,
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": ["listbox:0"],
+          "keydownPrevented": ["ArrowDown:true", "ArrowDown:true", "Escape:true"],
+          "listboxStates": [
+            {
+              "location": "body",
+              "classes": ["vf-dropdown__menu", "vf-select__menu"],
+              "role": "listbox",
+              "options": [
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Starter",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Legacy",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": true,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Pro",
+                  "selected": "true",
+                  "selectedClass": true,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Team",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                }
+              ]
+            },
+            null
+          ],
+          "transitions": [["enter:normal"], ["enter:normal", "leave:normal"]],
+          "settled": true
+        }
+      },
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {},
+      "attrs": {},
+      "content": {},
+      "id": "select/interaction-pointer-switch",
+      "title": "Clicking the second trigger closes a click-opened first as an outside click",
+      "group": [
+        {
+          "options": [
+            {
+              "value": "starter",
+              "label": "Starter"
+            },
+            {
+              "value": "legacy",
+              "label": "Legacy",
+              "disabled": true
+            },
+            {
+              "value": "pro",
+              "label": "Pro"
+            },
+            {
+              "value": "team",
+              "label": "Team"
+            }
+          ],
+          "modelValue": "pro"
+        },
+        {
+          "options": [
+            {
+              "value": "starter",
+              "label": "Starter"
+            },
+            {
+              "value": "legacy",
+              "label": "Legacy",
+              "disabled": true
+            },
+            {
+              "value": "pro",
+              "label": "Pro"
+            },
+            {
+              "value": "team",
+              "label": "Team"
+            }
+          ],
+          "modelValue": "team"
+        }
+      ],
+      "componentInteractive": 2,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": "button.vf-select",
+            "index": 0
+          },
+          {
+            "action": "wait",
+            "ms": 450
+          },
+          {
+            "action": "clickButton",
+            "selector": "button.vf-select",
+            "index": 1
+          }
+        ],
+        "componentInteractive": 6,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["false", "true"],
+          "focusRole": "trigger",
+          "events": [],
+          "triggerStates": [
+            {
+              "label": "Pro",
+              "classes": ["vf-select"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": "true",
+              "clear": false,
+              "chevron": true
+            },
+            {
+              "label": "Team",
+              "classes": ["vf-select", "vf-select--open"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": "true",
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "dangling",
+              "labelledBy": null,
+              "activedescendant": false
+            },
+            {
+              "controls": "listbox",
+              "labelledBy": "own-trigger",
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": ["listbox:1"],
+          "listboxStates": [
+            null,
+            {
+              "location": "body",
+              "classes": ["vf-dropdown__menu", "vf-select__menu"],
+              "role": "listbox",
+              "options": [
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Starter",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Legacy",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": true,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Pro",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Team",
+                  "selected": "true",
+                  "selectedClass": true,
+                  "disabled": false,
+                  "tabindex": "-1"
+                }
+              ]
+            }
+          ],
+          "listboxGeometryAfterResize": [
+            null,
+            {
+              "side": "below",
+              "left": 0,
+              "right": 0,
+              "gap": 2,
+              "minWidth": "172px",
+              "triggerWidth": "172px",
+              "withinViewport": true
+            }
+          ],
+          "transitions": [["enter:normal", "leave:normal"], ["enter:normal"]],
+          "settled": true
+        }
+      },
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "starter"
+      },
+      "attrs": {
+        "name": "plan"
+      },
+      "content": {
+        "form": {}
+      },
+      "id": "select/interaction-form-select",
+      "title": "A keyboard selection updates the hidden input and the form’s entries",
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": "button.vf-select",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "pressKey",
+            "key": "Enter"
+          }
+        ],
+        "componentInteractive": 1,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["false"],
+          "focusRole": "trigger",
+          "events": [
+            {
+              "instance": 0,
+              "value": "pro"
+            }
+          ],
+          "triggerStates": [
+            {
+              "label": "Pro",
+              "classes": ["vf-select"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": "true",
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "dangling",
+              "labelledBy": null,
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": [],
+          "keydownPrevented": ["ArrowDown:true", "ArrowDown:true", "Enter:true"],
+          "hiddenInputs": [
+            {
+              "name": "plan",
+              "value": "pro",
+              "disabled": false,
+              "first": true
+            }
+          ],
+          "formData": [["plan", "pro"]],
+          "formValid": true,
+          "transitions": [["enter:short", "leave:normal"]],
+          "settled": true
+        }
+      },
+      "matches": "select/named",
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "starter"
+      },
+      "attrs": {
+        "name": "plan"
+      },
+      "content": {
+        "form": {
+          "reset": true
+        }
+      },
+      "id": "select/interaction-form-reset",
+      "title": "A native form reset after a selection changes nothing: no emit, the submitted value stays",
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": "button.vf-select",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "pressKey",
+            "key": "Enter"
+          },
+          {
+            "action": "wait",
+            "ms": 450
+          },
+          {
+            "action": "clickButton",
+            "selector": ".parity-reset-control"
+          }
+        ],
+        "componentInteractive": 1,
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["false"],
+          "focusRole": "other-inside-case",
+          "events": [
+            {
+              "instance": 0,
+              "value": "pro"
+            }
+          ],
+          "triggerStates": [
+            {
+              "label": "Pro",
+              "classes": ["vf-select"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": "true",
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "dangling",
+              "labelledBy": null,
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": [],
+          "keydownPrevented": ["ArrowDown:true", "ArrowDown:true", "Enter:true"],
+          "hiddenInputs": [
+            {
+              "name": "plan",
+              "value": "pro",
+              "disabled": false,
+              "first": true
+            }
+          ],
+          "formData": [["plan", "pro"]],
+          "formValid": true,
+          "transitions": [["enter:short", "leave:normal"]],
+          "settled": true
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "pro",
+        "clearable": true
+      },
+      "attrs": {
+        "name": "plan"
+      },
+      "content": {
+        "form": {}
+      },
+      "id": "select/interaction-form-clear",
+      "title": "A clear submits the empty string",
+      "componentInteractive": 2,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-select-wrap__clear"
+          }
+        ],
+        "componentInteractive": 1,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["false"],
+          "focusRole": "trigger",
+          "events": [
+            {
+              "instance": 0,
+              "value": ""
+            }
+          ],
+          "triggerStates": [
+            {
+              "label": "",
+              "classes": ["vf-select"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": null,
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "dangling",
+              "labelledBy": null,
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": [],
+          "hiddenInputs": [
+            {
+              "name": "plan",
+              "value": "",
+              "disabled": false,
+              "first": true
+            }
+          ],
+          "formData": [["plan", ""]],
+          "formValid": true,
+          "transitions": [[]],
+          "settled": true
+        }
+      },
+      "matches": "select/form-clear-empty",
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "pro",
+        "disabled": true
+      },
+      "attrs": {
+        "name": "plan"
+      },
+      "content": {
+        "form": {},
+        "after": {
+          "control": {
+            "text": "Outside"
+          }
+        }
+      },
+      "id": "select/interaction-form-disabled",
+      "title": "A disabled select submits nothing",
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".parity-after-control"
+          }
+        ],
+        "componentInteractive": 1,
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["false"],
+          "focusRole": "other-inside-case",
+          "events": [],
+          "triggerStates": [
+            {
+              "label": "Pro",
+              "classes": ["vf-select"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": "true",
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "dangling",
+              "labelledBy": null,
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": [],
+          "hiddenInputs": [
+            {
+              "name": "plan",
+              "value": "pro",
+              "disabled": true,
+              "first": true
+            }
+          ],
+          "formData": [],
+          "formValid": true,
+          "transitions": [[]],
+          "settled": true
+        }
+      },
+      "matches": "select/form-disabled",
+      "componentInteractive": 1,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ]
+      },
+      "attrs": {
+        "name": "plan",
+        "required": true
+      },
+      "content": {
+        "form": {},
+        "after": {
+          "control": {
+            "text": "Outside"
+          }
+        }
+      },
+      "id": "select/interaction-form-required",
+      "title": "required is dropped: the empty form is valid and submits the empty value",
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".parity-after-control"
+          }
+        ],
+        "componentInteractive": 1,
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["false"],
+          "focusRole": "other-inside-case",
+          "events": [],
+          "triggerStates": [
+            {
+              "label": "",
+              "classes": ["vf-select"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": null,
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "dangling",
+              "labelledBy": null,
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": [],
+          "hiddenInputs": [
+            {
+              "name": "plan",
+              "value": "",
+              "disabled": false,
+              "first": true
+            }
+          ],
+          "formData": [["plan", ""]],
+          "formValid": true,
+          "transitions": [[]],
+          "settled": true
+        }
+      },
+      "matches": "select/form-required",
+      "componentInteractive": 1,
+      "consumerInteractive": 1,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "placeholder": "Choose a plan"
+      },
+      "attrs": {},
+      "content": {
+        "field": {
+          "label": "Plan",
+          "placement": "floating"
+        }
+      },
+      "id": "select/interaction-field-open-empty",
+      "title": "In a floating field an open empty select fills the field",
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": "button.vf-select"
+          }
+        ],
+        "componentInteractive": 5,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "trigger",
+          "events": [],
+          "triggerStates": [
+            {
+              "label": "",
+              "classes": ["vf-select", "vf-select--floating", "vf-select--open", "vf-select--placeholder"],
+              "wrapperClasses": ["vf-select-wrap", "vf-select-wrap--floating"],
+              "filled": null,
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "listbox",
+              "labelledBy": "own-trigger",
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": ["listbox:0"],
+          "listboxStates": [
+            {
+              "location": "body",
+              "classes": ["vf-dropdown__menu", "vf-select__menu"],
+              "role": "listbox",
+              "options": [
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Starter",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Legacy",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": true,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Pro",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Team",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                }
+              ]
+            }
+          ],
+          "fieldStates": [
+            {
+              "classes": ["vf-field", "vf-field--floating", "vf-field--floating-in"],
+              "controlClasses": ["vf-field__control", "vf-field__control--filled", "vf-field__control--floating"],
+              "labelTargetsTrigger": true
+            }
+          ],
+          "settled": true
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "placeholder": "Choose a plan"
+      },
+      "attrs": {},
+      "content": {
+        "field": {
+          "label": "Plan",
+          "placement": "floating"
+        }
+      },
+      "id": "select/interaction-field-open-close",
+      "title": "Closing it again empties the field",
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": "button.vf-select"
+          },
+          {
+            "action": "wait",
+            "ms": 450
+          },
+          {
+            "action": "pressKey",
+            "key": "Escape"
+          }
+        ],
+        "componentInteractive": 1,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["false"],
+          "focusRole": "trigger",
+          "events": [],
+          "triggerStates": [
+            {
+              "label": "",
+              "classes": ["vf-select", "vf-select--floating", "vf-select--placeholder"],
+              "wrapperClasses": ["vf-select-wrap", "vf-select-wrap--floating"],
+              "filled": null,
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "dangling",
+              "labelledBy": null,
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": [],
+          "keydownPrevented": ["Escape:true"],
+          "fieldStates": [
+            {
+              "classes": ["vf-field", "vf-field--floating", "vf-field--floating-in"],
+              "controlClasses": ["vf-field__control", "vf-field__control--floating"],
+              "labelTargetsTrigger": true
+            }
+          ],
+          "transitions": [["enter:normal", "leave:normal"]],
+          "settled": true
+        }
+      },
+      "matches": "select/field-floating",
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "placeholder": "Choose a plan"
+      },
+      "attrs": {},
+      "content": {
+        "field": {
+          "label": "Plan",
+          "placement": "floating"
+        }
+      },
+      "id": "select/interaction-field-select",
+      "title": "Selecting in a floating field leaves it filled",
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": "button.vf-select"
+          },
+          {
+            "action": "wait",
+            "ms": 450
+          },
+          {
+            "action": "clickButton",
+            "selector": "[role=\"option\"]",
+            "index": 2,
+            "through": {
+              "selector": "button.vf-select",
+              "attribute": "aria-controls"
+            }
+          }
+        ],
+        "componentInteractive": 1,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["false"],
+          "focusRole": "body",
+          "events": [
+            {
+              "instance": 0,
+              "value": "pro"
+            }
+          ],
+          "triggerStates": [
+            {
+              "label": "Pro",
+              "classes": ["vf-select", "vf-select--floating"],
+              "wrapperClasses": ["vf-select-wrap", "vf-select-wrap--floating"],
+              "filled": "true",
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "dangling",
+              "labelledBy": null,
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": [],
+          "fieldStates": [
+            {
+              "classes": ["vf-field", "vf-field--floating", "vf-field--floating-in"],
+              "controlClasses": ["vf-field__control", "vf-field__control--filled", "vf-field__control--floating"],
+              "labelTargetsTrigger": true
+            }
+          ],
+          "transitions": [["enter:normal", "leave:normal"]],
+          "settled": true
+        }
+      },
+      "matches": "select/field-floating-filled",
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ],
+        "modelValue": "pro"
+      },
+      "attrs": {},
+      "content": {
+        "field": {
+          "label": "Plan",
+          "placement": "floating"
+        }
+      },
+      "id": "select/interaction-field-open-filled",
+      "title": "An open filled select keeps its floating field filled",
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": "button.vf-select",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          }
+        ],
+        "componentInteractive": 5,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["true"],
+          "focusRole": "option",
+          "events": [],
+          "triggerStates": [
+            {
+              "label": "Pro",
+              "classes": ["vf-select", "vf-select--floating", "vf-select--open"],
+              "wrapperClasses": ["vf-select-wrap", "vf-select-wrap--floating"],
+              "filled": "true",
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "listbox",
+              "labelledBy": "own-trigger",
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": ["listbox:0"],
+          "focusOption": "Pro",
+          "keydownPrevented": ["ArrowDown:true"],
+          "listboxStates": [
+            {
+              "location": "body",
+              "classes": ["vf-dropdown__menu", "vf-select__menu"],
+              "role": "listbox",
+              "options": [
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Starter",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Legacy",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": true,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Pro",
+                  "selected": "true",
+                  "selectedClass": true,
+                  "disabled": false,
+                  "tabindex": "-1"
+                },
+                {
+                  "tag": "button",
+                  "role": "option",
+                  "label": "Team",
+                  "selected": "false",
+                  "selectedClass": false,
+                  "disabled": false,
+                  "tabindex": "-1"
+                }
+              ]
+            }
+          ],
+          "fieldStates": [
+            {
+              "classes": ["vf-field", "vf-field--floating", "vf-field--floating-in"],
+              "controlClasses": ["vf-field__control", "vf-field__control--filled", "vf-field__control--floating"],
+              "labelTargetsTrigger": true
+            }
+          ],
+          "settled": true
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "popover": {
+          "trigger": "Filters"
+        }
+      },
+      "id": "select/interaction-popover-escape",
+      "title": "Inside a popover the first Escape closes the select, the second the popover",
+      "componentInteractive": 1,
+      "consumerInteractive": 1,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-popover__trigger"
+          },
+          {
+            "action": "wait",
+            "ms": 450
+          },
+          {
+            "action": "clickButton",
+            "selector": "button.vf-select",
+            "index": 1
+          },
+          {
+            "action": "wait",
+            "ms": 450
+          },
+          {
+            "action": "pressKey",
+            "key": "Escape"
+          },
+          {
+            "action": "wait",
+            "ms": 450
+          },
+          {
+            "action": "pressKey",
+            "key": "Escape"
+          },
+          {
+            "action": "wait",
+            "ms": 450
+          }
+        ],
+        "componentInteractive": 1,
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["false"],
+          "focusRole": "other-inside-case",
+          "events": [],
+          "triggerStates": [
+            {
+              "label": "",
+              "classes": ["vf-select"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": null,
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "dangling",
+              "labelledBy": null,
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": [],
+          "keydownPrevented": ["Escape:true", "Escape:true"],
+          "popoverStates": ["false"],
+          "transitions": [[]],
+          "settled": true
+        }
+      },
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "popover": {
+          "trigger": "Filters"
+        }
+      },
+      "id": "select/interaction-popover-option",
+      "title": "An option click in a select inside a popover closes the popover too: the listbox is outside its panel",
+      "componentInteractive": 1,
+      "consumerInteractive": 1,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-popover__trigger"
+          },
+          {
+            "action": "wait",
+            "ms": 450
+          },
+          {
+            "action": "clickButton",
+            "selector": "button.vf-select",
+            "index": 1
+          },
+          {
+            "action": "wait",
+            "ms": 450
+          },
+          {
+            "action": "clickButton",
+            "selector": "[role=\"option\"]",
+            "index": 0,
+            "through": {
+              "selector": "button.vf-select",
+              "attribute": "aria-controls",
+              "index": 1
+            }
+          },
+          {
+            "action": "wait",
+            "ms": 450
+          }
+        ],
+        "componentInteractive": 1,
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["false"],
+          "focusRole": "other-inside-case",
+          "events": [
+            {
+              "instance": 1,
+              "value": "starter"
+            }
+          ],
+          "triggerStates": [
+            {
+              "label": "",
+              "classes": ["vf-select"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": null,
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "dangling",
+              "labelledBy": null,
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": [],
+          "popoverStates": ["false"],
+          "transitions": [[]],
+          "settled": true
+        }
+      },
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "props": {
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          },
+          {
+            "value": "pro",
+            "label": "Pro"
+          },
+          {
+            "value": "team",
+            "label": "Team"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "popover": {
+          "trigger": "Filters"
+        }
+      },
+      "id": "select/interaction-popover-close",
+      "title": "Closing the popover with its select open unmounts the select: no orphan listbox, no stack entry",
+      "componentInteractive": 1,
+      "consumerInteractive": 1,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-popover__trigger"
+          },
+          {
+            "action": "wait",
+            "ms": 450
+          },
+          {
+            "action": "focusButton",
+            "selector": "button.vf-select",
+            "index": 1
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          },
+          {
+            "action": "wait",
+            "ms": 450
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-popover__trigger"
+          },
+          {
+            "action": "wait",
+            "ms": 450
+          },
+          {
+            "action": "pressKey",
+            "key": "Escape"
+          },
+          {
+            "action": "wait",
+            "ms": 450
+          }
+        ],
+        "componentInteractive": 1,
+        "consumerInteractive": 1,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedStates": ["false"],
+          "focusRole": "other-inside-case",
+          "events": [],
+          "triggerStates": [
+            {
+              "label": "",
+              "classes": ["vf-select"],
+              "wrapperClasses": ["vf-select-wrap"],
+              "filled": null,
+              "clear": false,
+              "chevron": true
+            }
+          ],
+          "listboxRelationships": [
+            {
+              "controls": "dangling",
+              "labelledBy": null,
+              "activedescendant": false
+            }
+          ],
+          "bodyListboxes": [],
+          "keydownPrevented": ["ArrowDown:true", "Escape:false"],
+          "popoverStates": ["false"],
+          "transitions": [[]],
+          "settled": true
+        }
+      },
+      "consumerInteractiveRoles": 0
+    }
+  ]
+}

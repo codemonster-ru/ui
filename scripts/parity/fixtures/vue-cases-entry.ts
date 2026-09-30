@@ -37,6 +37,7 @@ import VfDropdown from '@parity/core/components/dropdown/VfDropdown.vue';
 import VfGroupBox from '@parity/core/components/group-box/VfGroupBox.vue';
 import VfPopover from '@parity/core/components/popover/VfPopover.vue';
 import VfTooltip from '@parity/core/components/tooltip/VfTooltip.vue';
+import VfSelect from '@parity/core/components/select/VfSelect.vue';
 import { VueIconify } from '@codemonster-ru/vueforge-icons';
 import '@parity/core/styles/components.css';
 import cases from '@parity/cases.json';
@@ -832,6 +833,205 @@ function installDropdownLogs(): void {
         if (!running.has(node) && (state === 'enter' || state === 'leave')) {
           const entry = { kind: state, start: now, ms: null };
           (window.__parityDropdownTransitions![node.id] ??= []).push(entry);
+          running.set(node, entry);
+        }
+      }
+    }
+  }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+}
+
+/**
+ * VfSelect's content, as the shared catalog spells it (M32).
+ *
+ * `field` wraps the select in a real VfField whose slot scope the select is
+ * bound to, as a consumer binds it; `form` wraps the case in a form, with a
+ * native reset button when asked; `popover` puts the select in a real
+ * VfPopover rendered in place, so the select stays inside the case; `after`
+ * is a consumer button after the roots; `leading` and `trailing` fill the
+ * adornment slots.
+ */
+interface SelectContent {
+  field?: { label: string; placement?: 'top' | 'floating'; description?: string; error?: string };
+  form?: { reset?: boolean };
+  popover?: { trigger: string };
+  after?: { control?: { text: string } };
+  leading?: { text: string };
+  trailing?: { text: string };
+}
+
+/**
+ * The reactive props each VfSelect instance is rendered with. Every select is
+ * rendered the way a v-model consumer renders it, update:modelValue written
+ * back: the no-write-back reading is Vue-only and pinned by the
+ * characterization suite (platform divergence razor-has-no-controlled-mode).
+ */
+const selectProps = reactive<Record<string, Record<string, unknown>>>({});
+
+declare global {
+  interface Window {
+    __paritySelectEvents?: Record<string, { instance: number; value: string }[]>;
+    __paritySelectKeys?: { key: string; prevented: boolean }[];
+    __paritySelectTransitions?: Record<string, { kind: string; start: number; ms: number | null }[]>;
+  }
+}
+
+function renderSelectInstance(
+  caseId: string,
+  key: string,
+  instance: number,
+  props: Record<string, unknown>,
+  attrs: Record<string, unknown>,
+  content: SelectContent,
+  scope: Record<string, unknown> = {},
+): VNode {
+  selectProps[key] ??= reactive({ modelValue: '', ...props });
+  const live = selectProps[key];
+  const slots: Record<string, () => VNode[]> = {};
+  if (content.leading) slots.leading = () => [h('span', { class: 'parity-content' }, content.leading!.text)];
+  if (content.trailing) slots.trailing = () => [h('span', { class: 'parity-content' }, content.trailing!.text)];
+
+  return h(
+    VfSelect,
+    {
+      ...live,
+      ...attrs,
+      ...scope,
+      key,
+      'onUpdate:modelValue': (value: string) => {
+        if (document.documentElement.getAttribute('data-parity-ready') === 'true') {
+          (window.__paritySelectEvents![caseId] ??= []).push({ instance, value });
+        }
+        live.modelValue = value;
+      },
+    },
+    slots,
+  );
+}
+
+/** VfSelect, for the select catalog. See SelectContent. */
+function renderSelect(parityCase: ParityCase): VNode[] {
+  const content = (parityCase.content ?? {}) as unknown as SelectContent;
+  const field = content.field;
+  let nodes: VNode[] = Array.isArray(parityCase.group)
+    ? parityCase.group.map((member, index) =>
+        renderSelectInstance(parityCase.id, `${parityCase.id}/${index}`, index, member, parityCase.attrs, content),
+      )
+    : field
+      ? [
+          h(
+            VfField,
+            {
+              label: field.label,
+              labelPlacement: field.placement ?? 'top',
+              ...(field.description ? { description: field.description } : {}),
+              ...(field.error ? { error: field.error } : {}),
+            },
+            {
+              default: ({ controlId, describedBy, invalid }: Record<string, unknown>) => [
+                renderSelectInstance(parityCase.id, parityCase.id, 0, parityCase.props, parityCase.attrs, content, {
+                  id: controlId,
+                  'aria-describedby': describedBy,
+                  invalid: Boolean(invalid) || Boolean(parityCase.props.invalid),
+                }),
+              ],
+            },
+          ),
+        ]
+      : [renderSelectInstance(parityCase.id, parityCase.id, 0, parityCase.props, parityCase.attrs, content)];
+
+  if (content.popover) {
+    // A select beside the popover first, so the profile's declared edge - a
+    // select trigger - is rendered in the case in every state, and the select
+    // inside the closed popover second.
+    const inner = renderSelectInstance(parityCase.id, `${parityCase.id}/inside`, 1, parityCase.props, parityCase.attrs, content);
+    nodes = [
+      renderSelectInstance(parityCase.id, `${parityCase.id}/beside`, 0, parityCase.props, parityCase.attrs, content),
+      h(
+        VfPopover,
+        { disableTeleport: true, 'aria-label': 'Filters' },
+        { trigger: () => [h('span', content.popover!.trigger)], default: () => [inner] },
+      ),
+    ];
+  }
+  if (content.after?.control) {
+    nodes.push(h('button', { type: 'button', class: 'parity-after-control' }, content.after.control.text));
+  }
+  if (content.form) {
+    if (content.form.reset) nodes.push(h('button', { type: 'reset', class: 'parity-reset-control' }, 'Reset'));
+    nodes = [h('form', { class: 'parity-form', onSubmit: (event: Event) => event.preventDefault() }, nodes)];
+  }
+
+  return nodes;
+}
+
+/**
+ * The select's page-level harness logs, the dropdown's in shape: one entry
+ * per update:modelValue with the instance's index in the case, from
+ * readiness on; one entry per keydown reaching the document with whether it
+ * ended up prevented; every enter and leave a listbox completes after the
+ * first real pointer or key input.
+ */
+function installSelectLogs(): void {
+  window.__paritySelectEvents = {};
+  window.__paritySelectKeys = [];
+  window.__paritySelectTransitions = {};
+  let observing = false;
+  for (const type of ['pointerdown', 'keydown']) {
+    document.addEventListener(type, () => (observing = true), true);
+  }
+  // As the dropdown's: filled on window after every product handler, and only
+  // then is an unconsumed navigation key's or Escape's default swallowed.
+  const entries = new WeakMap<Event, { key: string; prevented: boolean }>();
+  const swallowed = new Set([
+    'ArrowUp',
+    'ArrowDown',
+    'ArrowLeft',
+    'ArrowRight',
+    'Home',
+    'End',
+    'PageUp',
+    'PageDown',
+    'Escape',
+  ]);
+  document.addEventListener(
+    'keydown',
+    (event) => {
+      const entry = { key: event.key, prevented: false };
+      window.__paritySelectKeys!.push(entry);
+      entries.set(event, entry);
+    },
+    true,
+  );
+  window.addEventListener('keydown', (event) => {
+    const entry = entries.get(event);
+    if (entry) entry.prevented = event.defaultPrevented;
+    if (!event.defaultPrevented && swallowed.has(event.key)) event.preventDefault();
+  });
+  const running = new Map<Element, { kind: string; start: number; ms: number | null }>();
+  const phase = (element: Element) =>
+    !element.isConnected
+      ? 'removed'
+      : [...element.classList].some((name) => name.startsWith('vf-floating-transition-leave'))
+        ? 'leave'
+        : [...element.classList].some((name) => name.startsWith('vf-floating-transition-enter'))
+          ? 'enter'
+          : 'none';
+  new MutationObserver((records) => {
+    if (!observing) return;
+    const now = performance.now();
+    for (const record of records) {
+      const nodes = record.type === 'childList' ? [...record.addedNodes, ...record.removedNodes] : [record.target];
+      for (const node of nodes) {
+        if (!(node instanceof HTMLElement) || !node.classList.contains('vf-select__menu')) continue;
+        const state = phase(node);
+        const current = running.get(node);
+        if (current && (current.kind === 'enter' ? state !== 'enter' : state === 'removed')) {
+          current.ms = Math.round(now - current.start);
+          running.delete(node);
+        }
+        if (!running.has(node) && (state === 'enter' || state === 'leave')) {
+          const entry = { kind: state, start: now, ms: null };
+          (window.__paritySelectTransitions![node.id] ??= []).push(entry);
           running.set(node, entry);
         }
       }
@@ -1749,6 +1949,10 @@ function renderCase(parityCase: ParityCase): VNode {
     return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, renderGroupBox(parityCase));
   }
 
+  if (catalog.component === 'select') {
+    return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, renderSelect(parityCase));
+  }
+
   if (catalog.component === 'popover') {
     return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, renderPopover(parityCase));
   }
@@ -1854,6 +2058,7 @@ document.documentElement.setAttribute('data-vf-theme', theme);
 
 if (catalog.component === 'dropdown') installDropdownLogs();
 if (catalog.component === 'popover') installPopoverLogs();
+if (catalog.component === 'select') installSelectLogs();
 if (catalog.component === 'tooltip') {
   installTooltipLogs(tooltipDelays());
   // A Teleport resolves a selector when it mounts, so every selector target

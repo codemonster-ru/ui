@@ -1487,6 +1487,75 @@ export const profiles = {
     followedReferences: [{ source: '.vf-tooltip__trigger', attribute: 'aria-describedby' }],
     liveParity: true,
   },
+  // The M32 component: the fourth overlay, and the first whose overlay holds
+  // controls of the component's own. It owns its <button> trigger, its clear
+  // button and, while open, every <button role=option> of its listbox. The
+  // listbox is teleported to <body> and followed through the trigger's
+  // aria-controls, one hop, as the dropdown's menu is; the hidden form input
+  // is compared as DOM and as the form's entries, never as a control.
+  select: {
+    id: 'select',
+    label: 'VfSelect',
+    component: 'select',
+    casesPath: 'contracts/select/cases.json',
+    policyPath: 'contracts/select/parity-policy.json',
+    artifactDirectory: 'parity-select',
+    reportName: 'select-parity-report.json',
+    measuredRoles: {
+      root: '.vf-select-wrap',
+      trigger: 'button.vf-select',
+      value: '.vf-select__value',
+      chevron: '.vf-select__icon--chevron',
+      clear: '.vf-select-wrap__clear',
+      inPlaceListbox: '.vf-select__menu',
+    },
+    // The trigger is a native button with a listbox popup; the listbox and its
+    // options are read where they are, through the trigger's aria-controls;
+    // the listbox is named by its trigger. The chevron is listed because it is
+    // aria-hidden and so expected absent, which is only a measurement if the
+    // selector is queried.
+    accessibilityRoles: {
+      trigger: 'button.vf-select',
+      clear: '.vf-select-wrap__clear',
+      chevron: '.vf-select__icon--chevron',
+      listbox: 'followed(button.vf-select, aria-controls)',
+      firstOption: 'followed(button.vf-select, aria-controls) [role="option"]',
+      selectedOption: 'followed(button.vf-select, aria-controls) [aria-selected="true"]',
+      disabledOption: 'followed(button.vf-select, aria-controls) [role="option"][disabled]',
+    },
+    semanticAttributes: [
+      'class',
+      'style',
+      'id',
+      'type',
+      'role',
+      'name',
+      'value',
+      'disabled',
+      'tabindex',
+      'for',
+      'aria-controls',
+      'aria-labelledby',
+      'aria-describedby',
+      'aria-expanded',
+      'aria-haspopup',
+      'aria-selected',
+      'aria-invalid',
+      'aria-hidden',
+      'aria-label',
+      'data-vf-filled',
+      'data-testid',
+    ],
+    snapshot: 'select',
+    activationSelector: 'button.vf-select',
+    controlOwnership: {
+      trigger: { selector: 'button.vf-select', tag: 'button' },
+      clear: { selector: '.vf-select-wrap__clear', tag: 'button' },
+      option: { selector: '.vf-select__option', tag: 'button', ariaRole: 'option' },
+    },
+    followedReferences: [{ source: 'button.vf-select', attribute: 'aria-controls' }],
+    liveParity: true,
+  },
 };
 
 export function loadProfile(id) {

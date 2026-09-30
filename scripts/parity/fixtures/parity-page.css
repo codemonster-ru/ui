@@ -140,3 +140,15 @@ body {
   margin-left: 590px;
   justify-content: flex-end;
 }
+/* The M32 select catalog. Sibling selects - a group, or the select beside a
+   popover - sit in a row, so an open listbox, which lies below its own
+   trigger, never covers the next trigger a scenario clicks. A select alone
+   still fills the case, as its wrapper is width: 100%.
+   Page chrome, applied identically to all three targets, so it can produce no
+   difference between them. The select's geometry still comes from floater.js
+   and select.css and is still what the comparison measures. */
+.parity-case:has(> .vf-select-wrap) {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}

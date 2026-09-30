@@ -112,7 +112,11 @@ test('a malformed declaration fails closed instead of falling back to the case',
 });
 
 test('an absent declaration is exactly the old rule for every existing owning profile', () => {
-  const owning = Object.entries(profiles).filter(([id, entry]) => entry.controlOwnership && id !== 'popover');
+  // The popover (M30) and the select (M32) are the catalogs that declare a
+  // scenario's end count; every other owning catalog passes undefined.
+  const owning = Object.entries(profiles).filter(
+    ([id, entry]) => entry.controlOwnership && id !== 'popover' && id !== 'select',
+  );
   assert.ok(owning.length >= 8);
   for (const [id, entry] of owning) {
     for (const parityCase of catalog(entry.component)) {
@@ -144,5 +148,15 @@ test('every popover scenario that opens or closes a panel declares the count it 
     const declared = entry.interaction.componentInteractive ?? entry.componentInteractive;
     assert.ok(Number.isInteger(declared), entry.id);
     assert.ok(declared >= entry.componentInteractive - 1 && declared <= entry.componentInteractive * 2, entry.id);
+  }
+});
+
+test('every select scenario declares the count it ends with (M32)', () => {
+  const selectCases = catalog('select');
+  const scenarios = selectCases.filter((parityCase) => parityCase.interaction);
+  assert.ok(scenarios.length > 0);
+  for (const entry of scenarios) {
+    assert.ok(Number.isInteger(entry.interaction.componentInteractive), entry.id);
+    assert.ok(Number.isInteger(entry.interaction.consumerInteractive), entry.id);
   }
 });

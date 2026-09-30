@@ -1,0 +1,245 @@
+{
+  "$comment": "Parity policy for the shared VfSelect cases. Plain data: no DSL, no waiver engine. The fourth overlay policy, and the first whose overlay holds controls the component owns: every option of an open listbox is a component control. It starts empty and stays empty. What the Razor adapter cannot represent - a consumer that does not write the emitted value back, a teleport target given as an element, options that change after render - is not an approval: the controlled mode is a declared platform divergence with both halves covered, and the rest is recorded below with where it is covered.",
+  "classifications": {
+    "exact": "Must match literally across every target. Structure, canonical classes, native attributes, the listbox's inline position and min-width, visible text, accessible names and states, live state, ownership, relationships, focus, the value log, the form entries and the transitions.",
+    "semantic": "Framework mechanics may differ; the observable meaning must not. How content is composed, how state is stored, how a renderer marks its own output, which literal a generated id has, how an adapter anchors its teleported content.",
+    "framework-specific": "Historical behaviour of one adapter that the other is not required to reproduce. Narrow, named, and covered by its own test."
+  },
+  "notCompared": {
+    "$comment": "Recorded so a reviewer can see what is deliberately outside the comparison, without leaving dead dimensions that look like live protection. Nothing here is a waiver: the extractor never produces these differences in the first place.",
+    "attributeOrder": "Attributes are extracted into a sorted map, so serialisation order cannot produce a difference.",
+    "rendererMarkers": "Vue scope attributes (data-v-*), the Razor ownership marker, the Razor adapter's configuration (data-vf-razor-select-*, including each option's value and the field-control marker on the trigger) and the inert <template data-vf-razor-select=\"...\"> elements holding the options, the chevron and the clear button are dropped by scripts/parity/extract.mjs. What the templates hold is compared the moment the controller renders it.",
+    "teleportAnchors": "Vue's Teleport marks its place in <body> with empty text nodes; the Razor controller appends one empty text node per instance at bootstrap. Neither is an element. That listboxes sit in <body> in instance order is compared through document-order id tokens and the snapshot's bodyListboxes.",
+    "generatedIdLiterals": "Vue's useId writes vf-select-*-v-N and the Razor server writes vf-select-*-r-N; the extractor rewrites every id to its document position, the followed listbox's after the root's, and every aria-controls / aria-labelledby / aria-describedby / for through the same map. A closed select's aria-controls is compared as #dangling.",
+    "eventTransport": "Vue emits update:modelValue; the Razor controller dispatches one bubbling vf-select:value-change with { value }. What is compared is the neutral log each fixture keeps from readiness on, with the instance, as interaction.events - repeats included.",
+    "styleSerialisation": "Both adapters write the listbox's left, top and min-width through the CSSOM at run time. The extractor parses them through the browser and compares the declarations."
+  },
+  "platformDivergences": [
+    {
+      "id": "razor-has-no-controlled-mode",
+      "description": "Vue: the displayed value, the hidden input and aria-selected are derived from `modelValue` alone - a selection or a clear emits update:modelValue and changes nothing until the parent writes it back. Razor: `model-value` is the initial value only, and the controller applies a selection or a clear itself and dispatches vf-select:value-change.",
+      "reason": "A server-rendered select has no parent in the page to emit a request to and wait on. Reproducing the wait would leave every Razor select permanently showing its first value without a script protocol the reference never had. The same divergence as VfDropdown's, VfPopover's and VfGroupBox's.",
+      "comparedAs": "Every select scenario of contracts/select/cases.json: the Vue fixtures write update:modelValue back into the prop (v-model), the Razor adapter applies the value directly, and all three targets must land on the same DOM, hidden input, form entries, events, focus and tree - select/interaction-enter-select, select/interaction-option-click and select/interaction-clear among them.",
+      "vueHalfCoveredBy": "packages/core/src/components/select/VfSelect.characterization.spec.ts (controlled model: a selection without write-back keeps the old label, hidden value and aria-selected; a clear without write-back keeps the value; forms: a selection not written back keeps the old submitted value)",
+      "razorHalfCoveredBy": "packages/razor/tests/Components/SelectComponentTest.php (the server renders the model-value it is given) and scripts/ci/check-razor-browser.mjs (a selection and a clear update the label, the hidden input and FormData, and dispatch one value-change)",
+      "mutationCoveredBy": "scripts/baseline/input-mutations.mjs#select-uncontrolled-self-update - the Razor reading applied to the Vue component - is detected by the characterization suite"
+    }
+  ],
+  "outsideTheCatalog": {
+    "$comment": "Behaviour that is part of the contract and deliberately not represented as a parity case, each with where it is covered instead.",
+    "teleportToElement": "teleportTo given as an HTMLElement is Vue-only; a selector is covered by the Razor browser gate (teleport-to=\"#razor-overlay-root\") and the characterization suite; teleportTo: null is spelled teleport-to=\"false\" by the Razor adapter's null convention.",
+    "reactiveOptions": "Options or placeholder changed after render re-derive the label and the listbox in Vue. The Razor options are static server markup; pinned by the characterization suite.",
+    "duplicateValues": "Duplicate option values select the first for the label and mark every duplicate aria-selected; Vue warns about the duplicate key. Pinned by the characterization suite and the shared vectors, outside the catalog so no case carries a framework warning.",
+    "outsidePointerdown": "The outside close listens for a document click, not pointerdown: a pointerdown or mousedown alone closes nothing. The harness drives whole clicks; the pointerdown half is pinned by the characterization suite and the Razor browser gate.",
+    "focusScopeBranch": "Inside an active modal focus trap the open listbox joins the trap's scope. No migrated component owns a trap yet; the branch is pinned by the characterization suite and is outside the Razor controller until a trap exists.",
+    "firstRenderFieldReport": "Inside a VfField the Vue select declares floating support during its own setup, after the field rendered, so the field is plain for one tick; the Razor field is floating from the server render. The settled state is compared; the first tick is pinned by the characterization suite.",
+    "tabOutOfTheDocument": "Tab from an option of a teleported listbox leaves the document - the listbox is last in <body> - and headless Chrome then delivers junk keydowns to every later scenario on the page. The catalog's Tab scenario renders the listbox in place; the teleported Tab is pinned by the characterization suite and the Razor browser gate.",
+    "disabledClicks": "The harness refuses to click a disabled control - a real pointer on a disabled <button> delivers no click, which is the browser's rule, not the component's. A disabled select and a disabled option are compared as static and ownership state (inoperable, excluded from the walk and from the form); that a synthetic click on a disabled option is still refused by the handler is pinned by the characterization suite, and the Razor browser gate clicks a disabled trigger with a real pointer.",
+    "nodeIdentityAcrossOpens": "Every open creates a new listbox node on every target. Pinned by the characterization suite and the Razor browser gate."
+  },
+  "dimensions": {
+    "dom.structure": {
+      "classification": "exact",
+      "description": "An unexpected element, a missing trigger, hidden input or clear button, a listbox rendered while closed, a listbox left after its leave, a listbox in place where it should be teleported or teleported where it should be in place. The followed listbox is described as its own top-level entry after the root's children. Never approvable."
+    },
+    "dom.canonicalClasses": {
+      "classification": "exact",
+      "description": "vf-* classes on every element: the wrapper and trigger modifiers (size, invalid, open, placeholder, adornments, clear, floating), the listbox's vf-dropdown__menu / vf-select__menu / --top, and the options' selected modifier."
+    },
+    "dom.nativeAttributes": {
+      "classification": "exact",
+      "description": "type, name, value and disabled on the hidden input, the trigger and the options; tabindex (-1 on every option); the listbox's inline position and min-width, compared through the browser's parser."
+    },
+    "dom.text": {
+      "classification": "exact",
+      "description": "Visible text: the displayed label (or placeholder, or nothing under a floating label), each option's label, the field label, description and error."
+    },
+    "dom.aria": {
+      "classification": "exact",
+      "description": "aria-expanded on every trigger, aria-haspopup=\"listbox\", aria-invalid only as \"true\", role=listbox and role=option, aria-selected on every option, aria-hidden on the adornments and the chevron. No aria-activedescendant anywhere."
+    },
+    "dom.productData": {
+      "classification": "exact",
+      "description": "data-vf-filled on the trigger while the model is non-empty, and a consumer data-testid."
+    },
+    "dom.relationships": {
+      "classification": "semantic",
+      "description": "The id graph through document-position tokens, the followed listbox numbered after the root: the trigger's id and aria-controls, the listbox's aria-labelledby, the field label's for and the trigger's aria-describedby."
+    },
+    "dom.actionPresence": {
+      "classification": "exact",
+      "description": "Whether each button is operable: the trigger of a disabled select and a disabled option are inoperable on every target."
+    },
+    "dom.wrapperPresence": {
+      "classification": "exact",
+      "description": "Present so the comparator has a classification for it. A select has no wrapper either adapter may add."
+    },
+    "dom.inertAction": {
+      "classification": "exact",
+      "description": "Present for the same reason. A select renders no inert action."
+    },
+    "style.geometry": {
+      "classification": "exact",
+      "description": "width, height, padding, border width and radius, font size and line height of the wrapper, the trigger, the value, the chevron, the clear button and an in-place listbox."
+    },
+    "style.colour": {
+      "classification": "exact",
+      "description": "colour, background colour and border colour of the same elements."
+    },
+    "visual": {
+      "classification": "exact",
+      "description": "Clipped screenshot of the case root in its initial state, per theme."
+    },
+    "visual.postInteraction": {
+      "classification": "exact",
+      "description": "Clipped screenshot after the interaction, per theme, covering the case root and every listbox it owns wherever it is."
+    },
+    "a11y.role": {
+      "classification": "exact",
+      "description": "Computed role of the trigger (button), the clear button, the listbox and its first, selected and disabled options, read where the listbox is; the aria-hidden chevron is absent."
+    },
+    "a11y.name": {
+      "classification": "exact",
+      "description": "Accessible name of the trigger (its label, or the consumer's aria-label, or the field label), of the clear button, of the listbox (its trigger, through aria-labelledby) and of each read option."
+    },
+    "a11y.states": {
+      "classification": "exact",
+      "description": "focusable, disabled, expanded, hasPopup, invalid and selected as exposed to assistive tech, before and after an interaction."
+    },
+    "ownership.controls": {
+      "classification": "exact",
+      "description": "The component-owned controls: every trigger, the clear button while shown and every option of an open listbox, with tag, role, aria-expanded, aria-haspopup, aria-selected, disabled, tabindex and name; the consumer count beside them and the totals they add up to."
+    },
+    "interaction.state": {
+      "classification": "exact",
+      "description": "The live state after a scenario, per instance: aria-expanded, the trigger's label and classes, the listbox's place, classes, role and options, its geometry and scroll, every listbox in <body> by what names it, the field and a popover around the select, and the transitions."
+    },
+    "interaction.events": {
+      "classification": "exact",
+      "description": "The neutral value log the fixture recorded from readiness on, with the instance and the value. A missing, duplicated or reordered emission differs."
+    },
+    "interaction.convergence": {
+      "classification": "exact",
+      "description": "Whether a closing gesture's DOM equals the target's own render of the closed case it lands on. A leave that left a listbox behind, a stale label or a clear button that did not swap back differs."
+    },
+    "interaction.focus": {
+      "classification": "exact",
+      "description": "Where focus is after the scenario - a trigger, the clear button, an option (by label), another control, the body - and which instance holds it."
+    },
+    "interaction.relationships": {
+      "classification": "exact",
+      "description": "Whether each trigger's aria-controls reaches a listbox labelled by that trigger, on the live DOM, and that nothing carries aria-activedescendant."
+    },
+    "interaction.value": {
+      "classification": "exact",
+      "description": "The hidden input per instance (name, value, disabled, first in the wrapper), the entries of the form around the case and its validity."
+    },
+    "interaction.selection": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. A select carries no caret."
+    },
+    "interaction.wrapperPresence": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. A select renders no wrapper that could appear on one side only."
+    }
+  },
+  "historicalQuirks": [
+    {
+      "id": "arrowup-opens",
+      "description": "ArrowUp opens the select as ArrowDown, Enter and Space do; Home, End and Escape on a closed trigger do nothing and are not prevented.",
+      "classification": "exact",
+      "reason": "Compared as select/interaction-arrowup-open.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/select/cases.json#select/interaction-arrowup-open"
+    },
+    {
+      "id": "selected-or-first-enabled",
+      "description": "A keyboard open focuses the selected option counted among the enabled ones, or the first enabled option when the selected one is disabled, missing or absent.",
+      "classification": "exact",
+      "reason": "Compared as select/interaction-disabled-selected-focus.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/select/cases.json#select/interaction-disabled-selected-focus"
+    },
+    {
+      "id": "disabled-options-are-not-items",
+      "description": "The walk runs over the enabled options only: a disabled option is skipped by the arrows, Home and End, and a click on it does nothing.",
+      "classification": "exact",
+      "reason": "Compared as select/interaction-walk.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/select/cases.json#select/interaction-walk"
+    },
+    {
+      "id": "tab-leaves-it-open",
+      "description": "Tab is not handled in the listbox: focus moves on and the listbox stays open until an outside click or Escape.",
+      "classification": "exact",
+      "reason": "Compared as select/interaction-tab-open.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/select/cases.json#select/interaction-tab-open"
+    },
+    {
+      "id": "pointer-selection-keeps-focus",
+      "description": "An option click selects without focusing the trigger; a keyboard selection focuses it.",
+      "classification": "exact",
+      "reason": "Compared as select/interaction-option-click.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/select/cases.json#select/interaction-option-click"
+    },
+    {
+      "id": "outside-click-keeps-focus",
+      "description": "An outside click closes without focusing the trigger - unlike VfDropdown's, which does.",
+      "classification": "exact",
+      "reason": "Compared as select/interaction-outside-click.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/select/cases.json#select/interaction-outside-click"
+    },
+    {
+      "id": "clear-focuses-trigger",
+      "description": "The clear button prevents its mousedown, stops its click, emits '' and focuses the trigger, closing an open listbox.",
+      "classification": "exact",
+      "reason": "Compared as select/interaction-clear-open.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/select/cases.json#select/interaction-clear-open"
+    },
+    {
+      "id": "two-escape-paths",
+      "description": "Escape from an option is handled by the listbox itself and prevented, so the shared stack ignores it; from anywhere else the stack closes the most recently opened select.",
+      "classification": "exact",
+      "reason": "Compared as select/interaction-escape-lifo.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/select/cases.json#select/interaction-escape-lifo"
+    },
+    {
+      "id": "option-click-closes-surrounding-popover",
+      "description": "The listbox is teleported out of a surrounding popover's panel, so an option click is an outside click to the popover and closes it too.",
+      "classification": "exact",
+      "reason": "Compared as select/interaction-popover-option.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/select/cases.json#select/interaction-popover-option"
+    },
+    {
+      "id": "required-dropped",
+      "description": "required, autofocus, form and role reach no element: only aria-*, data-*, title and tabindex are forwarded to the trigger, a string id becomes its id and a string name the hidden input's.",
+      "classification": "exact",
+      "reason": "Compared as select/interaction-form-required.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/select/cases.json#select/interaction-form-required"
+    },
+    {
+      "id": "reset-ignored",
+      "description": "Nothing listens to a form reset: the hidden input's value is its own default, so a reset changes nothing.",
+      "classification": "exact",
+      "reason": "Compared as select/interaction-form-reset.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/select/cases.json#select/interaction-form-reset"
+    },
+    {
+      "id": "empty-value-option-not-filled",
+      "description": "An option with value '' is selected by the empty model but does not count as filled: no data-vf-filled, no clear button.",
+      "classification": "exact",
+      "reason": "Compared as a static case on every target.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/select/cases.json#select/empty-value-option"
+    }
+  ],
+  "approvedDivergences": []
+}

@@ -112,6 +112,11 @@ if ($tooltipComponent === null) {
     fwrite(STDERR, "The VueForge vf-tooltip component is not registered.\n");
     exit(1);
 }
+$selectComponent = $registry->resolve('vf-select');
+if ($selectComponent === null) {
+    fwrite(STDERR, "The VueForge vf-select component is not registered.\n");
+    exit(1);
+}
 $popoverComponent = $registry->resolve('vf-popover');
 if ($popoverComponent === null) {
     fwrite(STDERR, "The VueForge vf-popover component is not registered.\n");
@@ -1490,6 +1495,71 @@ $renderTooltip = static function (array $case) use ($tooltipInstance, $popoverCo
     return $markup;
 };
 
+/**
+ * VfSelect, for the select catalog (M32), as the Vue fixture builds it: a
+ * `group` renders each member as its own instance; a `field` wraps the one
+ * select in a real vf-field, which hands it the control id, the described-by
+ * and the invalid state through the render-time context; a `popover` renders a
+ * select beside a real vf-popover rendered in place and a second one inside
+ * it; an `after` control and a
+ * `form` with its optional reset button are page content. The camelCase props
+ * of the catalog are the component's own alternative spellings; attrs go
+ * through as they are, and the component decides which reach the trigger.
+ */
+$renderSelect = static function (array $case) use ($selectComponent, $fieldComponent, $popoverComponent, $escape): string {
+    $content = $case['content'] ?? [];
+    $slots = [];
+    foreach (['leading', 'trailing'] as $slot) {
+        if (isset($content[$slot]['text'])) {
+            $markup = '<span class="parity-content">' . $escape((string) $content[$slot]['text']) . '</span>';
+            $slots[$slot] = static fn (): RenderedHtml => RenderedHtml::fromTrustedString($markup);
+        }
+    }
+    $instance = static fn (array $props): string => $selectComponent
+        ->render(new ComponentRenderContext($props + ($case['attrs'] ?? []), $slots))
+        ->value();
+
+    if (isset($case['group']) && is_array($case['group'])) {
+        $markup = implode('', array_map($instance, $case['group']));
+    } elseif (isset($content['field'])) {
+        $field = $content['field'];
+        $fieldProps = ['label' => $field['label'], 'label-placement' => $field['placement'] ?? 'top'];
+        if (isset($field['description'])) {
+            $fieldProps['description'] = $field['description'];
+        }
+        if (isset($field['error'])) {
+            $fieldProps['error'] = $field['error'];
+        }
+        $markup = $fieldComponent->render(new ComponentRenderContext($fieldProps, [
+            'default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString($instance($case['props'] ?? [])),
+        ]))->value();
+    } else {
+        $markup = $instance($case['props'] ?? []);
+    }
+
+    if (isset($content['popover'])) {
+        // A select beside the popover first, then the popover in place with a
+        // second select inside, as the Vue fixture builds them.
+        $trigger = '<span>' . $escape((string) $content['popover']['trigger']) . '</span>';
+        $inner = $instance($case['props'] ?? []);
+        $markup = $instance($case['props'] ?? []) . $popoverComponent->render(new ComponentRenderContext(['disableTeleport' => true, 'aria-label' => 'Filters'], [
+            'trigger' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString($trigger),
+            'default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString($inner),
+        ]))->value();
+    }
+    if (isset($content['after']['control'])) {
+        $markup .= '<button type="button" class="parity-after-control">' . $escape((string) $content['after']['control']['text']) . '</button>';
+    }
+    if (isset($content['form'])) {
+        if (($content['form']['reset'] ?? false) === true) {
+            $markup .= '<button type="reset" class="parity-reset-control">Reset</button>';
+        }
+        $markup = '<form class="parity-form" onsubmit="event.preventDefault()">' . $markup . '</form>';
+    }
+
+    return $markup;
+};
+
 $sections = '';
 
 foreach ($catalog['cases'] as $case) {
@@ -1497,6 +1567,8 @@ foreach ($catalog['cases'] as $case) {
 
     if ($component === 'tooltip') {
         $body = $renderTooltip($case);
+    } elseif ($component === 'select') {
+        $body = $renderSelect($case);
     } elseif ($component === 'dropdown') {
         $body = $renderDropdown($case);
     } elseif ($component === 'popover') {
@@ -1699,6 +1771,62 @@ $popoverLogs = $component === 'popover' ? <<<'JS'
   }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
 JS : '';
 
+// The select's page-level logs, the dropdown's in shape, installed only on the
+// select catalog's page. An instance is the select's index among the case's
+// selects, as the Vue fixture numbers them.
+$selectLogs = $component === 'select' ? <<<'JS'
+  window.__paritySelectEvents = {};
+  window.__paritySelectKeys = [];
+  window.__paritySelectTransitions = {};
+  document.addEventListener('vf-select:value-change', (event) => {
+    const caseRoot = event.target.closest('[data-parity-case]');
+    if (!caseRoot) return;
+    const instance = [...caseRoot.querySelectorAll('.vf-select-wrap')].indexOf(event.target);
+    (window.__paritySelectEvents[caseRoot.getAttribute('data-parity-case')] ??= []).push({ instance, value: event.detail.value });
+  });
+  let observing = false;
+  for (const type of ['pointerdown', 'keydown']) document.addEventListener(type, () => (observing = true), true);
+  const entries = new WeakMap();
+  const swallowed = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown', 'Escape']);
+  document.addEventListener('keydown', (event) => {
+    const entry = { key: event.key, prevented: false };
+    window.__paritySelectKeys.push(entry);
+    entries.set(event, entry);
+  }, true);
+  window.addEventListener('keydown', (event) => {
+    const entry = entries.get(event);
+    if (entry) entry.prevented = event.defaultPrevented;
+    if (!event.defaultPrevented && swallowed.has(event.key)) event.preventDefault();
+  });
+  const running = new Map();
+  const phase = (element) => !element.isConnected
+    ? 'removed'
+    : [...element.classList].some((name) => name.startsWith('vf-floating-transition-leave'))
+      ? 'leave'
+      : [...element.classList].some((name) => name.startsWith('vf-floating-transition-enter')) ? 'enter' : 'none';
+  new MutationObserver((records) => {
+    if (!observing) return;
+    const now = performance.now();
+    for (const record of records) {
+      const nodes = record.type === 'childList' ? [...record.addedNodes, ...record.removedNodes] : [record.target];
+      for (const node of nodes) {
+        if (!(node instanceof HTMLElement) || !node.classList.contains('vf-select__menu')) continue;
+        const state = phase(node);
+        const current = running.get(node);
+        if (current && (current.kind === 'enter' ? state !== 'enter' : state === 'removed')) {
+          current.ms = Math.round(now - current.start);
+          running.delete(node);
+        }
+        if (!running.has(node) && (state === 'enter' || state === 'leave')) {
+          const entry = { kind: state, start: now, ms: null };
+          (window.__paritySelectTransitions[node.id] ??= []).push(entry);
+          running.set(node, entry);
+        }
+      }
+    }
+  }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+JS : '';
+
 // The tooltip's page-level logs, installed only on the tooltip catalog's page:
 // the same script the Vue fixture imports, inlined, with each case's delays in
 // instance order.
@@ -1783,6 +1911,7 @@ $html = <<<HTML
   });
 {$dropdownLogs}
 {$popoverLogs}
+{$selectLogs}
 {$tooltipLogs}
   const theme = new URLSearchParams(window.location.search).get('theme') ?? 'light';
   document.documentElement.setAttribute('data-vf-theme', theme);
