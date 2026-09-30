@@ -228,8 +228,12 @@ describe('component entry CSS parity', () => {
     expect(source).toContain('.vf-floating-transition-leave-to.vf-dropdown__menu {');
     expect(stripImports(source)).not.toContain('--vf-overlay-border-width:');
 
+    // Read through the forward: since M32 the select entry is one too, and its
+    // canonical file keeps the sibling import under the same name.
     for (const name of ['select.css', 'date-picker.css', 'data-table-column-chooser.css']) {
-      expect(readFileSync(resolve(entriesDir, name), 'utf8'), name).toContain("@import './dropdown.css';");
+      expect(readFileSync(resolveStyleEntrySource(resolve(entriesDir, name)), 'utf8'), name).toContain(
+        "@import './dropdown.css';",
+      );
     }
   });
 
@@ -298,6 +302,33 @@ describe('component entry CSS parity', () => {
     expect(source).not.toContain('.vf-popover');
     expect(source).not.toContain('.vf-dropdown');
     expect(stripImports(source)).not.toContain('--vf-overlay-border-width:');
+  });
+
+  it('forwards the select entry to its canonical source in packages/styles, which reads its three neighbours', () => {
+    // The M32 move. The select reads the field, the icon button and the
+    // dropdown stylesheets - its listbox is a `.vf-dropdown__menu` and its
+    // options `.vf-dropdown__item`s - and each import resolves to the
+    // canonical sibling the other entries forward to, not to a second copy.
+    const canonical = resolveStyleEntrySource(resolve(entriesDir, 'select.css'));
+    expect(canonical).toBe(resolve(stylesDir, '../../../styles/src/components/select.css'));
+
+    const source = readFileSync(canonical, 'utf8');
+    const imports = [...source.matchAll(/^@import\s+'([^']+)';$/gm)].map((match) => match[1]);
+    expect(imports).toEqual(['./field.css', './icon-button.css', './dropdown.css']);
+    for (const name of ['field.css', 'icon-button.css', 'dropdown.css']) {
+      expect(resolveStyleEntrySource(resolve(dirname(canonical), `./${name}`)), name).toBe(
+        resolveStyleEntrySource(resolve(entriesDir, name)),
+      );
+    }
+    // The listbox scrolls inside its own max-height, which is what the
+    // component scrolls the target option into view against; the selected
+    // state is written by class and by aria-selected alike.
+    expect(source).toContain(
+      '.vf-select__menu {\n  min-width: var(--vf-menu-min-width);\n  max-height: var(--vf-select-menu-max-height);\n  overflow: auto;',
+    );
+    expect(source).toContain(".vf-select__option--selected,\n.vf-select__option[aria-selected='true'] {");
+    expect(source).not.toContain('.vf-popover');
+    expect(source).not.toContain('.vf-tooltip');
   });
 
   it('keeps the menu and the menu item in one closure with no descendant coupling', () => {

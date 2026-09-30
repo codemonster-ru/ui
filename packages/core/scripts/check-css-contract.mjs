@@ -61,6 +61,8 @@ const explicitDeps = {
   'form-layout.css': ['./field.css'],
   'input.css': ['./field.css', './icon-button.css'],
   'page-header.css': ['./breadcrumbs.css'],
+  // The select entry forwards to packages/styles since M32; the canonical file
+  // keeps its three sibling imports under the same names.
   'select.css': ['./field.css', './icon-button.css', './dropdown.css'],
   'textarea.css': ['./field.css'],
   'theme-switch.css': ['./button.css', './switch.css'],

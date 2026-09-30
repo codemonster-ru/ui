@@ -209,4 +209,12 @@ export const styleSources = [
   // imports overlay-primitives.css, already inlined above, so those tokens
   // appear once. Listed last; no selector here overlaps another file's.
   'packages/styles/src/components/tooltip.css',
+  // VfSelect, M32: the wrapper, the button trigger with its adornments, sizes,
+  // floating-label paddings and states, the clear button, the scrolling
+  // listbox and the option states. Its first lines import field.css,
+  // icon-button.css and dropdown.css - the listbox is a `.vf-dropdown__menu`
+  // and every option a `.vf-dropdown__item` - all three already inlined
+  // above, so they appear once and before these overrides, as in
+  // packages/core/src/styles/components.css. Listed last.
+  'packages/styles/src/components/select.css',
 ];
