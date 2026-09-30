@@ -156,6 +156,15 @@ final class SelectComponent implements ComponentInterface
             'data-vf-razor-select-placeholder' => $placeholder,
             'data-vf-razor-select-floating' => $floating ? 'true' : 'false',
             'data-vf-razor-select-clearable' => $clearable ? 'true' : 'false',
+            'data-vf-razor-select-size' => $size,
+            'data-vf-razor-select-invalid' => $invalid ? 'true' : 'false',
+            // Component attributes the consumer forwarded over: the reference
+            // binds them after its own on every render, so the controller
+            // must never rewrite them.
+            'data-vf-razor-select-forwarded' => implode(' ', array_values(array_filter(
+                array_keys($this->forwardedAttributes($context)),
+                static fn (string $name): bool => in_array($name, ['aria-expanded', 'data-vf-filled'], true),
+            ))) ?: null,
         ];
 
         $markup = '<div' . Html::attributes($wrapper) . '>';

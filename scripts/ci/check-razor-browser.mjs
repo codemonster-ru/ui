@@ -557,6 +557,81 @@ const readGroupBox = (title) => `(() => {
   };
 })()`;
 
+// ------------------------------------------------------------------- select
+
+const selectTrigger = (label) => `document.querySelector('button.vf-select[aria-label="${label}"]')`;
+const selectListbox = (label) => `document.getElementById(${selectTrigger(label)}.getAttribute('aria-controls'))`;
+
+/**
+ * A real pointer click at the centre of the element the expression returns,
+ * scrolled into view first: the select cases sit low on the fixture page.
+ */
+async function clickVisible(page, expression) {
+  await page.evaluate(`(() => {
+    const element = ${expression};
+    if (!element) throw new Error('missing click target');
+    const rect = element.getBoundingClientRect();
+    if (rect.top < 0 || rect.bottom > innerHeight) element.scrollIntoView({ block: 'center' });
+    return true;
+  })()`);
+  await delay(50);
+  await clickElement(page, expression);
+}
+
+/** Installs a per-root log of the select's value-change events, keyed by the trigger's accessible name. */
+const installSelectLog = `(() => {
+  window.__selectEvents = {};
+  window.__selectKeys = [];
+  for (const trigger of document.querySelectorAll('[data-case] button.vf-select[aria-label]')) {
+    const name = trigger.getAttribute('aria-label');
+    window.__selectEvents[name] = [];
+    trigger.closest('.vf-select-wrap').addEventListener('vf-select:value-change', (event) => {
+      window.__selectEvents[name].push({ value: event.detail.value, bubbles: event.bubbles });
+    });
+  }
+  document.addEventListener('keydown', (event) => {
+    const entry = { key: event.key, prevented: false };
+    window.__selectKeys.push(entry);
+    setTimeout(() => { entry.prevented = event.defaultPrevented; }, 0);
+  }, true);
+  return Object.keys(window.__selectEvents).length;
+})()`;
+
+/** One select as the suite reads it, by the trigger's accessible name. */
+const readSelect = (label) => `(() => {
+  const trigger = ${selectTrigger(label)};
+  const root = trigger.closest('.vf-select-wrap');
+  const listbox = document.getElementById(trigger.getAttribute('aria-controls'));
+  const active = document.activeElement;
+  const hidden = root.querySelector(':scope > input[type="hidden"]');
+  const where = !listbox ? null : listbox.parentElement === document.body ? 'body' : listbox.parentElement === root ? 'inline' : listbox.parentElement.id || listbox.parentElement.className;
+  return {
+    enhanced: root.hasAttribute('data-vf-razor-select-enhanced'),
+    expanded: trigger.getAttribute('aria-expanded'),
+    listbox: Boolean(listbox),
+    leaving: listbox ? listbox.className.includes('leave') : null,
+    where,
+    lastInWrapper: listbox ? root.lastElementChild === listbox : null,
+    listboxClasses: listbox ? [...listbox.classList].filter((name) => !name.includes('transition')) : null,
+    labelledByTrigger: listbox ? listbox.getAttribute('aria-labelledby') === trigger.id : null,
+    role: listbox?.getAttribute('role') ?? null,
+    minWidth: listbox ? listbox.style.minWidth : null,
+    triggerWidth: trigger.offsetWidth,
+    positioned: listbox ? listbox.style.left !== '0px' || listbox.style.top !== '0px' : null,
+    selected: listbox ? [...listbox.querySelectorAll('[aria-selected="true"]')].map((option) => option.textContent.trim()) : null,
+    label: trigger.querySelector('.vf-select__value').textContent,
+    triggerClasses: [...trigger.classList],
+    wrapperClasses: [...root.classList],
+    filled: trigger.getAttribute('data-vf-filled'),
+    hidden: hidden ? { value: hidden.value, disabled: hidden.disabled } : null,
+    clear: Boolean(root.querySelector(':scope > .vf-select-wrap__clear')),
+    chevron: Boolean(trigger.querySelector(':scope > .vf-select__icon--chevron')),
+    activedescendant: trigger.hasAttribute('aria-activedescendant') || (listbox?.hasAttribute('aria-activedescendant') ?? false),
+    focus: active === trigger ? 'trigger' : listbox && listbox.contains(active) ? 'option:' + active.textContent.trim() : active === document.body ? 'body' : root.contains(active) ? 'inside' : 'elsewhere',
+    events: window.__selectEvents?.[${JSON.stringify(label)}] ?? null,
+  };
+})()`;
+
 const server = await serve(distDirectory);
 const chrome = await launchChrome();
 
@@ -3894,6 +3969,408 @@ try {
     );
   });
 
+  // ------------------------------------------------------------ select (M32)
+  //
+  // The controller against the historical contract, driven with a real
+  // pointer and real keys: pointer and keyboard opening, the walk over the
+  // enabled options, selection, focus, the two Escape paths, the click-only
+  // outside close, the clear button, teleport destinations, the hidden input
+  // and FormData, the controlled-as-initial self-update and its event.
+  await withPage(chrome, server.origin, 'fixture-enhanced.html', async (page) => {
+    await page.waitFor(`Boolean(document.querySelector('[data-vf-razor-select-enhanced]'))`);
+    await page.evaluate(installSelectLog);
+    const read = (label) => page.evaluate(readSelect(label));
+
+    const all = await page.evaluate(`(() => {
+      const roots = [...document.querySelectorAll('[data-vf-razor="select"]')];
+      return { total: roots.length, enhanced: roots.filter((root) => root.hasAttribute('data-vf-razor-select-enhanced')).length };
+    })()`);
+    check('every Razor select is enhanced', all.total === all.enhanced && all.total >= 8, JSON.stringify(all));
+
+    // Pointer open: the listbox in body, no focus move, the selected option marked.
+    await page.evaluate(`document.querySelector('.select-outside').focus()`);
+    await clickVisible(page, selectTrigger('SelDefault'));
+    await delay(400);
+    const clickOpen = await read('SelDefault');
+    check(
+      'a trigger click opens a teleported, positioned listbox labelled by the trigger, with no aria-activedescendant',
+      clickOpen.expanded === 'true' &&
+        clickOpen.where === 'body' &&
+        clickOpen.role === 'listbox' &&
+        clickOpen.labelledByTrigger === true &&
+        clickOpen.positioned === true &&
+        clickOpen.activedescendant === false,
+      JSON.stringify(clickOpen),
+    );
+    check(
+      'the listbox is the dropdown menu block with the select block, and marks the selected option',
+      JSON.stringify(clickOpen.listboxClasses) === JSON.stringify(['vf-dropdown__menu', 'vf-select__menu']) &&
+        JSON.stringify(clickOpen.selected) === JSON.stringify(['Pro']),
+      JSON.stringify(clickOpen),
+    );
+    check(
+      'the listbox is at least as wide as the trigger',
+      clickOpen.minWidth === `${clickOpen.triggerWidth}px`,
+      JSON.stringify(clickOpen),
+    );
+    // A real click on a <button> focuses it in Chrome; the reference moves nothing further.
+    check('a pointer open moves focus to no option', clickOpen.focus === 'trigger', JSON.stringify(clickOpen));
+
+    // Stack Escape from the trigger: closes, prevented, focus on the trigger.
+    await pressKey(page, 'Escape');
+    await delay(450);
+    const escaped = await read('SelDefault');
+    const escapeKey = await page.evaluate(`window.__selectKeys.filter((entry) => entry.key === 'Escape').at(-1)`);
+    check(
+      'an Escape from the trigger closes the listbox through the stack, prevented, focus on the trigger',
+      escaped.expanded === 'false' &&
+        escaped.listbox === false &&
+        escaped.focus === 'trigger' &&
+        escapeKey.prevented === true,
+      JSON.stringify({ escaped, escapeKey }),
+    );
+
+    // Keyboard open and the walk over enabled options, with wrapping.
+    const walk = [];
+    await pressKey(page, 'ArrowDown');
+    await delay(150);
+    walk.push((await read('SelDefault')).focus);
+    for (const key of ['ArrowDown', 'ArrowDown', 'ArrowUp', 'Home', 'End']) {
+      await pressKey(page, key);
+      await delay(60);
+      walk.push((await read('SelDefault')).focus);
+    }
+    check(
+      'ArrowDown opens on the selected option; the walk skips the disabled one, wraps, and Home/End go to the ends',
+      JSON.stringify(walk) ===
+        JSON.stringify(['option:Pro', 'option:Team', 'option:Starter', 'option:Team', 'option:Starter', 'option:Team']),
+      JSON.stringify(walk),
+    );
+
+    // Tab is not handled: the listbox stays open. Shift+Tab keeps focus in the document.
+    await pressKey(page, 'Tab');
+    await delay(100);
+    const tabbed = await read('SelDefault');
+    check(
+      'Tab from an option leaves the listbox open',
+      tabbed.expanded === 'true' && tabbed.listbox === true,
+      JSON.stringify(tabbed),
+    );
+
+    // Enter on the focused option selects it, closes, focuses the trigger and updates itself.
+    await page.evaluate(`${selectListbox('SelDefault')}.querySelectorAll('[role="option"]')[3].focus()`);
+    await pressKey(page, 'Enter');
+    await delay(450);
+    const entered = await read('SelDefault');
+    const formData = await page.evaluate(`new FormData(document.getElementById('fixture-form')).getAll('plan')`);
+    check(
+      'Enter selects the focused option, closes, and puts focus on the trigger',
+      entered.expanded === 'false' && entered.focus === 'trigger' && entered.label === 'Team',
+      JSON.stringify(entered),
+    );
+    check(
+      'a selection updates the hidden input and FormData, and dispatches one bubbling value-change',
+      entered.hidden?.value === 'team' &&
+        JSON.stringify(formData) === JSON.stringify(['team']) &&
+        JSON.stringify(entered.events) === JSON.stringify([{ value: 'team', bubbles: true }]),
+      JSON.stringify({ entered, formData }),
+    );
+
+    // Space on an option selects too.
+    await pressKey(page, ' ');
+    await delay(150);
+    await pressKey(page, 'ArrowDown');
+    await delay(60);
+    await pressKey(page, ' ');
+    await delay(450);
+    const spaced = await read('SelDefault');
+    check(
+      'Space on the trigger opens and Space on an option selects',
+      spaced.label === 'Starter' && spaced.focus === 'trigger',
+      JSON.stringify(spaced),
+    );
+
+    // Escape from an option: the local handler closes and prevents.
+    await pressKey(page, 'ArrowUp');
+    await delay(150);
+    await pressKey(page, 'Escape');
+    await delay(450);
+    const localEscape = await read('SelDefault');
+    check(
+      'Escape from an option closes, focuses the trigger and selects nothing',
+      localEscape.listbox === false && localEscape.focus === 'trigger' && localEscape.label === 'Starter',
+      JSON.stringify(localEscape),
+    );
+
+    // Pointer selection does not restore focus to the trigger.
+    await clickVisible(page, selectTrigger('SelDefault'));
+    await delay(400);
+    await clickVisible(page, `${selectListbox('SelDefault')}.querySelectorAll('[role="option"]')[2]`);
+    await delay(450);
+    const clicked = await read('SelDefault');
+    check(
+      'an option click selects and does not put focus on the trigger',
+      clicked.label === 'Pro' && clicked.listbox === false && clicked.focus !== 'trigger',
+      JSON.stringify(clicked),
+    );
+
+    // Outside: a pointerdown alone does not close; the click does, without focusing the trigger.
+    await clickVisible(page, selectTrigger('SelDefault'));
+    await delay(400);
+    // The case heading, above the trigger: the listbox opens below it, over
+    // whatever follows the select, so a point below would land on an option.
+    const outside = await page.evaluate(
+      `(() => { const r = document.querySelector('[data-case="select-default"] h2').getBoundingClientRect(); return { x: r.left + 10, y: r.top + r.height / 2 }; })()`,
+    );
+    await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...outside });
+    await page.send('Input.dispatchMouseEvent', { type: 'mousePressed', ...outside, button: 'left', clickCount: 1 });
+    await delay(100);
+    const pressedOnly = await read('SelDefault');
+    await page.send('Input.dispatchMouseEvent', { type: 'mouseReleased', ...outside, button: 'left', clickCount: 1 });
+    await delay(450);
+    const outsideClosed = await read('SelDefault');
+    check(
+      'an outside pointerdown alone does not close the listbox',
+      pressedOnly.expanded === 'true',
+      JSON.stringify(pressedOnly),
+    );
+    check(
+      'the outside click closes it without focusing the trigger or selecting anything',
+      outsideClosed.expanded === 'false' &&
+        outsideClosed.focus !== 'trigger' &&
+        outsideClosed.label === 'Pro' &&
+        outsideClosed.events.length === 3,
+      JSON.stringify(outsideClosed),
+    );
+
+    // The clear button: mousedown prevented, clears, swaps back to the chevron, focuses the trigger.
+    const clearDown = await page.evaluate(`(() => {
+      const button = document.querySelector('[data-case="select-clear"] .vf-select-wrap__clear');
+      const event = new MouseEvent('mousedown', { bubbles: true, cancelable: true });
+      button.dispatchEvent(event);
+      return event.defaultPrevented;
+    })()`);
+    const beforeClear = await read('SelClear');
+    await clickVisible(page, `document.querySelector('[data-case="select-clear"] .vf-select-wrap__clear')`);
+    await delay(200);
+    const cleared = await read('SelClear');
+    check('the clear button prevents its mousedown', clearDown === true);
+    check(
+      'a clearable filled select shows the clear button instead of the chevron',
+      beforeClear.clear === true &&
+        beforeClear.chevron === false &&
+        beforeClear.wrapperClasses.includes('vf-select-wrap--with-clear'),
+      JSON.stringify(beforeClear),
+    );
+    check(
+      'clearing empties the value, submits "", swaps back to the chevron and focuses the trigger',
+      cleared.label === '' &&
+        cleared.hidden?.value === '' &&
+        cleared.clear === false &&
+        cleared.chevron === true &&
+        cleared.filled === null &&
+        cleared.focus === 'trigger' &&
+        JSON.stringify(cleared.events) === JSON.stringify([{ value: '', bubbles: true }]) &&
+        !cleared.wrapperClasses.includes('vf-select-wrap--with-clear'),
+      JSON.stringify(cleared),
+    );
+    // Selecting again brings the clear button back.
+    await clickVisible(page, selectTrigger('SelClear'));
+    await delay(400);
+    await clickVisible(page, `${selectListbox('SelClear')}.querySelectorAll('[role="option"]')[0]`);
+    await delay(450);
+    const refilled = await read('SelClear');
+    check(
+      'a selection brings the clear button back',
+      refilled.clear === true && refilled.label === 'Starter',
+      JSON.stringify(refilled),
+    );
+
+    // Placeholder and teleport destinations.
+    const empty = await read('SelEmpty');
+    check(
+      'an empty select shows its placeholder with the placeholder modifier',
+      empty.label === 'Pick a plan' && empty.triggerClasses.includes('vf-select--placeholder'),
+      JSON.stringify(empty),
+    );
+    await clickVisible(page, selectTrigger('SelInline'));
+    await delay(400);
+    const inline = await read('SelInline');
+    await pressKey(page, 'Escape');
+    await delay(450);
+    await clickVisible(page, selectTrigger('SelTarget'));
+    await delay(400);
+    const target = await read('SelTarget');
+    await pressKey(page, 'Escape');
+    await delay(450);
+    check(
+      'teleport-to="false" renders the listbox last in the wrapper',
+      inline.where === 'inline' && inline.lastInWrapper === true,
+      JSON.stringify(inline),
+    );
+    check('a selector target receives the listbox', target.where === 'razor-overlay-root', JSON.stringify(target));
+
+    // Disabled: the click and the keys do nothing; the hidden input is excluded from FormData.
+    await clickVisible(page, selectTrigger('SelDisabled'));
+    await delay(300);
+    const disabled = await read('SelDisabled');
+    const disabledForm = await page.evaluate(
+      `new FormData(document.getElementById('fixture-form')).getAll('plan-disabled')`,
+    );
+    check(
+      'a disabled select does not open and submits nothing',
+      disabled.listbox === false && disabled.hidden?.disabled === true && disabledForm.length === 0,
+      JSON.stringify({ disabled, disabledForm }),
+    );
+
+    // Form reset: nothing listens, the self-updated value stays.
+    await page.evaluate(`document.getElementById('fixture-form').reset()`);
+    await delay(100);
+    const reset = await read('SelDefault');
+    check(
+      'a form reset changes nothing',
+      reset.label === 'Pro' && reset.hidden?.value === 'pro',
+      JSON.stringify(reset),
+    );
+
+    // The unowned copy: nothing mounts, a click opens nothing.
+    await clickVisible(page, selectTrigger('SelUnowned'));
+    await delay(300);
+    const unowned = await read('SelUnowned');
+    check(
+      'a select without the ownership marker is not enhanced and opens nothing',
+      unowned.enhanced === false && unowned.listbox === false,
+      JSON.stringify(unowned),
+    );
+
+    check(
+      'the select page produced no script errors',
+      page.diagnostics.pageErrors.length === 0,
+      page.diagnostics.pageErrors.join('; '),
+    );
+  });
+
+  // -------------------------------------------- select inside a popover (M32)
+  await withPage(chrome, server.origin, 'fixture-enhanced.html', async (page) => {
+    await page.waitFor(`Boolean(document.querySelector('[data-vf-razor-select-enhanced]'))`);
+    await page.evaluate(`(async () => {
+      const razor = await import('./vueforge-razor.js');
+      const mount = (node) => {
+        razor.enhanceVueForgePopovers(node, mount);
+        razor.enhanceVueForgeSelects(node);
+      };
+      const section = document.querySelector('[data-case="select-in-popover"]');
+      section.append(document.getElementById('select-inside-source').content.cloneNode(true));
+      mount(section);
+      return true;
+    })()`);
+    const host = `document.querySelector('.select-host > .vf-popover__trigger')`;
+    const panelOpen = () => page.evaluate(`${host}.getAttribute('aria-expanded')`);
+
+    await clickVisible(page, host);
+    await delay(400);
+    await clickVisible(page, selectTrigger('SelInside'));
+    await delay(400);
+    const bothOpen = { popover: await panelOpen(), select: (await page.evaluate(readSelect('SelInside'))).expanded };
+    await pressKey(page, 'Escape');
+    await delay(450);
+    const firstEscape = { popover: await panelOpen(), select: (await page.evaluate(readSelect('SelInside'))).expanded };
+    await pressKey(page, 'Escape');
+    await delay(450);
+    const secondEscape = { popover: await panelOpen() };
+    check(
+      'inside a popover the select closes on the first Escape and the popover on the second',
+      bothOpen.popover === 'true' &&
+        bothOpen.select === 'true' &&
+        firstEscape.popover === 'true' &&
+        firstEscape.select === 'false' &&
+        secondEscape.popover === 'false',
+      JSON.stringify({ bothOpen, firstEscape, secondEscape }),
+    );
+
+    // An option click is outside the popover panel: it selects and closes the popover too.
+    await clickVisible(page, host);
+    await delay(400);
+    await clickVisible(page, selectTrigger('SelInside'));
+    await delay(400);
+    await clickVisible(page, `${selectListbox('SelInside')}.querySelectorAll('[role="option"]')[0]`);
+    await delay(450);
+    const afterOption = await page.evaluate(`({
+      popover: ${host}.getAttribute('aria-expanded'),
+      listboxes: document.querySelectorAll('body > .vf-select__menu').length,
+    })`);
+    check(
+      'an option click in a select inside a popover closes the popover as an outside click',
+      afterOption.popover === 'false' && afterOption.listboxes === 0,
+      JSON.stringify(afterOption),
+    );
+
+    // Closing the popover while its select is open disposes the select: no orphan listbox, no stack entry.
+    await clickVisible(page, host);
+    await delay(400);
+    await clickVisible(page, selectTrigger('SelInside'));
+    await delay(400);
+    await clickVisible(page, host);
+    await delay(500);
+    const orphan = await page.evaluate(`document.querySelectorAll('body > .vf-select__menu').length`);
+    const stale = await page.evaluate(`(() => {
+      const event = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true });
+      document.dispatchEvent(event);
+      return event.defaultPrevented;
+    })()`);
+    check('closing the popover removes the open listbox inside it at once', orphan === 0, String(orphan));
+    check('and leaves no escape entry behind', stale === false, String(stale));
+    check(
+      'the popover page produced no script errors',
+      page.diagnostics.pageErrors.length === 0,
+      page.diagnostics.pageErrors.join('; '),
+    );
+  });
+
+  // ------------------------------------------------------ select, no-js (M32)
+  await withPage(chrome, server.origin, 'fixture-no-js.html', async (page) => {
+    const noJs = await page.evaluate(`(() => {
+      const trigger = ${selectTrigger('SelDefault')};
+      trigger.click();
+      return {
+        listbox: Boolean(document.getElementById(trigger.getAttribute('aria-controls'))),
+        expanded: trigger.getAttribute('aria-expanded'),
+        label: trigger.querySelector('.vf-select__value').textContent,
+        submitted: new FormData(document.getElementById('fixture-form')).getAll('plan'),
+        enhanced: document.querySelectorAll('[data-vf-razor-select-enhanced]').length,
+        floatingSelectFields: document.querySelectorAll('.vf-field--floating:has(.vf-select-wrap)').length,
+      };
+    })()`);
+    check(
+      'without javascript a select shows its value, submits it, and opens nothing',
+      noJs.listbox === false &&
+        noJs.expanded === 'false' &&
+        noJs.label === 'Pro' &&
+        JSON.stringify(noJs.submitted) === JSON.stringify(['pro']) &&
+        noJs.enhanced === 0,
+      JSON.stringify(noJs),
+    );
+    check('select fields are floating without javascript', noJs.floatingSelectFields === 3, JSON.stringify(noJs));
+  });
+
+  // ------------------------------------------ select, double bootstrap (M32)
+  await withPage(chrome, server.origin, 'fixture-enhanced.html', async (page) => {
+    await page.waitFor(`Boolean(document.querySelector('[data-vf-razor-select-enhanced]'))`);
+    await page.evaluate(`import('./vueforge-razor.js?bootstrap=select').then(() => true)`);
+    await delay(250);
+    await clickVisible(page, selectTrigger('SelDefault'));
+    await delay(400);
+    const twice = await page.evaluate(`({
+      listboxes: document.querySelectorAll('body > .vf-select__menu').length,
+      expanded: ${selectTrigger('SelDefault')}.getAttribute('aria-expanded'),
+    })`);
+    check(
+      'after a second bootstrap one click opens one listbox',
+      twice.listboxes === 1 && twice.expanded === 'true',
+      JSON.stringify(twice),
+    );
+  });
+
   // ------------------------------------------- select inside a field (M32)
   //
   // The field controller owns vf-field__control--filled and follows the one
@@ -3961,6 +4438,42 @@ try {
       JSON.stringify(seam),
     );
     check('a report of empty clears the field', seam.cleared === false, JSON.stringify(seam));
+
+    // With the controller: the reference's filled is value || open.
+    const fieldFilled = (id) =>
+      page.evaluate(
+        `document.querySelector('[data-testid="field-${id}"] .vf-field__control').classList.contains('vf-field__control--filled')`,
+      );
+    const unnamedTrigger = `document.querySelector('[data-testid="field-select-field-unnamed"] button.vf-select')`;
+    await clickVisible(page, unnamedTrigger);
+    await delay(400);
+    const openEmpty = await fieldFilled('select-field-unnamed');
+    await clickVisible(page, unnamedTrigger);
+    await delay(450);
+    const closedEmpty = await fieldFilled('select-field-unnamed');
+    await clickVisible(page, unnamedTrigger);
+    await delay(400);
+    await clickElement(
+      page,
+      `document.getElementById(${unnamedTrigger}.getAttribute('aria-controls')).querySelector('[role="option"]')`,
+    );
+    await delay(450);
+    const closedFilled = await fieldFilled('select-field-unnamed');
+    await clickElement(
+      page,
+      `document.querySelector('[data-testid="field-select-field-filled"] .vf-select-wrap__clear')`,
+    );
+    await delay(200);
+    const clearedField = await fieldFilled('select-field-filled');
+    check(
+      'the field follows value || open: open empty filled, closed empty not, closed with a value filled, cleared not',
+      openEmpty === true && closedEmpty === false && closedFilled === true && clearedField === false,
+      JSON.stringify({ openEmpty, closedEmpty, closedFilled, clearedField }),
+    );
+    const suppressed = await page.evaluate(
+      `document.querySelector('[data-testid="field-select-field-named"] .vf-select__value').textContent`,
+    );
+    check('a floating field suppresses the placeholder', suppressed === '', JSON.stringify(suppressed));
   });
 } finally {
   await chrome.close();
@@ -3978,5 +4491,5 @@ if (failures.length > 0) {
 }
 
 process.stdout.write(
-  '[razor-browser] OK: enhanced interactions, no-JS fallback, mixed Vue/Razor ownership and the accordion, stepper, tabs, dropdown, group box, popover and tooltip controllers.\n',
+  '[razor-browser] OK: enhanced interactions, no-JS fallback, mixed Vue/Razor ownership and the accordion, stepper, tabs, dropdown, group box, popover, tooltip and select controllers.\n',
 );

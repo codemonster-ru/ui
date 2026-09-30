@@ -539,6 +539,28 @@ $selectField = static function (string $id, array $selectProps) use ($field, $se
     ]))->value();
 };
 $selectCases = [
+    'select-default' => $renderSelect(['aria-label' => 'SelDefault', 'name' => 'plan', 'model-value' => 'pro'])
+        . '<button type="button" class="select-outside">Outside</button>',
+    'select-empty' => $renderSelect(['aria-label' => 'SelEmpty', 'placeholder' => 'Pick a plan']),
+    'select-clear' => $renderSelect(['aria-label' => 'SelClear', 'name' => 'plan-clear', 'model-value' => 'pro', 'clearable' => true]),
+    'select-inline' => $renderSelect(['aria-label' => 'SelInline', 'teleport-to' => false]),
+    'select-target' => $renderSelect(['aria-label' => 'SelTarget', 'teleport-to' => '#razor-overlay-root']),
+    'select-disabled' => $renderSelect(['aria-label' => 'SelDisabled', 'name' => 'plan-disabled', 'model-value' => 'pro', 'disabled' => true]),
+    // Held in a template until the select suite appends it, so the popover
+    // suite's counts of live popovers are not changed by it.
+    'select-in-popover' => '<template id="select-inside-source">'
+        . $renderPopover(
+            ['class' => 'select-host'],
+            '<span>Filters</span>',
+            $renderSelect(['aria-label' => 'SelInside']),
+        )
+        . '</template>',
+    // The same markup with the marker stripped: not Razor-owned, must not mount.
+    'select-unowned' => str_replace(
+        ' data-vf-razor="select"',
+        '',
+        $renderSelect(['aria-label' => 'SelUnowned']),
+    ),
     'select-field-named' => $selectField('select-field-named', ['name' => 'plan-field']),
     'select-field-unnamed' => $selectField('select-field-unnamed', []),
     'select-field-filled' => $selectField('select-field-filled', ['name' => 'plan-filled', 'model-value' => 'pro', 'clearable' => true]),

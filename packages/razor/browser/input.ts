@@ -29,6 +29,7 @@ import { enhanceVueForgeDropdowns } from './dropdown.js';
 import { enhanceVueForgeGroupBoxes } from './group-box.js';
 import { enhanceVueForgePopovers } from './popover.js';
 import { enhanceVueForgeTooltips } from './tooltip.js';
+import { enhanceVueForgeSelects } from './select.js';
 
 const ROOT_SELECTOR = '[data-vf-razor="input"]';
 const ENHANCED_ATTRIBUTE = 'data-vf-razor-enhanced';
@@ -291,6 +292,10 @@ function enhanceAll(root: ParentNode = document): void {
   // The dropdown is handed this same function so that whatever the server
   // rendered into its menu mounts each time a fresh menu is rendered.
   enhanceVueForgeDropdowns(root, enhanceAll);
+  // Selects render nothing another controller mounts - their options are the
+  // adapter's own buttons - so they take no enhanceContent. A select inside a
+  // popover waits in the popover's template and mounts with each fresh panel.
+  enhanceVueForgeSelects(root);
 }
 
 export {
@@ -300,6 +305,7 @@ export {
   enhanceVueForgeFields,
   enhanceVueForgeGroupBoxes,
   enhanceVueForgePopovers,
+  enhanceVueForgeSelects,
   enhanceVueForgeSteppers,
   enhanceVueForgeTabs,
   enhanceVueForgeTextareas,

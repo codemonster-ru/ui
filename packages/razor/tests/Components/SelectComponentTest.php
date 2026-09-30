@@ -84,7 +84,8 @@ final class SelectComponentTest extends TestCase
         self::assertSame(
             '<div class="vf-select-wrap" data-vf-razor="select" data-vf-razor-select-value=""'
             . ' data-vf-razor-select-placement="bottom-start" data-vf-razor-select-teleport="body"'
-            . ' data-vf-razor-select-floating="false" data-vf-razor-select-clearable="false">'
+            . ' data-vf-razor-select-floating="false" data-vf-razor-select-clearable="false"'
+            . ' data-vf-razor-select-size="md" data-vf-razor-select-invalid="false">'
             . '<button id="vf-select-trigger-r-0" type="button" class="vf-select" aria-controls="vf-select-listbox-r-1"'
             . ' aria-expanded="false" aria-haspopup="listbox" data-vf-razor-select="trigger">'
             . '<span class="vf-select__value"></span>' . self::chevron() . '</button>'
@@ -155,7 +156,7 @@ final class SelectComponentTest extends TestCase
             $this->render(['model-value' => 'pro', 'name' => 'plan']),
         );
         self::assertStringContainsString(
-            'data-vf-razor-select-clearable="false"><input type="hidden" name="plan" value="pro"><button',
+            'data-vf-razor-select-invalid="false"><input type="hidden" name="plan" value="pro"><button',
             $this->render(['model-value' => 'pro', 'name' => 'plan']),
         );
         self::assertStringContainsString(
@@ -193,6 +194,9 @@ final class SelectComponentTest extends TestCase
         $html = $this->render(['aria-haspopup' => 'true', 'aria-expanded' => 'mixed']);
 
         self::assertStringContainsString('aria-expanded="mixed" aria-haspopup="true"', $html);
+        // The controller is told which of its own attributes it must never rewrite.
+        self::assertStringContainsString('data-vf-razor-select-forwarded="aria-expanded"', $html);
+        self::assertStringNotContainsString('data-vf-razor-select-forwarded', $this->render());
     }
 
     public function testClassAndStyleGoToTheWrapperAndAStringIdToTheTrigger(): void
