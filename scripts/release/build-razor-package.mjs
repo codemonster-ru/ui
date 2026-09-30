@@ -141,6 +141,12 @@ export const requiredEntries = [
   // disposal, not its escape stack - the tooltip has no entry on it.
   'src/Components/TooltipComponent.php',
   'src/Support/TooltipState.php',
+  // The M32 component: a listbox on the dropdown's floating layer. Its
+  // browser controller travels inside dist/vueforge-razor.js on the shared
+  // escape stack and disposal registry, and reports its filled state to the
+  // field through the declared-control seam in the field controller.
+  'src/Components/SelectComponent.php',
+  'src/Support/SelectState.php',
   'resources/icons/icon-registry.json',
   'dist/vueforge-razor.css',
   'dist/vueforge-razor.js',

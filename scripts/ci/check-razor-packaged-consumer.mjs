@@ -197,6 +197,7 @@ $dropdown = $registry->resolve('vf-dropdown');
 $groupBox = $registry->resolve('vf-group-box');
 $popover = $registry->resolve('vf-popover');
 $tooltip = $registry->resolve('vf-tooltip');
+$select = $registry->resolve('vf-select');
 $assetPath = VueForgeRazorProvider::assetPath();
 $tabItems = [
     ['value' => 'overview', 'label' => 'Overview'],
@@ -246,6 +247,7 @@ echo json_encode([
         'vf-group-box' => $registry->handles('vf-group-box'),
         'vf-popover' => $registry->handles('vf-popover'),
         'vf-tooltip' => $registry->handles('vf-tooltip'),
+        'vf-select' => $registry->handles('vf-select'),
     ],
     'markup' => $input->render(new ComponentRenderContext(
         ['name' => 'workspace', 'value' => 'Acme', 'clearable' => true, 'password-reveal' => false],
@@ -900,6 +902,24 @@ echo json_encode([
         && preg_match_all('/^\\.vf-tooltip__content \\{/m', (string) file_get_contents($assetPath . '/vueforge-razor.css')) === 1
         && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-tooltip__arrow--bottom')
         && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-floating-transition-enter-from.vf-tooltip__content'),
+    // VfSelect, M32: always closed on the server - the trigger, the hidden
+    // input a name asks for, and the options waiting in an inert template.
+    'selectClosed' => $select->render(new ComponentRenderContext(
+        [
+            'options' => [['value' => 'starter', 'label' => 'Starter'], ['value' => 'pro', 'label' => 'Pro']],
+            'model-value' => 'pro',
+            'name' => 'plan',
+        ],
+        [],
+    ))->value(),
+    'selectBrowserCode' => str_contains($controllerSource, 'data-vf-razor-select-enhanced')
+        && substr_count($controllerSource, 'function enhanceVueForgeSelects(') === 1
+        && substr_count($controllerSource, 'function activateEscapeEntry(') === 1
+        && substr_count($controllerSource, 'function registerDisposal(') === 1
+        && substr_count($controllerSource, '[floater.js] flip middleware expects params.placements') === 1,
+    'selectCss' => is_file($assetPath . '/vueforge-razor.css')
+        && preg_match_all('/^\\.vf-select__menu \\{/m', (string) file_get_contents($assetPath . '/vueforge-razor.css')) === 1
+        && preg_match_all('/^\\.vf-select-wrap \\{/m', (string) file_get_contents($assetPath . '/vueforge-razor.css')) === 1,
     'dropdownClosed' => $dropdown->render(new ComponentRenderContext(
         [],
         [
@@ -2199,6 +2219,29 @@ echo json_encode([
     rendered.tooltipEmpty,
   );
   check('the tooltip component takes no constructor argument', rendered.tooltipConstructorTakesNothing === true);
+  check('the registry resolves vf-select', rendered.handles['vf-select'] === true);
+  check(
+    'the consumer renders a closed select: the trigger wired to its listbox id, the named hidden input, the options in an inert template and no script',
+    /^<div class="vf-select-wrap" data-vf-razor="select" data-vf-razor-select-value="pro"[^>]*><input type="hidden" name="plan" value="pro"><button id="vf-select-trigger-r-\d+" type="button" class="vf-select" data-vf-filled="true" aria-controls="vf-select-listbox-r-\d+" aria-expanded="false" aria-haspopup="listbox" data-vf-razor-select="trigger"><span class="vf-select__value">Pro<\/span>/.test(
+      rendered.selectClosed,
+    ) &&
+      rendered.selectClosed.includes(
+        '<template data-vf-razor-select="listbox"><button type="button" class="vf-dropdown__item vf-select__option" role="option" aria-selected="false" tabindex="-1" data-vf-razor-select-value="starter">Starter</button>',
+      ) &&
+      !rendered.selectClosed.includes('role="listbox"') &&
+      !rendered.selectClosed.includes('<script'),
+    rendered.selectClosed,
+  );
+  check(
+    'the packaged controller carries the select layer once, on the one escape stack, disposal registry and floater.js copy',
+    rendered.selectBrowserCode === true,
+    'vueforge-razor.js lacks the select layer, or carries a second escape stack, disposal registry or floater.js copy',
+  );
+  check(
+    'the packaged stylesheet carries the select rules once',
+    rendered.selectCss === true,
+    'vueforge-razor.css is missing select rules or duplicates them',
+  );
   check(
     'the packaged controller carries the tooltip layer once, on the one disposal registry and the one floater.js copy',
     rendered.tooltipBrowserCode === true,

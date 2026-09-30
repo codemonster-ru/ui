@@ -216,6 +216,19 @@ check(
     css.includes('.vf-floating-transition-enter-from.vf-tooltip__content') &&
     css.includes('.vf-tooltip__arrow--bottom'),
 );
+// M32: the select controller - once, on the same floater.js copy, escape stack
+// and disposal registry, and its stylesheet once.
+check(
+  'the packaged controller carries the select enhancement exactly once',
+  js.includes('data-vf-razor-select-enhanced') && js.split('function enhanceVueForgeSelects(').length === 2,
+);
+check(
+  'the packaged stylesheet carries the select rules exactly once',
+  (css.match(/^\.vf-select-wrap \{$/gm) ?? []).length === 1 &&
+    (css.match(/^\.vf-select \{$/gm) ?? []).length === 1 &&
+    (css.match(/^\.vf-select__menu \{$/gm) ?? []).length === 1 &&
+    css.includes('.vf-dropdown__item.vf-select__option'),
+);
 check(
   'the packaged stylesheet carries the popover rules exactly once',
   (css.match(/^\.vf-popover__content \{$/gm) ?? []).length === 1 &&

@@ -188,6 +188,10 @@ const controlSelectors = {
   // The M31 component. It owns no control; the trigger wrapper, one per
   // instance, is what every case renders, and the probe below hovers it.
   VfTooltip: '.vf-tooltip__trigger',
+  // The M32 component. The <button> trigger, one per rendered instance; the
+  // clear button and the options of an open listbox are its too, and the
+  // probe below reads the listbox where it is.
+  VfSelect: 'button.vf-select',
 };
 
 /**
@@ -234,6 +238,9 @@ const controlsPerCase = {
   // One trigger wrapper per instance; a tooltip inside a closed popover waits
   // in the popover's inert template and is not on the page.
   VfTooltip: (parityCase) => (Array.isArray(parityCase.group) ? parityCase.group.length : 1),
+  // One trigger per instance; the select inside a closed popover waits in the
+  // popover's inert template and is not on the page.
+  VfSelect: (parityCase) => (Array.isArray(parityCase.group) ? parityCase.group.length : 1),
 };
 
 /**
@@ -253,6 +260,8 @@ const rootsPerCase = {
   VfPopover: (parityCase) => (Array.isArray(parityCase.group) ? parityCase.group.length : 1),
   // One tooltip root per instance; the one a popover holds is not live yet.
   VfTooltip: (parityCase) => (Array.isArray(parityCase.group) ? parityCase.group.length : 1),
+  // One select root per instance; the one a closed popover holds is not live.
+  VfSelect: (parityCase) => (Array.isArray(parityCase.group) ? parityCase.group.length : 1),
   // Every group box root carries the marker, static or not; a nested one is in
   // the DOM only while its parent shows its content - inside a closed parent
   // it waits in the parent's inert template.
@@ -303,6 +312,7 @@ const ownershipMarkers = {
   VfGroupBox: { root: '[data-vf-razor="group-box"]', enhanced: '[data-vf-razor-group-box-enhanced]' },
   VfPopover: { root: '[data-vf-razor="popover"]', enhanced: '[data-vf-razor-popover-enhanced]' },
   VfTooltip: { root: '[data-vf-razor="tooltip"]', enhanced: '[data-vf-razor-tooltip-enhanced]' },
+  VfSelect: { root: '[data-vf-razor="select"]', enhanced: '[data-vf-razor-select-enhanced]' },
 };
 
 const components = showcaseIndex.components
@@ -376,6 +386,7 @@ check(
       'VfProgressBar',
       'VfProgressSpinner',
       'VfRadio',
+      'VfSelect',
       'VfSkeleton',
       'VfSkeletonGate',
       'VfStepper',
@@ -1654,6 +1665,199 @@ async function probeDropdownBehaviour(origin, path) {
   }
 }
 
+async function probeSelectBehaviour(origin, path) {
+  const page = await openPage(chrome.endpoint);
+  const triggerOf = (caseId, index = 0) =>
+    `document.querySelectorAll('[data-showcase-case="${caseId}"] button.vf-select')[${index}]`;
+  const listboxOf = (caseId, index = 0) =>
+    `document.getElementById(${triggerOf(caseId, index)}.getAttribute('aria-controls'))`;
+  const state = (caseId, index = 0) => `(() => {
+    const root = document.querySelector('[data-showcase-case="${caseId}"]');
+    const trigger = ${triggerOf(caseId, index)};
+    const listbox = document.getElementById(trigger.getAttribute('aria-controls'));
+    const active = document.activeElement;
+    const form = root.querySelector('form');
+    const control = root.querySelector('.vf-field__control');
+    return {
+      expanded: trigger.getAttribute('aria-expanded'),
+      haspopup: trigger.getAttribute('aria-haspopup'),
+      label: trigger.querySelector('.vf-select__value').textContent,
+      listbox: listbox ? {
+        inBody: listbox.parentElement === document.body,
+        role: listbox.getAttribute('role'),
+        labelledByTrigger: listbox.getAttribute('aria-labelledby') === trigger.id,
+        positioned: listbox.style.left !== '0px' || listbox.style.top !== '0px',
+        minWidth: listbox.style.minWidth === trigger.offsetWidth + 'px',
+        below: listbox.getBoundingClientRect().top >= trigger.getBoundingClientRect().bottom,
+        scrolled: listbox.scrollTop > 0,
+        selected: [...listbox.querySelectorAll('[aria-selected="true"]')].map((option) => option.textContent.trim()),
+        leaving: [...listbox.classList].some((name) => name.startsWith('vf-floating-transition-leave')),
+      } : null,
+      clear: Boolean(root.querySelector('.vf-select-wrap__clear')),
+      formData: form ? [...new FormData(form).entries()].map(([name, value]) => name + '=' + value) : null,
+      fieldFilled: control ? control.classList.contains('vf-field__control--filled') : null,
+      focus: active === trigger ? 'trigger' : listbox && listbox.contains(active) ? 'option:' + active.textContent.trim() : active === document.body ? 'body' : root.contains(active) ? 'inside' : 'elsewhere',
+    };
+  })()`;
+  const key = async (name, code, keyCode) => {
+    await page.send('Input.dispatchKeyEvent', {
+      type: 'rawKeyDown',
+      key: name,
+      code,
+      windowsVirtualKeyCode: keyCode,
+      nativeVirtualKeyCode: keyCode,
+    });
+    await page.send('Input.dispatchKeyEvent', {
+      type: 'keyUp',
+      key: name,
+      code,
+      windowsVirtualKeyCode: keyCode,
+      nativeVirtualKeyCode: keyCode,
+    });
+    await delay(150);
+  };
+  const click = async (expression) => {
+    await page.evaluate(`(${expression}).scrollIntoView({ block: 'center' })`);
+    await delay(150);
+    const point = await page.evaluate(
+      `(() => { const rect = (${expression}).getBoundingClientRect(); return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }; })()`,
+    );
+    await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...point });
+    await page.send('Input.dispatchMouseEvent', { type: 'mousePressed', ...point, button: 'left', clickCount: 1 });
+    await page.send('Input.dispatchMouseEvent', { type: 'mouseReleased', ...point, button: 'left', clickCount: 1 });
+    await delay(450);
+  };
+
+  try {
+    await page.send('Page.enable');
+    await page.send('Runtime.enable');
+    await page.send('Emulation.setDeviceMetricsOverride', { ...viewport, deviceScaleFactor: 1, mobile: false });
+    await page.send('Page.navigate', { url: `${origin}${path}` });
+    await page.waitFor(`Boolean(${triggerOf('select/interaction-arrowdown-open')})`);
+    await delay(600);
+
+    const initial = await page.evaluate(`(() => ({
+      openOnLoad: document.querySelectorAll('button.vf-select[aria-expanded="true"]').length,
+      listboxesInBody: [...document.body.children].filter((node) => node.classList.contains('vf-select__menu')).length,
+      inlineScripts: [...document.querySelectorAll('script:not([src])')].filter((script) => /select|floater/i.test(script.textContent)).length,
+    }))()`);
+
+    // Keyboard: ArrowDown opens on the selected option, the walk moves on,
+    // Enter selects, closes and focuses the trigger; Escape from an option closes.
+    await page.evaluate(
+      `(${triggerOf('select/interaction-arrowdown-open')}).scrollIntoView({ block: 'center' }); (${triggerOf('select/interaction-arrowdown-open')}).focus()`,
+    );
+    await key('ArrowDown', 'ArrowDown', 40);
+    await delay(400);
+    const keyboardOpen = await page.evaluate(state('select/interaction-arrowdown-open'));
+    await key('ArrowDown', 'ArrowDown', 40);
+    const walked = await page.evaluate(state('select/interaction-arrowdown-open'));
+    await key('Enter', 'Enter', 13);
+    await delay(450);
+    const entered = await page.evaluate(state('select/interaction-arrowdown-open'));
+    await key('ArrowDown', 'ArrowDown', 40);
+    await delay(400);
+    await key('Escape', 'Escape', 27);
+    const escaped = await page.evaluate(state('select/interaction-arrowdown-open'));
+    await delay(450);
+    const escapedLater = await page.evaluate(state('select/interaction-arrowdown-open'));
+
+    // Tab from an in-place listbox moves focus on and leaves it open.
+    await page.evaluate(
+      `(${triggerOf('select/interaction-tab-open')}).scrollIntoView({ block: 'center' }); (${triggerOf('select/interaction-tab-open')}).focus()`,
+    );
+    await key('ArrowDown', 'ArrowDown', 40);
+    await delay(400);
+    await key('Tab', 'Tab', 9);
+    const tabbed = await page.evaluate(state('select/interaction-tab-open'));
+    await key('Escape', 'Escape', 27);
+    await delay(450);
+
+    // Pointer: a click opens; an option click selects without focusing the trigger.
+    await click(triggerOf('select/interaction-option-click'));
+    const pointerOpen = await page.evaluate(state('select/interaction-option-click'));
+    await click(`${listboxOf('select/interaction-option-click')}.querySelectorAll('[role="option"]')[3]`);
+    const optionClicked = await page.evaluate(state('select/interaction-option-click'));
+
+    // An outside click closes without focusing the trigger.
+    await click(triggerOf('select/interaction-outside-click'));
+    await click(
+      `document.querySelector('[data-showcase-case="select/interaction-outside-click"] .parity-after-control')`,
+    );
+    const outsideClosed = await page.evaluate(state('select/interaction-outside-click'));
+
+    // The clear button empties it and focuses the trigger.
+    await click(`document.querySelector('[data-showcase-case="select/interaction-clear"] .vf-select-wrap__clear')`);
+    const cleared = await page.evaluate(state('select/interaction-clear'));
+
+    // A floating field fills while the empty select is open.
+    await click(triggerOf('select/interaction-field-open-empty'));
+    const fieldOpen = await page.evaluate(state('select/interaction-field-open-empty'));
+    await key('Escape', 'Escape', 27);
+    await delay(450);
+    const fieldClosed = await page.evaluate(state('select/interaction-field-open-empty'));
+
+    // A keyboard selection reaches the form's entries.
+    await page.evaluate(
+      `(${triggerOf('select/interaction-form-select')}).scrollIntoView({ block: 'center' }); (${triggerOf('select/interaction-form-select')}).focus()`,
+    );
+    await key('ArrowDown', 'ArrowDown', 40);
+    await delay(400);
+    await key('ArrowDown', 'ArrowDown', 40);
+    await key('Enter', 'Enter', 13);
+    await delay(450);
+    const formSelected = await page.evaluate(state('select/interaction-form-select'));
+
+    // A long list opens scrolled to its selected option.
+    await click(triggerOf('select/interaction-scroll-on-click'));
+    const scrolled = await page.evaluate(state('select/interaction-scroll-on-click'));
+    await key('Escape', 'Escape', 27);
+    await delay(450);
+
+    // Closing a popover with its select open removes the listbox and leaves no escape entry.
+    await click(
+      `document.querySelector('[data-showcase-case="select/interaction-popover-close"] .vf-popover__trigger')`,
+    );
+    await click(triggerOf('select/interaction-popover-close', 1));
+    const innerOpen = await page.evaluate(
+      `${triggerOf('select/interaction-popover-close', 1)}.getAttribute('aria-expanded')`,
+    );
+    await click(
+      `document.querySelector('[data-showcase-case="select/interaction-popover-close"] .vf-popover__trigger')`,
+    );
+    const disposed = await page.evaluate(`(() => {
+      const event = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true });
+      document.dispatchEvent(event);
+      return {
+        listboxesInBody: [...document.body.children].filter((node) => node.classList.contains('vf-select__menu')).length,
+        escapePrevented: event.defaultPrevented,
+      };
+    })()`);
+
+    return {
+      initial,
+      keyboardOpen,
+      walked,
+      entered,
+      escaped,
+      escapedLater,
+      tabbed,
+      pointerOpen,
+      optionClicked,
+      outsideClosed,
+      cleared,
+      fieldOpen,
+      fieldClosed,
+      formSelected,
+      scrolled,
+      innerOpen,
+      disposed,
+    };
+  } finally {
+    await page.close();
+  }
+}
+
 /** Opens a case address on one platform and reports which case it selected. */
 async function readSelectedCase(origin, path) {
   const page = await openPage(chrome.endpoint);
@@ -1717,6 +1921,7 @@ try {
       'VfGroupBox',
       'VfPopover',
       'VfTooltip',
+      'VfSelect',
     ].includes(name);
 
     for (const theme of themes) {
@@ -2146,6 +2351,105 @@ try {
         }
         check(
           `[${name}/${theme}] the Vue and Razor showcases read the same at every step`,
+          JSON.stringify(readings.vue) === JSON.stringify(readings.razor),
+          JSON.stringify(readings),
+        );
+      }
+
+      // --------------------------------- the select on both real pages
+      //
+      // M32: the listbox. Driven with real events on both platforms and read
+      // where the listbox really is; every reading must also be the same on both.
+      if (name === 'VfSelect') {
+        const readings = {};
+        for (const [platform, origin, route] of [
+          ['vue', vueOrigin, `${vueRoute}&theme=${theme}`],
+          ['razor', razorOrigin, `${razorRoute}&theme=${theme}`],
+        ]) {
+          const run = await probeSelectBehaviour(origin, route);
+          readings[platform] = run;
+          check(
+            `[${name}/${theme}] the ${platform} showcase opens nothing on load and adds no script of its own`,
+            run.initial.openOnLoad === 0 && run.initial.listboxesInBody === 0 && run.initial.inlineScripts === 0,
+            JSON.stringify(run.initial),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase opens on ArrowDown into <body>, positioned below and as wide as its trigger, labelled by it, focusing the selected option`,
+            run.keyboardOpen.expanded === 'true' &&
+              run.keyboardOpen.listbox?.inBody &&
+              run.keyboardOpen.listbox.role === 'listbox' &&
+              run.keyboardOpen.listbox.labelledByTrigger &&
+              run.keyboardOpen.listbox.positioned &&
+              run.keyboardOpen.listbox.minWidth &&
+              run.keyboardOpen.listbox.below &&
+              run.keyboardOpen.focus === 'option:Pro' &&
+              run.keyboardOpen.haspopup === 'listbox',
+            JSON.stringify(run.keyboardOpen),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase walks with ArrowDown, and Enter selects, closes and focuses the trigger`,
+            run.walked.focus === 'option:Team' &&
+              run.entered.expanded === 'false' &&
+              run.entered.label === 'Team' &&
+              run.entered.focus === 'trigger',
+            JSON.stringify({ walked: run.walked.focus, entered: run.entered }),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase closes on Escape from an option and removes the listbox after its leave`,
+            run.escaped.expanded === 'false' &&
+              run.escaped.focus === 'trigger' &&
+              run.escaped.listbox?.leaving === true &&
+              run.escapedLater.listbox === null,
+            JSON.stringify({ escaped: run.escaped, later: run.escapedLater.listbox }),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase stays open on Tab`,
+            run.tabbed.expanded === 'true' && run.tabbed.focus === 'inside',
+            JSON.stringify(run.tabbed),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase opens on a click and selects on an option click without focusing the trigger`,
+            run.pointerOpen.expanded === 'true' &&
+              run.pointerOpen.focus === 'trigger' &&
+              run.optionClicked.expanded === 'false' &&
+              run.optionClicked.label === 'Team' &&
+              run.optionClicked.focus !== 'trigger',
+            JSON.stringify({ open: run.pointerOpen, clicked: run.optionClicked }),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase closes on an outside click without focusing the trigger`,
+            run.outsideClosed.expanded === 'false' && run.outsideClosed.focus !== 'trigger',
+            JSON.stringify(run.outsideClosed),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase clears, swaps back to the chevron and focuses the trigger`,
+            run.cleared.label === '' && run.cleared.clear === false && run.cleared.focus === 'trigger',
+            JSON.stringify(run.cleared),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase fills its floating field while open and empties it on close`,
+            run.fieldOpen.fieldFilled === true && run.fieldClosed.fieldFilled === false,
+            JSON.stringify({ open: run.fieldOpen.fieldFilled, closed: run.fieldClosed.fieldFilled }),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase submits the selected value`,
+            JSON.stringify(run.formSelected.formData) === JSON.stringify(['plan=pro']),
+            JSON.stringify(run.formSelected),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase opens a long list scrolled to its selected option`,
+            run.scrolled.listbox?.scrolled === true &&
+              JSON.stringify(run.scrolled.listbox.selected) === '["Option 11"]',
+            JSON.stringify(run.scrolled),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase removes an open listbox with its popover and leaves no escape entry`,
+            run.innerOpen === 'true' && run.disposed.listboxesInBody === 0 && run.disposed.escapePrevented === false,
+            JSON.stringify({ inner: run.innerOpen, disposed: run.disposed }),
+          );
+        }
+        check(
+          `[${name}/${theme}] the Vue and Razor select showcases read the same at every step`,
           JSON.stringify(readings.vue) === JSON.stringify(readings.razor),
           JSON.stringify(readings),
         );
