@@ -629,6 +629,7 @@
         "style": "margin-top: 4px;",
         "aria-label": "Plan",
         "data-testid": "plan",
+        "title": "Pick a plan",
         "tabindex": "3",
         "required": true,
         "autofocus": true,
@@ -637,7 +638,7 @@
       },
       "content": {},
       "id": "select/attrs",
-      "title": "Attributes: aria-*, data-* and tabindex reach the trigger, class and style the wrapper, id the trigger id; required, autofocus and role reach nothing",
+      "title": "Attributes: aria-*, data-*, title and tabindex reach the trigger, class and style the wrapper, id the trigger id; required, autofocus and role reach nothing",
       "componentInteractive": 1,
       "consumerInteractive": 0,
       "consumerInteractiveRoles": 0

@@ -84,6 +84,7 @@ import {
 import { dropdownBrowserMutations, dropdownParityMutations, dropdownPolicyMutations } from './dropdown-mutations.mjs';
 import { popoverBrowserMutations, popoverParityMutations, popoverPolicyMutations } from './popover-mutations.mjs';
 import { tooltipBrowserMutations, tooltipParityMutations, tooltipPolicyMutations } from './tooltip-mutations.mjs';
+import { selectBrowserMutations, selectParityMutations, selectPolicyMutations } from './select-mutations.mjs';
 import { groupBoxBrowserMutations, groupBoxParityMutations, groupBoxPolicyMutations } from './group-box-mutations.mjs';
 import {
   skeletonGateBrowserMutations,
@@ -216,6 +217,11 @@ const mutationSets = {
     capture: tooltipParityMutations,
     policy: tooltipPolicyMutations,
     browser: tooltipBrowserMutations,
+  },
+  select: {
+    capture: selectParityMutations,
+    policy: selectPolicyMutations,
+    browser: selectBrowserMutations,
   },
   'skeleton-gate': {
     capture: skeletonGateParityMutations,

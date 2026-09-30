@@ -142,6 +142,11 @@ export const COMPARED_ATTRIBUTES = [
   // on a real capture: a Razor trigger announcing aria-haspopup="true"
   // compared equal to the reference's "menu" on every DOM dimension.
   'aria-haspopup',
+  // VfSelect (M32). Found missing by a Razor mutation that dropped the title a
+  // consumer forwards to the trigger - reproduced as a false PASS on real
+  // captures before being added: title is one of the four attribute kinds the
+  // select forwards, and nothing compared it.
+  'title',
   // VfBreadcrumbs. Found missing by the attribute-coverage gate in M26 - the
   // thirteenth attribute it has caught nobody compared - and reproduced as a
   // false PASS on real captures before being added: the separator glyph is a

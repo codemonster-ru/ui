@@ -1533,6 +1533,7 @@ export const profiles = {
       'value',
       'disabled',
       'tabindex',
+      'title',
       'for',
       'aria-controls',
       'aria-labelledby',
