@@ -85,6 +85,7 @@ import { dropdownBrowserMutations, dropdownParityMutations, dropdownPolicyMutati
 import { popoverBrowserMutations, popoverParityMutations, popoverPolicyMutations } from './popover-mutations.mjs';
 import { tooltipBrowserMutations, tooltipParityMutations, tooltipPolicyMutations } from './tooltip-mutations.mjs';
 import { selectBrowserMutations, selectParityMutations, selectPolicyMutations } from './select-mutations.mjs';
+import { navMenuBrowserMutations, navMenuParityMutations, navMenuPolicyMutations } from './nav-menu-mutations.mjs';
 import { groupBoxBrowserMutations, groupBoxParityMutations, groupBoxPolicyMutations } from './group-box-mutations.mjs';
 import {
   skeletonGateBrowserMutations,
@@ -222,6 +223,16 @@ const mutationSets = {
     capture: selectParityMutations,
     policy: selectPolicyMutations,
     browser: selectBrowserMutations,
+  },
+  // VfNavMenu (M33): the false-pass attacks A-N - the active mark, stale
+  // announcements, identity with the count kept, nested and single-mode
+  // expansion, the level, the disabled link, rel, the transition's removal
+  // and timing mechanism, the observer and the isolation of instances - and
+  // the defects current and Razor share, which only the reference sees.
+  'nav-menu': {
+    capture: navMenuParityMutations,
+    policy: navMenuPolicyMutations,
+    browser: navMenuBrowserMutations,
   },
   'skeleton-gate': {
     capture: skeletonGateParityMutations,

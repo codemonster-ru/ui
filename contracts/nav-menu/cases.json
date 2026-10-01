@@ -2835,6 +2835,124 @@
       "visual": false
     },
     {
+      "id": "nav-menu/interaction-single-descendants-reopen",
+      "title": "Single mode: reopening a sibling shows the branch below it closed",
+      "$why": "The sibling rule removed the descendant's value too, so it does not come back with its parent.",
+      "props": {
+        "items": [
+          {
+            "value": "library",
+            "label": "Library",
+            "children": [
+              {
+                "value": "forms",
+                "kind": "group",
+                "label": "Forms",
+                "children": [
+                  {
+                    "value": "input",
+                    "label": "Input",
+                    "children": [
+                      {
+                        "value": "input-api",
+                        "label": "Input API"
+                      }
+                    ]
+                  },
+                  {
+                    "value": "select",
+                    "label": "Select",
+                    "children": [
+                      {
+                        "value": "select-api",
+                        "label": "Select API"
+                      },
+                      {
+                        "value": "select-deep",
+                        "label": "Select deep",
+                        "children": [
+                          {
+                            "value": "select-leaf",
+                            "label": "Leaf"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "value": "layout",
+                "label": "Layout",
+                "children": [
+                  {
+                    "value": "grid",
+                    "label": "Grid"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "about",
+            "label": "About",
+            "children": [
+              {
+                "value": "team",
+                "label": "Team"
+              }
+            ]
+          }
+        ],
+        "expandMode": "single"
+      },
+      "attrs": {},
+      "content": {},
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 0
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 2
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 4
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 1
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 3
+          }
+        ],
+        "componentInteractive": 7,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedLabels": ["Library", "Select"],
+          "currentLabels": [],
+          "events": [],
+          "locationHash": "",
+          "settled": true
+        }
+      },
+      "componentInteractive": 2,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "visual": false
+    },
+    {
       "id": "nav-menu/interaction-single-group-skip",
       "title": "Single mode: a sibling group is skipped whole",
       "$why": "Opening Layout leaves Input, inside the Forms group, open.",
