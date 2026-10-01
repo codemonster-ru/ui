@@ -331,6 +331,27 @@ describe('component entry CSS parity', () => {
     expect(source).not.toContain('.vf-tooltip');
   });
 
+  it('forwards the nav menu entry to its canonical source in packages/styles, which imports nothing', () => {
+    // The M33 move. The nav menu is its own closure: nothing imports it and it
+    // imports nothing. What the component depends on is pinned - the probe the
+    // compact sidebar is measured against is as wide as the breakpoint token
+    // and takes no space; the collapse clips what its enter and leave hooks
+    // animate; the sidebar's collapse carries its own grid transition, which
+    // the hooks' inline transition overrides while they run.
+    const canonical = resolveStyleEntrySource(resolve(entriesDir, 'nav-menu.css'));
+    expect(canonical).toBe(resolve(stylesDir, '../../../styles/src/components/nav-menu.css'));
+
+    const source = readFileSync(canonical, 'utf8');
+    expect([...source.matchAll(/^@import\s+'([^']+)';$/gm)]).toEqual([]);
+    expect(source).toContain(
+      '.vf-nav-menu__compact-breakpoint-probe {\n  position: absolute;\n  inset: 0 auto auto 0;\n  inline-size: var(--vf-nav-menu-sidebar-compact-breakpoint);\n  block-size: 0;\n  visibility: hidden;\n  pointer-events: none;\n}',
+    );
+    expect(source).toContain('.vf-nav-menu__collapse {\n  --vf-nav-menu-sidebar-current-inset-padding: 0px;\n\n  overflow: hidden;\n}');
+    expect(source).toContain('.vf-nav-menu--sidebar .vf-nav-menu__collapse {');
+    expect(source).not.toContain('.vf-menu-bar');
+    expect(source).not.toContain('.vf-menu ');
+  });
+
   it('keeps the menu and the menu item in one closure with no descendant coupling', () => {
     // VfMenu and VfMenuItem are one milestone because they are one stylesheet,
     // not because either needs the other. No selector here joins them: every

@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { mount } from '@vue/test-utils';
+import { resolveStyleEntrySource } from '../../../build/style-entry-sources.mjs';
 import { defineComponent, h, nextTick, ref } from 'vue';
 import { describe, expect, it, vi } from 'vitest';
 import VfNavMenu from './VfNavMenu.vue';
@@ -97,7 +98,11 @@ describe('VfNavMenu', () => {
   });
 
   it('provides a width-aware compact sidebar presentation', () => {
-    const navMenuCss = readFileSync(resolve(process.cwd(), 'src/styles/entries/nav-menu.css'), 'utf8');
+    // Read through the forward: since M33 the entry is one, and the rules live in packages/styles.
+    const navMenuCss = readFileSync(
+      resolveStyleEntrySource(resolve(process.cwd(), 'src/styles/entries/nav-menu.css')),
+      'utf8',
+    );
     const compactSidebarCss = navMenuCss.slice(navMenuCss.indexOf('.vf-nav-menu--sidebar-compact'));
 
     expect(navMenuCss).not.toContain('@container (max-width: var(--vf-nav-menu-sidebar-compact-breakpoint))');

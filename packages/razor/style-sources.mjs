@@ -217,4 +217,10 @@ export const styleSources = [
   // above, so they appear once and before these overrides, as in
   // packages/core/src/styles/components.css. Listed last.
   'packages/styles/src/components/select.css',
+  // VfNavMenu, M33: the nav, the breakpoint probe the compact sidebar is
+  // measured against, the lists, groups, branch buttons, leaves, collapse
+  // wrappers and the four variant/compact layers. It imports nothing; its
+  // leading and trailing glyphs are `.vf-icon`s, laid out by icon.css above.
+  // No selector here overlaps another file's. Listed last.
+  'packages/styles/src/components/nav-menu.css',
 ];
