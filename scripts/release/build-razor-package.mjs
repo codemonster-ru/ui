@@ -147,6 +147,11 @@ export const requiredEntries = [
   // field through the declared-control seam in the field controller.
   'src/Components/SelectComponent.php',
   'src/Support/SelectState.php',
+  // The M33 component: a recursive navigation tree. Its browser controller
+  // travels inside dist/vueforge-razor.js on the shared disposal registry and
+  // depends on no overlay controller; its stylesheet is the last one inlined.
+  'src/Components/NavMenuComponent.php',
+  'src/Support/NavMenuState.php',
   'resources/icons/icon-registry.json',
   'dist/vueforge-razor.css',
   'dist/vueforge-razor.js',

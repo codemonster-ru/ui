@@ -198,6 +198,7 @@ $groupBox = $registry->resolve('vf-group-box');
 $popover = $registry->resolve('vf-popover');
 $tooltip = $registry->resolve('vf-tooltip');
 $select = $registry->resolve('vf-select');
+$navMenu = $registry->resolve('vf-nav-menu');
 $assetPath = VueForgeRazorProvider::assetPath();
 $tabItems = [
     ['value' => 'overview', 'label' => 'Overview'],
@@ -248,6 +249,7 @@ echo json_encode([
         'vf-popover' => $registry->handles('vf-popover'),
         'vf-tooltip' => $registry->handles('vf-tooltip'),
         'vf-select' => $registry->handles('vf-select'),
+        'vf-nav-menu' => $registry->handles('vf-nav-menu'),
     ],
     'markup' => $input->render(new ComponentRenderContext(
         ['name' => 'workspace', 'value' => 'Acme', 'clearable' => true, 'password-reveal' => false],
@@ -824,7 +826,9 @@ echo json_encode([
     'menuItemRoleNotOverridable' => $menuItem->render(new ComponentRenderContext(['label' => 'Edit', 'role' => 'option'], []))->value(),
     'menuConstructorsTakeNothing' => (new ReflectionClass($menu))->getConstructor() === null
         && (new ReflectionClass($menuItem))->getConstructor() === null,
-    'menuBrowserCode' => preg_match('/vf-menu|data-vf-razor="menu"|menu-enhanced/', $controllerSource) === 1,
+    // VfMenu's own markers, not any marker ending in menu-enhanced: the nav
+    // menu's data-vf-razor-nav-menu-enhanced (M33) is not the menu's.
+    'menuBrowserCode' => preg_match('/vf-menu|data-vf-razor="menu"|data-vf-razor-menu(-item)?-enhanced/', $controllerSource) === 1,
     'menuCss' => is_file($assetPath . '/vueforge-razor.css')
         && substr_count((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-menu {') === 1
         && substr_count((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-menu__item {') === 1
@@ -920,6 +924,33 @@ echo json_encode([
     'selectCss' => is_file($assetPath . '/vueforge-razor.css')
         && preg_match_all('/^\\.vf-select__menu \\{/m', (string) file_get_contents($assetPath . '/vueforge-razor.css')) === 1
         && preg_match_all('/^\\.vf-select-wrap \\{/m', (string) file_get_contents($assetPath . '/vueforge-razor.css')) === 1,
+    // VfNavMenu, M33: the initial value's ancestry open on the server, every
+    // closed subtree in an inert template, no script; [to] refused by name.
+    'navMenuTree' => $navMenu->render(new ComponentRenderContext(
+        [
+            'items' => [
+                ['value' => 'guide', 'label' => 'Guide', 'children' => [['value' => 'intro', 'label' => 'Intro', 'href' => '/intro']]],
+                ['value' => 'api', 'label' => 'API', 'children' => [['value' => 'props', 'label' => 'Props']]],
+            ],
+            'default-value' => 'intro',
+        ],
+        [],
+    ))->value(),
+    'navMenuRefusesTo' => (static function () use ($navMenu): bool {
+        try {
+            $navMenu->render(new ComponentRenderContext(['items' => [['value' => 'a', 'label' => 'A', 'to' => '/a']]], []));
+        } catch (\InvalidArgumentException $exception) {
+            return str_contains($exception->getMessage(), 'does not accept [to]');
+        }
+
+        return false;
+    })(),
+    'navMenuBrowserCode' => str_contains($controllerSource, 'data-vf-razor-nav-menu-enhanced')
+        && substr_count($controllerSource, 'function enhanceVueForgeNavMenus(') === 1
+        && substr_count($controllerSource, 'function registerDisposal(') === 1,
+    'navMenuCss' => is_file($assetPath . '/vueforge-razor.css')
+        && preg_match_all('/^\\.vf-nav-menu \\{/m', (string) file_get_contents($assetPath . '/vueforge-razor.css')) === 1
+        && preg_match_all('/^\\.vf-nav-menu__collapse \\{/m', (string) file_get_contents($assetPath . '/vueforge-razor.css')) === 1,
     'dropdownClosed' => $dropdown->render(new ComponentRenderContext(
         [],
         [
@@ -2219,6 +2250,29 @@ echo json_encode([
     rendered.tooltipEmpty,
   );
   check('the tooltip component takes no constructor argument', rendered.tooltipConstructorTakesNothing === true);
+  check('the registry resolves vf-nav-menu', rendered.handles['vf-nav-menu'] === true);
+  check(
+    'the consumer renders a nav menu with its active ancestry open, its closed subtree in an inert template and no script',
+    rendered.navMenuTree.startsWith(
+      '<nav class="vf-nav-menu vf-nav-menu--default vf-nav-menu--simple" aria-label="Navigation" data-vf-razor="nav-menu" data-vf-razor-nav-menu-value="intro"',
+    ) &&
+      rendered.navMenuTree.includes('aria-expanded="true"') &&
+      rendered.navMenuTree.includes('aria-current="page"') &&
+      rendered.navMenuTree.includes('<template data-vf-razor-nav-menu="collapse">') &&
+      !rendered.navMenuTree.includes('<script'),
+    rendered.navMenuTree,
+  );
+  check("the consumer's nav menu refuses an item `to` by name", rendered.navMenuRefusesTo === true);
+  check(
+    'the packaged controller carries the nav menu layer once, on the one disposal registry',
+    rendered.navMenuBrowserCode === true,
+    'vueforge-razor.js lacks the nav menu layer, or carries a second disposal registry',
+  );
+  check(
+    'the packaged stylesheet carries the nav menu rules once',
+    rendered.navMenuCss === true,
+    'vueforge-razor.css is missing nav menu rules or duplicates them',
+  );
   check('the registry resolves vf-select', rendered.handles['vf-select'] === true);
   check(
     'the consumer renders a closed select: the trigger wired to its listbox id, the named hidden input, the options in an inert template and no script',

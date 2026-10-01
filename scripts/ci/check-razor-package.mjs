@@ -172,7 +172,9 @@ check(
   'the packaged controller imports nothing and fetches nothing at run time',
   !/^\s*import[\s{*]/m.test(js) &&
     !/\bimport\(/.test(js) &&
-    !/from\s*["']/.test(js) &&
+    // A module specifier's `from` follows whitespace, `}` or `*`; a string such
+    // as the nav menu's "v-enter-from" class (M33) is not an import.
+    !/(?:^|[\s}*])from\s*["']/m.test(js) &&
     !/https?:\/\/(unpkg|cdn\.jsdelivr|esm\.sh|cdnjs|skypack)/.test(js),
 );
 const assetManifest = JSON.parse(readFileSync(resolve(target, 'dist/assets-manifest.json'), 'utf8'));
@@ -228,6 +230,18 @@ check(
     (css.match(/^\.vf-select \{$/gm) ?? []).length === 1 &&
     (css.match(/^\.vf-select__menu \{$/gm) ?? []).length === 1 &&
     css.includes('.vf-dropdown__item.vf-select__option'),
+);
+// M33: the nav menu controller - once, on the disposal registry, beside no
+// overlay controller of its own - and its stylesheet once.
+check(
+  'the packaged controller carries the nav menu enhancement exactly once',
+  js.includes('data-vf-razor-nav-menu-enhanced') && js.split('function enhanceVueForgeNavMenus(').length === 2,
+);
+check(
+  'the packaged stylesheet carries the nav menu rules exactly once',
+  (css.match(/^\.vf-nav-menu \{$/gm) ?? []).length === 1 &&
+    (css.match(/^\.vf-nav-menu__compact-breakpoint-probe \{$/gm) ?? []).length === 1 &&
+    (css.match(/^\.vf-nav-menu__collapse \{$/gm) ?? []).length === 1,
 );
 check(
   'the packaged stylesheet carries the popover rules exactly once',

@@ -154,6 +154,7 @@ export default defineConfig({
         popover: fileURLToPath(new URL('./popover.html', import.meta.url)),
         tooltip: fileURLToPath(new URL('./tooltip.html', import.meta.url)),
         select: fileURLToPath(new URL('./select.html', import.meta.url)),
+        navMenu: fileURLToPath(new URL('./nav-menu.html', import.meta.url)),
       },
     },
   },
@@ -300,6 +301,10 @@ export default defineConfig({
       {
         find: /^@vueforge\/select-cases$/,
         replacement: fileURLToPath(new URL('../../contracts/select/cases.json', import.meta.url)),
+      },
+      {
+        find: /^@vueforge\/nav-menu-cases$/,
+        replacement: fileURLToPath(new URL('../../contracts/nav-menu/cases.json', import.meta.url)),
       },
       {
         find: /^@vueforge\/menu-item-cases$/,

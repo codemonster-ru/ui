@@ -679,7 +679,16 @@
           "status": "implemented"
         },
         "razor": {
-          "status": "not-implemented"
+          "status": "implemented",
+          "caseSource": "contracts/nav-menu/cases.json"
+        }
+      },
+      "showcase": {
+        "caseSource": "contracts/nav-menu/cases.json",
+        "caseIdField": "id",
+        "routes": {
+          "vue": "/nav-menu",
+          "razor": "/"
         }
       }
     },

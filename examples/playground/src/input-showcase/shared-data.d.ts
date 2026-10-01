@@ -173,3 +173,8 @@ declare module '@vueforge/select-cases' {
   const cases: { cases: unknown[] };
   export default cases;
 }
+
+declare module '@vueforge/nav-menu-cases' {
+  const cases: { cases: unknown[] };
+  export default cases;
+}

@@ -192,6 +192,9 @@ const controlSelectors = {
   // clear button and the options of an open listbox are its too, and the
   // probe below reads the listbox where it is.
   VfSelect: 'button.vf-select',
+  // M33: a nav menu's owned controls are its branch buttons, button leaves and
+  // links; the empty-items case renders none.
+  VfNavMenu: '.vf-nav-menu__item',
 };
 
 /**
@@ -241,6 +244,7 @@ const controlsPerCase = {
   // One trigger per instance; the select inside a closed popover waits in the
   // popover's inert template and is not on the page.
   VfSelect: (parityCase) => (Array.isArray(parityCase.group) ? parityCase.group.length : 1),
+  VfNavMenu: (parityCase) => parityCase.componentInteractive ?? 0,
 };
 
 /**
@@ -262,6 +266,7 @@ const rootsPerCase = {
   VfTooltip: (parityCase) => (Array.isArray(parityCase.group) ? parityCase.group.length : 1),
   // One select root per instance; the one a closed popover holds is not live.
   VfSelect: (parityCase) => (Array.isArray(parityCase.group) ? parityCase.group.length : 1),
+  VfNavMenu: (parityCase) => (Array.isArray(parityCase.group) ? parityCase.group.length : 1),
   // Every group box root carries the marker, static or not; a nested one is in
   // the DOM only while its parent shows its content - inside a closed parent
   // it waits in the parent's inert template.
@@ -313,6 +318,7 @@ const ownershipMarkers = {
   VfPopover: { root: '[data-vf-razor="popover"]', enhanced: '[data-vf-razor-popover-enhanced]' },
   VfTooltip: { root: '[data-vf-razor="tooltip"]', enhanced: '[data-vf-razor-tooltip-enhanced]' },
   VfSelect: { root: '[data-vf-razor="select"]', enhanced: '[data-vf-razor-select-enhanced]' },
+  VfNavMenu: { root: '[data-vf-razor="nav-menu"]', enhanced: '[data-vf-razor-nav-menu-enhanced]' },
 };
 
 const components = showcaseIndex.components
@@ -381,6 +387,7 @@ check(
       'VfLink',
       'VfMenu',
       'VfMenuItem',
+      'VfNavMenu',
       'VfPanel',
       'VfPopover',
       'VfProgressBar',
@@ -1665,6 +1672,139 @@ async function probeDropdownBehaviour(origin, path) {
   }
 }
 
+/**
+ * Drives the real nav menu on one platform with real pointer and key events
+ * (M33): the initial tree, a branch opened and a nested one inside it, the
+ * parent closed and reopened with the child still open, single mode closing a
+ * sibling and the branch below it, a button leaf made current, a link
+ * selected with its hash, a disabled link refused, Enter on a focused branch
+ * keeping focus, and a sidebar box narrowed and widened under its
+ * ResizeObserver. Every reading is also compared across the two platforms.
+ */
+async function probeNavMenuBehaviour(origin, path) {
+  const page = await openPage(chrome.endpoint);
+  const caseRoot = (id) => `document.querySelector('[data-showcase-case="${id}"]')`;
+  const read = (id) => `(() => {
+    const root = ${caseRoot(id)};
+    const labelOf = (element) => element.querySelector(':scope > .vf-nav-menu__item-content > .vf-nav-menu__label')?.textContent ?? null;
+    const active = document.activeElement;
+    return {
+      expanded: [...root.querySelectorAll('.vf-nav-menu__item[aria-expanded="true"]')].map(labelOf),
+      current: [...root.querySelectorAll('[aria-current]')].map((element) => labelOf(element) + ':' + element.getAttribute('aria-current')),
+      compact: [...root.querySelectorAll('nav.vf-nav-menu')].map((nav) => nav.classList.contains('vf-nav-menu--sidebar-compact')),
+      collapses: root.querySelectorAll('.vf-nav-menu__collapse').length,
+      leftovers: [...root.querySelectorAll('.vf-nav-menu__collapse')].filter((element) => (element.getAttribute('style') ?? '') !== '' || [...element.classList].some((name) => name.startsWith('v-'))).length,
+      focus: active === document.body ? 'body' : root.contains(active) ? 'item:' + labelOf(active) : 'elsewhere',
+      hash: location.hash,
+    };
+  })()`;
+  const click = async (id, label) => {
+    const point = await page.evaluate(`(() => {
+      const element = [...${caseRoot(id)}.querySelectorAll('.vf-nav-menu__item')].find((item) => item.querySelector(':scope > .vf-nav-menu__item-content > .vf-nav-menu__label')?.textContent === ${JSON.stringify(label)});
+      if (!element) throw new Error('missing nav item ${label}');
+      element.scrollIntoView({ block: 'center' });
+      const rect = element.getBoundingClientRect();
+      return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+    })()`);
+    await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...point });
+    await page.send('Input.dispatchMouseEvent', { type: 'mousePressed', ...point, button: 'left', clickCount: 1 });
+    await page.send('Input.dispatchMouseEvent', { type: 'mouseReleased', ...point, button: 'left', clickCount: 1 });
+    await delay(600);
+  };
+  try {
+    await page.send('Page.enable');
+    await page.send('Runtime.enable');
+    await page.send('Emulation.setDeviceMetricsOverride', { ...viewport, deviceScaleFactor: 1, mobile: false });
+    await page.send('Page.navigate', { url: `${origin}${path}` });
+    await page.waitFor(`Boolean(document.querySelector('[data-showcase-case="nav-menu/default"] .vf-nav-menu__item'))`);
+    await delay(400);
+
+    const initial = {
+      closed: await page.evaluate(read('nav-menu/default')),
+      active: await page.evaluate(read('nav-menu/active-leaf')),
+      narrow: await page.evaluate(read('nav-menu/sidebar-narrow')),
+      wide: await page.evaluate(read('nav-menu/sidebar-wide')),
+      explicitFalse: await page.evaluate(read('nav-menu/sidebar-compact-false')),
+      pair: await page.evaluate(read('nav-menu/sidebar-pair')),
+      inlineScripts: await page.evaluate(
+        `[...document.querySelectorAll('script:not([src])')].filter((script) => /nav-menu|vf-nav/i.test(script.textContent)).length`,
+      ),
+    };
+    await click('nav-menu/default', 'Guide');
+    const opened = await page.evaluate(read('nav-menu/default'));
+    await click('nav-menu/default', 'Advanced');
+    const nested = await page.evaluate(read('nav-menu/default'));
+    await click('nav-menu/default', 'Guide');
+    const parentClosed = await page.evaluate(read('nav-menu/default'));
+    await click('nav-menu/default', 'Guide');
+    const parentReopened = await page.evaluate(read('nav-menu/default'));
+    for (const label of ['Library', 'Select', 'Select deep', 'Input']) {
+      await click('nav-menu/interaction-single-descendants', label);
+    }
+    const single = await page.evaluate(read('nav-menu/interaction-single-descendants'));
+    await click('nav-menu/interaction-select-button', 'Changelog');
+    const selected = await page.evaluate(read('nav-menu/interaction-select-button'));
+    await click('nav-menu/interaction-select-link', 'Guide');
+    await click('nav-menu/interaction-select-link', 'Intro');
+    const linked = await page.evaluate(read('nav-menu/interaction-select-link'));
+    await click('nav-menu/disabled', 'Off');
+    const disabled = await page.evaluate(read('nav-menu/disabled'));
+    const disabledLink = await page.evaluate(`(() => {
+      const link = [...${caseRoot('nav-menu/disabled')}.querySelectorAll('a.vf-nav-menu__item')][0];
+      return { href: link.getAttribute('href'), tabindex: link.getAttribute('tabindex'), ariaDisabled: link.getAttribute('aria-disabled') };
+    })()`);
+    await page.evaluate(
+      `[...${caseRoot('nav-menu/interaction-enter-key')}.querySelectorAll('.vf-nav-menu__item')][0].focus()`,
+    );
+    await page.send('Input.dispatchKeyEvent', {
+      type: 'keyDown',
+      key: 'Enter',
+      code: 'Enter',
+      windowsVirtualKeyCode: 13,
+      nativeVirtualKeyCode: 13,
+      text: '\r',
+      unmodifiedText: '\r',
+    });
+    await page.send('Input.dispatchKeyEvent', {
+      type: 'keyUp',
+      key: 'Enter',
+      code: 'Enter',
+      windowsVirtualKeyCode: 13,
+      nativeVirtualKeyCode: 13,
+    });
+    await delay(600);
+    const entered = await page.evaluate(read('nav-menu/interaction-enter-key'));
+    const box = `${caseRoot('nav-menu/sidebar-wide')}.querySelector('nav.vf-nav-menu').parentElement`;
+    await page.evaluate(`${box}.style.width = '100px'`);
+    await delay(200);
+    const narrowed = await page.evaluate(read('nav-menu/sidebar-wide'));
+    const pairAfter = await page.evaluate(read('nav-menu/sidebar-pair'));
+    await page.evaluate(`${box}.style.width = '360px'`);
+    await delay(200);
+    const widened = await page.evaluate(read('nav-menu/sidebar-wide'));
+
+    return {
+      initial,
+      opened,
+      nested,
+      parentClosed,
+      parentReopened,
+      single,
+      selected,
+      linked,
+      disabled,
+      disabledLink,
+      entered,
+      narrowed,
+      pairAfter,
+      widened,
+      pageErrors: page.diagnostics.pageErrors.length,
+    };
+  } finally {
+    await page.close();
+  }
+}
+
 async function probeSelectBehaviour(origin, path) {
   const page = await openPage(chrome.endpoint);
   const triggerOf = (caseId, index = 0) =>
@@ -1922,6 +2062,7 @@ try {
       'VfPopover',
       'VfTooltip',
       'VfSelect',
+      'VfNavMenu',
     ].includes(name);
 
     for (const theme of themes) {
@@ -2352,6 +2493,93 @@ try {
         check(
           `[${name}/${theme}] the Vue and Razor showcases read the same at every step`,
           JSON.stringify(readings.vue) === JSON.stringify(readings.razor),
+          JSON.stringify(readings),
+        );
+      }
+
+      // ----------------------------------- the nav menu on both real pages
+      //
+      // M33: the recursive tree, its expansion, its selection, its disabled
+      // link, its keyboard and its measured compactness, driven with real
+      // events on both platforms; every reading must also be the same on both.
+      if (name === 'VfNavMenu') {
+        const readings = {};
+        for (const [platform, origin, route] of [
+          ['vue', vueOrigin, `${vueRoute}&theme=${theme}`],
+          ['razor', razorOrigin, `${razorRoute}&theme=${theme}`],
+        ]) {
+          const run = await probeNavMenuBehaviour(origin, route);
+          readings[platform] = run;
+          check(
+            `[${name}/${theme}] the ${platform} showcase renders the initial trees: closed, the active ancestry open, sidebars compact by measurement only`,
+            JSON.stringify(run.initial.closed.expanded) === '[]' &&
+              JSON.stringify(run.initial.active.expanded) === '["Guide","Advanced"]' &&
+              JSON.stringify(run.initial.active.current) === '["Theming:page"]' &&
+              JSON.stringify(run.initial.narrow.compact) === '[true]' &&
+              JSON.stringify(run.initial.wide.compact) === '[false]' &&
+              JSON.stringify(run.initial.explicitFalse.compact) === '[false]' &&
+              JSON.stringify(run.initial.pair.compact) === '[true,false]' &&
+              run.initial.inlineScripts === 0,
+            JSON.stringify(run.initial),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase opens a branch and a nested one, and a reopened parent shows the child still open`,
+            JSON.stringify(run.opened.expanded) === '["Guide"]' &&
+              JSON.stringify(run.nested.expanded) === '["Guide","Advanced"]' &&
+              JSON.stringify(run.parentClosed.expanded) === '[]' &&
+              run.parentClosed.collapses === 0 &&
+              JSON.stringify(run.parentReopened.expanded) === '["Guide","Advanced"]' &&
+              run.parentReopened.leftovers === 0,
+            JSON.stringify({
+              opened: run.opened,
+              nested: run.nested,
+              closed: run.parentClosed,
+              reopened: run.parentReopened,
+            }),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase closes a sibling and the branch below it in single mode`,
+            JSON.stringify(run.single.expanded) === '["Library","Input"]',
+            JSON.stringify(run.single),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase makes a leaf current and a link current with its hash`,
+            JSON.stringify(run.selected.current) === '["Changelog:page"]' &&
+              JSON.stringify(run.linked.current) === '["Intro:page"]' &&
+              run.linked.hash === '#nav-intro',
+            JSON.stringify({ selected: run.selected, linked: run.linked }),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase refuses a disabled link: no navigation, no current item, out of the tab order`,
+            run.disabled.hash === '#nav-intro' &&
+              JSON.stringify(run.disabled.current) === '[]' &&
+              run.disabledLink.href === '#nav-off' &&
+              run.disabledLink.tabindex === '-1' &&
+              run.disabledLink.ariaDisabled === 'true',
+            JSON.stringify({ disabled: run.disabled, link: run.disabledLink }),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase toggles a focused branch with Enter and keeps focus on it`,
+            JSON.stringify(run.entered.expanded) === '["Guide"]' && run.entered.focus === 'item:Guide',
+            JSON.stringify(run.entered),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase re-measures a sidebar on resize, both ways, and leaves the other instances alone`,
+            JSON.stringify(run.narrowed.compact) === '[true]' &&
+              JSON.stringify(run.widened.compact) === '[false]' &&
+              JSON.stringify(run.pairAfter.compact) === '[true,false]',
+            JSON.stringify({ narrowed: run.narrowed, widened: run.widened, pair: run.pairAfter }),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} nav menu probe produced no page error`,
+            run.pageErrors === 0,
+            `${run.pageErrors}`,
+          );
+        }
+        const strip = (run) => ({ ...run, pageErrors: undefined });
+        check(
+          `[${name}/${theme}] the Vue and Razor showcases read the same at every step`,
+          JSON.stringify(strip(readings.vue)) === JSON.stringify(strip(readings.razor)),
           JSON.stringify(readings),
         );
       }
