@@ -222,6 +222,6 @@ final class PopoverComponentTest extends TestCase
         self::assertInstanceOf(PopoverComponent::class, $components['popover']);
         self::assertNotSame($components['dropdown'], $components['popover']);
         self::assertNull((new \ReflectionClass(PopoverComponent::class))->getConstructor());
-        self::assertCount(31, $components);
+        self::assertCount(32, $components);
     }
 }

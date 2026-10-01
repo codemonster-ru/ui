@@ -390,6 +390,6 @@ final class BreadcrumbsComponentTest extends TestCase
 
         self::assertInstanceOf(BreadcrumbsComponent::class, $components['breadcrumbs']);
         self::assertNull((new \ReflectionClass(BreadcrumbsComponent::class))->getConstructor());
-        self::assertCount(31, $components);
+        self::assertCount(32, $components);
     }
 }

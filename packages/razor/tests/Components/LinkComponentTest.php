@@ -305,6 +305,6 @@ final class LinkComponentTest extends TestCase
 
         self::assertInstanceOf(LinkComponent::class, $components['link']);
         self::assertNull((new \ReflectionClass(LinkComponent::class))->getConstructor());
-        self::assertCount(31, $components);
+        self::assertCount(32, $components);
     }
 }

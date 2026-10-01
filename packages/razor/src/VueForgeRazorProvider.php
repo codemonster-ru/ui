@@ -22,6 +22,7 @@ use Codemonster\VueForge\Razor\Components\InputComponent;
 use Codemonster\VueForge\Razor\Components\LinkComponent;
 use Codemonster\VueForge\Razor\Components\MenuComponent;
 use Codemonster\VueForge\Razor\Components\MenuItemComponent;
+use Codemonster\VueForge\Razor\Components\NavMenuComponent;
 use Codemonster\VueForge\Razor\Components\PanelComponent;
 use Codemonster\VueForge\Razor\Components\PopoverComponent;
 use Codemonster\VueForge\Razor\Components\ProgressBarComponent;
@@ -124,6 +125,13 @@ final class VueForgeRazorProvider implements ComponentProviderInterface
             // See MenuComponent and MenuItemComponent.
             'menu' => new MenuComponent(),
             'menu-item' => new MenuItemComponent(),
+            // The fifth component that owns controls - a native button per
+            // branch, a native button or anchor per leaf - and the first that
+            // owns a recursive tree. Its browser enhancement lives in
+            // browser/nav-menu.ts, and depends on no overlay controller. The
+            // Vue component's router branch has no counterpart here by design
+            // - see NavMenuComponent.
+            'nav-menu' => new NavMenuComponent(),
             // Registered beside the card, never through it. See PanelComponent.
             'panel' => new PanelComponent(),
             // The second overlay, registered beside vf-dropdown and never

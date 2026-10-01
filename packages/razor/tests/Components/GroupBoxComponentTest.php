@@ -125,7 +125,7 @@ final class GroupBoxComponentTest extends TestCase
         $property = (new \ReflectionClass(GroupBoxComponent::class))->getProperty('button');
         self::assertSame($components['button'], $property->getValue($groupBox));
         self::assertInstanceOf(ButtonComponent::class, $components['button']);
-        self::assertCount(31, $components);
+        self::assertCount(32, $components);
     }
 
     public function testTheTriggerClassSerialisationFollowsTheButtonAdapter(): void
