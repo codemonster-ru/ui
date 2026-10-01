@@ -569,6 +569,71 @@ foreach ($selectCases as $name => $markup) {
     $sections .= '<section class="case case--select" data-case="' . $name . '"><h2>' . $name . '</h2>' . $markup . '</section>';
 }
 
+// ----------------------------------------------------------------- nav menu
+//
+// The M33 sections. Hash links only, so a leaf click never leaves the page; a
+// sidebar in a narrow and in a wide box, and one whose explicit compact=false
+// beats the narrow measurement; a copy without the ownership marker.
+$navMenu = $registry->resolve('vf-nav-menu');
+if ($navMenu === null) {
+    fwrite(STDERR, "vf-nav-menu must be registered.\n");
+    exit(1);
+}
+$navTree = [
+    ['value' => 'guide', 'label' => 'Guide', 'children' => [
+        ['value' => 'intro', 'label' => 'Intro', 'href' => '#intro'],
+        ['value' => 'advanced', 'label' => 'Advanced', 'children' => [
+            ['value' => 'theming', 'label' => 'Theming'],
+            ['value' => 'ssr', 'label' => 'SSR', 'href' => '#ssr'],
+        ]],
+    ]],
+    ['value' => 'components', 'label' => 'Components', 'children' => [['value' => 'button', 'label' => 'Button']]],
+    ['value' => 'changelog', 'label' => 'Changelog'],
+    ['value' => 'off', 'label' => 'Off', 'href' => '#off', 'disabled' => true],
+    ['value' => 'ext', 'label' => 'External', 'href' => '#ext', 'target' => '_blank'],
+];
+$navGrouped = [
+    ['value' => 'library', 'label' => 'Library', 'children' => [
+        ['value' => 'forms', 'kind' => 'group', 'label' => 'Forms', 'children' => [
+            ['value' => 'input', 'label' => 'Input', 'children' => [['value' => 'input-api', 'label' => 'Input API']]],
+            ['value' => 'select', 'label' => 'Select', 'children' => [
+                ['value' => 'select-api', 'label' => 'Select API'],
+                ['value' => 'select-deep', 'label' => 'Select deep', 'children' => [['value' => 'select-leaf', 'label' => 'Leaf']]],
+            ]],
+        ]],
+        ['value' => 'layout', 'label' => 'Layout', 'children' => [['value' => 'grid', 'label' => 'Grid']]],
+    ]],
+    ['value' => 'about', 'label' => 'About', 'children' => [['value' => 'team', 'label' => 'Team']]],
+];
+$renderNav = static fn (array $props): string => $navMenu->render(new ComponentRenderContext($props, []))->value();
+$navCases = [
+    'nav-multiple' => $renderNav(['items' => $navTree, 'default-value' => 'ssr', 'aria-label' => 'NavMultiple']),
+    'nav-single' => $renderNav(['items' => $navGrouped, 'expand-mode' => 'single', 'aria-label' => 'NavSingle']),
+    'nav-sidebar-narrow' => '<div class="nav-box" style="width: 100px">'
+        . $renderNav(['items' => $navTree, 'variant' => 'sidebar', 'aria-label' => 'NavNarrow']) . '</div>',
+    'nav-sidebar-wide' => '<div class="nav-box" style="width: 360px">'
+        . $renderNav(['items' => $navTree, 'variant' => 'sidebar', 'aria-label' => 'NavWide']) . '</div>',
+    'nav-sidebar-explicit' => '<div class="nav-box" style="width: 100px">'
+        . $renderNav(['items' => $navTree, 'variant' => 'sidebar', 'compact' => false, 'aria-label' => 'NavExplicit']) . '</div>',
+    // A nav menu inside a popover: the popover renders it into each fresh
+    // panel and disposes it when it closes.
+    // Held in a template until the nav suite appends it, so the popover suite
+    // never counts it.
+    'nav-in-popover' => '<template id="nav-popover-source">' . $renderPopover(
+        ['aria-label' => 'NavPop'],
+        '<span>NavPop</span>',
+        $renderNav(['items' => $navTree, 'aria-label' => 'NavInPopover']),
+    ) . '</template>',
+    'nav-unowned' => str_replace(
+        ' data-vf-razor="nav-menu"',
+        '',
+        $renderNav(['items' => $navTree, 'aria-label' => 'NavUnowned']),
+    ),
+];
+foreach ($navCases as $name => $markup) {
+    $sections .= '<section class="case case--nav" data-case="' . $name . '"><h2>' . $name . '</h2>' . $markup . '</section>';
+}
+
 $withVue = ($argv[2] ?? '') === '--with-vue';
 $vueSection = $withVue
     ? '<section class="case" data-case="vue"><h2>vue</h2><div id="vue-input"></div></section>'
@@ -594,6 +659,7 @@ body { margin: 0; padding: 24px; background: var(--vf-color-background-canvas); 
 .case--popover { width: 360px; }
 .case--tooltip { width: 360px; padding-top: 48px; }
 .case--select { width: 360px; }
+.case--nav { width: 360px; }
 .case h2 { font-size: 12px; margin: 0 0 6px; color: var(--vf-color-text-secondary); font-weight: 400; }
 </style>
 </head>

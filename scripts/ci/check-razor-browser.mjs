@@ -4500,6 +4500,556 @@ try {
     );
     check('a floating field suppresses the placeholder', suppressed === '', JSON.stringify(suppressed));
   });
+  // ---------------------------------------------------------- nav menu (M33)
+  //
+  // The controller against the historical contract with a real pointer:
+  // branch toggles, nested preservation, single mode, selection and its
+  // event, disabled links, Vue's collapse transition hook for hook - its
+  // classes, its frames, its end on transitionend or on the computed
+  // duration - its reversals, the measured compact sidebar per instance, and
+  // timers and frames kept in two id spaces.
+  const navRoot = (label) => `document.querySelector('nav[aria-label="${label}"]')`;
+  const navItem = (label, text) =>
+    `[...${navRoot(label)}.querySelectorAll('.vf-nav-menu__item')].find((item) => item.querySelector('.vf-nav-menu__label').textContent === ${JSON.stringify(text)})`;
+  const readNav = (label) => `(() => {
+    const root = ${navRoot(label)};
+    const labelOf = (element) => element.querySelector('.vf-nav-menu__label, .vf-nav-menu__group-label').textContent;
+    return {
+      enhanced: root.hasAttribute('data-vf-razor-nav-menu-enhanced'),
+      classes: root.className,
+      expanded: [...root.querySelectorAll('button[aria-expanded="true"]')].map(labelOf),
+      current: [...root.querySelectorAll('[aria-current]')].map((element) => labelOf(element) + ':' + element.getAttribute('aria-current')),
+      visible: [...root.querySelectorAll('.vf-nav-menu__item, .vf-nav-menu__group')].map(labelOf),
+      collapses: [...root.querySelectorAll('.vf-nav-menu__collapse')].map((element) => ({ classes: element.className, style: element.getAttribute('style') ?? '' })),
+      ancestors: [...root.querySelectorAll('li.vf-nav-menu__node--ancestor-active')].map((li) => labelOf(li.firstElementChild)),
+      events: window.__navEvents?.[${JSON.stringify(label)}] ?? [],
+    };
+  })()`;
+  const installNavLog = `(() => {
+    window.__navEvents = {};
+    document.addEventListener('vf-nav-menu:change', (event) => {
+      (window.__navEvents[event.target.getAttribute('aria-label')] ??= []).push(event.detail);
+    });
+    return true;
+  })()`;
+  // Frames and timeouts: every id the page cancels is recorded against the
+  // ids each kind handed out - a frame id handed to clearTimeout or a timeout
+  // id to cancelAnimationFrame is a misuse, kept with the function that made
+  // it (the bundle is not minified) - and every frame requested from inside
+  // a frame callback is marked, so a second frame left untracked by a
+  // disposal shows as a nested id that was neither run nor cancelled.
+  const installTimerAudit = `(() => {
+    const timeouts = new Set();
+    const frames = new Set();
+    window.__timerMisuse = [];
+    window.__nestedFrames = new Set();
+    window.__ranFrames = new Set();
+    window.__cancelledFrames = new Set();
+    let inFrame = false;
+    const setTimeoutNative = window.setTimeout.bind(window);
+    const clearTimeoutNative = window.clearTimeout.bind(window);
+    const rafNative = window.requestAnimationFrame.bind(window);
+    const cancelNative = window.cancelAnimationFrame.bind(window);
+    const caller = () => (new Error().stack ?? '').split('\\n').slice(2, 4).join(' | ');
+    window.setTimeout = (...args) => { const id = setTimeoutNative(...args); timeouts.add(id); return id; };
+    window.requestAnimationFrame = (callback) => {
+      let id = 0;
+      id = rafNative((time) => { window.__ranFrames.add(id); const outer = inFrame; inFrame = true; try { callback(time); } finally { inFrame = outer; } });
+      frames.add(id);
+      if (inFrame) window.__nestedFrames.add(id);
+      return id;
+    };
+    window.clearTimeout = (id) => { if (id !== undefined && !timeouts.has(id)) window.__timerMisuse.push({ call: 'clearTimeout:' + id, caller: caller() }); return clearTimeoutNative(id); };
+    window.cancelAnimationFrame = (id) => { if (id !== undefined && !frames.has(id)) window.__timerMisuse.push({ call: 'cancelAnimationFrame:' + id, caller: caller() }); window.__cancelledFrames.add(id); return cancelNative(id); };
+    return true;
+  })()`;
+  const navFrames = (count) =>
+    `new Promise((done) => { let left = ${count}; const tick = () => (--left <= 0 ? done(true) : requestAnimationFrame(tick)); requestAnimationFrame(tick); })`;
+  const navDuration = (value) => `(() => {
+    let style = document.getElementById('nav-duration');
+    if (!style) { style = document.createElement('style'); style.id = 'nav-duration'; document.head.append(style); }
+    style.textContent = '[aria-label="NavMultiple"] .vf-nav-menu__collapse { transition-duration: ${value} !important; }';
+    return true;
+  })()`;
+  const collapseClasses = (rest) => `vf-nav-menu__collapse vf-nav-menu__collapse--level-0${rest ? ' ' + rest : ''}`;
+
+  await withPage(chrome, server.origin, 'fixture-enhanced.html', async (page) => {
+    await page.waitFor(`Boolean(document.querySelector('[data-vf-razor-nav-menu-enhanced]'))`);
+    await page.evaluate(installNavLog);
+    await page.evaluate(installTimerAudit);
+    const read = (label) => page.evaluate(readNav(label));
+    const click = async (label, text) => {
+      await clickVisible(page, navItem(label, text));
+    };
+    // The page may run with reduced motion, which makes the theme's duration
+    // 0.01ms; the sequence pins its own - two values for the two listed
+    // properties, so Vue's count of transitionend events is two - and can
+    // sample the frames between.
+    await page.evaluate(navDuration('200ms, 200ms'));
+
+    const owned = await page.evaluate(`(() => {
+      const roots = [...document.querySelectorAll('[data-vf-razor="nav-menu"]')];
+      return {
+        total: roots.length,
+        enhanced: roots.filter((root) => root.hasAttribute('data-vf-razor-nav-menu-enhanced')).length,
+        unowned: ${navRoot('NavUnowned')}.hasAttribute('data-vf-razor-nav-menu-enhanced'),
+      };
+    })()`);
+    check(
+      'every Razor nav menu is enhanced and a copy without the ownership marker is not',
+      owned.total === 5 && owned.enhanced === 5 && owned.unowned === false,
+      JSON.stringify(owned),
+    );
+
+    const initial = await read('NavMultiple');
+    check(
+      'the initial tree is the server one: the active ancestry open, the active leaf current, nothing transitioning',
+      JSON.stringify(initial.expanded) === '["Guide","Advanced"]' &&
+        JSON.stringify(initial.current) === '["SSR:page"]' &&
+        JSON.stringify(initial.ancestors) === '["Guide","Advanced"]' &&
+        initial.collapses.length === 2 &&
+        initial.collapses.every((collapse) => collapse.style === '' && !/\bv-(enter|leave)/.test(collapse.classes)),
+      JSON.stringify(initial),
+    );
+
+    // Enter, sampled at the click and in each of the three frames after.
+    const enter = await page.evaluate(`new Promise((done) => {
+      const root = ${navRoot('NavMultiple')};
+      const branch = ${navItem('NavMultiple', 'Components')};
+      branch.scrollIntoView({ block: 'center' });
+      const snap = () => {
+        const collapse = branch.parentElement.querySelector(':scope > .vf-nav-menu__collapse');
+        return collapse ? { classes: collapse.className, height: collapse.style.height, opacity: collapse.style.opacity, overflow: collapse.style.overflow, transition: collapse.style.transition, scroll: collapse.scrollHeight } : null;
+      };
+      const ends = [];
+      root.addEventListener('transitionend', (event) => { if (event.target.classList.contains('vf-nav-menu__collapse')) ends.push(event.propertyName); });
+      branch.click();
+      const states = [snap()];
+      requestAnimationFrame(() => {
+        states.push(snap());
+        requestAnimationFrame(() => {
+          states.push(snap());
+          requestAnimationFrame(() => {
+            states.push(snap());
+            setTimeout(() => { states.push(snap()); done({ states, ends, expanded: branch.getAttribute('aria-expanded'), icon: branch.querySelector('.vf-nav-menu__icon').className, node: branch.parentElement.className }); }, 450);
+          });
+        });
+      });
+    })`);
+    const transition =
+      'height var(--vf-motion-duration-normal) var(--vf-motion-ease-standard), opacity var(--vf-motion-duration-normal) var(--vf-motion-ease-standard)';
+    const [atClick, frameOne, frameTwo, frameThree, entered] = enter.states;
+    check(
+      'a branch click flips aria-expanded, the li and the chevron at once',
+      enter.expanded === 'true' &&
+        enter.icon === 'vf-nav-menu__icon vf-nav-menu__icon--open' &&
+        enter.node.includes('vf-nav-menu__node--expanded'),
+      JSON.stringify(enter),
+    );
+    check(
+      "the collapse enters collapsed with the hooks' inline declarations and v-enter-from v-enter-active",
+      atClick?.classes === collapseClasses('v-enter-from v-enter-active') &&
+        atClick.height === '0px' &&
+        atClick.opacity === '0' &&
+        atClick.overflow === 'hidden' &&
+        atClick.transition === transition,
+      JSON.stringify(atClick),
+    );
+    check(
+      'a frame later it grows to its scroll height at full opacity, the frame after swaps to v-enter-to, and it stays there',
+      frameOne?.height === `${frameOne?.scroll}px` &&
+        frameOne.opacity === '1' &&
+        frameOne.classes === collapseClasses('v-enter-from v-enter-active') &&
+        frameTwo?.classes === collapseClasses('v-enter-active v-enter-to') &&
+        frameThree?.classes === frameTwo.classes,
+      JSON.stringify({ frameOne, frameTwo, frameThree }),
+    );
+    check(
+      "the enter ends on the element's own transitionend pair and clears every inline declaration and class",
+      entered?.classes === collapseClasses('') &&
+        entered.height === '' &&
+        entered.opacity === '' &&
+        entered.overflow === '' &&
+        entered.transition === '' &&
+        enter.ends.includes('height') &&
+        enter.ends.includes('opacity'),
+      JSON.stringify({ entered, ends: enter.ends }),
+    );
+
+    // Leave, sampled the same way.
+    const leave = await page.evaluate(`new Promise((done) => {
+      const branch = ${navItem('NavMultiple', 'Components')};
+      const collapse = branch.parentElement.querySelector(':scope > .vf-nav-menu__collapse');
+      const snap = () => ({ classes: collapse.className, height: collapse.style.height, opacity: collapse.style.opacity, connected: collapse.isConnected, scroll: collapse.scrollHeight });
+      branch.click();
+      const states = [snap()];
+      requestAnimationFrame(() => {
+        states.push(snap());
+        requestAnimationFrame(() => {
+          states.push(snap());
+          setTimeout(() => { states.push(snap()); done({ states, expanded: branch.getAttribute('aria-expanded'), style: collapse.getAttribute('style') }); }, 450);
+        });
+      });
+    })`);
+    check(
+      'the leave starts from the scroll height with v-leave-from v-leave-active while aria-expanded is already false',
+      leave.expanded === 'false' &&
+        leave.states[0].classes === collapseClasses('v-leave-from v-leave-active') &&
+        leave.states[0].height === `${leave.states[0].scroll}px` &&
+        leave.states[0].opacity === '1',
+      JSON.stringify(leave),
+    );
+    check(
+      'it shrinks to zero a frame later, swaps to v-leave-to the frame after, and leaves the DOM at its end, cleared',
+      leave.states[1].height === '0px' &&
+        leave.states[1].opacity === '0' &&
+        leave.states[1].classes === collapseClasses('v-leave-from v-leave-active') &&
+        leave.states[2].classes === collapseClasses('v-leave-active v-leave-to') &&
+        leave.states[2].connected === true &&
+        leave.states[3].connected === false &&
+        (leave.style ?? '') === '',
+      JSON.stringify(leave),
+    );
+
+    // The end follows the element's computed duration, not a fixed timer: a
+    // 40ms duration ends long before the theme's 320ms; a 10s duration listed
+    // twice ends on the element's own second transitionend, and one bubbled
+    // from inside does not count.
+    await page.evaluate(navDuration('40ms, 40ms'));
+    const short = await page.evaluate(`new Promise((done) => {
+      const branch = ${navItem('NavMultiple', 'Components')};
+      branch.click();
+      const collapse = branch.parentElement.querySelector(':scope > .vf-nav-menu__collapse');
+      setTimeout(() => { const classes = collapse.className; branch.click(); setTimeout(() => done({ classes, removed: !collapse.isConnected }), 200); }, 150);
+    })`);
+    await page.evaluate(navDuration('10s, 10s'));
+    const slow = await page.evaluate(`new Promise((done) => {
+      const branch = ${navItem('NavMultiple', 'Components')};
+      branch.click();
+      const collapse = branch.parentElement.querySelector(':scope > .vf-nav-menu__collapse');
+      requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(() => {
+        const fire = (target, propertyName) => target.dispatchEvent(Object.assign(new Event('transitionend', { bubbles: true }), { propertyName }));
+        const before = collapse.className;
+        fire(collapse.querySelector('.vf-nav-menu__item'), 'height');
+        fire(collapse, 'height');
+        const afterOne = collapse.className;
+        fire(collapse, 'opacity');
+        done({ before, afterOne, afterTwo: collapse.className, style: collapse.getAttribute('style') ?? '' });
+      })));
+    })`);
+    await page.evaluate(navDuration('200ms, 200ms'));
+    check(
+      "a 40ms computed duration ends the enter and the leave long before the theme's 320ms",
+      short.classes === collapseClasses('') && short.removed === true,
+      JSON.stringify(short),
+    );
+    check(
+      'a 10s duration listed twice ends on the second transitionend of the element itself, never on one bubbled from inside',
+      slow.before === collapseClasses('v-enter-active v-enter-to') &&
+        slow.afterOne === slow.before &&
+        slow.afterTwo === collapseClasses('') &&
+        slow.style === '',
+      JSON.stringify(slow),
+    );
+
+    // Nested preservation: Advanced stays expanded under a closed Guide and
+    // renders without a transition when Guide reopens.
+    await click('NavMultiple', 'Guide');
+    await delay(450);
+    const closedGuide = await read('NavMultiple');
+    const reopened = await page.evaluate(`(() => {
+      const branch = ${navItem('NavMultiple', 'Guide')};
+      branch.click();
+      const [outer, inner] = branch.parentElement.querySelectorAll('.vf-nav-menu__collapse');
+      return { outer: outer?.className, inner: inner?.className, innerStyle: inner?.getAttribute('style') ?? null };
+    })()`);
+    await delay(450);
+    const afterReopen = await read('NavMultiple');
+    check(
+      'closing a parent keeps its child expanded underneath, and reopening renders the child at once without a transition',
+      JSON.stringify(closedGuide.expanded) === '["Components"]' &&
+        !closedGuide.visible.includes('Theming') &&
+        reopened.outer === collapseClasses('v-enter-from v-enter-active') &&
+        reopened.inner === 'vf-nav-menu__collapse vf-nav-menu__collapse--level-1' &&
+        reopened.innerStyle === null &&
+        JSON.stringify(afterReopen.expanded) === '["Guide","Advanced","Components"]',
+      JSON.stringify({ closedGuide, reopened, afterReopen }),
+    );
+
+    // Reversals.
+    const reversal = await page.evaluate(`new Promise((done) => {
+      const branch = ${navItem('NavMultiple', 'Components')};
+      const leaving = branch.parentElement.querySelector(':scope > .vf-nav-menu__collapse');
+      branch.click();
+      requestAnimationFrame(() => {
+        branch.click();
+        const fresh = [...branch.parentElement.querySelectorAll(':scope > .vf-nav-menu__collapse')];
+        const reopen = { leavingConnected: leaving.isConnected, leavingStyle: leaving.getAttribute('style') ?? '', count: fresh.length, classes: fresh[0]?.className, height: fresh[0]?.style.height };
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          const entering = branch.parentElement.querySelector(':scope > .vf-nav-menu__collapse');
+          branch.click();
+          const cancel = { classes: entering.className, height: entering.style.height, scroll: entering.scrollHeight };
+          setTimeout(() => done({ reopen, cancel, removed: !entering.isConnected, expanded: branch.getAttribute('aria-expanded'), left: branch.parentElement.querySelectorAll('.vf-nav-menu__collapse').length }), 450);
+        }));
+      });
+    })`);
+    check(
+      'reopening while leaving removes the leaving subtree at once, cleared, and enters a fresh one from zero',
+      reversal.reopen.leavingConnected === false &&
+        reversal.reopen.leavingStyle === '' &&
+        reversal.reopen.count === 1 &&
+        reversal.reopen.classes === collapseClasses('v-enter-from v-enter-active') &&
+        reversal.reopen.height === '0px',
+      JSON.stringify(reversal),
+    );
+    check(
+      'closing while entering cancels the enter and leaves from the full scroll height, then the subtree is gone',
+      reversal.cancel.classes === collapseClasses('v-leave-from v-leave-active') &&
+        reversal.cancel.height === `${reversal.cancel.scroll}px` &&
+        reversal.removed === true &&
+        reversal.expanded === 'false' &&
+        reversal.left === 0,
+      JSON.stringify(reversal),
+    );
+
+    // Selection.
+    await click('NavMultiple', 'Changelog');
+    await delay(100);
+    await click('NavMultiple', 'Changelog');
+    await delay(100);
+    await click('NavMultiple', 'Guide');
+    await delay(450);
+    const selected = await read('NavMultiple');
+    check(
+      'a button leaf click moves aria-current and dispatches the change every time; a branch click dispatches nothing',
+      JSON.stringify(selected.current) === '["Changelog:page"]' &&
+        JSON.stringify(selected.events) === '[{"value":"changelog"},{"value":"changelog"}]' &&
+        selected.ancestors.length === 0 &&
+        JSON.stringify(selected.expanded) === '[]',
+      JSON.stringify(selected),
+    );
+    await click('NavMultiple', 'Guide');
+    await delay(450);
+    await click('NavMultiple', 'Intro');
+    await delay(100);
+    const linked = await read('NavMultiple');
+    const hash = await page.evaluate('location.hash');
+    check(
+      'a link leaf selects, keeps its navigation and marks the ancestry; the nested expansion survived',
+      hash === '#intro' &&
+        JSON.stringify(linked.current) === '["Intro:page"]' &&
+        JSON.stringify(linked.ancestors) === '["Guide"]' &&
+        JSON.stringify(linked.expanded) === '["Guide","Advanced"]' &&
+        linked.events.at(-1)?.value === 'intro',
+      JSON.stringify({ hash, linked }),
+    );
+    await click('NavMultiple', 'Off');
+    await delay(100);
+    const disabledLink = await read('NavMultiple');
+    const afterOff = await page.evaluate(
+      `({ hash: location.hash, tabindex: ${navItem('NavMultiple', 'Off')}.getAttribute('tabindex'), disabled: ${navItem('NavMultiple', 'Off')}.getAttribute('aria-disabled') })`,
+    );
+    check(
+      'a disabled link click is prevented and selects nothing',
+      afterOff.hash === '#intro' &&
+        afterOff.tabindex === '-1' &&
+        afterOff.disabled === 'true' &&
+        disabledLink.events.length === linked.events.length &&
+        JSON.stringify(disabledLink.current) === '["Intro:page"]',
+      JSON.stringify({ afterOff, disabledLink }),
+    );
+
+    // Single mode.
+    for (const text of ['Library', 'Select', 'Select deep', 'Input']) {
+      await click('NavSingle', text);
+      await delay(450);
+    }
+    const single = await read('NavSingle');
+    for (let index = 0; index < 3; index += 1) {
+      await click('NavSingle', 'Layout');
+      await delay(450);
+    }
+    const singleGroup = await read('NavSingle');
+    await click('NavSingle', 'About');
+    await delay(450);
+    const singleTop = await read('NavSingle');
+    check(
+      'single mode closes the siblings and the branches below them, and skips a sibling group whole',
+      JSON.stringify(single.expanded) === '["Library","Input"]' &&
+        JSON.stringify(singleGroup.expanded) === '["Library","Input","Layout"]' &&
+        JSON.stringify(singleTop.expanded) === '["About"]' &&
+        single.events.length === 0,
+      JSON.stringify({ single, singleGroup, singleTop }),
+    );
+
+    // Compactness, per instance.
+    const compactOf = (label) => page.evaluate(`${navRoot(label)}.classList.contains('vf-nav-menu--sidebar-compact')`);
+    const before = {
+      narrow: await compactOf('NavNarrow'),
+      wide: await compactOf('NavWide'),
+      explicit: await compactOf('NavExplicit'),
+      pills: await compactOf('NavMultiple'),
+    };
+    await page.evaluate(`${navRoot('NavWide')}.parentElement.style.width = '100px'`);
+    await page.evaluate(navFrames(3));
+    const wideNarrowed = { narrow: await compactOf('NavNarrow'), wide: await compactOf('NavWide') };
+    await page.evaluate(`${navRoot('NavNarrow')}.parentElement.style.width = '360px'`);
+    await page.evaluate(navFrames(3));
+    const narrowWidened = { narrow: await compactOf('NavNarrow'), wide: await compactOf('NavWide') };
+    await page.evaluate(`${navRoot('NavExplicit')}.parentElement.style.width = '90px'`);
+    await page.evaluate(navFrames(3));
+    check(
+      'a sidebar no wider than the probe is compact after enhancement, a wider one is not, and an explicit false wins',
+      before.narrow === true && before.wide === false && before.explicit === false && before.pills === false,
+      JSON.stringify(before),
+    );
+    check(
+      'each instance re-measures on its own ResizeObserver: wide to narrow and narrow to wide, the other untouched',
+      wideNarrowed.narrow === true &&
+        wideNarrowed.wide === true &&
+        narrowWidened.narrow === false &&
+        narrowWidened.wide === true &&
+        (await compactOf('NavExplicit')) === false,
+      JSON.stringify({ wideNarrowed, narrowWidened }),
+    );
+    const order = await page.evaluate(`${navRoot('NavWide')}.className`);
+    check(
+      'the compact modifier lands after --simple, as the reference orders it',
+      order === 'vf-nav-menu vf-nav-menu--sidebar vf-nav-menu--simple vf-nav-menu--sidebar-compact',
+      order,
+    );
+
+    const misuseBeforePopover = await page.evaluate('window.__timerMisuse');
+    check(
+      'across every toggle, reversal, selection and resize the nav menu never cancels an id with the wrong API',
+      misuseBeforePopover.length === 0,
+      JSON.stringify(misuseBeforePopover),
+    );
+
+    // Disposal mid-transition: a nav menu inside a popover, a branch clicked,
+    // the popover closed in the very next frame - after the first of Vue's
+    // frame pair ran and requested the second. The second must be cancelled,
+    // with cancelAnimationFrame, and never run.
+    await page.evaluate(`(async () => {
+      const razor = await import('./vueforge-razor.js');
+      const mount = (node) => {
+        razor.enhanceVueForgePopovers(node, mount);
+        razor.enhanceVueForgeNavMenus(node);
+      };
+      const section = document.querySelector('[data-case="nav-in-popover"]');
+      section.append(document.getElementById('nav-popover-source').content.cloneNode(true));
+      mount(section);
+      return true;
+    })()`);
+    await clickVisible(page, `document.querySelector('.vf-popover[aria-label="NavPop"] > .vf-popover__trigger')`);
+    await delay(450);
+    const disposal = await page.evaluate(`new Promise((done) => {
+      const NativeObserver = window.ResizeObserver;
+      const trigger = document.querySelector('.vf-popover[aria-label="NavPop"] > .vf-popover__trigger');
+      const nav = ${navRoot('NavInPopover')};
+      const branch = ${navItem('NavInPopover', 'Components')};
+      const nestedBefore = new Set(window.__nestedFrames);
+      const disconnect = NativeObserver.prototype.disconnect;
+      let disconnected = 0;
+      NativeObserver.prototype.disconnect = function () { disconnected += 1; return disconnect.call(this); };
+      branch.click();
+      const collapse = branch.parentElement.querySelector(':scope > .vf-nav-menu__collapse');
+      requestAnimationFrame(() => {
+        // Taken before the close: the popover's own leave frames are not the nav menu's.
+        const pending = [...window.__nestedFrames].filter((id) => !nestedBefore.has(id) && !window.__ranFrames.has(id));
+        trigger.click();
+        setTimeout(() => {
+          NativeObserver.prototype.disconnect = disconnect;
+          done({
+            enhanced: nav.hasAttribute('data-vf-razor-nav-menu-enhanced'),
+            pending,
+            cancelled: pending.filter((id) => window.__cancelledFrames.has(id)),
+            ran: pending.filter((id) => window.__ranFrames.has(id)),
+            classes: collapse.className,
+            disconnected,
+          });
+        }, 500);
+      });
+    })`);
+    check(
+      'disposal mid-enter cancels the pending second frame with cancelAnimationFrame, so v-enter-to never lands',
+      disposal.enhanced === true &&
+        disposal.pending.length >= 1 &&
+        disposal.cancelled.length === disposal.pending.length &&
+        disposal.ran.length === 0 &&
+        disposal.classes.includes('v-enter-from') &&
+        !disposal.classes.includes('v-enter-to'),
+      JSON.stringify(disposal),
+    );
+    check("disposal disconnects the nav menu's ResizeObserver", disposal.disconnected >= 1, JSON.stringify(disposal));
+
+    // The popover's own close is the known M32 timer-id defect - its
+    // clearTimers hands every id to both APIs - deliberately not fixed in M33.
+    // It is reported, never counted against the nav menu: every misuse of the
+    // disposal step must come from that function.
+    const misuse = await page.evaluate('window.__timerMisuse');
+    const foreign = misuse.filter((entry) => !/clearTimers/.test(entry.caller));
+    check(
+      'the nav menu never hands a timeout id to cancelAnimationFrame nor a frame id to clearTimeout, disposal included',
+      foreign.length === 0,
+      JSON.stringify(misuse),
+    );
+    process.stdout.write(
+      `[razor-browser] nav menu disposal step: ${misuse.length} timer-id misuse(s), all from the popover's known clearTimers defect; 0 from the nav menu.\n`,
+    );
+    check(
+      'the nav menu page produced no script errors',
+      page.diagnostics.pageErrors.length === 0,
+      page.diagnostics.pageErrors.join('; '),
+    );
+  });
+
+  // ---------------------------------------------------- nav menu, no-js (M33)
+  await withPage(chrome, server.origin, 'fixture-no-js.html', async (page) => {
+    const before = await page.evaluate(readNav('NavMultiple'));
+    await clickVisible(page, navItem('NavMultiple', 'Components'));
+    await clickVisible(page, navItem('NavMultiple', 'Changelog'));
+    await delay(200);
+    const after = await page.evaluate(readNav('NavMultiple'));
+    const narrow = await page.evaluate(`${navRoot('NavNarrow')}.className`);
+    const templates = await page.evaluate(
+      `${navRoot('NavMultiple')}.querySelectorAll('template[data-vf-razor-nav-menu="collapse"]').length`,
+    );
+    check(
+      'without JavaScript the active ancestry is open, closed subtrees wait inert, and a button click does nothing',
+      before.enhanced === false &&
+        JSON.stringify(before.expanded) === '["Guide","Advanced"]' &&
+        !before.visible.includes('Button') &&
+        templates >= 3 &&
+        JSON.stringify(after.expanded) === '["Guide","Advanced"]' &&
+        JSON.stringify(after.current) === '["SSR:page"]',
+      JSON.stringify({ before, after, templates }),
+    );
+    check(
+      'without JavaScript a narrow sidebar is not compact: the server never measures',
+      narrow === 'vf-nav-menu vf-nav-menu--sidebar vf-nav-menu--simple',
+      narrow,
+    );
+    await clickVisible(page, navItem('NavMultiple', 'Intro'));
+    await delay(200);
+    const hash = await page.evaluate('location.hash');
+    check('without JavaScript a link still navigates', hash === '#intro', hash);
+  });
+
+  // ------------------------------------------ nav menu, double bootstrap (M33)
+  await withPage(chrome, server.origin, 'fixture-enhanced.html', async (page) => {
+    await page.waitFor(`Boolean(document.querySelector('[data-vf-razor-nav-menu-enhanced]'))`);
+    await page.evaluate(`import('./vueforge-razor.js?bootstrap=nav').then(() => true)`);
+    await delay(250);
+    await clickVisible(page, navItem('NavMultiple', 'Components'));
+    await delay(450);
+    const twice = await page.evaluate(readNav('NavMultiple'));
+    check(
+      'after a second bootstrap one click toggles once and renders one collapse',
+      JSON.stringify(twice.expanded) === '["Guide","Advanced","Components"]' && twice.collapses.length === 3,
+      JSON.stringify(twice),
+    );
+  });
 } finally {
   await chrome.close();
   await server.close();
@@ -4516,5 +5066,5 @@ if (failures.length > 0) {
 }
 
 process.stdout.write(
-  '[razor-browser] OK: enhanced interactions, no-JS fallback, mixed Vue/Razor ownership and the accordion, stepper, tabs, dropdown, group box, popover, tooltip and select controllers.\n',
+  '[razor-browser] OK: enhanced interactions, no-JS fallback, mixed Vue/Razor ownership and the accordion, stepper, tabs, dropdown, group box, popover, tooltip, select and nav menu controllers.\n',
 );
