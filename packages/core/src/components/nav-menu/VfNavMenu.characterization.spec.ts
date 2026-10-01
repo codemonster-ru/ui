@@ -1060,6 +1060,7 @@ describe('VfNavMenu characterization: links', () => {
 
     expect(leaf({ href: '/x', target: '_blank', rel: 'external' }).getAttribute('rel')).toBe('external');
     expect(leaf({ href: '/x', target: '_top' }).hasAttribute('rel')).toBe(false);
+    expect(leaf({ href: '/x', target: '_self' }).hasAttribute('rel')).toBe(false);
     expect(leaf({ href: '/x', target: '_top' }).querySelector('[data-icon="external-link"]')).toBeNull();
     expect(leaf({ href: '/x', rel: '' }).hasAttribute('rel')).toBe(false);
     expect(leaf({ href: '/x', target: '_blank', rel: '' }).getAttribute('rel')).toBe('noopener noreferrer');

@@ -124,6 +124,8 @@ export const selectRulePath = 'packages/shared-core/src/select/state.ts';
 const selectSuite = 'src/components/select/VfSelect.characterization.spec.ts';
 export const navMenuSourcePath = 'packages/core/src/components/nav-menu/VfNavMenu.vue';
 export const navMenuNodeSourcePath = 'packages/core/src/components/nav-menu/VfNavMenuItemNode.vue';
+/** The shared rules VfNavMenu, its Razor controller and the PHP adapter derive from. */
+export const navMenuRulePath = 'packages/shared-core/src/nav-menu/state.ts';
 const navMenuSuite = 'src/components/nav-menu/VfNavMenu.characterization.spec.ts';
 
 /**
@@ -4778,6 +4780,9 @@ export const tabsMutations = [
  * rule makes that a measured claim - a rel mutation that stopped reaching the
  * breadcrumbs would fail here, which is how "the breadcrumbs really consume
  * the link rule" stays true. The two class-rule mutations reach nothing else.
+ * Since M33 the five also declare VfNavMenu's suite, measured the same way:
+ * the nav menu's node calls resolveLinkRel instead of the character-for-
+ * character copy the reference carried, so a rel defect now reaches it too.
  */
 export const linkMutations = [
   {
@@ -4870,7 +4875,7 @@ export const linkMutations = [
     id: 'link-rel-derived-for-self',
     file: linkRulePath,
     suite: linkSuite,
-    alsoFails: [breadcrumbsSuite],
+    alsoFails: [breadcrumbsSuite, navMenuSuite],
     description: 'rel is derived for _self as well as for _blank',
     find: "  return target === '_blank' ? 'noopener noreferrer' : undefined;",
     replace: "  return target === '_blank' || target === '_self' ? 'noopener noreferrer' : undefined;",
@@ -4879,7 +4884,7 @@ export const linkMutations = [
     id: 'link-rel-never-derived',
     file: linkRulePath,
     suite: linkSuite,
-    alsoFails: [breadcrumbsSuite],
+    alsoFails: [breadcrumbsSuite, navMenuSuite],
     description: 'the derived rel is dropped, so a _blank link opens without noopener',
     find: "  return target === '_blank' ? 'noopener noreferrer' : undefined;",
     replace: '  return undefined;',
@@ -4888,7 +4893,7 @@ export const linkMutations = [
     id: 'link-rel-appended-to-explicit',
     file: linkRulePath,
     suite: linkSuite,
-    alsoFails: [breadcrumbsSuite],
+    alsoFails: [breadcrumbsSuite, navMenuSuite],
     description: 'the derived rel is appended to an explicit one instead of the explicit one winning',
     find: "  if (rel) return rel;\n\n  return target === '_blank' ? 'noopener noreferrer' : undefined;",
     replace:
@@ -4899,7 +4904,7 @@ export const linkMutations = [
     id: 'link-rel-explicit-overridden',
     file: linkRulePath,
     suite: linkSuite,
-    alsoFails: [breadcrumbsSuite],
+    alsoFails: [breadcrumbsSuite, navMenuSuite],
     description: 'the derived rel overrides an explicit one for _blank',
     find: "  if (rel) return rel;\n\n  return target === '_blank' ? 'noopener noreferrer' : undefined;",
     replace: "  if (target === '_blank') return 'noopener noreferrer';\n\n  return rel || undefined;",
@@ -4908,7 +4913,7 @@ export const linkMutations = [
     id: 'link-empty-rel-wins',
     file: linkRulePath,
     suite: linkSuite,
-    alsoFails: [breadcrumbsSuite],
+    alsoFails: [breadcrumbsSuite, navMenuSuite],
     description: 'an empty-string rel is treated as given, so a _blank link loses the derivation',
     find: '  if (rel) return rel;',
     replace: '  if (rel !== undefined && rel !== null) return rel || undefined;',
@@ -7673,10 +7678,11 @@ export const navMenuMutations = [
     suite: navMenuSuite,
     description: 'the root is a div, not a nav landmark',
     edits: [
-      { find: '  <nav\n    ref="rootElement"', replace: '  <div\n    ref="rootElement"' },
+      { find: '  <nav ref="rootElement" :class="rootClasses" :aria-label="ariaLabel">', replace: '  <div ref="rootElement" :class="rootClasses" :aria-label="ariaLabel">' },
       { find: '    </ul>\n  </nav>\n</template>', replace: '    </ul>\n  </div>\n</template>' },
     ],
   },
+
   {
     id: 'nav-menu-root-list-ol',
     file: navMenuSourcePath,
@@ -7694,12 +7700,13 @@ export const navMenuMutations = [
     description: 'an expanded branch renders its nested list without the collapse wrapper',
     edits: [
       {
-        find: `      <div v-if="isExpanded" :class="['vf-nav-menu__collapse', \`vf-nav-menu__collapse--level-\${level}\`]">\n        <ul class="vf-nav-menu__list vf-nav-menu__list--nested">`,
+        find: '      <div v-if="isExpanded" :class="resolveNavMenuCollapseClasses(level)">\n        <ul class="vf-nav-menu__list vf-nav-menu__list--nested">',
         replace: '      <ul v-if="isExpanded" class="vf-nav-menu__list vf-nav-menu__list--nested">',
       },
       { find: '        </ul>\n      </div>\n    </Transition>', replace: '      </ul>\n    </Transition>' },
     ],
   },
+
   {
     id: 'nav-menu-group-children-collapsible',
     file: navMenuNodeSourcePath,
@@ -7745,20 +7752,22 @@ export const navMenuMutations = [
   },
   {
     id: 'nav-menu-node-expanded-class-missing',
-    file: navMenuNodeSourcePath,
+    file: navMenuRulePath,
     suite: navMenuSuite,
     description: 'the li never carries the --expanded modifier',
-    find: "      isExpanded && 'vf-nav-menu__node--expanded',\n",
+    find: '  if (expanded) classes.push(\'vf-nav-menu__node--expanded\');\n',
     replace: '',
   },
+
   {
     id: 'nav-menu-icon-open-missing',
-    file: navMenuNodeSourcePath,
+    file: navMenuRulePath,
     suite: navMenuSuite,
     description: 'the chevron never gains --open',
-    find: "isExpanded && 'vf-nav-menu__icon--open'",
-    replace: "false && 'vf-nav-menu__icon--open'",
+    find: '  return expanded ? [\'vf-nav-menu__icon\', \'vf-nav-menu__icon--open\'] : [\'vf-nav-menu__icon\'];',
+    replace: '  return [\'vf-nav-menu__icon\'];',
   },
+
   // Active value.
   {
     id: 'nav-menu-aria-current-missing',
@@ -7808,34 +7817,37 @@ export const navMenuMutations = [
     file: navMenuNodeSourcePath,
     suite: navMenuSuite,
     description: 'ancestors of the active item are not marked',
-    find: 'const isAncestorActive = computed(() => !isActive.value && hasDescendantValue(props.item, props.activeValue));',
+    find: 'const isAncestorActive = computed(() => !isActive.value && resolveNavMenuHasDescendant(props.item, props.activeValue));',
     replace: 'const isAncestorActive = computed(() => false);',
   },
+
   {
     id: 'nav-menu-active-ancestors-not-expanded',
-    file: navMenuSourcePath,
+    file: navMenuRulePath,
     suite: navMenuSuite,
-    description: 'the active value does not expand its ancestors',
-    find: '  expandedValues.value = Array.from(new Set([...expandedValues.value, ...ancestorValues]));',
-    replace: '  expandedValues.value = Array.from(new Set([...expandedValues.value, ...ancestorValues.slice(1)]));',
+    description: 'the active value does not expand its outermost ancestor',
+    find: '  return Array.from(new Set([...expanded, ...resolveNavMenuAncestorValues(items, active)]));',
+    replace: '  return Array.from(new Set([...expanded, ...resolveNavMenuAncestorValues(items, active).slice(1)]));',
   },
+
   {
     id: 'nav-menu-ancestors-exclude-groups',
-    file: navMenuSourcePath,
+    file: navMenuRulePath,
     suite: navMenuSuite,
     description: 'group values are left out of the expanded ancestry',
-    find: '      const result = collectAncestorValues(item.children, targetValue, [...parents, item.value]);',
-    replace:
-      "      const result = collectAncestorValues(item.children, targetValue, item.kind === 'group' ? parents : [...parents, item.value]);",
+    find: '      const result = resolveNavMenuAncestorValues(item.children, value, [...parents, item.value]);',
+    replace: '      const result = resolveNavMenuAncestorValues(item.children, value, item.kind === \'group\' ? parents : [...parents, item.value]);',
   },
+
   {
     id: 'nav-menu-activation-replaces-expansion',
-    file: navMenuSourcePath,
+    file: navMenuRulePath,
     suite: navMenuSuite,
     description: 'a new active value collapses the previous ancestry',
-    find: '  expandedValues.value = Array.from(new Set([...expandedValues.value, ...ancestorValues]));',
-    replace: '  expandedValues.value = ancestorValues.length ? ancestorValues : expandedValues.value;',
+    find: '  return Array.from(new Set([...expanded, ...resolveNavMenuAncestorValues(items, active)]));',
+    replace: '  const ancestors = resolveNavMenuAncestorValues(items, active);\n  return ancestors.length ? ancestors : [...expanded];',
   },
+
   // Events.
   {
     id: 'nav-menu-event-order',
@@ -7858,59 +7870,65 @@ export const navMenuMutations = [
     file: navMenuSourcePath,
     suite: navMenuSuite,
     description: 'a branch toggle also emits change',
-    find: '  const { value, parentPath } = payload;\n',
-    replace: "  const { value, parentPath } = payload;\n  emit('change', value);\n",
+    find: 'function handleToggle(payload: { value: string; parentPath: string[] }) {\n',
+    replace: 'function handleToggle(payload: { value: string; parentPath: string[] }) {\n  emit(\'change\', payload.value);\n',
   },
+
   // Expansion.
   {
     id: 'nav-menu-collapse-drops-descendants',
-    file: navMenuSourcePath,
+    file: navMenuRulePath,
     suite: navMenuSuite,
     description: 'closing a branch forgets the expansion of everything under it',
-    find: '    expandedValues.value = expandedValues.value.filter((itemValue) => itemValue !== value);\n    return;',
-    replace:
-      '    const closing = collectBranchValues(getItemsAtPath(props.items, [...parentPath, value]));\n    expandedValues.value = expandedValues.value.filter((itemValue) => itemValue !== value && !closing.includes(itemValue));\n    return;',
+    find: '    return expanded.filter((itemValue) => itemValue !== value);',
+    replace: '    const closing = branchValues(itemsAtPath(items, [...parentPath, value]));\n    return expanded.filter((itemValue) => itemValue !== value && !closing.includes(itemValue));',
   },
+
   {
     id: 'nav-menu-single-mode-ignored',
-    file: navMenuSourcePath,
+    file: navMenuRulePath,
     suite: navMenuSuite,
     description: 'single mode keeps siblings open',
-    find: "  if (props.expandMode === 'single') {",
-    replace: "  if (props.expandMode === ('none' as string)) {",
+    find: '  if (expandMode === \'single\') {',
+    replace: '  if (expandMode === \'none\') {',
   },
+
   {
     id: 'nav-menu-single-mode-siblings-only',
-    file: navMenuSourcePath,
+    file: navMenuRulePath,
     suite: navMenuSuite,
     description: 'single mode closes the siblings but leaves the branches below them open',
-    find: '      .flatMap((item) => collectBranchValues([item]));',
+    find: '      .flatMap((item) => branchValues([item]));',
     replace: '      .map((item) => item.value);',
   },
+
   {
     id: 'nav-menu-single-mode-closes-own-descendants',
-    file: navMenuSourcePath,
+    file: navMenuRulePath,
     suite: navMenuSuite,
-    description: "single mode also closes the opened branch's own descendants",
-    find: '      .filter((item) => item.value !== value && isBranch(item))',
-    replace: '      .filter((item) => isBranch(item))',
+    description: 'single mode also closes the opened branch\'s own descendants',
+    find: '      .filter((item) => item.value !== value && resolveNavMenuIsBranch(item))',
+    replace: '      .filter((item) => resolveNavMenuIsBranch(item))',
   },
+
   {
     id: 'nav-menu-single-mode-global',
-    file: navMenuSourcePath,
+    file: navMenuRulePath,
     suite: navMenuSuite,
     description: 'single mode closes every other branch in the tree, not only siblings',
-    find: '    const siblingItems = getItemsAtPath(props.items, parentPath);',
-    replace: '    const siblingItems = getItemsAtPath(props.items, []);',
+    find: '    const siblingBranchValues = itemsAtPath(items, parentPath)',
+    replace: '    const siblingBranchValues = itemsAtPath(items, [])',
   },
+
   {
     id: 'nav-menu-single-mode-enters-groups',
-    file: navMenuSourcePath,
+    file: navMenuRulePath,
     suite: navMenuSuite,
     description: 'single mode collapses the branches inside a sibling group',
-    find: '      .filter((item) => item.value !== value && isBranch(item))',
-    replace: "      .filter((item) => item.value !== value && (isBranch(item) || item.kind === 'group'))",
+    find: '      .filter((item) => item.value !== value && resolveNavMenuIsBranch(item))',
+    replace: '      .filter((item) => item.value !== value && (resolveNavMenuIsBranch(item) || item.kind === \'group\'))',
   },
+
   {
     id: 'nav-menu-items-watch-shallow',
     file: navMenuSourcePath,
@@ -7970,12 +7988,13 @@ export const navMenuMutations = [
   },
   {
     id: 'nav-menu-href-truthiness',
-    file: navMenuNodeSourcePath,
+    file: navMenuRulePath,
     suite: navMenuSuite,
     description: 'the link test is truthiness: href "" renders a button',
-    find: 'const isLink = computed(() => props.item.href !== undefined || props.item.to !== undefined);',
-    replace: 'const isLink = computed(() => Boolean(props.item.href) || props.item.to !== undefined);',
+    find: '  return item.href !== undefined || item.to !== undefined;',
+    replace: '  return Boolean(item.href) || item.to !== undefined;',
   },
+
   {
     id: 'nav-menu-href-wins-over-to',
     file: navMenuNodeSourcePath,
@@ -8020,34 +8039,38 @@ export const navMenuMutations = [
     id: 'nav-menu-rel-not-derived',
     file: navMenuNodeSourcePath,
     suite: navMenuSuite,
-    description: 'target=_blank derives no rel',
-    find: "  return props.item.target === '_blank' ? 'noopener noreferrer' : undefined;",
-    replace: '  return undefined;',
+    description: 'the node hands VfLink\'s rule no target, so _blank derives no rel',
+    find: 'const resolvedRel = computed(() => resolveLinkRel(props.item.rel, props.item.target));',
+    replace: 'const resolvedRel = computed(() => resolveLinkRel(props.item.rel, undefined));',
   },
+
   {
     id: 'nav-menu-rel-overrides-explicit',
     file: navMenuNodeSourcePath,
     suite: navMenuSuite,
     description: 'the derived rel replaces an explicit one',
-    find: '  if (props.item.rel) {\n    return props.item.rel;\n  }\n',
-    replace: "  if (props.item.rel && props.item.target !== '_blank') {\n    return props.item.rel;\n  }\n",
+    find: 'const resolvedRel = computed(() => resolveLinkRel(props.item.rel, props.item.target));',
+    replace: 'const resolvedRel = computed(() =>\n  props.item.target === \'_blank\' ? \'noopener noreferrer\' : resolveLinkRel(props.item.rel, props.item.target),\n);',
   },
+
   {
     id: 'nav-menu-external-icon-missing',
     file: navMenuNodeSourcePath,
     suite: navMenuSuite,
     description: 'a _blank link renders no external glyph',
-    find: "const showsExternalLinkIcon = computed(() => isLink.value && props.item.target === '_blank');",
+    find: 'const showsExternalLinkIcon = computed(() => resolveNavMenuShowsExternalIcon(props.item));',
     replace: 'const showsExternalLinkIcon = computed(() => false);',
   },
+
   {
     id: 'nav-menu-simple-shallow',
-    file: navMenuSourcePath,
+    file: navMenuRulePath,
     suite: navMenuSuite,
     description: 'a leading icon below the top level does not make the menu non-simple',
-    find: '    (item) => predicate(item) || (item.children?.length ? hasMenuFeature(item.children, predicate) : false),',
+    find: '    (item) => predicate(item) || (item.children?.length ? hasFeature(item.children, predicate) : false),',
     replace: '    (item) => predicate(item),',
   },
+
   // Transition.
   {
     id: 'nav-menu-transition-height-wrong',
@@ -8119,28 +8142,31 @@ export const navMenuMutations = [
   // Compactness.
   {
     id: 'nav-menu-compact-any-variant',
-    file: navMenuSourcePath,
+    file: navMenuRulePath,
     suite: navMenuSuite,
     description: 'every variant can be compact, not only the sidebar',
-    find: "const isCompactSidebar = computed(() => props.variant === 'sidebar' && (props.compact ?? measuredCompactSidebar.value));",
-    replace: 'const isCompactSidebar = computed(() => props.compact ?? measuredCompactSidebar.value);',
+    find: '  return variant === \'sidebar\' && (compact ?? measured);',
+    replace: '  return compact ?? measured;',
   },
+
   {
     id: 'nav-menu-compact-strict-boundary',
-    file: navMenuSourcePath,
+    file: navMenuRulePath,
     suite: navMenuSuite,
     description: 'a sidebar exactly as wide as the probe is not compact',
-    find: 'breakpointWidth > 0 && rootWidth <= breakpointWidth;',
-    replace: 'breakpointWidth > 0 && rootWidth < breakpointWidth;',
+    find: '  return variant === \'sidebar\' && breakpointWidth > 0 && rootWidth <= breakpointWidth;',
+    replace: '  return variant === \'sidebar\' && breakpointWidth > 0 && rootWidth < breakpointWidth;',
   },
+
   {
     id: 'nav-menu-compact-explicit-ignored',
-    file: navMenuSourcePath,
+    file: navMenuRulePath,
     suite: navMenuSuite,
     description: 'the measurement wins over an explicit compact',
-    find: "(props.compact ?? measuredCompactSidebar.value)",
-    replace: '(measuredCompactSidebar.value || props.compact === true)',
+    find: '  return variant === \'sidebar\' && (compact ?? measured);',
+    replace: '  return variant === \'sidebar\' && (measured || compact === true);',
   },
+
   {
     id: 'nav-menu-compact-not-on-mount',
     file: navMenuSourcePath,
@@ -8197,18 +8223,20 @@ export const navMenuMutations = [
     file: navMenuSourcePath,
     suite: navMenuSuite,
     description: 'ArrowDown moves focus to the next item and is prevented',
-    edits: [
-      { find: '    :aria-label="ariaLabel"\n  >', replace: '    :aria-label="ariaLabel"\n    @keydown.down.prevent="($event.target as HTMLElement).closest(\'li\')?.nextElementSibling?.querySelector<HTMLElement>(\'button, a\')?.focus()"\n  >' },
-    ],
+    find: '  <nav ref="rootElement" :class="rootClasses" :aria-label="ariaLabel">',
+    replace:
+      '  <nav\n    ref="rootElement"\n    :class="rootClasses"\n    :aria-label="ariaLabel"\n    @keydown.down.prevent="($event.target as HTMLElement).closest(\'li\')?.nextElementSibling?.querySelector<HTMLElement>(\'button, a\')?.focus()"\n  >',
   },
+
   {
     id: 'nav-menu-toggle-moves-focus',
     file: navMenuSourcePath,
     suite: navMenuSuite,
     description: 'a toggle moves focus off the branch button',
-    find: '  expandedValues.value = [...expandedValues.value, value];\n}',
-    replace: '  expandedValues.value = [...expandedValues.value, value];\n  (document.activeElement as HTMLElement | null)?.blur();\n}',
+    find: '    props.expandMode,\n  );\n}',
+    replace: '    props.expandMode,\n  );\n  (document.activeElement as HTMLElement | null)?.blur();\n}',
   },
+
 ];
 
 export const componentMutations = [

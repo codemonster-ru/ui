@@ -241,3 +241,28 @@ export {
   resolveSelectWrapperClasses,
 } from './select/state.js';
 export type { VfSelectClassState, VfSelectOptionLike } from './select/state.js';
+// VfNavMenu. Values in, values out: the recursion, the clicks, the transition
+// hooks, the ResizeObserver and what it measures stay in each adapter. The rel
+// of a link is resolveLinkRel above, which the reference reproduces; nothing
+// here knows about routes.
+export {
+  NAV_MENU_COLLAPSE_TRANSITION,
+  resolveNavMenuAncestorValues,
+  resolveNavMenuBranchClasses,
+  resolveNavMenuCollapseClasses,
+  resolveNavMenuCompact,
+  resolveNavMenuGroupClasses,
+  resolveNavMenuHasDescendant,
+  resolveNavMenuIconClasses,
+  resolveNavMenuIsBranch,
+  resolveNavMenuIsLink,
+  resolveNavMenuIsSimple,
+  resolveNavMenuLeafClasses,
+  resolveNavMenuMeasuredCompact,
+  resolveNavMenuNodeClasses,
+  resolveNavMenuRootClasses,
+  resolveNavMenuShowsExternalIcon,
+  resolveNavMenuSyncedExpandedValues,
+  resolveNavMenuToggledExpandedValues,
+} from './nav-menu/state.js';
+export type { VfNavMenuExpandModeName, VfNavMenuItemLike, VfNavMenuVariantName } from './nav-menu/state.js';

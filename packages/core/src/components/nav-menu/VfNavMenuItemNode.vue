@@ -1,6 +1,19 @@
 <script setup lang="ts">
 import { computed, resolveDynamicComponent } from 'vue';
 import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
+import {
+  NAV_MENU_COLLAPSE_TRANSITION,
+  resolveLinkRel,
+  resolveNavMenuBranchClasses,
+  resolveNavMenuCollapseClasses,
+  resolveNavMenuGroupClasses,
+  resolveNavMenuHasDescendant,
+  resolveNavMenuIconClasses,
+  resolveNavMenuIsLink,
+  resolveNavMenuLeafClasses,
+  resolveNavMenuNodeClasses,
+  resolveNavMenuShowsExternalIcon,
+} from '@codemonster-ru/vueforge-shared-core';
 import type { VfNavMenuItem } from '@/types/components';
 
 defineOptions({
@@ -24,8 +37,8 @@ const hasChildren = computed(() => Boolean(props.item.children?.length));
 const isGroup = computed(() => props.item.kind === 'group');
 const isExpanded = computed(() => props.expandedValues.includes(props.item.value));
 const isActive = computed(() => props.activeValue === props.item.value);
-const isAncestorActive = computed(() => !isActive.value && hasDescendantValue(props.item, props.activeValue));
-const isLink = computed(() => props.item.href !== undefined || props.item.to !== undefined);
+const isAncestorActive = computed(() => !isActive.value && resolveNavMenuHasDescendant(props.item, props.activeValue));
+const isLink = computed(() => resolveNavMenuIsLink(props.item));
 const resolvedComponent = computed(() => {
   if (props.item.to !== undefined) {
     return resolveDynamicComponent('RouterLink');
@@ -34,15 +47,39 @@ const resolvedComponent = computed(() => {
   return 'a';
 });
 
-const resolvedRel = computed(() => {
-  if (props.item.rel) {
-    return props.item.rel;
-  }
+// VfLink's rule, which the reference wrote out again here character for character.
+const resolvedRel = computed(() => resolveLinkRel(props.item.rel, props.item.target));
 
-  return props.item.target === '_blank' ? 'noopener noreferrer' : undefined;
-});
+const showsExternalLinkIcon = computed(() => resolveNavMenuShowsExternalIcon(props.item));
 
-const showsExternalLinkIcon = computed(() => isLink.value && props.item.target === '_blank');
+// The class lists are shared with the Razor adapter; see
+// packages/shared-core/src/nav-menu/state.ts.
+const hasLeadingIcon = computed(() => Boolean(props.item.leadingIcon));
+const nodeClasses = computed(() =>
+  resolveNavMenuNodeClasses({
+    level: props.level,
+    expanded: isExpanded.value,
+    active: isActive.value,
+    ancestorActive: isAncestorActive.value,
+  }),
+);
+const branchClasses = computed(() =>
+  resolveNavMenuBranchClasses({
+    level: props.level,
+    hasLeadingIcon: hasLeadingIcon.value,
+    ancestorActive: isAncestorActive.value,
+    expanded: isExpanded.value,
+  }),
+);
+const leafClasses = computed(() =>
+  resolveNavMenuLeafClasses({
+    level: props.level,
+    hasLeadingIcon: hasLeadingIcon.value,
+    active: isActive.value,
+    ancestorActive: isAncestorActive.value,
+    disabled: Boolean(props.item.disabled),
+  }),
+);
 
 const linkProps = computed(() => {
   if (props.item.to !== undefined) {
@@ -80,18 +117,9 @@ function onLeafClick(event?: MouseEvent) {
   emit('select', props.item);
 }
 
-function hasDescendantValue(item: VfNavMenuItem, targetValue?: string): boolean {
-  if (!targetValue || !item.children?.length) {
-    return false;
-  }
-
-  return item.children.some((child) => child.value === targetValue || hasDescendantValue(child, targetValue));
-}
-
 function setNestedListTransition(element: Element) {
   const target = element as HTMLElement;
-  target.style.transition =
-    'height var(--vf-motion-duration-normal) var(--vf-motion-ease-standard), opacity var(--vf-motion-duration-normal) var(--vf-motion-ease-standard)';
+  target.style.transition = NAV_MENU_COLLAPSE_TRANSITION;
 
   return target;
 }
@@ -145,20 +173,8 @@ function onNestedListAfterLeave(element: Element) {
 </script>
 
 <template>
-  <li
-    :class="[
-      'vf-nav-menu__node',
-      `vf-nav-menu__node--level-${level}`,
-      isExpanded && 'vf-nav-menu__node--expanded',
-      isActive && 'vf-nav-menu__node--active',
-      isAncestorActive && 'vf-nav-menu__node--ancestor-active',
-    ]"
-  >
-    <div
-      v-if="isGroup"
-      :class="['vf-nav-menu__group', `vf-nav-menu__group--level-${level}`]"
-      :style="{ '--vf-nav-menu-level': String(level) }"
-    >
+  <li :class="nodeClasses">
+    <div v-if="isGroup" :class="resolveNavMenuGroupClasses(level)" :style="{ '--vf-nav-menu-level': String(level) }">
       <span class="vf-nav-menu__item-content">
         <span class="vf-nav-menu__group-label">{{ item.label }}</span>
       </span>
@@ -166,14 +182,7 @@ function onNestedListAfterLeave(element: Element) {
 
     <button
       v-else-if="hasChildren"
-      :class="[
-        'vf-nav-menu__item',
-        'vf-nav-menu__item--branch',
-        level === 0 && 'vf-nav-menu__item--top',
-        !item.leadingIcon && 'vf-nav-menu__item--icon-offset',
-        isAncestorActive && 'vf-nav-menu__item--ancestor-active',
-        isExpanded && 'vf-nav-menu__item--expanded',
-      ]"
+      :class="branchClasses"
       :style="{ '--vf-nav-menu-level': String(level) }"
       :aria-expanded="isExpanded"
       :disabled="item.disabled"
@@ -186,7 +195,7 @@ function onNestedListAfterLeave(element: Element) {
         </span>
         <span class="vf-nav-menu__label">{{ item.label }}</span>
       </span>
-      <span :class="['vf-nav-menu__icon', isExpanded && 'vf-nav-menu__icon--open']" aria-hidden="true">
+      <span :class="resolveNavMenuIconClasses(isExpanded)" aria-hidden="true">
         <VueIconify :icon="icons.chevronDown" size="var(--vf-icon-size-sm)" />
       </span>
     </button>
@@ -195,14 +204,7 @@ function onNestedListAfterLeave(element: Element) {
       :is="resolvedComponent"
       v-else-if="isLink"
       v-bind="linkProps"
-      :class="[
-        'vf-nav-menu__item',
-        level === 0 && 'vf-nav-menu__item--top',
-        !item.leadingIcon && 'vf-nav-menu__item--icon-offset',
-        isActive && 'vf-nav-menu__item--active',
-        isAncestorActive && 'vf-nav-menu__item--ancestor-active',
-        item.disabled && 'vf-nav-menu__item--disabled',
-      ]"
+      :class="leafClasses"
       :style="{ '--vf-nav-menu-level': String(level) }"
       :aria-current="isActive ? 'page' : undefined"
       :aria-disabled="item.disabled || undefined"
@@ -222,14 +224,7 @@ function onNestedListAfterLeave(element: Element) {
 
     <button
       v-else
-      :class="[
-        'vf-nav-menu__item',
-        level === 0 && 'vf-nav-menu__item--top',
-        !item.leadingIcon && 'vf-nav-menu__item--icon-offset',
-        isActive && 'vf-nav-menu__item--active',
-        isAncestorActive && 'vf-nav-menu__item--ancestor-active',
-        item.disabled && 'vf-nav-menu__item--disabled',
-      ]"
+      :class="leafClasses"
       :style="{ '--vf-nav-menu-level': String(level) }"
       :aria-current="isActive ? 'page' : undefined"
       :disabled="item.disabled"
@@ -267,7 +262,7 @@ function onNestedListAfterLeave(element: Element) {
       @leave="onNestedListLeave"
       @after-leave="onNestedListAfterLeave"
     >
-      <div v-if="isExpanded" :class="['vf-nav-menu__collapse', `vf-nav-menu__collapse--level-${level}`]">
+      <div v-if="isExpanded" :class="resolveNavMenuCollapseClasses(level)">
         <ul class="vf-nav-menu__list vf-nav-menu__list--nested">
           <VfNavMenuItemNode
             v-for="child in item.children"

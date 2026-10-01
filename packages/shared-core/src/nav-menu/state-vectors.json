@@ -1,0 +1,2011 @@
+{
+  "$comment": "Shared input/expected vectors for VfNavMenu. The TypeScript rules in nav-menu/state.ts run every section; the PHP mirror in packages/razor/src/Support/NavMenuState.php runs the sections a server can decide (listed in $serverRules) and deliberately has no method for the other two - a toggle is a click and a measurement is a browser's, neither of which a server ever has. The contract of the reference at fd793696, quirks included: an item with children [] is a leaf; a group is never a branch; href '' is a link; the ancestry is the path to the first match in document order, group values included, and a top-level match has none; activation only adds, current values first; closing removes one value and keeps the descendants; single mode removes the sibling branches and every branch below them, skips a sibling group whole and keeps the opened branch's own descendants; only the sidebar is compact, an explicit compact wins both ways, and a probe with no width never makes it compact. An absent key is `undefined`.",
+  "$serverRules": [
+    "resolveNavMenuAncestorValues",
+    "resolveNavMenuBranchClasses",
+    "resolveNavMenuCollapseClasses",
+    "resolveNavMenuCompact",
+    "resolveNavMenuGroupClasses",
+    "resolveNavMenuHasDescendant",
+    "resolveNavMenuIconClasses",
+    "resolveNavMenuIsBranch",
+    "resolveNavMenuIsLink",
+    "resolveNavMenuIsSimple",
+    "resolveNavMenuLeafClasses",
+    "resolveNavMenuNodeClasses",
+    "resolveNavMenuRootClasses",
+    "resolveNavMenuShowsExternalIcon",
+    "resolveNavMenuSyncedExpandedValues"
+  ],
+  "constants": {
+    "NAV_MENU_COLLAPSE_TRANSITION": "height var(--vf-motion-duration-normal) var(--vf-motion-ease-standard), opacity var(--vf-motion-duration-normal) var(--vf-motion-ease-standard)"
+  },
+  "resolveNavMenuIsBranch": [
+    {
+      "item": {
+        "value": "a",
+        "children": [
+          {
+            "value": "b"
+          }
+        ]
+      },
+      "expected": true
+    },
+    {
+      "item": {
+        "value": "a",
+        "kind": "item",
+        "children": [
+          {
+            "value": "b"
+          }
+        ]
+      },
+      "expected": true
+    },
+    {
+      "item": {
+        "value": "a",
+        "href": "/a",
+        "children": [
+          {
+            "value": "b"
+          }
+        ]
+      },
+      "expected": true
+    },
+    {
+      "item": {
+        "value": "a",
+        "children": []
+      },
+      "expected": false
+    },
+    {
+      "item": {
+        "value": "a"
+      },
+      "expected": false
+    },
+    {
+      "item": {
+        "value": "g",
+        "kind": "group",
+        "children": [
+          {
+            "value": "b"
+          }
+        ]
+      },
+      "expected": false
+    },
+    {
+      "item": {
+        "value": "g",
+        "kind": "group"
+      },
+      "expected": false
+    }
+  ],
+  "resolveNavMenuIsLink": [
+    {
+      "item": {
+        "value": "a",
+        "href": "/a"
+      },
+      "expected": true
+    },
+    {
+      "item": {
+        "value": "a",
+        "href": ""
+      },
+      "expected": true
+    },
+    {
+      "item": {
+        "value": "a",
+        "to": "/a"
+      },
+      "expected": true
+    },
+    {
+      "item": {
+        "value": "a",
+        "to": {
+          "name": "a"
+        }
+      },
+      "expected": true
+    },
+    {
+      "item": {
+        "value": "a",
+        "target": "_blank"
+      },
+      "expected": false
+    },
+    {
+      "item": {
+        "value": "a"
+      },
+      "expected": false
+    }
+  ],
+  "resolveNavMenuShowsExternalIcon": [
+    {
+      "item": {
+        "value": "a",
+        "href": "/a",
+        "target": "_blank"
+      },
+      "expected": true
+    },
+    {
+      "item": {
+        "value": "a",
+        "to": "/a",
+        "target": "_blank"
+      },
+      "expected": true
+    },
+    {
+      "item": {
+        "value": "a",
+        "href": "",
+        "target": "_blank"
+      },
+      "expected": true
+    },
+    {
+      "item": {
+        "value": "a",
+        "href": "/a",
+        "target": "_self"
+      },
+      "expected": false
+    },
+    {
+      "item": {
+        "value": "a",
+        "href": "/a"
+      },
+      "expected": false
+    },
+    {
+      "item": {
+        "value": "a",
+        "target": "_blank"
+      },
+      "expected": false
+    }
+  ],
+  "resolveNavMenuIsSimple": [
+    {
+      "items": [
+        {
+          "value": "guide",
+          "children": [
+            {
+              "value": "intro",
+              "href": "/intro"
+            },
+            {
+              "value": "advanced",
+              "children": [
+                {
+                  "value": "theming"
+                },
+                {
+                  "value": "ssr",
+                  "href": "/ssr"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "value": "components",
+          "children": [
+            {
+              "value": "button",
+              "href": "/button"
+            }
+          ]
+        },
+        {
+          "value": "changelog"
+        }
+      ],
+      "expected": true
+    },
+    {
+      "items": [],
+      "expected": true
+    },
+    {
+      "items": [
+        {
+          "value": "library",
+          "children": [
+            {
+              "value": "forms",
+              "kind": "group",
+              "children": [
+                {
+                  "value": "input",
+                  "children": [
+                    {
+                      "value": "input-api"
+                    }
+                  ]
+                },
+                {
+                  "value": "select",
+                  "children": [
+                    {
+                      "value": "select-api"
+                    },
+                    {
+                      "value": "select-deep",
+                      "children": [
+                        {
+                          "value": "select-leaf"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "value": "layout",
+              "children": [
+                {
+                  "value": "grid"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "value": "about",
+          "children": [
+            {
+              "value": "team"
+            }
+          ]
+        }
+      ],
+      "expected": false
+    },
+    {
+      "items": [
+        {
+          "value": "a",
+          "leadingIcon": "home"
+        }
+      ],
+      "expected": false
+    },
+    {
+      "items": [
+        {
+          "value": "a",
+          "children": [
+            {
+              "value": "b",
+              "children": [
+                {
+                  "value": "c",
+                  "leadingIcon": "home"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "expected": false
+    },
+    {
+      "items": [
+        {
+          "value": "a",
+          "leadingIcon": ""
+        }
+      ],
+      "expected": true
+    },
+    {
+      "items": [
+        {
+          "value": "g",
+          "kind": "group"
+        }
+      ],
+      "expected": false
+    }
+  ],
+  "resolveNavMenuAncestorValues": [
+    {
+      "items": [
+        {
+          "value": "guide",
+          "children": [
+            {
+              "value": "intro",
+              "href": "/intro"
+            },
+            {
+              "value": "advanced",
+              "children": [
+                {
+                  "value": "theming"
+                },
+                {
+                  "value": "ssr",
+                  "href": "/ssr"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "value": "components",
+          "children": [
+            {
+              "value": "button",
+              "href": "/button"
+            }
+          ]
+        },
+        {
+          "value": "changelog"
+        }
+      ],
+      "value": "ssr",
+      "expected": ["guide", "advanced"]
+    },
+    {
+      "items": [
+        {
+          "value": "guide",
+          "children": [
+            {
+              "value": "intro",
+              "href": "/intro"
+            },
+            {
+              "value": "advanced",
+              "children": [
+                {
+                  "value": "theming"
+                },
+                {
+                  "value": "ssr",
+                  "href": "/ssr"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "value": "components",
+          "children": [
+            {
+              "value": "button",
+              "href": "/button"
+            }
+          ]
+        },
+        {
+          "value": "changelog"
+        }
+      ],
+      "value": "intro",
+      "expected": ["guide"]
+    },
+    {
+      "items": [
+        {
+          "value": "guide",
+          "children": [
+            {
+              "value": "intro",
+              "href": "/intro"
+            },
+            {
+              "value": "advanced",
+              "children": [
+                {
+                  "value": "theming"
+                },
+                {
+                  "value": "ssr",
+                  "href": "/ssr"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "value": "components",
+          "children": [
+            {
+              "value": "button",
+              "href": "/button"
+            }
+          ]
+        },
+        {
+          "value": "changelog"
+        }
+      ],
+      "value": "changelog",
+      "expected": []
+    },
+    {
+      "items": [
+        {
+          "value": "guide",
+          "children": [
+            {
+              "value": "intro",
+              "href": "/intro"
+            },
+            {
+              "value": "advanced",
+              "children": [
+                {
+                  "value": "theming"
+                },
+                {
+                  "value": "ssr",
+                  "href": "/ssr"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "value": "components",
+          "children": [
+            {
+              "value": "button",
+              "href": "/button"
+            }
+          ]
+        },
+        {
+          "value": "changelog"
+        }
+      ],
+      "value": "guide",
+      "expected": []
+    },
+    {
+      "items": [
+        {
+          "value": "guide",
+          "children": [
+            {
+              "value": "intro",
+              "href": "/intro"
+            },
+            {
+              "value": "advanced",
+              "children": [
+                {
+                  "value": "theming"
+                },
+                {
+                  "value": "ssr",
+                  "href": "/ssr"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "value": "components",
+          "children": [
+            {
+              "value": "button",
+              "href": "/button"
+            }
+          ]
+        },
+        {
+          "value": "changelog"
+        }
+      ],
+      "value": "advanced",
+      "expected": ["guide"]
+    },
+    {
+      "items": [
+        {
+          "value": "guide",
+          "children": [
+            {
+              "value": "intro",
+              "href": "/intro"
+            },
+            {
+              "value": "advanced",
+              "children": [
+                {
+                  "value": "theming"
+                },
+                {
+                  "value": "ssr",
+                  "href": "/ssr"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "value": "components",
+          "children": [
+            {
+              "value": "button",
+              "href": "/button"
+            }
+          ]
+        },
+        {
+          "value": "changelog"
+        }
+      ],
+      "value": "nowhere",
+      "expected": []
+    },
+    {
+      "items": [
+        {
+          "value": "guide",
+          "children": [
+            {
+              "value": "intro",
+              "href": "/intro"
+            },
+            {
+              "value": "advanced",
+              "children": [
+                {
+                  "value": "theming"
+                },
+                {
+                  "value": "ssr",
+                  "href": "/ssr"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "value": "components",
+          "children": [
+            {
+              "value": "button",
+              "href": "/button"
+            }
+          ]
+        },
+        {
+          "value": "changelog"
+        }
+      ],
+      "value": "",
+      "expected": []
+    },
+    {
+      "items": [
+        {
+          "value": "guide",
+          "children": [
+            {
+              "value": "intro",
+              "href": "/intro"
+            },
+            {
+              "value": "advanced",
+              "children": [
+                {
+                  "value": "theming"
+                },
+                {
+                  "value": "ssr",
+                  "href": "/ssr"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "value": "components",
+          "children": [
+            {
+              "value": "button",
+              "href": "/button"
+            }
+          ]
+        },
+        {
+          "value": "changelog"
+        }
+      ],
+      "expected": []
+    },
+    {
+      "items": [
+        {
+          "value": "library",
+          "children": [
+            {
+              "value": "forms",
+              "kind": "group",
+              "children": [
+                {
+                  "value": "input",
+                  "children": [
+                    {
+                      "value": "input-api"
+                    }
+                  ]
+                },
+                {
+                  "value": "select",
+                  "children": [
+                    {
+                      "value": "select-api"
+                    },
+                    {
+                      "value": "select-deep",
+                      "children": [
+                        {
+                          "value": "select-leaf"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "value": "layout",
+              "children": [
+                {
+                  "value": "grid"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "value": "about",
+          "children": [
+            {
+              "value": "team"
+            }
+          ]
+        }
+      ],
+      "value": "input-api",
+      "expected": ["library", "forms", "input"]
+    },
+    {
+      "items": [
+        {
+          "value": "library",
+          "children": [
+            {
+              "value": "forms",
+              "kind": "group",
+              "children": [
+                {
+                  "value": "input",
+                  "children": [
+                    {
+                      "value": "input-api"
+                    }
+                  ]
+                },
+                {
+                  "value": "select",
+                  "children": [
+                    {
+                      "value": "select-api"
+                    },
+                    {
+                      "value": "select-deep",
+                      "children": [
+                        {
+                          "value": "select-leaf"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "value": "layout",
+              "children": [
+                {
+                  "value": "grid"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "value": "about",
+          "children": [
+            {
+              "value": "team"
+            }
+          ]
+        }
+      ],
+      "value": "forms",
+      "expected": ["library"]
+    },
+    {
+      "items": [
+        {
+          "value": "a",
+          "children": [
+            {
+              "value": "dup"
+            }
+          ]
+        },
+        {
+          "value": "b",
+          "children": [
+            {
+              "value": "dup"
+            }
+          ]
+        },
+        {
+          "value": "dup"
+        }
+      ],
+      "value": "dup",
+      "expected": ["a"]
+    },
+    {
+      "items": [
+        {
+          "value": "dup"
+        },
+        {
+          "value": "b",
+          "children": [
+            {
+              "value": "dup"
+            }
+          ]
+        }
+      ],
+      "value": "dup",
+      "expected": []
+    }
+  ],
+  "resolveNavMenuHasDescendant": [
+    {
+      "item": {
+        "value": "guide",
+        "children": [
+          {
+            "value": "intro",
+            "href": "/intro"
+          },
+          {
+            "value": "advanced",
+            "children": [
+              {
+                "value": "theming"
+              },
+              {
+                "value": "ssr",
+                "href": "/ssr"
+              }
+            ]
+          }
+        ]
+      },
+      "value": "ssr",
+      "expected": true
+    },
+    {
+      "item": {
+        "value": "guide",
+        "children": [
+          {
+            "value": "intro",
+            "href": "/intro"
+          },
+          {
+            "value": "advanced",
+            "children": [
+              {
+                "value": "theming"
+              },
+              {
+                "value": "ssr",
+                "href": "/ssr"
+              }
+            ]
+          }
+        ]
+      },
+      "value": "intro",
+      "expected": true
+    },
+    {
+      "item": {
+        "value": "guide",
+        "children": [
+          {
+            "value": "intro",
+            "href": "/intro"
+          },
+          {
+            "value": "advanced",
+            "children": [
+              {
+                "value": "theming"
+              },
+              {
+                "value": "ssr",
+                "href": "/ssr"
+              }
+            ]
+          }
+        ]
+      },
+      "value": "guide",
+      "expected": false
+    },
+    {
+      "item": {
+        "value": "guide",
+        "children": [
+          {
+            "value": "intro",
+            "href": "/intro"
+          },
+          {
+            "value": "advanced",
+            "children": [
+              {
+                "value": "theming"
+              },
+              {
+                "value": "ssr",
+                "href": "/ssr"
+              }
+            ]
+          }
+        ]
+      },
+      "value": "button",
+      "expected": false
+    },
+    {
+      "item": {
+        "value": "guide",
+        "children": [
+          {
+            "value": "intro",
+            "href": "/intro"
+          },
+          {
+            "value": "advanced",
+            "children": [
+              {
+                "value": "theming"
+              },
+              {
+                "value": "ssr",
+                "href": "/ssr"
+              }
+            ]
+          }
+        ]
+      },
+      "value": "",
+      "expected": false
+    },
+    {
+      "item": {
+        "value": "guide",
+        "children": [
+          {
+            "value": "intro",
+            "href": "/intro"
+          },
+          {
+            "value": "advanced",
+            "children": [
+              {
+                "value": "theming"
+              },
+              {
+                "value": "ssr",
+                "href": "/ssr"
+              }
+            ]
+          }
+        ]
+      },
+      "expected": false
+    },
+    {
+      "item": {
+        "value": "forms",
+        "kind": "group",
+        "children": [
+          {
+            "value": "input",
+            "children": [
+              {
+                "value": "input-api"
+              }
+            ]
+          },
+          {
+            "value": "select",
+            "children": [
+              {
+                "value": "select-api"
+              },
+              {
+                "value": "select-deep",
+                "children": [
+                  {
+                    "value": "select-leaf"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "value": "select-leaf",
+      "expected": true
+    },
+    {
+      "item": {
+        "value": "a",
+        "children": []
+      },
+      "value": "a",
+      "expected": false
+    }
+  ],
+  "resolveNavMenuSyncedExpandedValues": [
+    {
+      "items": [
+        {
+          "value": "guide",
+          "children": [
+            {
+              "value": "intro",
+              "href": "/intro"
+            },
+            {
+              "value": "advanced",
+              "children": [
+                {
+                  "value": "theming"
+                },
+                {
+                  "value": "ssr",
+                  "href": "/ssr"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "value": "components",
+          "children": [
+            {
+              "value": "button",
+              "href": "/button"
+            }
+          ]
+        },
+        {
+          "value": "changelog"
+        }
+      ],
+      "expanded": [],
+      "active": "ssr",
+      "expected": ["guide", "advanced"]
+    },
+    {
+      "items": [
+        {
+          "value": "guide",
+          "children": [
+            {
+              "value": "intro",
+              "href": "/intro"
+            },
+            {
+              "value": "advanced",
+              "children": [
+                {
+                  "value": "theming"
+                },
+                {
+                  "value": "ssr",
+                  "href": "/ssr"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "value": "components",
+          "children": [
+            {
+              "value": "button",
+              "href": "/button"
+            }
+          ]
+        },
+        {
+          "value": "changelog"
+        }
+      ],
+      "expanded": ["components"],
+      "active": "ssr",
+      "expected": ["components", "guide", "advanced"]
+    },
+    {
+      "items": [
+        {
+          "value": "guide",
+          "children": [
+            {
+              "value": "intro",
+              "href": "/intro"
+            },
+            {
+              "value": "advanced",
+              "children": [
+                {
+                  "value": "theming"
+                },
+                {
+                  "value": "ssr",
+                  "href": "/ssr"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "value": "components",
+          "children": [
+            {
+              "value": "button",
+              "href": "/button"
+            }
+          ]
+        },
+        {
+          "value": "changelog"
+        }
+      ],
+      "expanded": ["advanced", "components"],
+      "active": "ssr",
+      "expected": ["advanced", "components", "guide"]
+    },
+    {
+      "items": [
+        {
+          "value": "guide",
+          "children": [
+            {
+              "value": "intro",
+              "href": "/intro"
+            },
+            {
+              "value": "advanced",
+              "children": [
+                {
+                  "value": "theming"
+                },
+                {
+                  "value": "ssr",
+                  "href": "/ssr"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "value": "components",
+          "children": [
+            {
+              "value": "button",
+              "href": "/button"
+            }
+          ]
+        },
+        {
+          "value": "changelog"
+        }
+      ],
+      "expanded": ["components"],
+      "active": "changelog",
+      "expected": ["components"]
+    },
+    {
+      "items": [
+        {
+          "value": "guide",
+          "children": [
+            {
+              "value": "intro",
+              "href": "/intro"
+            },
+            {
+              "value": "advanced",
+              "children": [
+                {
+                  "value": "theming"
+                },
+                {
+                  "value": "ssr",
+                  "href": "/ssr"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "value": "components",
+          "children": [
+            {
+              "value": "button",
+              "href": "/button"
+            }
+          ]
+        },
+        {
+          "value": "changelog"
+        }
+      ],
+      "expanded": ["components"],
+      "expected": ["components"]
+    },
+    {
+      "items": [
+        {
+          "value": "library",
+          "children": [
+            {
+              "value": "forms",
+              "kind": "group",
+              "children": [
+                {
+                  "value": "input",
+                  "children": [
+                    {
+                      "value": "input-api"
+                    }
+                  ]
+                },
+                {
+                  "value": "select",
+                  "children": [
+                    {
+                      "value": "select-api"
+                    },
+                    {
+                      "value": "select-deep",
+                      "children": [
+                        {
+                          "value": "select-leaf"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "value": "layout",
+              "children": [
+                {
+                  "value": "grid"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "value": "about",
+          "children": [
+            {
+              "value": "team"
+            }
+          ]
+        }
+      ],
+      "expanded": [],
+      "active": "select-leaf",
+      "expected": ["library", "forms", "select", "select-deep"]
+    }
+  ],
+  "resolveNavMenuToggledExpandedValues": [
+    {
+      "items": [
+        {
+          "value": "guide",
+          "children": [
+            {
+              "value": "intro",
+              "href": "/intro"
+            },
+            {
+              "value": "advanced",
+              "children": [
+                {
+                  "value": "theming"
+                },
+                {
+                  "value": "ssr",
+                  "href": "/ssr"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "value": "components",
+          "children": [
+            {
+              "value": "button",
+              "href": "/button"
+            }
+          ]
+        },
+        {
+          "value": "changelog"
+        }
+      ],
+      "expanded": [],
+      "value": "guide",
+      "parentPath": [],
+      "expandMode": "multiple",
+      "expected": ["guide"]
+    },
+    {
+      "items": [
+        {
+          "value": "guide",
+          "children": [
+            {
+              "value": "intro",
+              "href": "/intro"
+            },
+            {
+              "value": "advanced",
+              "children": [
+                {
+                  "value": "theming"
+                },
+                {
+                  "value": "ssr",
+                  "href": "/ssr"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "value": "components",
+          "children": [
+            {
+              "value": "button",
+              "href": "/button"
+            }
+          ]
+        },
+        {
+          "value": "changelog"
+        }
+      ],
+      "expanded": ["guide", "advanced"],
+      "value": "guide",
+      "parentPath": [],
+      "expandMode": "multiple",
+      "expected": ["advanced"]
+    },
+    {
+      "items": [
+        {
+          "value": "guide",
+          "children": [
+            {
+              "value": "intro",
+              "href": "/intro"
+            },
+            {
+              "value": "advanced",
+              "children": [
+                {
+                  "value": "theming"
+                },
+                {
+                  "value": "ssr",
+                  "href": "/ssr"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "value": "components",
+          "children": [
+            {
+              "value": "button",
+              "href": "/button"
+            }
+          ]
+        },
+        {
+          "value": "changelog"
+        }
+      ],
+      "expanded": ["guide", "advanced"],
+      "value": "components",
+      "parentPath": [],
+      "expandMode": "multiple",
+      "expected": ["guide", "advanced", "components"]
+    },
+    {
+      "items": [
+        {
+          "value": "guide",
+          "children": [
+            {
+              "value": "intro",
+              "href": "/intro"
+            },
+            {
+              "value": "advanced",
+              "children": [
+                {
+                  "value": "theming"
+                },
+                {
+                  "value": "ssr",
+                  "href": "/ssr"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "value": "components",
+          "children": [
+            {
+              "value": "button",
+              "href": "/button"
+            }
+          ]
+        },
+        {
+          "value": "changelog"
+        }
+      ],
+      "expanded": ["guide", "advanced"],
+      "value": "components",
+      "parentPath": [],
+      "expandMode": "single",
+      "expected": ["components"]
+    },
+    {
+      "items": [
+        {
+          "value": "guide",
+          "children": [
+            {
+              "value": "intro",
+              "href": "/intro"
+            },
+            {
+              "value": "advanced",
+              "children": [
+                {
+                  "value": "theming"
+                },
+                {
+                  "value": "ssr",
+                  "href": "/ssr"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "value": "components",
+          "children": [
+            {
+              "value": "button",
+              "href": "/button"
+            }
+          ]
+        },
+        {
+          "value": "changelog"
+        }
+      ],
+      "expanded": ["guide", "advanced"],
+      "value": "advanced",
+      "parentPath": ["guide"],
+      "expandMode": "single",
+      "expected": ["guide"]
+    },
+    {
+      "items": [
+        {
+          "value": "guide",
+          "children": [
+            {
+              "value": "intro",
+              "href": "/intro"
+            },
+            {
+              "value": "advanced",
+              "children": [
+                {
+                  "value": "theming"
+                },
+                {
+                  "value": "ssr",
+                  "href": "/ssr"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "value": "components",
+          "children": [
+            {
+              "value": "button",
+              "href": "/button"
+            }
+          ]
+        },
+        {
+          "value": "changelog"
+        }
+      ],
+      "expanded": ["advanced"],
+      "value": "guide",
+      "parentPath": [],
+      "expandMode": "single",
+      "expected": ["advanced", "guide"]
+    },
+    {
+      "items": [
+        {
+          "value": "library",
+          "children": [
+            {
+              "value": "forms",
+              "kind": "group",
+              "children": [
+                {
+                  "value": "input",
+                  "children": [
+                    {
+                      "value": "input-api"
+                    }
+                  ]
+                },
+                {
+                  "value": "select",
+                  "children": [
+                    {
+                      "value": "select-api"
+                    },
+                    {
+                      "value": "select-deep",
+                      "children": [
+                        {
+                          "value": "select-leaf"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "value": "layout",
+              "children": [
+                {
+                  "value": "grid"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "value": "about",
+          "children": [
+            {
+              "value": "team"
+            }
+          ]
+        }
+      ],
+      "expanded": ["library", "select", "select-deep"],
+      "value": "input",
+      "parentPath": ["library", "forms"],
+      "expandMode": "single",
+      "expected": ["library", "input"]
+    },
+    {
+      "items": [
+        {
+          "value": "library",
+          "children": [
+            {
+              "value": "forms",
+              "kind": "group",
+              "children": [
+                {
+                  "value": "input",
+                  "children": [
+                    {
+                      "value": "input-api"
+                    }
+                  ]
+                },
+                {
+                  "value": "select",
+                  "children": [
+                    {
+                      "value": "select-api"
+                    },
+                    {
+                      "value": "select-deep",
+                      "children": [
+                        {
+                          "value": "select-leaf"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "value": "layout",
+              "children": [
+                {
+                  "value": "grid"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "value": "about",
+          "children": [
+            {
+              "value": "team"
+            }
+          ]
+        }
+      ],
+      "expanded": ["library", "input"],
+      "value": "layout",
+      "parentPath": ["library"],
+      "expandMode": "single",
+      "expected": ["library", "input", "layout"]
+    },
+    {
+      "items": [
+        {
+          "value": "library",
+          "children": [
+            {
+              "value": "forms",
+              "kind": "group",
+              "children": [
+                {
+                  "value": "input",
+                  "children": [
+                    {
+                      "value": "input-api"
+                    }
+                  ]
+                },
+                {
+                  "value": "select",
+                  "children": [
+                    {
+                      "value": "select-api"
+                    },
+                    {
+                      "value": "select-deep",
+                      "children": [
+                        {
+                          "value": "select-leaf"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "value": "layout",
+              "children": [
+                {
+                  "value": "grid"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "value": "about",
+          "children": [
+            {
+              "value": "team"
+            }
+          ]
+        }
+      ],
+      "expanded": ["library", "input", "layout"],
+      "value": "about",
+      "parentPath": [],
+      "expandMode": "single",
+      "expected": ["about"]
+    },
+    {
+      "items": [
+        {
+          "value": "library",
+          "children": [
+            {
+              "value": "forms",
+              "kind": "group",
+              "children": [
+                {
+                  "value": "input",
+                  "children": [
+                    {
+                      "value": "input-api"
+                    }
+                  ]
+                },
+                {
+                  "value": "select",
+                  "children": [
+                    {
+                      "value": "select-api"
+                    },
+                    {
+                      "value": "select-deep",
+                      "children": [
+                        {
+                          "value": "select-leaf"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "value": "layout",
+              "children": [
+                {
+                  "value": "grid"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "value": "about",
+          "children": [
+            {
+              "value": "team"
+            }
+          ]
+        }
+      ],
+      "expanded": ["library", "input"],
+      "value": "about",
+      "parentPath": ["nowhere"],
+      "expandMode": "single",
+      "expected": ["library", "input", "about"]
+    },
+    {
+      "items": [
+        {
+          "value": "guide",
+          "children": [
+            {
+              "value": "intro",
+              "href": "/intro"
+            },
+            {
+              "value": "advanced",
+              "children": [
+                {
+                  "value": "theming"
+                },
+                {
+                  "value": "ssr",
+                  "href": "/ssr"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "value": "components",
+          "children": [
+            {
+              "value": "button",
+              "href": "/button"
+            }
+          ]
+        },
+        {
+          "value": "changelog"
+        }
+      ],
+      "expanded": ["guide"],
+      "value": "components",
+      "parentPath": [],
+      "expandMode": "other",
+      "expected": ["guide", "components"]
+    }
+  ],
+  "resolveNavMenuMeasuredCompact": [
+    {
+      "variant": "sidebar",
+      "rootWidth": 128,
+      "breakpointWidth": 128,
+      "expected": true
+    },
+    {
+      "variant": "sidebar",
+      "rootWidth": 100,
+      "breakpointWidth": 128,
+      "expected": true
+    },
+    {
+      "variant": "sidebar",
+      "rootWidth": 129,
+      "breakpointWidth": 128,
+      "expected": false
+    },
+    {
+      "variant": "sidebar",
+      "rootWidth": 0,
+      "breakpointWidth": 0,
+      "expected": false
+    },
+    {
+      "variant": "pills",
+      "rootWidth": 50,
+      "breakpointWidth": 128,
+      "expected": false
+    },
+    {
+      "variant": "default",
+      "rootWidth": 50,
+      "breakpointWidth": 128,
+      "expected": false
+    }
+  ],
+  "resolveNavMenuCompact": [
+    {
+      "variant": "sidebar",
+      "measured": true,
+      "expected": true
+    },
+    {
+      "variant": "sidebar",
+      "measured": false,
+      "expected": false
+    },
+    {
+      "variant": "sidebar",
+      "compact": true,
+      "measured": false,
+      "expected": true
+    },
+    {
+      "variant": "sidebar",
+      "compact": false,
+      "measured": true,
+      "expected": false
+    },
+    {
+      "variant": "pills",
+      "compact": true,
+      "measured": true,
+      "expected": false
+    },
+    {
+      "variant": "default",
+      "compact": true,
+      "measured": false,
+      "expected": false
+    }
+  ],
+  "resolveNavMenuRootClasses": [
+    {
+      "variant": "default",
+      "simple": true,
+      "compact": false,
+      "expected": ["vf-nav-menu", "vf-nav-menu--default", "vf-nav-menu--simple"]
+    },
+    {
+      "variant": "pills",
+      "simple": false,
+      "compact": false,
+      "expected": ["vf-nav-menu", "vf-nav-menu--pills"]
+    },
+    {
+      "variant": "sidebar",
+      "simple": true,
+      "compact": true,
+      "expected": ["vf-nav-menu", "vf-nav-menu--sidebar", "vf-nav-menu--simple", "vf-nav-menu--sidebar-compact"]
+    },
+    {
+      "variant": "sidebar",
+      "simple": false,
+      "compact": true,
+      "expected": ["vf-nav-menu", "vf-nav-menu--sidebar", "vf-nav-menu--sidebar-compact"]
+    }
+  ],
+  "resolveNavMenuNodeClasses": [
+    {
+      "level": 0,
+      "expanded": false,
+      "active": false,
+      "ancestorActive": false,
+      "expected": ["vf-nav-menu__node", "vf-nav-menu__node--level-0"]
+    },
+    {
+      "level": 2,
+      "expanded": true,
+      "active": true,
+      "ancestorActive": true,
+      "expected": [
+        "vf-nav-menu__node",
+        "vf-nav-menu__node--level-2",
+        "vf-nav-menu__node--expanded",
+        "vf-nav-menu__node--active",
+        "vf-nav-menu__node--ancestor-active"
+      ]
+    },
+    {
+      "level": 1,
+      "expanded": true,
+      "active": false,
+      "ancestorActive": true,
+      "expected": [
+        "vf-nav-menu__node",
+        "vf-nav-menu__node--level-1",
+        "vf-nav-menu__node--expanded",
+        "vf-nav-menu__node--ancestor-active"
+      ]
+    }
+  ],
+  "resolveNavMenuGroupClasses": [
+    {
+      "level": 0,
+      "expected": ["vf-nav-menu__group", "vf-nav-menu__group--level-0"]
+    },
+    {
+      "level": 3,
+      "expected": ["vf-nav-menu__group", "vf-nav-menu__group--level-3"]
+    }
+  ],
+  "resolveNavMenuBranchClasses": [
+    {
+      "level": 0,
+      "hasLeadingIcon": false,
+      "ancestorActive": false,
+      "expanded": false,
+      "expected": [
+        "vf-nav-menu__item",
+        "vf-nav-menu__item--branch",
+        "vf-nav-menu__item--top",
+        "vf-nav-menu__item--icon-offset"
+      ]
+    },
+    {
+      "level": 1,
+      "hasLeadingIcon": true,
+      "ancestorActive": true,
+      "expanded": true,
+      "expected": [
+        "vf-nav-menu__item",
+        "vf-nav-menu__item--branch",
+        "vf-nav-menu__item--ancestor-active",
+        "vf-nav-menu__item--expanded"
+      ]
+    }
+  ],
+  "resolveNavMenuLeafClasses": [
+    {
+      "level": 0,
+      "hasLeadingIcon": false,
+      "active": false,
+      "ancestorActive": false,
+      "disabled": false,
+      "expected": ["vf-nav-menu__item", "vf-nav-menu__item--top", "vf-nav-menu__item--icon-offset"]
+    },
+    {
+      "level": 2,
+      "hasLeadingIcon": true,
+      "active": true,
+      "ancestorActive": false,
+      "disabled": true,
+      "expected": ["vf-nav-menu__item", "vf-nav-menu__item--active", "vf-nav-menu__item--disabled"]
+    },
+    {
+      "level": 0,
+      "hasLeadingIcon": false,
+      "active": true,
+      "ancestorActive": true,
+      "disabled": true,
+      "expected": [
+        "vf-nav-menu__item",
+        "vf-nav-menu__item--top",
+        "vf-nav-menu__item--icon-offset",
+        "vf-nav-menu__item--active",
+        "vf-nav-menu__item--ancestor-active",
+        "vf-nav-menu__item--disabled"
+      ]
+    }
+  ],
+  "resolveNavMenuIconClasses": [
+    {
+      "expanded": false,
+      "expected": ["vf-nav-menu__icon"]
+    },
+    {
+      "expanded": true,
+      "expected": ["vf-nav-menu__icon", "vf-nav-menu__icon--open"]
+    }
+  ],
+  "resolveNavMenuCollapseClasses": [
+    {
+      "level": 0,
+      "expected": ["vf-nav-menu__collapse", "vf-nav-menu__collapse--level-0"]
+    },
+    {
+      "level": 2,
+      "expected": ["vf-nav-menu__collapse", "vf-nav-menu__collapse--level-2"]
+    }
+  ]
+}
