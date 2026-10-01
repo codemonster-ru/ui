@@ -112,10 +112,11 @@ test('a malformed declaration fails closed instead of falling back to the case',
 });
 
 test('an absent declaration is exactly the old rule for every existing owning profile', () => {
-  // The popover (M30) and the select (M32) are the catalogs that declare a
-  // scenario's end count; every other owning catalog passes undefined.
+  // The popover (M30), the select (M32) and the nav menu (M33) are the
+  // catalogs that declare a scenario's end count; every other owning catalog
+  // passes undefined.
   const owning = Object.entries(profiles).filter(
-    ([id, entry]) => entry.controlOwnership && id !== 'popover' && id !== 'select',
+    ([id, entry]) => entry.controlOwnership && id !== 'popover' && id !== 'select' && id !== 'nav-menu',
   );
   assert.ok(owning.length >= 8);
   for (const [id, entry] of owning) {
@@ -158,5 +159,16 @@ test('every select scenario declares the count it ends with (M32)', () => {
   for (const entry of scenarios) {
     assert.ok(Number.isInteger(entry.interaction.componentInteractive), entry.id);
     assert.ok(Number.isInteger(entry.interaction.consumerInteractive), entry.id);
+  }
+});
+
+test('every nav menu scenario declares the count it ends with (M33)', () => {
+  // A toggle renders or removes a subtree of owned controls, so every
+  // scenario declares its own end count, derived from the visible tree.
+  const scenarios = catalog('nav-menu').filter((parityCase) => parityCase.interaction);
+  assert.ok(scenarios.length > 0);
+  for (const entry of scenarios) {
+    assert.ok(Number.isInteger(entry.interaction.componentInteractive), entry.id);
+    assert.equal(entry.interaction.consumerInteractive, 0, entry.id);
   }
 });

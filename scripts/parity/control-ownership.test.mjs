@@ -327,7 +327,7 @@ test('every shipped accordion case passes with the snapshot its declarations des
   }
 });
 
-test('only the accordion, the stepper, the tabs, the link, the breadcrumbs, the menu item, the dropdown, the group box, the popover, the tooltip and the select declare component-owned controls, and none of the static ones can', () => {
+test('only the accordion, the stepper, the tabs, the link, the breadcrumbs, the menu item, the dropdown, the group box, the popover, the tooltip, the select and the nav menu declare component-owned controls, and none of the static ones can', () => {
   const owning = Object.values(profiles).filter((entry) => entry.controlOwnership !== undefined);
   assert.deepEqual(
     owning.map((entry) => entry.id),
@@ -343,6 +343,7 @@ test('only the accordion, the stepper, the tabs, the link, the breadcrumbs, the 
       'popover',
       'tooltip',
       'select',
+      'nav-menu',
     ],
   );
   for (const entry of Object.values(profiles)) {
@@ -428,4 +429,40 @@ test('the menu declares no owned control, because it owns none', () => {
   assert.equal(profiles.menu.snapshot, 'static');
   assert.notEqual(profiles.menuItem.controlOwnership, undefined);
   assert.notEqual(profiles.menuItem.snapshot, 'static');
+});
+
+test('the nav menu owns a button per branch and a button or an anchor per leaf, by identity (M33)', () => {
+  // The rules find a control by what the component marks it as and assert
+  // the tag it has to be: a branch rendered as a link and a link rendered as
+  // a button keep the count and fail on the tag.
+  const navCases = JSON.parse(readFileSync(resolve(repositoryRoot, 'contracts/nav-menu/cases.json'), 'utf8')).cases;
+  assert.deepEqual(profiles['nav-menu'].controlOwnership, {
+    branch: { selector: '.vf-nav-menu__item--branch', tag: 'button' },
+    button: { selector: '.vf-nav-menu__item:not(.vf-nav-menu__item--branch):not([href])', tag: 'button' },
+    link: { selector: '.vf-nav-menu__item[href]', tag: 'a' },
+  });
+  assert.ok(navCases.every((entry) => Number.isInteger(entry.componentInteractive)));
+  const violations = controlOwnershipViolations(
+    navCases[0],
+    {
+      ownershipPosture: 'component',
+      componentControls: [
+        { role: 'branch', tag: 'a', ariaRole: null },
+        { role: 'link', tag: 'button', ariaRole: null },
+        { role: 'button', tag: 'button', ariaRole: null },
+      ],
+      consumerControlCount: 0,
+      focusableTotal: 3,
+      interactiveRoleTotal: 0,
+    },
+    profiles['nav-menu'],
+  );
+  assert.ok(
+    violations.some((violation) => violation.includes('the branch is a <a>, not the declared <button>')),
+    violations.join('\n'),
+  );
+  assert.ok(
+    violations.some((violation) => violation.includes('the link is a <button>, not the declared <a>')),
+    violations.join('\n'),
+  );
 });

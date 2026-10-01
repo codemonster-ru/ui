@@ -38,11 +38,14 @@ import VfGroupBox from '@parity/core/components/group-box/VfGroupBox.vue';
 import VfPopover from '@parity/core/components/popover/VfPopover.vue';
 import VfTooltip from '@parity/core/components/tooltip/VfTooltip.vue';
 import VfSelect from '@parity/core/components/select/VfSelect.vue';
+import VfNavMenu from '@parity/core/components/nav-menu/VfNavMenu.vue';
 import { VueIconify } from '@codemonster-ru/vueforge-icons';
 import '@parity/core/styles/components.css';
 import cases from '@parity/cases.json';
 // A plain script module shared with the Razor fixture, which inlines it (M31).
 import { installTooltipLogs } from './tooltip-logs.js';
+// The same for the nav menu (M33).
+import { installNavMenuLogs } from './nav-menu-logs.js';
 
 interface CaseContent {
   text?: string;
@@ -943,7 +946,14 @@ function renderSelect(parityCase: ParityCase): VNode[] {
     // A select beside the popover first, so the profile's declared edge - a
     // select trigger - is rendered in the case in every state, and the select
     // inside the closed popover second.
-    const inner = renderSelectInstance(parityCase.id, `${parityCase.id}/inside`, 1, parityCase.props, parityCase.attrs, content);
+    const inner = renderSelectInstance(
+      parityCase.id,
+      `${parityCase.id}/inside`,
+      1,
+      parityCase.props,
+      parityCase.attrs,
+      content,
+    );
     nodes = [
       renderSelectInstance(parityCase.id, `${parityCase.id}/beside`, 0, parityCase.props, parityCase.attrs, content),
       h(
@@ -1037,6 +1047,77 @@ function installSelectLogs(): void {
       }
     }
   }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+}
+
+/**
+ * VfNavMenu's content, as the shared catalog spells it (M33): `box` is the
+ * width in pixels of the box every instance is rendered in - absent, the box
+ * fills the case - and `boxes` the same per member of a `group`. The box is
+ * page chrome, the same element on every target; the snapshot narrows and
+ * widens it to drive the component's ResizeObserver.
+ */
+interface NavMenuContent {
+  box?: number;
+  boxes?: number[];
+}
+
+/**
+ * The reactive props each VfNavMenu instance is rendered with. A case with a
+ * `modelValue` is rendered the way a v-model consumer renders it,
+ * update:modelValue written back: the no-write-back reading is Vue-only and
+ * pinned by the characterization suite (platform divergence
+ * razor-has-no-controlled-mode). Every other case is uncontrolled.
+ */
+const navMenuProps = reactive<Record<string, Record<string, unknown>>>({});
+
+function renderNavMenuInstance(
+  caseId: string,
+  key: string,
+  props: Record<string, unknown>,
+  attrs: Record<string, unknown>,
+  width?: number,
+): VNode {
+  navMenuProps[key] ??= reactive({ ...props });
+  const live = navMenuProps[key];
+  const controlled = 'modelValue' in props;
+
+  return h('div', { class: 'parity-nav-box', style: width === undefined ? undefined : `width: ${width}px` }, [
+    h(VfNavMenu, {
+      ...live,
+      ...attrs,
+      key,
+      ...(controlled ? { 'onUpdate:modelValue': (value: string) => (live.modelValue = value) } : {}),
+      onChange: (value: string) => {
+        const root = document.querySelector(`[data-parity-case="${caseId}"]`);
+        const navs = root ? [...root.querySelectorAll('nav.vf-nav-menu')] : [];
+        const nav = navs[Number(key.split('#')[1] ?? 0)];
+        if (nav) window.__parityNavMenuRecord?.(nav, value);
+      },
+    } as never),
+  ]);
+}
+
+/** VfNavMenu, for the nav menu catalog. See NavMenuContent. */
+function renderNavMenu(parityCase: ParityCase): VNode[] {
+  const content = (parityCase.content ?? {}) as unknown as NavMenuContent;
+
+  return Array.isArray(parityCase.group)
+    ? parityCase.group.map((member, index) =>
+        renderNavMenuInstance(
+          parityCase.id,
+          `${parityCase.id}#${index}`,
+          member,
+          parityCase.attrs,
+          content.boxes?.[index],
+        ),
+      )
+    : [renderNavMenuInstance(parityCase.id, `${parityCase.id}#0`, parityCase.props, parityCase.attrs, content.box)];
+}
+
+declare global {
+  interface Window {
+    __parityNavMenuRecord?: (element: Element, value: string) => void;
+  }
 }
 
 /**
@@ -1953,6 +2034,10 @@ function renderCase(parityCase: ParityCase): VNode {
     return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, renderSelect(parityCase));
   }
 
+  if (catalog.component === 'nav-menu') {
+    return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, renderNavMenu(parityCase));
+  }
+
   if (catalog.component === 'popover') {
     return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, renderPopover(parityCase));
   }
@@ -2059,6 +2144,7 @@ document.documentElement.setAttribute('data-vf-theme', theme);
 if (catalog.component === 'dropdown') installDropdownLogs();
 if (catalog.component === 'popover') installPopoverLogs();
 if (catalog.component === 'select') installSelectLogs();
+if (catalog.component === 'nav-menu') installNavMenuLogs();
 if (catalog.component === 'tooltip') {
   installTooltipLogs(tooltipDelays());
   // A Teleport resolves a selector when it mounts, so every selector target
@@ -2099,6 +2185,14 @@ if (catalog.component === 'dropdown' || catalog.component === 'popover') {
     await new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)));
     document.body.removeAttribute('style');
     await new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)));
+    document.documentElement.setAttribute('data-parity-ready', 'true');
+  })();
+} else if (catalog.component === 'nav-menu') {
+  // A nav menu measures its sidebar on mount and again when its
+  // ResizeObserver first answers; the page is ready once that has had three
+  // frames, as the Razor fixture waits after enhancement.
+  void (async () => {
+    await new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(done))));
     document.documentElement.setAttribute('data-parity-ready', 'true');
   })();
 } else {

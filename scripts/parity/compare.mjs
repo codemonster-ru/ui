@@ -808,6 +808,19 @@ const INTERACTION_FIELDS = {
   fieldStates: { dimension: 'interaction.state', format: 'json' },
   popoverStates: { dimension: 'interaction.state', format: 'json' },
   focusOption: { dimension: 'interaction.focus' },
+  // The VfNavMenu snapshot (M33): every item element of the tree with its
+  // state, the expanded and current labels, each collapse wrapper settled and
+  // its frame-sampled life, compactness and the observer probe, and the hash
+  // a link left. The ownership, instance, event, focus, keydown and settled
+  // fields are the ones above, shared.
+  navItems: { dimension: 'interaction.state', format: 'json' },
+  expandedLabels: { dimension: 'interaction.state', format: 'json' },
+  currentLabels: { dimension: 'interaction.state', format: 'json' },
+  collapseStates: { dimension: 'interaction.state', format: 'json' },
+  collapseTransitions: { dimension: 'interaction.state', format: 'json' },
+  compactStates: { dimension: 'interaction.state', format: 'json' },
+  compactProbe: { dimension: 'interaction.state', format: 'json' },
+  locationHash: { dimension: 'interaction.value' },
 };
 
 /**

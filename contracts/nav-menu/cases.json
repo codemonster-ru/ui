@@ -1,0 +1,4329 @@
+{
+  "$comment": "Shared VfNavMenu cases, rendered by the Vue adapter at the reference commit, by the current Vue adapter, and by the real Razor adapter with its browser controller. A recursive tree whose controls are native: a button per branch, a button or an anchor per leaf. Every link is a hash link, so a click navigates without leaving the page; target=_blank links are never clicked. Every instance sits in a measurement box, `box` pixels wide or filling the case; the snapshot narrows, widens and restores the box of every sidebar to drive its ResizeObserver. A controlled case is a v-model consumer in Vue; the Razor adapter reads model-value as the initial value (platform divergence razor-has-no-controlled-mode). No case uses `to`: the router handoff is Vue-only and characterised there; the Razor adapter refuses it by name.",
+  "component": "nav-menu",
+  "propVocabulary": {
+    "items": "The tree, { value, label, kind?, leadingIcon?, href?, target?, rel?, disabled?, children? }. Never `to`. Static on every target.",
+    "defaultValue": "string. The initial active value.",
+    "modelValue": "string. The model; the Vue fixture writes update:modelValue back, the Razor adapter reads it as the initial value.",
+    "ariaLabel": "string, default 'Navigation'.",
+    "expandMode": "'multiple' | 'single', default 'multiple'.",
+    "variant": "'default' | 'pills' | 'sidebar', default 'default'.",
+    "compact": "boolean. Explicit compactness of a sidebar."
+  },
+  "contentVocabulary": {
+    "box": "The width in pixels of the box the instance is rendered in. Absent, the box fills the case.",
+    "boxes": "The same per member of a group."
+  },
+  "groupVocabulary": "A list of sibling nav menus rendered side by side in one case, each with its own props and its own box; the case-level props are ignored, the attrs apply to each.",
+  "ownershipVocabulary": {
+    "componentInteractive": "The exact number of controls the component renders: one per visible branch, button leaf and link leaf, disabled ones included. Groups, lists and collapse wrappers are structure.",
+    "consumerInteractive": "The exact number of consumer focusable elements in the case: none.",
+    "consumerInteractiveRoles": "The exact number of elements carrying an explicit interactive role: none - the reference writes no role."
+  },
+  "interactionVocabulary": {
+    "$comment": "A case with an `interaction` is driven with real pointer and key events, alone on the page, then re-measured: snapshot, DOM and accessibility tree. The snapshot waits, bounded, for every collapse to settle.",
+    "steps": "clickButton on `.vf-nav-menu__item` with the `index` of the visible item, focusButton likewise, pressKey with Enter, Space, Tab or ArrowDown. Every fixture swallows the browser default of a navigation key the product left unhandled - after recording that it did.",
+    "expect": "Claims about the snapshot fields of the same name: expandedLabels, currentLabels, events, locationHash, settled, focusItem and keydownPrevented.",
+    "matches": "The static case of the same content whose fresh render the gesture has to land on."
+  },
+  "cases": [
+    {
+      "id": "nav-menu/default",
+      "title": "A collapsed tree: three top-level items, branch buttons closed, nothing current",
+      "$why": "The closed half of the topology: branch buttons with aria-expanded=false, no collapse anywhere, a native anchor nowhere because every link is inside a closed branch.",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {},
+      "componentInteractive": 3,
+      "visual": true,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "nav-menu/aria-label",
+      "title": "The landmark named by ariaLabel",
+      "$why": "The nav's accessible name is the prop; the tree reads it.",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ],
+        "ariaLabel": "Documentation"
+      },
+      "attrs": {},
+      "content": {},
+      "componentInteractive": 3,
+      "visual": true,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "nav-menu/aria-label-empty",
+      "title": "An empty ariaLabel is written empty, not replaced by the default",
+      "$why": "The reference binds the prop as given.",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ],
+        "ariaLabel": ""
+      },
+      "attrs": {},
+      "content": {},
+      "componentInteractive": 3,
+      "visual": true,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "nav-menu/active-top",
+      "title": "A top-level button leaf current: aria-current=page, nothing expanded",
+      "$why": "Activation of a top-level value has no ancestry to open.",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ],
+        "defaultValue": "changelog"
+      },
+      "attrs": {},
+      "content": {},
+      "componentInteractive": 3,
+      "visual": true,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "nav-menu/active-leaf",
+      "title": "A nested button leaf current: its two ancestors expanded and marked ancestor-active",
+      "$why": "The ancestry opens at render and both ancestors carry the li and button modifiers; the current button is the only aria-current.",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ],
+        "defaultValue": "theming"
+      },
+      "attrs": {},
+      "content": {},
+      "componentInteractive": 7,
+      "visual": true,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "nav-menu/active-link",
+      "title": "A nested link current: aria-current on the anchor, its parent expanded",
+      "$why": "A link leaf announces the current page as a button leaf does.",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ],
+        "defaultValue": "intro"
+      },
+      "attrs": {},
+      "content": {},
+      "componentInteractive": 5,
+      "visual": true,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "nav-menu/active-deep-link",
+      "title": "The deepest link of the tree current",
+      "$why": "Two levels of ancestry, the innermost a link.",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ],
+        "defaultValue": "ssr"
+      },
+      "attrs": {},
+      "content": {},
+      "componentInteractive": 7,
+      "visual": true,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "nav-menu/active-branch",
+      "title": "A branch value current: its li alone is marked, it stays closed, no aria-current",
+      "$why": "A branch is never current by aria-current and activation does not open it - only its ancestors.",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ],
+        "defaultValue": "advanced"
+      },
+      "attrs": {},
+      "content": {},
+      "componentInteractive": 5,
+      "visual": true,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "nav-menu/active-unknown",
+      "title": "A value no item has: nothing current, nothing open",
+      "$why": "An unknown value is kept without effect.",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ],
+        "defaultValue": "nowhere"
+      },
+      "attrs": {},
+      "content": {},
+      "componentInteractive": 3,
+      "visual": true,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "nav-menu/active-duplicate",
+      "title": "Three items share the active value: the first match's ancestry opens, every rendered match is current",
+      "$why": "The ancestry is the first match in document order; the active mark is per item.",
+      "props": {
+        "items": [
+          {
+            "value": "a",
+            "label": "A",
+            "children": [
+              {
+                "value": "dup",
+                "label": "Dup 1"
+              }
+            ]
+          },
+          {
+            "value": "b",
+            "label": "B",
+            "children": [
+              {
+                "value": "dup",
+                "label": "Dup 2"
+              }
+            ]
+          },
+          {
+            "value": "dup",
+            "label": "Dup 3"
+          }
+        ],
+        "defaultValue": "dup"
+      },
+      "attrs": {},
+      "content": {},
+      "componentInteractive": 4,
+      "visual": true,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "nav-menu/controlled",
+      "title": "A controlled value renders as an uncontrolled default of the same value",
+      "$why": "The Vue fixture writes update:modelValue back; the Razor adapter reads model-value as the initial value (platform divergence razor-has-no-controlled-mode).",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ],
+        "modelValue": "ssr"
+      },
+      "attrs": {},
+      "content": {},
+      "componentInteractive": 7,
+      "visual": true,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "nav-menu/model-over-default",
+      "title": "modelValue wins over defaultValue",
+      "$why": "Both props given: the model is the active value.",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ],
+        "modelValue": "changelog",
+        "defaultValue": "ssr"
+      },
+      "attrs": {},
+      "content": {},
+      "componentInteractive": 3,
+      "visual": true,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "nav-menu/groups",
+      "title": "A group: a div over an always-rendered nested list; branches inside it closed",
+      "$why": "Groups make the menu not simple and carry no control.",
+      "props": {
+        "items": [
+          {
+            "value": "library",
+            "label": "Library",
+            "children": [
+              {
+                "value": "forms",
+                "kind": "group",
+                "label": "Forms",
+                "children": [
+                  {
+                    "value": "input",
+                    "label": "Input",
+                    "children": [
+                      {
+                        "value": "input-api",
+                        "label": "Input API"
+                      }
+                    ]
+                  },
+                  {
+                    "value": "select",
+                    "label": "Select",
+                    "children": [
+                      {
+                        "value": "select-api",
+                        "label": "Select API"
+                      },
+                      {
+                        "value": "select-deep",
+                        "label": "Select deep",
+                        "children": [
+                          {
+                            "value": "select-leaf",
+                            "label": "Leaf"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "value": "layout",
+                "label": "Layout",
+                "children": [
+                  {
+                    "value": "grid",
+                    "label": "Grid"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "about",
+            "label": "About",
+            "children": [
+              {
+                "value": "team",
+                "label": "Team"
+              }
+            ]
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {},
+      "componentInteractive": 2,
+      "visual": true,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "nav-menu/group-ancestor",
+      "title": "A value inside a group: the group's li is expanded and ancestor-active, the group div stays bare",
+      "$why": "Group values are part of the ancestry.",
+      "props": {
+        "items": [
+          {
+            "value": "library",
+            "label": "Library",
+            "children": [
+              {
+                "value": "forms",
+                "kind": "group",
+                "label": "Forms",
+                "children": [
+                  {
+                    "value": "input",
+                    "label": "Input",
+                    "children": [
+                      {
+                        "value": "input-api",
+                        "label": "Input API"
+                      }
+                    ]
+                  },
+                  {
+                    "value": "select",
+                    "label": "Select",
+                    "children": [
+                      {
+                        "value": "select-api",
+                        "label": "Select API"
+                      },
+                      {
+                        "value": "select-deep",
+                        "label": "Select deep",
+                        "children": [
+                          {
+                            "value": "select-leaf",
+                            "label": "Leaf"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "value": "layout",
+                "label": "Layout",
+                "children": [
+                  {
+                    "value": "grid",
+                    "label": "Grid"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "about",
+            "label": "About",
+            "children": [
+              {
+                "value": "team",
+                "label": "Team"
+              }
+            ]
+          }
+        ],
+        "defaultValue": "input-api"
+      },
+      "attrs": {},
+      "content": {},
+      "componentInteractive": 6,
+      "visual": true,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "nav-menu/group-active",
+      "title": "A group's own value current: its li is --active, nothing is aria-current",
+      "$why": "A group is never a control.",
+      "props": {
+        "items": [
+          {
+            "value": "lib",
+            "label": "Lib",
+            "children": [
+              {
+                "value": "grp",
+                "kind": "group",
+                "label": "Grp",
+                "children": [
+                  {
+                    "value": "in",
+                    "label": "In"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "defaultValue": "grp"
+      },
+      "attrs": {},
+      "content": {},
+      "componentInteractive": 2,
+      "visual": true,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "nav-menu/deep",
+      "title": "Four levels: level classes, level declarations and collapse levels down the path",
+      "$why": "The recursion, the level on every element and the collapse level of each branch.",
+      "props": {
+        "items": [
+          {
+            "value": "l0",
+            "label": "Level 0",
+            "children": [
+              {
+                "value": "l1",
+                "label": "Level 1",
+                "children": [
+                  {
+                    "value": "l2",
+                    "label": "Level 2",
+                    "children": [
+                      {
+                        "value": "l3",
+                        "label": "Level 3",
+                        "href": "#nav-l3"
+                      },
+                      {
+                        "value": "l3b",
+                        "label": "Level 3b"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "defaultValue": "l3"
+      },
+      "attrs": {},
+      "content": {},
+      "componentInteractive": 5,
+      "visual": true,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "nav-menu/leading-icons",
+      "title": "Leading icons on a branch, a nested item, a link and an unknown name; a group's icon is not rendered",
+      "$why": "The glyph slot, the icon-offset rule and the moon fallback for a name no glyph has.",
+      "props": {
+        "items": [
+          {
+            "value": "alerts",
+            "label": "Alerts",
+            "leadingIcon": "bell",
+            "children": [
+              {
+                "value": "calendar",
+                "label": "Calendar",
+                "leadingIcon": "calendar"
+              },
+              {
+                "value": "plain",
+                "label": "Plain"
+              }
+            ]
+          },
+          {
+            "value": "saved",
+            "label": "Saved",
+            "leadingIcon": "bookmark",
+            "href": "#nav-saved"
+          },
+          {
+            "value": "odd",
+            "label": "Odd",
+            "leadingIcon": "not-a-glyph"
+          },
+          {
+            "value": "section",
+            "kind": "group",
+            "label": "Section",
+            "leadingIcon": "bell",
+            "children": [
+              {
+                "value": "item",
+                "label": "Item"
+              }
+            ]
+          }
+        ],
+        "defaultValue": "calendar"
+      },
+      "attrs": {},
+      "content": {},
+      "componentInteractive": 6,
+      "visual": true,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "nav-menu/links",
+      "title": "Native anchors: _self, an explicit rel, _blank with the derived rel and the external glyph, _blank with an explicit rel, an empty href, and a target without a destination",
+      "$why": "The link contract: rel is VfLink's rule, the external glyph follows _blank, href is a link by definedness, and a target without a destination renders a button with nothing of it.",
+      "props": {
+        "items": [
+          {
+            "value": "self",
+            "label": "Self",
+            "href": "#nav-self",
+            "target": "_self"
+          },
+          {
+            "value": "help",
+            "label": "Help",
+            "href": "#nav-help",
+            "rel": "help"
+          },
+          {
+            "value": "external",
+            "label": "External",
+            "href": "#nav-external",
+            "target": "_blank"
+          },
+          {
+            "value": "partner",
+            "label": "Partner",
+            "href": "#nav-partner",
+            "target": "_blank",
+            "rel": "external"
+          },
+          {
+            "value": "empty",
+            "label": "Empty",
+            "href": ""
+          },
+          {
+            "value": "targeted",
+            "label": "Targeted",
+            "target": "_blank"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {},
+      "componentInteractive": 6,
+      "visual": true,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "nav-menu/disabled",
+      "title": "A disabled link keeps its href with aria-disabled and tabindex=-1; a disabled button and a disabled branch are natively disabled",
+      "$why": "The disabled contract, per element kind.",
+      "props": {
+        "items": [
+          {
+            "value": "open",
+            "label": "Open"
+          },
+          {
+            "value": "off",
+            "label": "Off",
+            "href": "#nav-off",
+            "disabled": true
+          },
+          {
+            "value": "paused",
+            "label": "Paused",
+            "disabled": true
+          },
+          {
+            "value": "locked",
+            "label": "Locked",
+            "disabled": true,
+            "children": [
+              {
+                "value": "inside",
+                "label": "Inside"
+              }
+            ]
+          },
+          {
+            "value": "next",
+            "label": "Next"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {},
+      "componentInteractive": 5,
+      "visual": true,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "nav-menu/disabled-active",
+      "title": "A disabled link that is current: aria-current beside aria-disabled",
+      "$why": "The reference never refuses a disabled current item.",
+      "props": {
+        "items": [
+          {
+            "value": "open",
+            "label": "Open"
+          },
+          {
+            "value": "off",
+            "label": "Off",
+            "href": "#nav-off",
+            "disabled": true
+          },
+          {
+            "value": "paused",
+            "label": "Paused",
+            "disabled": true
+          },
+          {
+            "value": "locked",
+            "label": "Locked",
+            "disabled": true,
+            "children": [
+              {
+                "value": "inside",
+                "label": "Inside"
+              }
+            ]
+          },
+          {
+            "value": "next",
+            "label": "Next"
+          }
+        ],
+        "defaultValue": "off"
+      },
+      "attrs": {},
+      "content": {},
+      "componentInteractive": 5,
+      "visual": true,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "nav-menu/disabled-branch-open",
+      "title": "A disabled branch on the active path is expanded",
+      "$why": "Activation ignores disabled.",
+      "props": {
+        "items": [
+          {
+            "value": "open",
+            "label": "Open"
+          },
+          {
+            "value": "off",
+            "label": "Off",
+            "href": "#nav-off",
+            "disabled": true
+          },
+          {
+            "value": "paused",
+            "label": "Paused",
+            "disabled": true
+          },
+          {
+            "value": "locked",
+            "label": "Locked",
+            "disabled": true,
+            "children": [
+              {
+                "value": "inside",
+                "label": "Inside"
+              }
+            ]
+          },
+          {
+            "value": "next",
+            "label": "Next"
+          }
+        ],
+        "defaultValue": "inside"
+      },
+      "attrs": {},
+      "content": {},
+      "componentInteractive": 6,
+      "visual": true,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "nav-menu/edges",
+      "title": "Empty children make a leaf; a branch with a destination is a button and drops it; an empty group; an escaped label",
+      "$why": "The branch and link tests at their edges.",
+      "props": {
+        "items": [
+          {
+            "value": "bare",
+            "label": "Bare",
+            "children": []
+          },
+          {
+            "value": "bare-link",
+            "label": "Bare link",
+            "href": "#nav-bare",
+            "children": []
+          },
+          {
+            "value": "routed",
+            "label": "Routed",
+            "href": "#nav-routed",
+            "target": "_blank",
+            "children": [
+              {
+                "value": "child",
+                "label": "Child"
+              }
+            ]
+          },
+          {
+            "value": "empty-group",
+            "kind": "group",
+            "label": "Empty group"
+          },
+          {
+            "value": "escaped",
+            "label": "<b>Tag</b> & \"quote\""
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {},
+      "componentInteractive": 4,
+      "visual": true,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "nav-menu/empty",
+      "title": "No items: the nav, the probe and an empty list",
+      "$why": "The skeleton of the component. No height, so no screenshot.",
+      "props": {
+        "items": []
+      },
+      "attrs": {},
+      "content": {},
+      "componentInteractive": 0,
+      "visual": false,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "nav-menu/pills",
+      "title": "The pills variant",
+      "$why": "The variant modifier.",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ],
+        "variant": "pills",
+        "defaultValue": "theming"
+      },
+      "attrs": {},
+      "content": {},
+      "componentInteractive": 7,
+      "visual": true,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "nav-menu/sidebar-wide",
+      "title": "A sidebar wider than the probe: not compact",
+      "$why": "Measured after mount; the probe narrows and widens its box.",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ],
+        "variant": "sidebar",
+        "defaultValue": "theming"
+      },
+      "attrs": {},
+      "content": {
+        "box": 360
+      },
+      "componentInteractive": 7,
+      "visual": true,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "nav-menu/sidebar-narrow",
+      "title": "A sidebar narrower than the probe: compact after measurement",
+      "$why": "The reference measures on mount; the server never does, so this is the enhanced state.",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ],
+        "variant": "sidebar",
+        "defaultValue": "theming"
+      },
+      "attrs": {},
+      "content": {
+        "box": 100
+      },
+      "componentInteractive": 7,
+      "visual": true,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "nav-menu/sidebar-boundary",
+      "title": "A sidebar exactly as wide as the probe: compact",
+      "$why": "rootWidth <= breakpointWidth.",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ],
+        "variant": "sidebar"
+      },
+      "attrs": {},
+      "content": {
+        "box": 128
+      },
+      "componentInteractive": 3,
+      "visual": true,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "nav-menu/sidebar-compact-true",
+      "title": "An explicit compact on a wide sidebar",
+      "$why": "The prop wins over the measurement.",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ],
+        "variant": "sidebar",
+        "compact": true
+      },
+      "attrs": {},
+      "content": {
+        "box": 360
+      },
+      "componentInteractive": 3,
+      "visual": true,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "nav-menu/sidebar-compact-false",
+      "title": "An explicit compact=false on a narrow sidebar",
+      "$why": "The prop wins over the measurement, both ways.",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ],
+        "variant": "sidebar",
+        "compact": false
+      },
+      "attrs": {},
+      "content": {
+        "box": 100
+      },
+      "componentInteractive": 3,
+      "visual": true,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "nav-menu/pills-compact",
+      "title": "compact on a pills menu is ignored",
+      "$why": "Only the sidebar is ever compact.",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ],
+        "variant": "pills",
+        "compact": true
+      },
+      "attrs": {},
+      "content": {
+        "box": 100
+      },
+      "componentInteractive": 3,
+      "visual": true,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "nav-menu/sidebar-icons",
+      "title": "A non-simple sidebar with icons and groups, narrow",
+      "$why": "The compact sidebar with icon-aligned items.",
+      "props": {
+        "items": [
+          {
+            "value": "alerts",
+            "label": "Alerts",
+            "leadingIcon": "bell",
+            "children": [
+              {
+                "value": "calendar",
+                "label": "Calendar",
+                "leadingIcon": "calendar"
+              },
+              {
+                "value": "plain",
+                "label": "Plain"
+              }
+            ]
+          },
+          {
+            "value": "saved",
+            "label": "Saved",
+            "leadingIcon": "bookmark",
+            "href": "#nav-saved"
+          },
+          {
+            "value": "odd",
+            "label": "Odd",
+            "leadingIcon": "not-a-glyph"
+          },
+          {
+            "value": "section",
+            "kind": "group",
+            "label": "Section",
+            "leadingIcon": "bell",
+            "children": [
+              {
+                "value": "item",
+                "label": "Item"
+              }
+            ]
+          }
+        ],
+        "variant": "sidebar",
+        "defaultValue": "calendar"
+      },
+      "attrs": {},
+      "content": {
+        "box": 100
+      },
+      "componentInteractive": 6,
+      "visual": true,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "nav-menu/sidebar-pair",
+      "title": "Two sidebars side by side, one narrow and one wide: each measures its own box",
+      "$why": "Instance isolation: the probe narrows one box at a time and reads both.",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "boxes": [100, 360]
+      },
+      "group": [
+        {
+          "items": [
+            {
+              "value": "guide",
+              "label": "Guide",
+              "children": [
+                {
+                  "value": "intro",
+                  "label": "Intro",
+                  "href": "#nav-intro"
+                },
+                {
+                  "value": "advanced",
+                  "label": "Advanced",
+                  "children": [
+                    {
+                      "value": "theming",
+                      "label": "Theming"
+                    },
+                    {
+                      "value": "ssr",
+                      "label": "SSR",
+                      "href": "#nav-ssr"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "value": "components",
+              "label": "Components",
+              "children": [
+                {
+                  "value": "button",
+                  "label": "Button",
+                  "href": "#nav-button"
+                },
+                {
+                  "value": "tabs",
+                  "label": "Tabs"
+                }
+              ]
+            },
+            {
+              "value": "changelog",
+              "label": "Changelog"
+            }
+          ],
+          "variant": "sidebar",
+          "ariaLabel": "First"
+        },
+        {
+          "items": [
+            {
+              "value": "guide",
+              "label": "Guide",
+              "children": [
+                {
+                  "value": "intro",
+                  "label": "Intro",
+                  "href": "#nav-intro"
+                },
+                {
+                  "value": "advanced",
+                  "label": "Advanced",
+                  "children": [
+                    {
+                      "value": "theming",
+                      "label": "Theming"
+                    },
+                    {
+                      "value": "ssr",
+                      "label": "SSR",
+                      "href": "#nav-ssr"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "value": "components",
+              "label": "Components",
+              "children": [
+                {
+                  "value": "button",
+                  "label": "Button",
+                  "href": "#nav-button"
+                },
+                {
+                  "value": "tabs",
+                  "label": "Tabs"
+                }
+              ]
+            },
+            {
+              "value": "changelog",
+              "label": "Changelog"
+            }
+          ],
+          "variant": "sidebar",
+          "ariaLabel": "Second"
+        }
+      ],
+      "componentInteractive": 6,
+      "visual": true,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "nav-menu/single-initial",
+      "title": "Single mode renders like multiple until a toggle",
+      "$why": "Single mode is enforced on opening only.",
+      "props": {
+        "items": [
+          {
+            "value": "library",
+            "label": "Library",
+            "children": [
+              {
+                "value": "forms",
+                "kind": "group",
+                "label": "Forms",
+                "children": [
+                  {
+                    "value": "input",
+                    "label": "Input",
+                    "children": [
+                      {
+                        "value": "input-api",
+                        "label": "Input API"
+                      }
+                    ]
+                  },
+                  {
+                    "value": "select",
+                    "label": "Select",
+                    "children": [
+                      {
+                        "value": "select-api",
+                        "label": "Select API"
+                      },
+                      {
+                        "value": "select-deep",
+                        "label": "Select deep",
+                        "children": [
+                          {
+                            "value": "select-leaf",
+                            "label": "Leaf"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "value": "layout",
+                "label": "Layout",
+                "children": [
+                  {
+                    "value": "grid",
+                    "label": "Grid"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "about",
+            "label": "About",
+            "children": [
+              {
+                "value": "team",
+                "label": "Team"
+              }
+            ]
+          }
+        ],
+        "expandMode": "single",
+        "defaultValue": "select-leaf"
+      },
+      "attrs": {},
+      "content": {},
+      "componentInteractive": 8,
+      "visual": true,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "nav-menu/attrs",
+      "title": "Consumer attributes on the nav: id, class, data-testid, title, style",
+      "$why": "Every attr falls through to the nav, after the component classes.",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ]
+      },
+      "attrs": {
+        "id": "docs-nav",
+        "class": "consumer-nav",
+        "data-testid": "nav",
+        "title": "Docs",
+        "style": "margin-top: 4px"
+      },
+      "content": {},
+      "componentInteractive": 3,
+      "visual": true,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0
+    },
+    {
+      "id": "nav-menu/interaction-open",
+      "title": "A branch click opens it: aria-expanded, the li and the chevron flip, the collapse enters",
+      "$why": "The enter, frame by frame, and nothing announced.",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {},
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 0
+          }
+        ],
+        "componentInteractive": 5,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedLabels": ["Guide"],
+          "currentLabels": [],
+          "events": [],
+          "locationHash": "",
+          "settled": true
+        }
+      },
+      "componentInteractive": 3,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "visual": false
+    },
+    {
+      "id": "nav-menu/interaction-close",
+      "title": "Opening and closing a branch lands on the collapsed tree",
+      "$why": "The leave and its removal.",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {},
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 0
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 0
+          }
+        ],
+        "componentInteractive": 3,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedLabels": [],
+          "currentLabels": [],
+          "events": [],
+          "locationHash": "",
+          "settled": true
+        },
+        "matches": "nav-menu/default"
+      },
+      "componentInteractive": 3,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "visual": false
+    },
+    {
+      "id": "nav-menu/interaction-close-active-ancestor",
+      "title": "Closing the open ancestry of the current item keeps it marked ancestor-active",
+      "$why": "Closing removes one expanded value; the active marks are the value's.",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ],
+        "defaultValue": "theming"
+      },
+      "attrs": {},
+      "content": {},
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 0
+          }
+        ],
+        "componentInteractive": 3,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedLabels": [],
+          "currentLabels": [],
+          "events": [],
+          "locationHash": "",
+          "settled": true
+        }
+      },
+      "componentInteractive": 7,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "visual": false
+    },
+    {
+      "id": "nav-menu/interaction-nested",
+      "title": "Opening a nested branch inside an open one",
+      "$why": "A second level enters while the first stays.",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {},
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 0
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 2
+          }
+        ],
+        "componentInteractive": 7,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedLabels": ["Guide", "Advanced"],
+          "currentLabels": [],
+          "events": [],
+          "locationHash": "",
+          "settled": true
+        }
+      },
+      "componentInteractive": 3,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "visual": false
+    },
+    {
+      "id": "nav-menu/interaction-parent-close",
+      "title": "Closing a parent hides an open child",
+      "$why": "The child's expansion is kept, its subtree goes with the parent's.",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {},
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 0
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 2
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 0
+          }
+        ],
+        "componentInteractive": 3,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedLabels": [],
+          "currentLabels": [],
+          "events": [],
+          "locationHash": "",
+          "settled": true
+        }
+      },
+      "componentInteractive": 3,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "visual": false
+    },
+    {
+      "id": "nav-menu/interaction-parent-reopen",
+      "title": "Reopening the parent shows the child still open, rendered without a transition",
+      "$why": "Nested expansion survives the parent's close; only the toggled branch animates.",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {},
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 0
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 2
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 0
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 0
+          }
+        ],
+        "componentInteractive": 7,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedLabels": ["Guide", "Advanced"],
+          "currentLabels": [],
+          "events": [],
+          "locationHash": "",
+          "settled": true
+        }
+      },
+      "componentInteractive": 3,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "visual": false
+    },
+    {
+      "id": "nav-menu/interaction-multiple",
+      "title": "Multiple mode keeps siblings open",
+      "$why": "Two top-level branches open together.",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {},
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 0
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 3
+          }
+        ],
+        "componentInteractive": 7,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedLabels": ["Guide", "Components"],
+          "currentLabels": [],
+          "events": [],
+          "locationHash": "",
+          "settled": true
+        }
+      },
+      "componentInteractive": 3,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "visual": false
+    },
+    {
+      "id": "nav-menu/interaction-single-siblings",
+      "title": "Single mode: opening a sibling closes the other",
+      "$why": "The sibling rule at the top level.",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ],
+        "expandMode": "single"
+      },
+      "attrs": {},
+      "content": {},
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 0
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 3
+          }
+        ],
+        "componentInteractive": 5,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedLabels": ["Components"],
+          "currentLabels": [],
+          "events": [],
+          "locationHash": "",
+          "settled": true
+        }
+      },
+      "componentInteractive": 3,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "visual": false
+    },
+    {
+      "id": "nav-menu/interaction-single-descendants",
+      "title": "Single mode: opening a sibling inside a group closes the other and the branch below it",
+      "$why": "Sibling branches and every branch below them close.",
+      "props": {
+        "items": [
+          {
+            "value": "library",
+            "label": "Library",
+            "children": [
+              {
+                "value": "forms",
+                "kind": "group",
+                "label": "Forms",
+                "children": [
+                  {
+                    "value": "input",
+                    "label": "Input",
+                    "children": [
+                      {
+                        "value": "input-api",
+                        "label": "Input API"
+                      }
+                    ]
+                  },
+                  {
+                    "value": "select",
+                    "label": "Select",
+                    "children": [
+                      {
+                        "value": "select-api",
+                        "label": "Select API"
+                      },
+                      {
+                        "value": "select-deep",
+                        "label": "Select deep",
+                        "children": [
+                          {
+                            "value": "select-leaf",
+                            "label": "Leaf"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "value": "layout",
+                "label": "Layout",
+                "children": [
+                  {
+                    "value": "grid",
+                    "label": "Grid"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "about",
+            "label": "About",
+            "children": [
+              {
+                "value": "team",
+                "label": "Team"
+              }
+            ]
+          }
+        ],
+        "expandMode": "single"
+      },
+      "attrs": {},
+      "content": {},
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 0
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 2
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 4
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 1
+          }
+        ],
+        "componentInteractive": 6,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedLabels": ["Library", "Input"],
+          "currentLabels": [],
+          "events": [],
+          "locationHash": "",
+          "settled": true
+        }
+      },
+      "componentInteractive": 2,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "visual": false
+    },
+    {
+      "id": "nav-menu/interaction-single-group-skip",
+      "title": "Single mode: a sibling group is skipped whole",
+      "$why": "Opening Layout leaves Input, inside the Forms group, open.",
+      "props": {
+        "items": [
+          {
+            "value": "library",
+            "label": "Library",
+            "children": [
+              {
+                "value": "forms",
+                "kind": "group",
+                "label": "Forms",
+                "children": [
+                  {
+                    "value": "input",
+                    "label": "Input",
+                    "children": [
+                      {
+                        "value": "input-api",
+                        "label": "Input API"
+                      }
+                    ]
+                  },
+                  {
+                    "value": "select",
+                    "label": "Select",
+                    "children": [
+                      {
+                        "value": "select-api",
+                        "label": "Select API"
+                      },
+                      {
+                        "value": "select-deep",
+                        "label": "Select deep",
+                        "children": [
+                          {
+                            "value": "select-leaf",
+                            "label": "Leaf"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "value": "layout",
+                "label": "Layout",
+                "children": [
+                  {
+                    "value": "grid",
+                    "label": "Grid"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "about",
+            "label": "About",
+            "children": [
+              {
+                "value": "team",
+                "label": "Team"
+              }
+            ]
+          }
+        ],
+        "expandMode": "single"
+      },
+      "attrs": {},
+      "content": {},
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 0
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 1
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 4
+          }
+        ],
+        "componentInteractive": 7,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedLabels": ["Library", "Input", "Layout"],
+          "currentLabels": [],
+          "events": [],
+          "locationHash": "",
+          "settled": true
+        }
+      },
+      "componentInteractive": 2,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "visual": false
+    },
+    {
+      "id": "nav-menu/interaction-single-reopen",
+      "title": "Single mode: reopening a parent keeps its own open child",
+      "$why": "The opened branch's own descendants are not siblings.",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ],
+        "expandMode": "single"
+      },
+      "attrs": {},
+      "content": {},
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 0
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 2
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 0
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 0
+          }
+        ],
+        "componentInteractive": 7,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedLabels": ["Guide", "Advanced"],
+          "currentLabels": [],
+          "events": [],
+          "locationHash": "",
+          "settled": true
+        }
+      },
+      "componentInteractive": 3,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "visual": false
+    },
+    {
+      "id": "nav-menu/interaction-single-close",
+      "title": "Single mode: closing a branch touches nothing else",
+      "$why": "Closing never applies the sibling rule.",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ],
+        "expandMode": "single"
+      },
+      "attrs": {},
+      "content": {},
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 0
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 2
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 2
+          }
+        ],
+        "componentInteractive": 5,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedLabels": ["Guide"],
+          "currentLabels": [],
+          "events": [],
+          "locationHash": "",
+          "settled": true
+        }
+      },
+      "componentInteractive": 3,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "visual": false
+    },
+    {
+      "id": "nav-menu/interaction-select-button",
+      "title": "A button leaf click makes it current and announces it once",
+      "$why": "update:modelValue, change and select in Vue; one vf-nav-menu:change in Razor; the neutral log has one entry.",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {},
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 2
+          }
+        ],
+        "componentInteractive": 3,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedLabels": [],
+          "currentLabels": ["Changelog:page"],
+          "events": [
+            {
+              "instance": 0,
+              "value": "changelog"
+            }
+          ],
+          "locationHash": "",
+          "settled": true
+        },
+        "matches": "nav-menu/active-top"
+      },
+      "componentInteractive": 3,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "visual": false
+    },
+    {
+      "id": "nav-menu/interaction-select-again",
+      "title": "Clicking the current item announces it again",
+      "$why": "The reference emits on every enabled leaf click.",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {},
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 2
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 2
+          }
+        ],
+        "componentInteractive": 3,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedLabels": [],
+          "currentLabels": ["Changelog:page"],
+          "events": [
+            {
+              "instance": 0,
+              "value": "changelog"
+            },
+            {
+              "instance": 0,
+              "value": "changelog"
+            }
+          ],
+          "locationHash": "",
+          "settled": true
+        },
+        "matches": "nav-menu/active-top"
+      },
+      "componentInteractive": 3,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "visual": false
+    },
+    {
+      "id": "nav-menu/interaction-select-nested",
+      "title": "Selecting a nested button moves the current item and the ancestor marks",
+      "$why": "The active value is the root's; every node repaints.",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {},
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 0
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 2
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 3
+          }
+        ],
+        "componentInteractive": 7,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedLabels": ["Guide", "Advanced"],
+          "currentLabels": ["Theming:page"],
+          "events": [
+            {
+              "instance": 0,
+              "value": "theming"
+            }
+          ],
+          "locationHash": "",
+          "settled": true
+        },
+        "matches": "nav-menu/active-leaf"
+      },
+      "componentInteractive": 3,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "visual": false
+    },
+    {
+      "id": "nav-menu/interaction-select-link",
+      "title": "A link click selects and navigates: the hash is the link's",
+      "$why": "A native anchor's navigation is not prevented.",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {},
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 0
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 1
+          }
+        ],
+        "componentInteractive": 5,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedLabels": ["Guide"],
+          "currentLabels": ["Intro:page"],
+          "events": [
+            {
+              "instance": 0,
+              "value": "intro"
+            }
+          ],
+          "locationHash": "#nav-intro",
+          "settled": true
+        },
+        "matches": "nav-menu/active-link"
+      },
+      "componentInteractive": 3,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "visual": false
+    },
+    {
+      "id": "nav-menu/interaction-select-moves",
+      "title": "Selecting a second item moves aria-current off the first",
+      "$why": "One current item at a time for distinct values.",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ],
+        "defaultValue": "theming"
+      },
+      "attrs": {},
+      "content": {},
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 6
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 1
+          }
+        ],
+        "componentInteractive": 7,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedLabels": ["Guide", "Advanced"],
+          "currentLabels": ["Intro:page"],
+          "events": [
+            {
+              "instance": 0,
+              "value": "changelog"
+            },
+            {
+              "instance": 0,
+              "value": "intro"
+            }
+          ],
+          "locationHash": "#nav-intro",
+          "settled": true
+        }
+      },
+      "componentInteractive": 7,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "visual": false
+    },
+    {
+      "id": "nav-menu/interaction-disabled-link",
+      "title": "A disabled link click is prevented: no announcement, no navigation",
+      "$why": "onLeafClick prevents and returns.",
+      "props": {
+        "items": [
+          {
+            "value": "open",
+            "label": "Open"
+          },
+          {
+            "value": "off",
+            "label": "Off",
+            "href": "#nav-off",
+            "disabled": true
+          },
+          {
+            "value": "paused",
+            "label": "Paused",
+            "disabled": true
+          },
+          {
+            "value": "locked",
+            "label": "Locked",
+            "disabled": true,
+            "children": [
+              {
+                "value": "inside",
+                "label": "Inside"
+              }
+            ]
+          },
+          {
+            "value": "next",
+            "label": "Next"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {},
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 1
+          }
+        ],
+        "componentInteractive": 5,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedLabels": [],
+          "currentLabels": [],
+          "events": [],
+          "locationHash": "",
+          "settled": true
+        },
+        "matches": "nav-menu/disabled"
+      },
+      "componentInteractive": 5,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "visual": false
+    },
+    {
+      "id": "nav-menu/interaction-controlled",
+      "title": "A controlled menu written back moves like an uncontrolled one",
+      "$why": "The v-model consumer and the Razor initial value land on the same tree (razor-has-no-controlled-mode).",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ],
+        "modelValue": "changelog"
+      },
+      "attrs": {},
+      "content": {},
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 0
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 1
+          }
+        ],
+        "componentInteractive": 5,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedLabels": ["Guide"],
+          "currentLabels": ["Intro:page"],
+          "events": [
+            {
+              "instance": 0,
+              "value": "intro"
+            }
+          ],
+          "locationHash": "#nav-intro",
+          "settled": true
+        },
+        "matches": "nav-menu/active-link"
+      },
+      "componentInteractive": 3,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "visual": false
+    },
+    {
+      "id": "nav-menu/interaction-group-ancestor-close",
+      "title": "Closing the branch above a group with the current item inside",
+      "$why": "The group li keeps its expanded value while hidden.",
+      "props": {
+        "items": [
+          {
+            "value": "library",
+            "label": "Library",
+            "children": [
+              {
+                "value": "forms",
+                "kind": "group",
+                "label": "Forms",
+                "children": [
+                  {
+                    "value": "input",
+                    "label": "Input",
+                    "children": [
+                      {
+                        "value": "input-api",
+                        "label": "Input API"
+                      }
+                    ]
+                  },
+                  {
+                    "value": "select",
+                    "label": "Select",
+                    "children": [
+                      {
+                        "value": "select-api",
+                        "label": "Select API"
+                      },
+                      {
+                        "value": "select-deep",
+                        "label": "Select deep",
+                        "children": [
+                          {
+                            "value": "select-leaf",
+                            "label": "Leaf"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "value": "layout",
+                "label": "Layout",
+                "children": [
+                  {
+                    "value": "grid",
+                    "label": "Grid"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "about",
+            "label": "About",
+            "children": [
+              {
+                "value": "team",
+                "label": "Team"
+              }
+            ]
+          }
+        ],
+        "defaultValue": "input-api"
+      },
+      "attrs": {},
+      "content": {},
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 0
+          }
+        ],
+        "componentInteractive": 2,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedLabels": [],
+          "currentLabels": [],
+          "events": [],
+          "locationHash": "",
+          "settled": true
+        }
+      },
+      "componentInteractive": 6,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "visual": false
+    },
+    {
+      "id": "nav-menu/interaction-enter-key",
+      "title": "Enter on a focused branch is native activation: it toggles once and keeps focus",
+      "$why": "No keydown handler; the native click does it.",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {},
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "Enter"
+          }
+        ],
+        "componentInteractive": 5,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedLabels": ["Guide"],
+          "currentLabels": [],
+          "events": [],
+          "locationHash": "",
+          "settled": true,
+          "focusItem": "item:Guide",
+          "keydownPrevented": ["Enter:false"]
+        }
+      },
+      "componentInteractive": 3,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "visual": false
+    },
+    {
+      "id": "nav-menu/interaction-space-key",
+      "title": "Space on a focused leaf button selects it natively",
+      "$why": "Space activates on keyup.",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {},
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 2
+          },
+          {
+            "action": "pressKey",
+            "key": " "
+          }
+        ],
+        "componentInteractive": 3,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedLabels": [],
+          "currentLabels": ["Changelog:page"],
+          "events": [
+            {
+              "instance": 0,
+              "value": "changelog"
+            }
+          ],
+          "locationHash": "",
+          "settled": true,
+          "focusItem": "item:Changelog",
+          "keydownPrevented": [" :false"]
+        },
+        "matches": "nav-menu/active-top"
+      },
+      "componentInteractive": 3,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "visual": false
+    },
+    {
+      "id": "nav-menu/interaction-arrow-ignored",
+      "title": "ArrowDown on a branch does nothing and is not prevented",
+      "$why": "The reference has no arrow-key navigation.",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {},
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          }
+        ],
+        "componentInteractive": 3,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedLabels": [],
+          "currentLabels": [],
+          "events": [],
+          "locationHash": "",
+          "settled": true,
+          "focusItem": "item:Guide",
+          "keydownPrevented": ["ArrowDown:false"]
+        },
+        "matches": "nav-menu/default"
+      },
+      "componentInteractive": 3,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "visual": false
+    },
+    {
+      "id": "nav-menu/interaction-tab-skips-disabled",
+      "title": "Tab from the first item skips the disabled link and the disabled buttons",
+      "$why": "tabindex=-1 and the native disabled leave the tab order.",
+      "props": {
+        "items": [
+          {
+            "value": "open",
+            "label": "Open"
+          },
+          {
+            "value": "off",
+            "label": "Off",
+            "href": "#nav-off",
+            "disabled": true
+          },
+          {
+            "value": "paused",
+            "label": "Paused",
+            "disabled": true
+          },
+          {
+            "value": "locked",
+            "label": "Locked",
+            "disabled": true,
+            "children": [
+              {
+                "value": "inside",
+                "label": "Inside"
+              }
+            ]
+          },
+          {
+            "value": "next",
+            "label": "Next"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {},
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "Tab"
+          }
+        ],
+        "componentInteractive": 5,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedLabels": [],
+          "currentLabels": [],
+          "events": [],
+          "locationHash": "",
+          "settled": true,
+          "focusItem": "item:Next",
+          "keydownPrevented": ["Tab:false"]
+        },
+        "matches": "nav-menu/disabled"
+      },
+      "componentInteractive": 5,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "visual": false
+    },
+    {
+      "id": "nav-menu/interaction-sidebar-narrow",
+      "title": "A branch opens in a compact sidebar",
+      "$why": "The compact sidebar is still a tree.",
+      "props": {
+        "items": [
+          {
+            "value": "guide",
+            "label": "Guide",
+            "children": [
+              {
+                "value": "intro",
+                "label": "Intro",
+                "href": "#nav-intro"
+              },
+              {
+                "value": "advanced",
+                "label": "Advanced",
+                "children": [
+                  {
+                    "value": "theming",
+                    "label": "Theming"
+                  },
+                  {
+                    "value": "ssr",
+                    "label": "SSR",
+                    "href": "#nav-ssr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "value": "components",
+            "label": "Components",
+            "children": [
+              {
+                "value": "button",
+                "label": "Button",
+                "href": "#nav-button"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ]
+          },
+          {
+            "value": "changelog",
+            "label": "Changelog"
+          }
+        ],
+        "variant": "sidebar"
+      },
+      "attrs": {},
+      "content": {
+        "box": 100
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 0
+          }
+        ],
+        "componentInteractive": 5,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedLabels": ["Guide"],
+          "currentLabels": [],
+          "events": [],
+          "locationHash": "",
+          "settled": true
+        }
+      },
+      "componentInteractive": 3,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "visual": false
+    },
+    {
+      "id": "nav-menu/interaction-deep-open",
+      "title": "Opening four levels one by one",
+      "$why": "The recursion under the toggle.",
+      "props": {
+        "items": [
+          {
+            "value": "l0",
+            "label": "Level 0",
+            "children": [
+              {
+                "value": "l1",
+                "label": "Level 1",
+                "children": [
+                  {
+                    "value": "l2",
+                    "label": "Level 2",
+                    "children": [
+                      {
+                        "value": "l3",
+                        "label": "Level 3",
+                        "href": "#nav-l3"
+                      },
+                      {
+                        "value": "l3b",
+                        "label": "Level 3b"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {},
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 0
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 1
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-nav-menu__item",
+            "index": 2
+          }
+        ],
+        "componentInteractive": 5,
+        "consumerInteractive": 0,
+        "consumerInteractiveRoles": 0,
+        "expect": {
+          "expandedLabels": ["Level 0", "Level 1", "Level 2"],
+          "currentLabels": [],
+          "events": [],
+          "locationHash": "",
+          "settled": true
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "consumerInteractiveRoles": 0,
+      "visual": false
+    }
+  ]
+}

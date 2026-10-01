@@ -112,6 +112,11 @@ if ($tooltipComponent === null) {
     fwrite(STDERR, "The VueForge vf-tooltip component is not registered.\n");
     exit(1);
 }
+$navMenuComponent = $registry->resolve('vf-nav-menu');
+if ($navMenuComponent === null) {
+    fwrite(STDERR, "The VueForge vf-nav-menu component is not registered.\n");
+    exit(1);
+}
 $selectComponent = $registry->resolve('vf-select');
 if ($selectComponent === null) {
     fwrite(STDERR, "The VueForge vf-select component is not registered.\n");
@@ -1560,6 +1565,35 @@ $renderSelect = static function (array $case) use ($selectComponent, $fieldCompo
     return $markup;
 };
 
+/**
+ * VfNavMenu, for the nav menu catalog (M33), as the Vue fixture builds it:
+ * every instance in its own box - `box` pixels wide, or filling the case - and
+ * a `group` rendered member by member with `boxes`. The camelCase props of the
+ * catalog are the component's own alternative spellings; `modelValue` is read
+ * as the initial value (platform divergence razor-has-no-controlled-mode).
+ */
+$renderNavMenu = static function (array $case) use ($navMenuComponent, $escape): string {
+    $content = $case['content'] ?? [];
+    $instance = static function (array $props, ?int $width) use ($navMenuComponent, $case, $escape): string {
+        $style = $width === null ? '' : ' style="width: ' . $escape((string) $width) . 'px"';
+
+        return '<div class="parity-nav-box"' . $style . '>'
+            . $navMenuComponent->render(new ComponentRenderContext($props + ($case['attrs'] ?? []), []))->value()
+            . '</div>';
+    };
+
+    if (isset($case['group']) && is_array($case['group'])) {
+        $markup = '';
+        foreach ($case['group'] as $index => $member) {
+            $markup .= $instance($member, isset($content['boxes'][$index]) ? (int) $content['boxes'][$index] : null);
+        }
+
+        return $markup;
+    }
+
+    return $instance($case['props'] ?? [], isset($content['box']) ? (int) $content['box'] : null);
+};
+
 $sections = '';
 
 foreach ($catalog['cases'] as $case) {
@@ -1569,6 +1603,8 @@ foreach ($catalog['cases'] as $case) {
         $body = $renderTooltip($case);
     } elseif ($component === 'select') {
         $body = $renderSelect($case);
+    } elseif ($component === 'nav-menu') {
+        $body = $renderNavMenu($case);
     } elseif ($component === 'dropdown') {
         $body = $renderDropdown($case);
     } elseif ($component === 'popover') {
@@ -1860,6 +1896,16 @@ if ($component === 'tooltip') {
         . "\n  installTooltipLogs(" . json_encode($delays, JSON_THROW_ON_ERROR) . ");\n";
 }
 
+$navMenuLogs = '';
+if ($component === 'nav-menu') {
+    $source = (string) file_get_contents(__DIR__ . '/nav-menu-logs.js');
+    $navMenuLogs = str_replace('export function installNavMenuLogs', 'function installNavMenuLogs', $source)
+        . "\n  installNavMenuLogs();\n"
+        . "  document.addEventListener('vf-nav-menu:change', (event) => window.__parityNavMenuRecord(event.target, event.detail.value));\n"
+        // As the Vue fixture: ready once the ResizeObserver has had three frames.
+        . "  await new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(done))));\n";
+}
+
 $html = <<<HTML
 <!doctype html>
 <html lang="en">
@@ -1913,6 +1959,7 @@ $html = <<<HTML
 {$popoverLogs}
 {$selectLogs}
 {$tooltipLogs}
+{$navMenuLogs}
   const theme = new URLSearchParams(window.location.search).get('theme') ?? 'light';
   document.documentElement.setAttribute('data-vf-theme', theme);
   // A dropdown page is ready once every overlay that entered at bootstrap has

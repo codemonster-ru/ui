@@ -1557,6 +1557,72 @@ export const profiles = {
     followedReferences: [{ source: 'button.vf-select', attribute: 'aria-controls' }],
     liveParity: true,
   },
+  // VfNavMenu (M33): a recursive tree whose controls are native - a button
+  // per branch, a button or an anchor per leaf. The rules find a control by
+  // what the component marks it as and assert the tag it has to be, so a
+  // branch rendered as a link, or a link as a button, fails by identity
+  // rather than balancing a count. The nav, the lists, the groups and the
+  // collapse wrappers are structure. Nothing is followed: the reference
+  // writes no id reference at all - no aria-controls on a branch.
+  'nav-menu': {
+    id: 'nav-menu',
+    label: 'VfNavMenu',
+    component: 'nav-menu',
+    casesPath: 'contracts/nav-menu/cases.json',
+    policyPath: 'contracts/nav-menu/parity-policy.json',
+    artifactDirectory: 'parity-nav-menu',
+    reportName: 'nav-menu-parity-report.json',
+    measuredRoles: {
+      root: 'nav.vf-nav-menu',
+      list: '.vf-nav-menu__list',
+      firstItem: '.vf-nav-menu__item',
+      branch: '.vf-nav-menu__item--branch',
+      activeItem: '.vf-nav-menu__item--active',
+      group: '.vf-nav-menu__group',
+      collapse: '.vf-nav-menu__collapse',
+      leadingIcon: '.vf-nav-menu__leading-icon',
+    },
+    // The nav is a landmark named by its aria-label; a branch is a button
+    // announcing expanded; the current item, a link, a disabled link and a
+    // disabled button are read where they are. The chevron is listed because
+    // it is aria-hidden and so expected absent.
+    accessibilityRoles: {
+      nav: 'nav.vf-nav-menu',
+      firstBranch: '.vf-nav-menu__item--branch',
+      expandedBranch: '.vf-nav-menu__item[aria-expanded="true"]',
+      currentItem: '[aria-current]',
+      firstLink: 'a.vf-nav-menu__item',
+      disabledLink: 'a.vf-nav-menu__item[aria-disabled="true"]',
+      disabledButton: 'button.vf-nav-menu__item[disabled]',
+      chevron: '.vf-nav-menu__icon',
+    },
+    semanticAttributes: [
+      'class',
+      'style',
+      'id',
+      'type',
+      'disabled',
+      'tabindex',
+      'title',
+      'href',
+      'target',
+      'rel',
+      'aria-label',
+      'aria-hidden',
+      'aria-expanded',
+      'aria-current',
+      'aria-disabled',
+      'data-testid',
+    ],
+    snapshot: 'nav-menu',
+    activationSelector: '.vf-nav-menu__item',
+    controlOwnership: {
+      branch: { selector: '.vf-nav-menu__item--branch', tag: 'button' },
+      button: { selector: '.vf-nav-menu__item:not(.vf-nav-menu__item--branch):not([href])', tag: 'button' },
+      link: { selector: '.vf-nav-menu__item[href]', tag: 'a' },
+    },
+    liveParity: true,
+  },
 };
 
 export function loadProfile(id) {

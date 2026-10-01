@@ -1,0 +1,217 @@
+{
+  "$comment": "Parity policy for the shared VfNavMenu cases. Plain data: no DSL, no waiver engine. It starts empty and stays empty. What the Razor adapter cannot represent - a consumer that does not write the emitted value back, a router - is a declared platform divergence or outside the catalog, never an approval.",
+  "classifications": {
+    "exact": "Must match literally across every target. Structure, canonical classes, native attributes, the listbox's inline position and min-width, visible text, accessible names and states, live state, ownership, relationships, focus, the value log, the form entries and the transitions.",
+    "semantic": "Framework mechanics may differ; the observable meaning must not. How content is composed, how state is stored, how a renderer marks its own output, which literal a generated id has, how an adapter anchors its teleported content.",
+    "framework-specific": "Historical behaviour of one adapter that the other is not required to reproduce. Narrow, named, and covered by its own test."
+  },
+  "notCompared": {
+    "$comment": "Recorded so a reviewer can see what is deliberately outside the comparison, without leaving dead dimensions that look like live protection. Nothing here is a waiver: the extractor never produces these differences in the first place.",
+    "attributeOrder": "Attributes are extracted into a sorted map, so serialisation order cannot produce a difference.",
+    "rendererMarkers": "Vue scope attributes (data-v-*), the Razor ownership marker, the Razor adapter's configuration (data-vf-razor-nav-menu-*, the tree structure, every li's index path) and the inert <template data-vf-razor-nav-menu=\"collapse\"> elements holding each branch's children are dropped by scripts/parity/extract.mjs. What the templates hold is compared the moment the controller renders it.",
+    "eventTransport": "Vue emits update:modelValue, change and select; the Razor controller dispatches one bubbling vf-nav-menu:change with { value }. What is compared is the neutral log each fixture keeps from readiness on - one entry per announced change, repeats included - as interaction.events.",
+    "styleSerialisation": "Vue writes --vf-nav-menu-level and the transition hooks' declarations through the CSSOM; the Razor server writes the level as attribute text and its controller writes the hooks through the CSSOM. The extractor parses every style through the browser and compares the declarations."
+  },
+  "platformDivergences": [
+    {
+      "id": "razor-has-no-controlled-mode",
+      "description": "Vue: with `modelValue` given, a leaf click emits update:modelValue, change and select and moves nothing until the parent writes the value back. Razor: `model-value` is the initial value only - read exactly as `default-value` - and the controller moves the active value itself and dispatches vf-nav-menu:change.",
+      "reason": "A server-rendered menu has no parent in the page to emit a request to and wait on. The same divergence as VfTabs', VfSelect's and VfStepper's.",
+      "comparedAs": "nav-menu/controlled and nav-menu/interaction-controlled: the Vue fixture writes update:modelValue back (v-model), the Razor adapter applies the value directly, and all three targets must land on the same tree, events, focus and accessibility tree.",
+      "vueHalfCoveredBy": "packages/core/src/components/nav-menu/VfNavMenu.characterization.spec.ts (events: controlled - the click emits but the active value stays until the parent writes it back; dropping modelValue falls back to an internal value a controlled click never wrote)",
+      "razorHalfCoveredBy": "packages/razor/tests/Components/NavMenuComponentTest.php (model-value is the initial value and beats the default) and scripts/ci/check-razor-browser.mjs (a leaf click moves aria-current and dispatches vf-nav-menu:change)",
+      "mutationCoveredBy": "scripts/baseline/input-mutations.mjs#nav-menu-controlled-self-update - the Razor reading applied to the Vue component - is detected by the characterization suite"
+    }
+  ],
+  "outsideTheCatalog": {
+    "$comment": "Behaviour that is part of the contract and deliberately not represented as a parity case, each with where it is covered instead.",
+    "routerLink": "An item `to` hands off to whatever is registered as RouterLink, with target, rel, classes, the level style, aria and the click listener, and renders Vue's literal unresolved element with nothing registered. Vue-only: the Razor adapter refuses `to` by name. Covered by the characterization suite (router branch) and NavMenuComponentTest::testTheRouterBranchIsRefusedByName.",
+    "reversals": "Closing while entering and reopening while leaving happen inside two animation frames, faster than a scenario step settles. Covered by the characterization suite (transition) and scripts/ci/check-razor-browser.mjs (reversals).",
+    "transitionTiming": "The end on a computed duration other than the reduced-motion one, on transitionend counting and on a bubbled transitionend: the characterization suite and scripts/ci/check-razor-browser.mjs (40ms and 10s durations). The parity run compares the frame-sampled life of every collapse under reduced motion.",
+    "reactiveProps": "items, variant and modelValue changed by a parent after mount: Vue-only, characterised; the Razor adapter renders once.",
+    "focusOnCollapse": "Focus inside a subtree that leaves is lost to the body when it is removed: characterised; a pointer collapse moves focus to the branch first.",
+    "windowResizeFallback": "Without ResizeObserver the reference listens to window resize: characterised; no parity browser lacks ResizeObserver.",
+    "targetBlankClicks": "A _blank link is compared statically and never clicked: a click would open a second page."
+  },
+  "dimensions": {
+    "dom.structure": {
+      "classification": "exact",
+      "description": "An unexpected element, a missing item, a group rendered as a button, a branch rendered as a link, a collapse rendered while closed or left after its leave, a nested list in the wrong place. Never approvable."
+    },
+    "dom.canonicalClasses": {
+      "classification": "exact",
+      "description": "The node, item, group, collapse, icon and root modifiers - level, expanded, active, ancestor-active, disabled, top, icon-offset, branch, simple, variant and sidebar-compact."
+    },
+    "dom.nativeAttributes": {
+      "classification": "exact",
+      "description": "type, disabled, tabindex, href, target, rel, title and the inline --vf-nav-menu-level, parsed by the browser."
+    },
+    "dom.text": {
+      "classification": "exact",
+      "description": "Visible text: the displayed label (or placeholder, or nothing under a floating label), each option's label, the field label, description and error."
+    },
+    "dom.aria": {
+      "classification": "exact",
+      "description": "aria-expanded on every branch, aria-current on every current leaf, aria-disabled on a disabled link, aria-label on the nav, aria-hidden on the probe and the glyph slots."
+    },
+    "dom.productData": {
+      "classification": "exact",
+      "description": "data-vf-filled on the trigger while the model is non-empty, and a consumer data-testid."
+    },
+    "dom.relationships": {
+      "classification": "semantic",
+      "description": "The reference writes no id reference: no branch aria-controls. An adapter that wrote one would differ here."
+    },
+    "dom.actionPresence": {
+      "classification": "exact",
+      "description": "Whether each button is operable: the trigger of a disabled select and a disabled option are inoperable on every target."
+    },
+    "dom.wrapperPresence": {
+      "classification": "exact",
+      "description": "Present so the comparator has a classification for it. A select has no wrapper either adapter may add."
+    },
+    "dom.inertAction": {
+      "classification": "exact",
+      "description": "Present for the same reason. A select renders no inert action."
+    },
+    "style.geometry": {
+      "classification": "exact",
+      "description": "width, height, padding, border width and radius, font size and line height of the wrapper, the trigger, the value, the chevron, the clear button and an in-place listbox."
+    },
+    "style.colour": {
+      "classification": "exact",
+      "description": "colour, background colour and border colour of the same elements."
+    },
+    "visual": {
+      "classification": "exact",
+      "description": "Clipped screenshot of the case root in its initial state, per theme."
+    },
+    "visual.postInteraction": {
+      "classification": "exact",
+      "description": "Clipped screenshot after the interaction, per theme, covering the case root and every listbox it owns wherever it is."
+    },
+    "a11y.role": {
+      "classification": "exact",
+      "description": "Computed role of the trigger (button), the clear button, the listbox and its first, selected and disabled options, read where the listbox is; the aria-hidden chevron is absent."
+    },
+    "a11y.name": {
+      "classification": "exact",
+      "description": "Accessible name of the trigger (its label, or the consumer's aria-label, or the field label), of the clear button, of the listbox (its trigger, through aria-labelledby) and of each read option."
+    },
+    "a11y.states": {
+      "classification": "exact",
+      "description": "focusable, disabled, expanded, hasPopup, invalid and selected as exposed to assistive tech, before and after an interaction."
+    },
+    "ownership.controls": {
+      "classification": "exact",
+      "description": "The component-owned controls: every trigger, the clear button while shown and every option of an open listbox, with tag, role, aria-expanded, aria-haspopup, aria-selected, disabled, tabindex and name; the consumer count beside them and the totals they add up to."
+    },
+    "interaction.state": {
+      "classification": "exact",
+      "description": "The live state after a scenario, per instance: aria-expanded, the trigger's label and classes, the listbox's place, classes, role and options, its geometry and scroll, every listbox in <body> by what names it, the field and a popover around the select, and the transitions."
+    },
+    "interaction.events": {
+      "classification": "exact",
+      "description": "The neutral value log the fixture recorded from readiness on, with the instance and the value. A missing, duplicated or reordered emission differs."
+    },
+    "interaction.convergence": {
+      "classification": "exact",
+      "description": "Whether a closing gesture's DOM equals the target's own render of the closed case it lands on. A leave that left a listbox behind, a stale label or a clear button that did not swap back differs."
+    },
+    "interaction.focus": {
+      "classification": "exact",
+      "description": "Where focus is after the scenario - a trigger, the clear button, an option (by label), another control, the body - and which instance holds it."
+    },
+    "interaction.relationships": {
+      "classification": "exact",
+      "description": "Whether each trigger's aria-controls reaches a listbox labelled by that trigger, on the live DOM, and that nothing carries aria-activedescendant."
+    },
+    "interaction.value": {
+      "classification": "exact",
+      "description": "The hidden input per instance (name, value, disabled, first in the wrapper), the entries of the form around the case and its validity."
+    },
+    "interaction.selection": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. A select carries no caret."
+    },
+    "interaction.wrapperPresence": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. A select renders no wrapper that could appear on one side only."
+    }
+  },
+  "historicalQuirks": [
+    {
+      "id": "group-sibling-skipped",
+      "description": "In single mode a sibling group is not a branch and is skipped whole: the branches inside it stay open.",
+      "classification": "exact",
+      "reason": "Compared as nav-menu/interaction-single-group-skip.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/nav-menu/cases.json#nav-menu/interaction-single-group-skip"
+    },
+    {
+      "id": "group-value-expanded",
+      "description": "Group values are part of the ancestry: a group around the current item carries vf-nav-menu__node--expanded on its li.",
+      "classification": "exact",
+      "reason": "Compared as nav-menu/group-ancestor.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/nav-menu/cases.json#nav-menu/group-ancestor"
+    },
+    {
+      "id": "branch-drops-destination",
+      "description": "A branch with href, target or to is a button and drops them.",
+      "classification": "exact",
+      "reason": "Compared as nav-menu/edges.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/nav-menu/cases.json#nav-menu/edges"
+    },
+    {
+      "id": "empty-href-is-link",
+      "description": "href '' is a link: the link test is definedness.",
+      "classification": "exact",
+      "reason": "Compared as nav-menu/links.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/nav-menu/cases.json#nav-menu/links"
+    },
+    {
+      "id": "current-ignores-disabled",
+      "description": "A disabled link that is current carries aria-current beside aria-disabled.",
+      "classification": "exact",
+      "reason": "Compared as nav-menu/disabled-active.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/nav-menu/cases.json#nav-menu/disabled-active"
+    },
+    {
+      "id": "reselect-announces",
+      "description": "Clicking the current item announces it again.",
+      "classification": "exact",
+      "reason": "Compared as nav-menu/interaction-select-again.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/nav-menu/cases.json#nav-menu/interaction-select-again"
+    },
+    {
+      "id": "close-keeps-descendants",
+      "description": "Closing a branch keeps its descendants expanded; reopening shows them at once, without a transition.",
+      "classification": "exact",
+      "reason": "Compared as nav-menu/interaction-parent-reopen.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/nav-menu/cases.json#nav-menu/interaction-parent-reopen"
+    },
+    {
+      "id": "first-match-ancestry",
+      "description": "The ancestry is the first match in document order; every rendered match is current.",
+      "classification": "exact",
+      "reason": "Compared as nav-menu/active-duplicate.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/nav-menu/cases.json#nav-menu/active-duplicate"
+    },
+    {
+      "id": "no-keyboard",
+      "description": "No component keyboard handling: arrows are not prevented, Enter and Space are native activation.",
+      "classification": "exact",
+      "reason": "Compared as nav-menu/interaction-arrow-ignored, -enter-key and -space-key.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/nav-menu/cases.json#nav-menu/interaction-arrow-ignored"
+    }
+  ],
+  "approvedDivergences": []
+}

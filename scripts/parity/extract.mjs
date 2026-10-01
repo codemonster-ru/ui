@@ -3299,6 +3299,179 @@ function breadcrumbsInteractionExpression(caseId, controlOwnership = {}) {
  * an activation count means nothing on a text field - so the profile selects
  * it. Everything downstream compares whatever shape comes back, key by key.
  */
+/**
+ * What a VfNavMenu case reports, before and after a scenario (M33).
+ *
+ * Component-specific and named so. The nav menu owns a native button per
+ * branch, a native button or anchor per leaf - the profile's three rules -
+ * and nothing else: the nav, the lists, the groups and the collapse wrappers
+ * are structure. What it records, each compared as its own dimension:
+ *
+ *   - ownership: the owned controls with their tag, type and label in
+ *     document order, and every other focusable element in the case;
+ *   - the tree: every item element in document order - group, branch, button
+ *     or link - with its level declaration, classes, its li's classes,
+ *     aria-expanded, aria-current, the native disabled, aria-disabled,
+ *     tabindex, href, target, rel and its two glyph slots; the labels of the
+ *     expanded branches and of the current items;
+ *   - the collapse wrappers: each one's owner, classes and inline style once
+ *     settled, and the frame-sampled life the fixture log kept - the states it
+ *     was inserted in, the ones each hook frame wrote, and its removal;
+ *   - compactness: per instance whether it is compact, and, for every
+ *     sidebar, what every instance in the case reports after its own box is
+ *     narrowed to 100px, widened to 400px and restored - the ResizeObserver
+ *     contract and the isolation between instances;
+ *   - the scenario's record: the change log, the location hash a link left,
+ *     focus and the keydown log.
+ *
+ * Asynchronous: it waits, bounded, until no collapse carries a transition
+ * class or an inline declaration, and records whether it got there.
+ */
+function navMenuInteractionExpression(caseId, controlOwnership = {}) {
+  return `(async () => {
+    const root = document.querySelector('[data-parity-case="${caseId}"]');
+    if (!root) throw new Error('missing case ${caseId}');
+
+    const OWNED = ${JSON.stringify(controlOwnership)};
+    const FOCUSABLE = 'a[href], button, input, select, textarea, [tabindex], [contenteditable=""], [contenteditable="true"]';
+    const INTERACTIVE_ROLES = new Set([
+      'button', 'link', 'checkbox', 'radio', 'switch', 'textbox', 'combobox',
+      'listbox', 'menuitem', 'option', 'slider', 'spinbutton', 'tab',
+    ]);
+    const vfClasses = (element) => [...element.classList].filter((name) => name.startsWith('vf-')).sort();
+    const frames = (count) => new Promise((done) => {
+      let left = count;
+      const tick = () => (--left <= 0 ? done() : requestAnimationFrame(tick));
+      requestAnimationFrame(tick);
+      setTimeout(done, 1000);
+    });
+
+    const collapses = () => [...root.querySelectorAll('.vf-nav-menu__collapse')];
+    const unsettled = () =>
+      collapses().some((element) => [...element.classList].some((name) => !name.startsWith('vf-')) || (element.getAttribute('style') ?? '') !== '');
+    const deadline = performance.now() + 2000;
+    while (unsettled() && performance.now() < deadline) {
+      await new Promise((tick) => setTimeout(tick, 20));
+    }
+    const settled = !unsettled();
+    // The fixture samples once per frame: two more frames, so the settled
+    // state - or a removal - is in its log before the log is read.
+    await frames(2);
+
+    const labelOf = (element) =>
+      (element.querySelector(':scope > .vf-nav-menu__item-content > .vf-nav-menu__label, :scope > .vf-nav-menu__item-content > .vf-nav-menu__group-label')?.textContent ?? null);
+    const levelOf = (element) => element.style.getPropertyValue('--vf-nav-menu-level').trim() || null;
+
+    const focusable = [...root.querySelectorAll(FOCUSABLE)];
+    const owned = [];
+    for (const [role, rule] of Object.entries(OWNED)) {
+      for (const element of root.querySelectorAll(rule.selector)) {
+        owned.push({ element, record: { role, tag: element.tagName.toLowerCase(), type: element.getAttribute('type'), label: labelOf(element) } });
+      }
+    }
+    owned.sort((left, right) => (left.element.compareDocumentPosition(right.element) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1));
+    const ownedElements = owned.map((entry) => entry.element);
+    const consumer = focusable.filter((element) => !ownedElements.includes(element));
+
+    const navs = [...root.querySelectorAll('nav.vf-nav-menu')];
+    const navItems = [...root.querySelectorAll('.vf-nav-menu__item, .vf-nav-menu__group')].map((element) => ({
+      instance: navs.indexOf(element.closest('nav.vf-nav-menu')),
+      kind: element.classList.contains('vf-nav-menu__group')
+        ? 'group:' + element.tagName.toLowerCase()
+        : element.classList.contains('vf-nav-menu__item--branch')
+          ? 'branch:' + element.tagName.toLowerCase()
+          : 'leaf:' + element.tagName.toLowerCase(),
+      label: labelOf(element),
+      level: levelOf(element),
+      classes: vfClasses(element),
+      node: element.parentElement ? vfClasses(element.parentElement) : [],
+      expanded: element.getAttribute('aria-expanded'),
+      current: element.getAttribute('aria-current'),
+      disabled: element.hasAttribute('disabled'),
+      ariaDisabled: element.getAttribute('aria-disabled'),
+      tabindex: element.getAttribute('tabindex'),
+      href: element.getAttribute('href'),
+      target: element.getAttribute('target'),
+      rel: element.getAttribute('rel'),
+      leadingIcon: element.querySelector(':scope > .vf-nav-menu__item-content > .vf-nav-menu__leading-icon') !== null,
+      chevron: element.querySelector(':scope > .vf-nav-menu__icon:not(.vf-nav-menu__icon--external)') ? vfClasses(element.querySelector(':scope > .vf-nav-menu__icon')) : null,
+      external: element.querySelector(':scope > .vf-nav-menu__icon--external') !== null,
+    }));
+    const collapseStates = collapses().map((element) => ({
+      owner: element.parentElement ? labelOf(element.parentElement.querySelector(':scope > .vf-nav-menu__item')) : null,
+      classes: [...element.classList].sort(),
+      style: element.getAttribute('style') ?? '',
+      parent: element.parentElement?.tagName.toLowerCase() ?? null,
+    }));
+    const collapseTransitions = (window.__parityNavMenuLogs?.[${JSON.stringify(caseId)}] ?? []).map((record) => ({
+      owner: record.owner,
+      states: [...record.states],
+    }));
+    const compactOf = () => navs.map((nav) => nav.classList.contains('vf-nav-menu--sidebar-compact'));
+    const compactStates = compactOf();
+
+    const active = document.activeElement;
+    const focusItem = active === document.body
+      ? 'body'
+      : root.contains(active)
+        ? (active.matches('.vf-nav-menu__item') ? 'item:' + labelOf(active) : 'other-inside-case')
+        : 'outside-case';
+    const caseRect = root.getBoundingClientRect();
+    const expandedLabels = [...root.querySelectorAll('.vf-nav-menu__item[aria-expanded="true"]')].map(labelOf);
+    const currentLabels = [...root.querySelectorAll('[aria-current]')].map((element) => labelOf(element) + ':' + element.getAttribute('aria-current'));
+    const locationHash = location.hash;
+    const events = window.__parityNavMenuEvents?.[${JSON.stringify(caseId)}] ?? [];
+    const keydownPrevented = (window.__parityNavMenuKeys ?? []).map((entry) => entry.key + ':' + entry.prevented);
+
+    // Last, and undone: every sidebar's box narrowed, widened and restored,
+    // with every instance read after each, so the observer answers and its
+    // isolation are measured on the live component.
+    const compactProbe = [];
+    for (const [instance, nav] of navs.entries()) {
+      if (!nav.classList.contains('vf-nav-menu--sidebar')) continue;
+      const box = nav.parentElement;
+      const style = box.getAttribute('style');
+      box.style.width = '100px';
+      await frames(3);
+      const narrow = compactOf();
+      box.style.width = '400px';
+      await frames(3);
+      const wide = compactOf();
+      if (style === null) box.removeAttribute('style');
+      else box.setAttribute('style', style);
+      await frames(3);
+      compactProbe.push({ instance, narrow, wide, restored: compactOf() });
+    }
+
+    return {
+      clip: {
+        x: Math.round(caseRect.left + window.scrollX),
+        y: Math.round(caseRect.top + window.scrollY),
+        width: Math.round(caseRect.width),
+        height: Math.round(caseRect.height),
+      },
+      ownershipPosture: 'component',
+      componentControls: owned.map((entry) => entry.record),
+      consumerControlCount: consumer.length,
+      focusableTotal: focusable.length,
+      interactiveRoleTotal: [...root.querySelectorAll('*')].filter((element) => INTERACTIVE_ROLES.has(element.getAttribute('role') ?? '')).length,
+      instanceCount: navs.length,
+      navItems,
+      expandedLabels,
+      currentLabels,
+      collapseStates,
+      collapseTransitions,
+      compactStates,
+      compactProbe,
+      locationHash,
+      events,
+      settled,
+      focusItem,
+      keydownPrevented,
+    };
+  })()`;
+}
+
 export function interactionExpression(caseId, snapshot = 'input', controlOwnership = undefined) {
   if (snapshot === 'static') {
     return staticInteractionExpression(caseId);
@@ -3343,6 +3516,9 @@ export function interactionExpression(caseId, snapshot = 'input', controlOwnersh
   }
   if (snapshot === 'tooltip') {
     return tooltipInteractionExpression(caseId, controlOwnership);
+  }
+  if (snapshot === 'nav-menu') {
+    return navMenuInteractionExpression(caseId, controlOwnership);
   }
   if (snapshot === 'select') {
     return selectInteractionExpression(caseId, controlOwnership);
