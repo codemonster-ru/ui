@@ -55,12 +55,13 @@ const DURATION = vfMotionDurationsMs.normal;
 
 // --------------------------------------------------------------- transition
 
-/** Vue's nextFrame: the callback runs in the frame after the next one. */
-function nextFrame(callback: () => void): number {
-  let id = requestAnimationFrame(() => {
-    id = requestAnimationFrame(callback);
-  });
-  return id;
+/** Vue's nextFrame: the callback runs in the frame after the next one. Both frames are recorded. */
+function nextFrame(tooltip: LiveTooltip, callback: () => void): void {
+  tooltip.frames.push(
+    requestAnimationFrame(() => {
+      tooltip.frames.push(requestAnimationFrame(callback));
+    }),
+  );
 }
 
 /** One tooltip element and the transition classes it currently carries. */
@@ -68,7 +69,12 @@ interface LiveTooltip {
   element: HTMLElement;
   arrow: HTMLElement;
   transition: string[];
-  timers: number[];
+  // Animation frames and timeouts are two id spaces: a frame id handed to
+  // clearTimeout cancels whichever unrelated timer of the page happens to
+  // share the number, and a timeout id handed to cancelAnimationFrame
+  // whichever frame does. Kept apart since M33.1, as the select keeps them.
+  frames: number[];
+  timeouts: number[];
   phase: 'entering' | 'open' | 'leaving';
 }
 
@@ -187,29 +193,26 @@ function enhanceRoot(root: HTMLElement, enhanceContent: (node: ParentNode) => vo
   }
 
   function clearTransitionTimers(tooltip: LiveTooltip): void {
-    for (const id of tooltip.timers) {
-      cancelAnimationFrame(id);
-      clearTimeout(id);
-    }
-    tooltip.timers = [];
+    for (const id of tooltip.frames) cancelAnimationFrame(id);
+    for (const id of tooltip.timeouts) clearTimeout(id);
+    tooltip.frames = [];
+    tooltip.timeouts = [];
   }
 
   function enter(tooltip: LiveTooltip): void {
     tooltip.phase = 'entering';
     setTransition(tooltip, baseClasses(), [`${TRANSITION}-enter-from`, `${TRANSITION}-enter-active`]);
-    tooltip.timers.push(
-      nextFrame(() => {
-        if (tooltip.phase !== 'entering') return;
-        setTransition(tooltip, baseClasses(), [`${TRANSITION}-enter-active`, `${TRANSITION}-enter-to`]);
-        tooltip.timers.push(
-          window.setTimeout(() => {
-            if (tooltip.phase !== 'entering') return;
-            tooltip.phase = 'open';
-            setTransition(tooltip, baseClasses(), []);
-          }, DURATION),
-        );
-      }),
-    );
+    nextFrame(tooltip, () => {
+      if (tooltip.phase !== 'entering') return;
+      setTransition(tooltip, baseClasses(), [`${TRANSITION}-enter-active`, `${TRANSITION}-enter-to`]);
+      tooltip.timeouts.push(
+        window.setTimeout(() => {
+          if (tooltip.phase !== 'entering') return;
+          tooltip.phase = 'open';
+          setTransition(tooltip, baseClasses(), []);
+        }, DURATION),
+      );
+    });
   }
 
   function leave(tooltip: LiveTooltip): void {
@@ -219,19 +222,17 @@ function enhanceRoot(root: HTMLElement, enhanceContent: (node: ParentNode) => vo
     // Vue forces a reflow between the two classes.
     void document.body.offsetHeight;
     setTransition(tooltip, baseClasses(), [`${TRANSITION}-leave-from`, `${TRANSITION}-leave-active`]);
-    tooltip.timers.push(
-      nextFrame(() => {
-        // A reopen may already have removed this tooltip.
-        if (!tooltip.element.isConnected) return;
-        setTransition(tooltip, baseClasses(), [`${TRANSITION}-leave-active`, `${TRANSITION}-leave-to`]);
-        tooltip.timers.push(
-          window.setTimeout(() => {
-            clearTransitionTimers(tooltip);
-            tooltip.element.remove();
-          }, DURATION),
-        );
-      }),
-    );
+    nextFrame(tooltip, () => {
+      // A reopen may already have removed this tooltip.
+      if (!tooltip.element.isConnected) return;
+      setTransition(tooltip, baseClasses(), [`${TRANSITION}-leave-active`, `${TRANSITION}-leave-to`]);
+      tooltip.timeouts.push(
+        window.setTimeout(() => {
+          clearTransitionTimers(tooltip);
+          tooltip.element.remove();
+        }, DURATION),
+      );
+    });
   }
 
   function build(body: Node): LiveTooltip {
@@ -241,7 +242,14 @@ function enhanceRoot(root: HTMLElement, enhanceContent: (node: ParentNode) => vo
     const arrowElement = document.createElement('span');
     arrowElement.setAttribute('aria-hidden', 'true');
     element.append(body.cloneNode(true), arrowElement);
-    const tooltip: LiveTooltip = { element, arrow: arrowElement, transition: [], timers: [], phase: 'entering' };
+    const tooltip: LiveTooltip = {
+      element,
+      arrow: arrowElement,
+      transition: [],
+      frames: [],
+      timeouts: [],
+      phase: 'entering',
+    };
     paint(tooltip);
     return tooltip;
   }

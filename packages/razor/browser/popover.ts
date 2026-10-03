@@ -69,12 +69,13 @@ const DURATION = vfMotionDurationsMs.normal;
 
 // --------------------------------------------------------------- transition
 
-/** Vue's nextFrame: the callback runs in the frame after the next one. */
-function nextFrame(callback: () => void): number {
-  let id = requestAnimationFrame(() => {
-    id = requestAnimationFrame(callback);
-  });
-  return id;
+/** Vue's nextFrame: the callback runs in the frame after the next one. Both frames are recorded. */
+function nextFrame(panel: LivePanel, callback: () => void): void {
+  panel.frames.push(
+    requestAnimationFrame(() => {
+      panel.frames.push(requestAnimationFrame(callback));
+    }),
+  );
 }
 
 /** One panel element and the transition classes it currently carries. */
@@ -82,7 +83,12 @@ interface LivePanel {
   element: HTMLElement;
   arrow: HTMLElement;
   transition: string[];
-  timers: number[];
+  // Animation frames and timeouts are two id spaces: a frame id handed to
+  // clearTimeout cancels whichever unrelated timer of the page happens to
+  // share the number, and a timeout id handed to cancelAnimationFrame
+  // whichever frame does. Kept apart since M33.1, as the select keeps them.
+  frames: number[];
+  timeouts: number[];
   phase: 'entering' | 'open' | 'leaving';
 }
 
@@ -244,27 +250,24 @@ function enhanceRoot(root: HTMLElement, enhanceContent: (node: ParentNode) => vo
   function enter(panel: LivePanel): void {
     panel.phase = 'entering';
     setTransition(panel, panelClasses(), [`${TRANSITION}-enter-from`, `${TRANSITION}-enter-active`]);
-    panel.timers.push(
-      nextFrame(() => {
-        if (panel.phase !== 'entering') return;
-        setTransition(panel, panelClasses(), [`${TRANSITION}-enter-active`, `${TRANSITION}-enter-to`]);
-        panel.timers.push(
-          window.setTimeout(() => {
-            if (panel.phase !== 'entering') return;
-            panel.phase = 'open';
-            setTransition(panel, panelClasses(), []);
-          }, DURATION),
-        );
-      }),
-    );
+    nextFrame(panel, () => {
+      if (panel.phase !== 'entering') return;
+      setTransition(panel, panelClasses(), [`${TRANSITION}-enter-active`, `${TRANSITION}-enter-to`]);
+      panel.timeouts.push(
+        window.setTimeout(() => {
+          if (panel.phase !== 'entering') return;
+          panel.phase = 'open';
+          setTransition(panel, panelClasses(), []);
+        }, DURATION),
+      );
+    });
   }
 
   function clearTimers(panel: LivePanel): void {
-    for (const id of panel.timers) {
-      cancelAnimationFrame(id);
-      clearTimeout(id);
-    }
-    panel.timers = [];
+    for (const id of panel.frames) cancelAnimationFrame(id);
+    for (const id of panel.timeouts) clearTimeout(id);
+    panel.frames = [];
+    panel.timeouts = [];
   }
 
   function leave(panel: LivePanel): void {
@@ -274,19 +277,17 @@ function enhanceRoot(root: HTMLElement, enhanceContent: (node: ParentNode) => vo
     // Vue forces a reflow between the two classes.
     void document.body.offsetHeight;
     setTransition(panel, panelClasses(), [`${TRANSITION}-leave-from`, `${TRANSITION}-leave-active`]);
-    panel.timers.push(
-      nextFrame(() => {
-        // A reopen may already have removed this panel.
-        if (!panel.element.isConnected) return;
-        setTransition(panel, panelClasses(), [`${TRANSITION}-leave-active`, `${TRANSITION}-leave-to`]);
-        panel.timers.push(
-          window.setTimeout(() => {
-            clearTimers(panel);
-            panel.element.remove();
-          }, DURATION),
-        );
-      }),
-    );
+    nextFrame(panel, () => {
+      // A reopen may already have removed this panel.
+      if (!panel.element.isConnected) return;
+      setTransition(panel, panelClasses(), [`${TRANSITION}-leave-active`, `${TRANSITION}-leave-to`]);
+      panel.timeouts.push(
+        window.setTimeout(() => {
+          clearTimers(panel);
+          panel.element.remove();
+        }, DURATION),
+      );
+    });
   }
 
   function buildPanel(): LivePanel {
@@ -298,7 +299,14 @@ function enhanceRoot(root: HTMLElement, enhanceContent: (node: ParentNode) => vo
     const arrowElement = document.createElement('span');
     arrowElement.setAttribute('aria-hidden', 'true');
     element.append(arrowElement, content.cloneNode(true));
-    const panel: LivePanel = { element, arrow: arrowElement, transition: [], timers: [], phase: 'entering' };
+    const panel: LivePanel = {
+      element,
+      arrow: arrowElement,
+      transition: [],
+      frames: [],
+      timeouts: [],
+      phase: 'entering',
+    };
     paint(panel);
     return panel;
   }

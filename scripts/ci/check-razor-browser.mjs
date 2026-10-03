@@ -4983,19 +4983,20 @@ try {
     );
     check("disposal disconnects the nav menu's ResizeObserver", disposal.disconnected >= 1, JSON.stringify(disposal));
 
-    // The popover's own close is the known M32 timer-id defect - its
-    // clearTimers hands every id to both APIs - deliberately not fixed in M33.
-    // It is reported, never counted against the nav menu: every misuse of the
-    // disposal step must come from that function.
+    // The popover closing around the nav menu is the path where M33 saw the
+    // popover's clearTimers hand frame ids to clearTimeout - the M32 defect,
+    // closed in M33.1. Nothing on this page may misuse an id any more, the
+    // host popover included.
     const misuse = await page.evaluate('window.__timerMisuse');
-    const foreign = misuse.filter((entry) => !/clearTimers/.test(entry.caller));
     check(
       'the nav menu never hands a timeout id to cancelAnimationFrame nor a frame id to clearTimeout, disposal included',
-      foreign.length === 0,
+      misuse.filter((entry) => !/clearTimers/.test(entry.caller)).length === 0,
       JSON.stringify(misuse),
     );
-    process.stdout.write(
-      `[razor-browser] nav menu disposal step: ${misuse.length} timer-id misuse(s), all from the popover's known clearTimers defect; 0 from the nav menu.\n`,
+    check(
+      'the popover closing around the nav menu hands no frame id to clearTimeout and no timeout id to cancelAnimationFrame (M33.1)',
+      misuse.length === 0,
+      JSON.stringify(misuse),
     );
     check(
       'the nav menu page produced no script errors',
@@ -5050,6 +5051,364 @@ try {
       JSON.stringify(twice),
     );
   });
+
+  // ------------------------------------------- overlay timer ids (M33.1)
+  //
+  // Animation frames and timeouts are two id spaces whose numbers may
+  // coincide: a frame id handed to clearTimeout cancels whichever timer of the
+  // page shares the number, a timeout id handed to cancelAnimationFrame
+  // whichever frame does. Until M33.1 the dropdown, popover and tooltip kept
+  // one list of transition ids, cancelled each with both APIs, and recorded
+  // only the first of Vue's two frames.
+  //
+  // The audit makes that visible and deterministic. The page is given frame
+  // ids and timeout ids from two disjoint ranges, so a wrong-API call is never
+  // ambiguous. Once armed, every id the page has been or is given gets an
+  // unrelated sentinel of the other kind under the same number - a timeout
+  // at each frame id, a frame (re-requested every frame) at each timeout id -
+  // so a wrong-API cancellation cancels a sentinel exactly as a native
+  // collision would. Every frame requested inside a frame callback is marked
+  // nested, and what was pending when an overlay closed or was disposed is
+  // followed to its end: cancelled with its own API, or run.
+  const OVERLAY_DURATION = 320;
+  const installOverlayTimerAudit = `(() => {
+    const native = {
+      setTimeout: window.setTimeout.bind(window),
+      clearTimeout: window.clearTimeout.bind(window),
+      requestAnimationFrame: window.requestAnimationFrame.bind(window),
+      cancelAnimationFrame: window.cancelAnimationFrame.bind(window),
+    };
+    const live = { frames: new Map(), timeouts: new Map() };
+    const issued = { frames: new Map(), timeouts: new Map() };
+    const sentinels = { timeouts: new Map(), frames: new Map() };
+    const misuse = [];
+    let scope = { frames: new Set(), timeouts: new Set() };
+    let nextFrame = 100001;
+    let nextTimeout = 500001;
+    let depth = 0;
+    let armed = false;
+    let misuseMark = 0;
+    const caller = () => (new Error().stack ?? '').split('\\n').slice(4, 6).map((line) => line.trim()).join(' | ');
+    const plantTimeout = (id, unrelated = false) => {
+      if (live.timeouts.has(id)) return;
+      const sentinel = { id, unrelated, fired: false, cancelled: null };
+      sentinels.timeouts.set(id, sentinel);
+      live.timeouts.set(id, { sentinel, native: native.setTimeout(() => { live.timeouts.delete(id); sentinel.fired = true; }, ${2 * OVERLAY_DURATION + 200}) });
+    };
+    const plantFrame = (id, unrelated = false) => {
+      if (live.frames.has(id)) return;
+      const sentinel = { id, unrelated, ticks: 0, cancelled: null };
+      const entry = { sentinel, native: 0 };
+      const tick = () => { sentinel.ticks += 1; entry.native = native.requestAnimationFrame(tick); };
+      entry.native = native.requestAnimationFrame(tick);
+      sentinels.frames.set(id, sentinel);
+      live.frames.set(id, entry);
+    };
+    const cancel = (api, id, map, own, other, nativeCancel) => {
+      if (other.has(id)) misuse.push({ api, id, belongsTo: api === 'clearTimeout' ? 'frame' : 'timeout', caller: caller() });
+      const entry = map.get(id);
+      if (!entry) {
+        // An id this audit never issued (one from before it was installed) goes to the browser.
+        if (!own.has(id) && !other.has(id) && id != null) nativeCancel(id);
+        return;
+      }
+      map.delete(id);
+      nativeCancel(entry.native);
+      if (entry.sentinel) entry.sentinel.cancelled = { api, caller: caller() };
+      else own.get(id).cancelledBy = api;
+    };
+    window.requestAnimationFrame = (callback) => {
+      const id = nextFrame++;
+      const record = { id, nested: depth > 0, ran: false, cancelledBy: null };
+      issued.frames.set(id, record);
+      scope.frames.add(id);
+      live.frames.set(id, { native: native.requestAnimationFrame((time) => {
+        live.frames.delete(id);
+        record.ran = true;
+        depth += 1;
+        try { callback(time); } finally { depth -= 1; }
+      }) });
+      if (armed) plantTimeout(id);
+      return id;
+    };
+    window.setTimeout = (handler, ms, ...args) => {
+      const id = nextTimeout++;
+      const record = { id, ran: false, cancelledBy: null };
+      issued.timeouts.set(id, record);
+      scope.timeouts.add(id);
+      live.timeouts.set(id, { native: native.setTimeout(() => {
+        live.timeouts.delete(id);
+        record.ran = true;
+        if (typeof handler === 'function') handler(...args);
+      }, ms) });
+      if (armed) plantFrame(id);
+      return id;
+    };
+    window.cancelAnimationFrame = (id) => cancel('cancelAnimationFrame', id, live.frames, issued.frames, issued.timeouts, native.cancelAnimationFrame);
+    window.clearTimeout = (id) => cancel('clearTimeout', id, live.timeouts, issued.timeouts, issued.frames, native.clearTimeout);
+
+    const stopSentinels = () => {
+      armed = false;
+      for (const [id, entry] of live.frames) if (entry.sentinel) { native.cancelAnimationFrame(entry.native); live.frames.delete(id); }
+      for (const [id, entry] of live.timeouts) if (entry.sentinel) { native.clearTimeout(entry.native); live.timeouts.delete(id); }
+      sentinels.timeouts.clear();
+      sentinels.frames.clear();
+    };
+    const audit = {
+      misuse,
+      wait: (ms) => new Promise((done) => native.setTimeout(done, ms)),
+      until: (predicate, ms = 3000) => new Promise((done) => {
+        const end = performance.now() + ms;
+        const poll = () => (predicate() ? done(true) : performance.now() > end ? done(false) : native.requestAnimationFrame(poll));
+        poll();
+      }),
+      begin: () => { stopSentinels(); scope = { frames: new Set(), timeouts: new Set() }; misuseMark = misuse.length; },
+      arm: () => {
+        armed = true;
+        for (const id of scope.frames) plantTimeout(id);
+        for (const id of scope.timeouts) plantFrame(id);
+        plantTimeout(400001, true);
+        plantFrame(900001, true);
+      },
+      pending: () => ({
+        frames: [...scope.frames].map((id) => issued.frames.get(id)).filter((record) => !record.ran && !record.cancelledBy).map((record) => record.id),
+        timeouts: [...scope.timeouts].map((id) => issued.timeouts.get(id)).filter((record) => !record.ran && !record.cancelledBy).map((record) => record.id),
+      }),
+      nestedPending: () => audit.pending().frames.some((id) => issued.frames.get(id).nested),
+      collect: (pending) => {
+        const all = [...sentinels.timeouts.values(), ...sentinels.frames.values()];
+        const result = {
+          misuse: misuse.slice(misuseMark),
+          frames: pending.frames.map((id) => ({ ...issued.frames.get(id) })),
+          timeouts: pending.timeouts.map((id) => ({ ...issued.timeouts.get(id) })),
+          colliding: all.filter((sentinel) => !sentinel.unrelated).length,
+          cancelledSentinels: all.filter((sentinel) => sentinel.cancelled).map((sentinel) => ({ id: sentinel.id, ...sentinel.cancelled })),
+          unfiredTimeoutSentinels: [...sentinels.timeouts.values()].filter((sentinel) => !sentinel.fired).map((sentinel) => sentinel.id),
+          unrelated: all.filter((sentinel) => sentinel.unrelated).map((sentinel) => ({ id: sentinel.id, fired: sentinel.fired, ticks: sentinel.ticks, cancelled: Boolean(sentinel.cancelled) })),
+        };
+        stopSentinels();
+        return result;
+      },
+    };
+    window.__overlayTimerAudit = audit;
+    return true;
+  })()`;
+
+  // One overlay scenario, run inside the page: the overlay - on its own, or
+  // inside a host popover whose close disposes it - is brought to a phase,
+  // the audit is armed, and in the same task the overlay is closed or its
+  // host closed. What was pending then is followed for the rest of the
+  // transition. Phases: `frames` - the first of Vue's two enter frames has
+  // run and requested the second; `timeout` - both frames ran and the enter
+  // timeout is pending; `leaving` - the overlay itself was closed and its
+  // leave timeout is pending; `delay` - the tooltip's open delay is pending.
+  const overlayTimerScenario = (kind, via, phase) => `(async () => {
+    const audit = window.__overlayTimerAudit;
+    const T = 'vf-floating-transition';
+    const q = (selector) => document.querySelector(selector);
+    const byControls = (trigger) => () => (trigger() ? document.getElementById(trigger().getAttribute('aria-controls')) : null);
+    const hostTrigger = () => q(${JSON.stringify(
+      kind === 'dropdown'
+        ? '.vf-popover[aria-label="Outer"] > .vf-popover__trigger'
+        : '.tip-host-inside > .vf-popover__trigger',
+    )});
+    const drivers = {
+      dropdown: (inner) => {
+        const trigger = () => q(inner ? '.vf-dropdown[aria-label="Inner"] > .vf-dropdown__trigger' : '.vf-dropdown[aria-label="Default"] > .vf-dropdown__trigger');
+        return { open: () => trigger().click(), shut: () => trigger().click(), live: byControls(trigger) };
+      },
+      popover: (inner) => {
+        const trigger = () => q(inner ? '.tip-host-beside > .vf-popover__trigger' : '.vf-popover[aria-label="Default"] > .vf-popover__trigger');
+        return { open: () => trigger().click(), shut: () => trigger().click(), live: byControls(trigger) };
+      },
+      tooltip: (inner) => {
+        const root = () => q(inner ? '.vf-tooltip[aria-label="TipInside"]' : '.vf-tooltip[aria-label="TipDefault"]');
+        return {
+          open: () => root().dispatchEvent(new MouseEvent('mouseenter')),
+          shut: () => root().dispatchEvent(new MouseEvent('mouseleave')),
+          live: () => (root() ? document.getElementById(root().getAttribute('data-vf-razor-tooltip-id')) : null),
+        };
+      },
+    };
+    const via = ${JSON.stringify(via)};
+    const phase = ${JSON.stringify(phase)};
+    const overlay = drivers[${JSON.stringify(kind)}](via === 'dispose');
+
+    audit.begin();
+    if (via === 'dispose') {
+      hostTrigger().click();
+      await audit.wait(${OVERLAY_DURATION + 200});
+    }
+    overlay.open();
+    let reached = true;
+    if (phase === 'frames') {
+      reached = await audit.until(() => overlay.live()?.classList.contains(T + '-enter-from') && audit.nestedPending());
+    } else if (phase === 'timeout') {
+      reached = await audit.until(() => overlay.live()?.classList.contains(T + '-enter-to'));
+    } else if (phase === 'leaving') {
+      reached = await audit.until(() => overlay.live()?.classList.contains(T + '-enter-to'));
+      await audit.wait(${OVERLAY_DURATION + 100});
+      overlay.shut();
+      reached = reached && (await audit.until(() => overlay.live()?.classList.contains(T + '-leave-to')));
+    }
+
+    audit.arm();
+    const pending = audit.pending();
+    const element = overlay.live();
+    if (via === 'dispose') hostTrigger().click();
+    else overlay.shut();
+    const atAction = { connected: element ? element.isConnected : null, classes: element ? element.className : null };
+    await audit.wait(${2 * OVERLAY_DURATION + 500});
+    const result = audit.collect(pending);
+    return {
+      reached,
+      ...result,
+      atAction,
+      afterSettle: { connected: element ? element.isConnected : null, classes: element ? element.className : null },
+      hostOpen: via === 'dispose' ? hostTrigger().getAttribute('aria-expanded') : null,
+    };
+  })()`;
+
+  const overlayTimerScenarios = {
+    dropdown: [
+      ['close', 'frames'],
+      ['close', 'timeout'],
+      ['dispose', 'frames'],
+      ['dispose', 'timeout'],
+      ['dispose', 'leaving'],
+    ],
+    popover: [
+      ['close', 'frames'],
+      ['close', 'timeout'],
+      ['dispose', 'frames'],
+      ['dispose', 'timeout'],
+      ['dispose', 'leaving'],
+    ],
+    tooltip: [
+      ['close', 'delay'],
+      ['close', 'frames'],
+      ['close', 'timeout'],
+      ['dispose', 'delay'],
+      ['dispose', 'frames'],
+      ['dispose', 'timeout'],
+      ['dispose', 'leaving'],
+    ],
+  };
+  const overlayTimerTotals = {
+    scenarios: 0,
+    misuse: 0,
+    cancelledSentinels: 0,
+    untrackedFrames: 0,
+    untrackedTimeouts: 0,
+  };
+
+  for (const [kind, scenarios] of Object.entries(overlayTimerScenarios)) {
+    await withPage(chrome, server.origin, 'fixture-enhanced.html', async (page) => {
+      await page.waitFor(`Boolean(document.querySelector('[data-vf-razor-${kind}-enhanced]'))`);
+      await neutral(page);
+      // The disposal hosts: the dropdown's is the live Outer popover; the
+      // popover's and the tooltip's are the tooltip suite's held popover,
+      // holding the TipInside tooltip, or - for the popover - the TipBeside
+      // host popover in its place.
+      await page.evaluate(`(async () => {
+        const razor = await import('./vueforge-razor.js');
+        const mount = (node) => {
+          razor.enhanceVueForgePopovers(node, mount);
+          razor.enhanceVueForgeTooltips(node, mount);
+          razor.enhanceVueForgeDropdowns(node, mount);
+        };
+        const source = document.getElementById('tooltip-inside-source').content.cloneNode(true);
+        if (${JSON.stringify(kind)} === 'popover') {
+          const beside = document.getElementById('tooltip-beside-source').content.querySelector('.tip-host-beside').cloneNode(true);
+          source.querySelector('.tip-host-inside > template[data-vf-razor-popover="content"]').content.replaceChildren(beside);
+        }
+        const section = document.querySelector('[data-case="tooltip-in-popover"]');
+        section.append(source);
+        mount(section);
+        return true;
+      })()`);
+      await page.evaluate(installOverlayTimerAudit);
+
+      for (const [via, phase] of scenarios) {
+        const name = `${kind} ${via === 'close' ? 'closed' : 'disposed'} in phase ${phase}`;
+        const result = await page.evaluate(overlayTimerScenario(kind, via, phase));
+        const detail = JSON.stringify(result);
+        const wantFrames = phase === 'frames';
+        const nested = result.frames.filter((frame) => frame.nested);
+        const untrackedFrames = result.frames.filter(
+          (frame) => frame.ran || frame.cancelledBy !== 'cancelAnimationFrame',
+        );
+        const untrackedTimeouts = result.timeouts.filter(
+          (timeout) => timeout.ran || timeout.cancelledBy !== 'clearTimeout',
+        );
+        overlayTimerTotals.scenarios += 1;
+        overlayTimerTotals.misuse += result.misuse.length;
+        overlayTimerTotals.cancelledSentinels += result.cancelledSentinels.length;
+        overlayTimerTotals.untrackedFrames += untrackedFrames.length;
+        overlayTimerTotals.untrackedTimeouts += untrackedTimeouts.length;
+
+        check(
+          `M33.1 ${name}: the phase is reached with work pending`,
+          result.reached === true &&
+            (wantFrames ? nested.length >= 1 : result.timeouts.length >= 1) &&
+            (via === 'close' || result.hostOpen === 'false'),
+          detail,
+        );
+        check(
+          `M33.1 ${name}: no frame id reaches clearTimeout and no timeout id reaches cancelAnimationFrame`,
+          result.misuse.length === 0,
+          detail,
+        );
+        check(
+          `M33.1 ${name}: no sentinel sharing a number with the overlay's ids is cancelled, and every sentinel timeout fires`,
+          result.colliding >= 1 &&
+            result.cancelledSentinels.length === 0 &&
+            result.unfiredTimeoutSentinels.length === 0,
+          detail,
+        );
+        check(
+          `M33.1 ${name}: unrelated sentinel timer and frame survive the cleanup`,
+          result.unrelated.length === 2 &&
+            result.unrelated.every((sentinel) => !sentinel.cancelled && (sentinel.fired || sentinel.ticks > 0)),
+          detail,
+        );
+        check(
+          `M33.1 ${name}: every frame pending at the ${via} is cancelled with cancelAnimationFrame and never runs`,
+          untrackedFrames.length === 0,
+          detail,
+        );
+        check(
+          `M33.1 ${name}: every timeout pending at the ${via} is cancelled with clearTimeout and never runs`,
+          untrackedTimeouts.length === 0,
+          detail,
+        );
+        if (via === 'dispose' && result.atAction.connected !== null) {
+          check(
+            `M33.1 ${name}: disposal removes the overlay at once and nothing lands on it afterwards`,
+            result.atAction.connected === false && result.afterSettle.classes === result.atAction.classes,
+            detail,
+          );
+        } else if (via === 'close' && result.atAction.connected !== null) {
+          check(
+            `M33.1 ${name}: the close still leaves and removes the overlay`,
+            result.atAction.connected === true &&
+              result.atAction.classes.includes('vf-floating-transition-leave-') &&
+              result.afterSettle.connected === false,
+            detail,
+          );
+        }
+      }
+
+      check(
+        `M33.1 the ${kind} page produced no script errors`,
+        page.diagnostics.pageErrors.length === 0,
+        page.diagnostics.pageErrors.join('; '),
+      );
+    });
+  }
+  process.stdout.write(
+    `[razor-browser] overlay timer ids: ${overlayTimerTotals.scenarios} scenario(s); ${overlayTimerTotals.misuse} wrong-API cancellation(s), ${overlayTimerTotals.cancelledSentinels} sentinel(s) cancelled by a shared number, ${overlayTimerTotals.untrackedFrames} pending frame(s) and ${overlayTimerTotals.untrackedTimeouts} pending timeout(s) not cancelled with their own API.\n`,
+  );
 } finally {
   await chrome.close();
   await server.close();

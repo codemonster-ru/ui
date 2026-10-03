@@ -88,12 +88,13 @@ const DURATION = vfMotionDurationsMs.normal;
 
 // --------------------------------------------------------------- transition
 
-/** Vue's nextFrame: the callback runs in the frame after the next one. */
-function nextFrame(callback: () => void): number {
-  let id = requestAnimationFrame(() => {
-    id = requestAnimationFrame(callback);
-  });
-  return id;
+/** Vue's nextFrame: the callback runs in the frame after the next one. Both frames are recorded. */
+function nextFrame(menu: LiveMenu, callback: () => void): void {
+  menu.frames.push(
+    requestAnimationFrame(() => {
+      menu.frames.push(requestAnimationFrame(callback));
+    }),
+  );
 }
 
 /**
@@ -108,7 +109,12 @@ interface LiveMenu {
   element: HTMLElement;
   arrow: HTMLElement;
   transition: string[];
-  timers: number[];
+  // Animation frames and timeouts are two id spaces: a frame id handed to
+  // clearTimeout cancels whichever unrelated timer of the page happens to
+  // share the number, and a timeout id handed to cancelAnimationFrame
+  // whichever frame does. Kept apart since M33.1, as the select keeps them.
+  frames: number[];
+  timeouts: number[];
   phase: 'entering' | 'open' | 'leaving';
 }
 
@@ -284,27 +290,24 @@ function enhanceRoot(root: HTMLElement, enhanceContent: (node: ParentNode) => vo
   function enter(menu: LiveMenu): void {
     menu.phase = 'entering';
     setTransition(menu, menuClasses(), [`${TRANSITION}-enter-from`, `${TRANSITION}-enter-active`]);
-    menu.timers.push(
-      nextFrame(() => {
-        if (menu.phase !== 'entering') return;
-        setTransition(menu, menuClasses(), [`${TRANSITION}-enter-active`, `${TRANSITION}-enter-to`]);
-        menu.timers.push(
-          window.setTimeout(() => {
-            if (menu.phase !== 'entering') return;
-            menu.phase = 'open';
-            setTransition(menu, menuClasses(), []);
-          }, DURATION),
-        );
-      }),
-    );
+    nextFrame(menu, () => {
+      if (menu.phase !== 'entering') return;
+      setTransition(menu, menuClasses(), [`${TRANSITION}-enter-active`, `${TRANSITION}-enter-to`]);
+      menu.timeouts.push(
+        window.setTimeout(() => {
+          if (menu.phase !== 'entering') return;
+          menu.phase = 'open';
+          setTransition(menu, menuClasses(), []);
+        }, DURATION),
+      );
+    });
   }
 
   function clearTimers(menu: LiveMenu): void {
-    for (const id of menu.timers) {
-      cancelAnimationFrame(id);
-      clearTimeout(id);
-    }
-    menu.timers = [];
+    for (const id of menu.frames) cancelAnimationFrame(id);
+    for (const id of menu.timeouts) clearTimeout(id);
+    menu.frames = [];
+    menu.timeouts = [];
   }
 
   function leave(menu: LiveMenu): void {
@@ -314,19 +317,17 @@ function enhanceRoot(root: HTMLElement, enhanceContent: (node: ParentNode) => vo
     // Vue forces a reflow between the two classes.
     void document.body.offsetHeight;
     setTransition(menu, menuClasses(), [`${TRANSITION}-leave-from`, `${TRANSITION}-leave-active`]);
-    menu.timers.push(
-      nextFrame(() => {
-        // A reopen may already have removed this menu.
-        if (!menu.element.isConnected) return;
-        setTransition(menu, menuClasses(), [`${TRANSITION}-leave-active`, `${TRANSITION}-leave-to`]);
-        menu.timers.push(
-          window.setTimeout(() => {
-            clearTimers(menu);
-            menu.element.remove();
-          }, DURATION),
-        );
-      }),
-    );
+    nextFrame(menu, () => {
+      // A reopen may already have removed this menu.
+      if (!menu.element.isConnected) return;
+      setTransition(menu, menuClasses(), [`${TRANSITION}-leave-active`, `${TRANSITION}-leave-to`]);
+      menu.timeouts.push(
+        window.setTimeout(() => {
+          clearTimers(menu);
+          menu.element.remove();
+        }, DURATION),
+      );
+    });
   }
 
   function buildMenu(): LiveMenu {
@@ -337,7 +338,14 @@ function enhanceRoot(root: HTMLElement, enhanceContent: (node: ParentNode) => vo
     const arrowElement = document.createElement('span');
     arrowElement.setAttribute('aria-hidden', 'true');
     element.append(arrowElement, content.cloneNode(true));
-    const menu: LiveMenu = { element, arrow: arrowElement, transition: [], timers: [], phase: 'entering' };
+    const menu: LiveMenu = {
+      element,
+      arrow: arrowElement,
+      transition: [],
+      frames: [],
+      timeouts: [],
+      phase: 'entering',
+    };
     paint(menu);
     attachMenuListeners(element);
     return menu;
