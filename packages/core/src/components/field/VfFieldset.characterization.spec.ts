@@ -638,6 +638,63 @@ describe('VfFieldset characterization: the scoped default slot', () => {
   });
 });
 
+// ------------------------------------------------------------------ slot presence after mount
+
+describe('VfFieldset characterization: slot presence is read once per prop change', () => {
+  // The presence tests are computed values over props and useSlots(). A slots
+  // object is not reactive, so a parent that adds or removes a label, a
+  // description or an error *slot* - with the props unchanged - re-renders the
+  // fieldset without recomputing which parts it has. Measured, not assumed.
+  it('keeps the presence it computed at mount when a parent later adds the label and error slots', async () => {
+    const on = ref(false);
+    const Host = defineComponent({
+      render: () =>
+        h(
+          VfFieldset,
+          null,
+          on.value ? { label: () => 'Late', error: () => 'Late error', default: () => 'x' } : { default: () => 'x' },
+        ),
+    });
+    const wrapper = mount(Host);
+
+    on.value = true;
+    await nextTick();
+
+    expect(wrapper.find('legend').exists()).toBe(false);
+    expect(wrapper.find('.vf-fieldset__error').exists()).toBe(false);
+    expect(wrapper.get('fieldset').classes()).toEqual(['vf-fieldset']);
+  });
+
+  it('recomputes a part only when the prop it reads changes, not when an unrelated prop does', async () => {
+    const on = ref(false);
+    const invalid = ref(false);
+    const label = ref<string | undefined>(undefined);
+    const Host = defineComponent({
+      render: () =>
+        h(
+          VfFieldset,
+          { invalid: invalid.value, label: label.value },
+          on.value ? { label: () => 'Late', default: () => 'x' } : { default: () => 'x' },
+        ),
+    });
+    const wrapper = mount(Host);
+
+    on.value = true;
+    await nextTick();
+    expect(wrapper.find('legend').exists()).toBe(false);
+
+    invalid.value = true;
+    await nextTick();
+    expect(wrapper.find('legend').exists()).toBe(false);
+
+    // An empty label is no label by itself, but writing it is what makes the
+    // legend test run again - and this time it sees the slot.
+    label.value = '';
+    await nextTick();
+    expect(wrapper.get('legend').text()).toBe('Late');
+  });
+});
+
 // ------------------------------------------------------------------ against the group box
 
 describe('VfFieldset characterization: not a group box', () => {

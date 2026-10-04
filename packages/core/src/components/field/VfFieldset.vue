@@ -1,5 +1,11 @@
 <script setup lang="ts">
 import { computed, useSlots } from 'vue';
+import {
+  isFieldsetInvalid,
+  resolveFieldsetClasses,
+  resolveFieldsetDescribedBy,
+  resolveFieldsetPresence,
+} from '@codemonster-ru/vueforge-shared-core';
 import { useId } from '@/composables';
 import { cx } from '@/utils/classes';
 
@@ -18,22 +24,37 @@ const props = withDefaults(defineProps<VfFieldsetProps>(), {
 });
 
 const slots = useSlots();
+const noSlots = { hasLabelSlot: false, hasDescriptionSlot: false, hasErrorSlot: false };
 const descriptionId = useId({ prefix: 'vf-fieldset-description' });
 const errorId = useId({ prefix: 'vf-fieldset-error' });
 
-const hasLabel = computed(() => Boolean(props.label) || Boolean(slots.label));
-const hasDescription = computed(() => Boolean(props.description) || Boolean(slots.description));
-const hasError = computed(() => Boolean(props.error) || Boolean(slots.error));
-const isInvalid = computed(() => props.invalid || hasError.value);
-const describedBy = computed(() => {
-  const ids = [
-    hasDescription.value ? descriptionId.value : undefined,
-    hasError.value ? errorId.value : undefined,
-  ].filter((value): value is string => Boolean(value));
-
-  return ids.length > 0 ? ids.join(' ') : undefined;
-});
-const rootClasses = computed(() => cx('vf-fieldset', isInvalid.value && 'vf-fieldset--invalid'));
+// Each part is its own computed over the props it reads and useSlots(), as in
+// the reference: a slot a parent adds after mount is only seen once that
+// part's prop changes. The characterization suite pins it.
+const hasLabel = computed(
+  () => resolveFieldsetPresence({ ...noSlots, label: props.label, hasLabelSlot: Boolean(slots.label) }).label,
+);
+const hasDescription = computed(
+  () =>
+    resolveFieldsetPresence({
+      ...noSlots,
+      description: props.description,
+      hasDescriptionSlot: Boolean(slots.description),
+    }).description,
+);
+const hasError = computed(
+  () => resolveFieldsetPresence({ ...noSlots, error: props.error, hasErrorSlot: Boolean(slots.error) }).error,
+);
+const isInvalid = computed(() => isFieldsetInvalid({ invalid: props.invalid, hasError: hasError.value }));
+const describedBy = computed(() =>
+  resolveFieldsetDescribedBy({
+    descriptionId: descriptionId.value,
+    errorId: errorId.value,
+    hasDescription: hasDescription.value,
+    hasError: hasError.value,
+  }),
+);
+const rootClasses = computed(() => cx(...resolveFieldsetClasses(isInvalid.value)));
 </script>
 
 <template>

@@ -266,3 +266,17 @@ export {
   resolveNavMenuToggledExpandedValues,
 } from './nav-menu/state.js';
 export type { VfNavMenuExpandModeName, VfNavMenuItemLike, VfNavMenuVariantName } from './nav-menu/state.js';
+// VfFieldset. Its own rules, not VfField's: the two compute the same strings
+// independently in the reference, and sharing them would let either
+// component's evidence stand in for the other's. The ids stay in each adapter.
+export {
+  isFieldsetInvalid,
+  resolveFieldsetClasses,
+  resolveFieldsetDescribedBy,
+  resolveFieldsetPresence,
+} from './fieldset/state.js';
+export type { VfFieldsetPresence } from './fieldset/state.js';
+// VfTable. Classes and section presence only; VfDataTable writes the same
+// class vocabulary itself and does not consume these.
+export { resolveTableClasses, resolveTableSections } from './table/state.js';
+export type { VfTableAppearance, VfTableSections } from './table/state.js';

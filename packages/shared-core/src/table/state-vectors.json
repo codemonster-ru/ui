@@ -1,0 +1,279 @@
+{
+  "$comment": "Shared input/expected vectors for VfTable. The TypeScript rules in table/state.ts and the PHP mirror in packages/razor/src/Support/TableState.php both run this file. resolveTableClasses is exhaustive over the sixteen modifier combinations, so the fixed order is pinned for every subset. VfDataTable is not in this file: it writes the same class vocabulary itself and is not migrated.",
+  "resolveTableClasses": [
+    {
+      "columnDividers": false,
+      "compact": false,
+      "striped": false,
+      "stickyHeader": false,
+      "expected": ["vf-table"]
+    },
+    {
+      "columnDividers": false,
+      "compact": false,
+      "striped": false,
+      "stickyHeader": true,
+      "expected": ["vf-table", "vf-table--sticky-header"]
+    },
+    {
+      "columnDividers": false,
+      "compact": false,
+      "striped": true,
+      "stickyHeader": false,
+      "expected": ["vf-table", "vf-table--striped"]
+    },
+    {
+      "columnDividers": false,
+      "compact": false,
+      "striped": true,
+      "stickyHeader": true,
+      "expected": ["vf-table", "vf-table--striped", "vf-table--sticky-header"]
+    },
+    {
+      "columnDividers": false,
+      "compact": true,
+      "striped": false,
+      "stickyHeader": false,
+      "expected": ["vf-table", "vf-table--compact"]
+    },
+    {
+      "columnDividers": false,
+      "compact": true,
+      "striped": false,
+      "stickyHeader": true,
+      "expected": ["vf-table", "vf-table--compact", "vf-table--sticky-header"]
+    },
+    {
+      "columnDividers": false,
+      "compact": true,
+      "striped": true,
+      "stickyHeader": false,
+      "expected": ["vf-table", "vf-table--compact", "vf-table--striped"]
+    },
+    {
+      "columnDividers": false,
+      "compact": true,
+      "striped": true,
+      "stickyHeader": true,
+      "expected": ["vf-table", "vf-table--compact", "vf-table--striped", "vf-table--sticky-header"]
+    },
+    {
+      "columnDividers": true,
+      "compact": false,
+      "striped": false,
+      "stickyHeader": false,
+      "expected": ["vf-table", "vf-table--column-dividers"]
+    },
+    {
+      "columnDividers": true,
+      "compact": false,
+      "striped": false,
+      "stickyHeader": true,
+      "expected": ["vf-table", "vf-table--column-dividers", "vf-table--sticky-header"]
+    },
+    {
+      "columnDividers": true,
+      "compact": false,
+      "striped": true,
+      "stickyHeader": false,
+      "expected": ["vf-table", "vf-table--column-dividers", "vf-table--striped"]
+    },
+    {
+      "columnDividers": true,
+      "compact": false,
+      "striped": true,
+      "stickyHeader": true,
+      "expected": ["vf-table", "vf-table--column-dividers", "vf-table--striped", "vf-table--sticky-header"]
+    },
+    {
+      "columnDividers": true,
+      "compact": true,
+      "striped": false,
+      "stickyHeader": false,
+      "expected": ["vf-table", "vf-table--column-dividers", "vf-table--compact"]
+    },
+    {
+      "columnDividers": true,
+      "compact": true,
+      "striped": false,
+      "stickyHeader": true,
+      "expected": ["vf-table", "vf-table--column-dividers", "vf-table--compact", "vf-table--sticky-header"]
+    },
+    {
+      "columnDividers": true,
+      "compact": true,
+      "striped": true,
+      "stickyHeader": false,
+      "expected": ["vf-table", "vf-table--column-dividers", "vf-table--compact", "vf-table--striped"]
+    },
+    {
+      "columnDividers": true,
+      "compact": true,
+      "striped": true,
+      "stickyHeader": true,
+      "expected": [
+        "vf-table",
+        "vf-table--column-dividers",
+        "vf-table--compact",
+        "vf-table--striped",
+        "vf-table--sticky-header"
+      ]
+    }
+  ],
+  "resolveTableSections": [
+    {
+      "$why": "An empty table.",
+      "caption": null,
+      "hasCaptionSlot": false,
+      "hasHeaderSlot": false,
+      "hasDefaultSlot": false,
+      "hasFooterSlot": false,
+      "expected": {
+        "caption": false,
+        "head": false,
+        "body": false,
+        "foot": false
+      }
+    },
+    {
+      "$why": "A caption prop alone.",
+      "caption": "Members",
+      "hasCaptionSlot": false,
+      "hasHeaderSlot": false,
+      "hasDefaultSlot": false,
+      "hasFooterSlot": false,
+      "expected": {
+        "caption": true,
+        "head": false,
+        "body": false,
+        "foot": false
+      }
+    },
+    {
+      "$why": "An empty caption is none.",
+      "caption": "",
+      "hasCaptionSlot": false,
+      "hasHeaderSlot": false,
+      "hasDefaultSlot": false,
+      "hasFooterSlot": false,
+      "expected": {
+        "caption": false,
+        "head": false,
+        "body": false,
+        "foot": false
+      }
+    },
+    {
+      "$why": "The caption \"0\" is a caption, as JavaScript reads it.",
+      "caption": "0",
+      "hasCaptionSlot": false,
+      "hasHeaderSlot": false,
+      "hasDefaultSlot": false,
+      "hasFooterSlot": false,
+      "expected": {
+        "caption": true,
+        "head": false,
+        "body": false,
+        "foot": false
+      }
+    },
+    {
+      "$why": "A caption slot alone.",
+      "caption": null,
+      "hasCaptionSlot": true,
+      "hasHeaderSlot": false,
+      "hasDefaultSlot": false,
+      "hasFooterSlot": false,
+      "expected": {
+        "caption": true,
+        "head": false,
+        "body": false,
+        "foot": false
+      }
+    },
+    {
+      "$why": "A caption slot with an empty prop.",
+      "caption": "",
+      "hasCaptionSlot": true,
+      "hasHeaderSlot": false,
+      "hasDefaultSlot": false,
+      "hasFooterSlot": false,
+      "expected": {
+        "caption": true,
+        "head": false,
+        "body": false,
+        "foot": false
+      }
+    },
+    {
+      "$why": "The header slot opens thead alone.",
+      "caption": null,
+      "hasCaptionSlot": false,
+      "hasHeaderSlot": true,
+      "hasDefaultSlot": false,
+      "hasFooterSlot": false,
+      "expected": {
+        "caption": false,
+        "head": true,
+        "body": false,
+        "foot": false
+      }
+    },
+    {
+      "$why": "The default slot opens tbody alone.",
+      "caption": null,
+      "hasCaptionSlot": false,
+      "hasHeaderSlot": false,
+      "hasDefaultSlot": true,
+      "hasFooterSlot": false,
+      "expected": {
+        "caption": false,
+        "head": false,
+        "body": true,
+        "foot": false
+      }
+    },
+    {
+      "$why": "The footer slot opens tfoot alone.",
+      "caption": null,
+      "hasCaptionSlot": false,
+      "hasHeaderSlot": false,
+      "hasDefaultSlot": false,
+      "hasFooterSlot": true,
+      "expected": {
+        "caption": false,
+        "head": false,
+        "body": false,
+        "foot": true
+      }
+    },
+    {
+      "$why": "Head and foot without a body: the row groups are independent.",
+      "caption": null,
+      "hasCaptionSlot": false,
+      "hasHeaderSlot": true,
+      "hasDefaultSlot": false,
+      "hasFooterSlot": true,
+      "expected": {
+        "caption": false,
+        "head": true,
+        "body": false,
+        "foot": true
+      }
+    },
+    {
+      "$why": "Everything.",
+      "caption": "Members",
+      "hasCaptionSlot": true,
+      "hasHeaderSlot": true,
+      "hasDefaultSlot": true,
+      "hasFooterSlot": true,
+      "expected": {
+        "caption": true,
+        "head": true,
+        "body": true,
+        "foot": true
+      }
+    }
+  ]
+}

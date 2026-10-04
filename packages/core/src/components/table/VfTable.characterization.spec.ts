@@ -29,7 +29,7 @@ import { mount } from '@vue/test-utils';
 import { renderToString } from '@vue/server-renderer';
 import { readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
-import { createSSRApp, defineComponent, h } from 'vue';
+import { createSSRApp, defineComponent, h, nextTick, ref } from 'vue';
 import { describe, expect, it } from 'vitest';
 
 import VfTable from './VfTable.vue';
@@ -335,6 +335,33 @@ describe('VfTable characterization: section presence', () => {
     expect(wrapper.findAll('tbody > tr')).toHaveLength(2);
     expect(wrapper.findAll('thead > tr > th')).toHaveLength(2);
     expect(wrapper.get('tbody > tr').attributes()).toEqual({});
+  });
+  it('follows the slots a parent passes on every render, not only at mount', async () => {
+    // The section tests read $slots in the template, so they are evaluated on
+    // every render. A parent that swaps its slots re-renders the table with
+    // the new set of sections even though no prop changed.
+    const on = ref(false);
+    const Host = defineComponent({
+      render: () =>
+        h(
+          VfTable,
+          null,
+          on.value
+            ? { caption: () => 'Late', header: () => h('tr', [h('th', 'H')]) }
+            : { default: () => h('tr', [h('td', 'B')]) },
+        ),
+    });
+    const wrapper = mount(Host);
+    const sectionsOf = () =>
+      Array.from(wrapper.get('table').element.children).map((child) => child.tagName.toLowerCase());
+
+    expect(sectionsOf()).toEqual(['tbody']);
+    on.value = true;
+    await nextTick();
+    expect(sectionsOf()).toEqual(['caption', 'thead']);
+    on.value = false;
+    await nextTick();
+    expect(sectionsOf()).toEqual(['tbody']);
   });
 });
 

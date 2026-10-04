@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, useAttrs } from 'vue';
+import { computed, useAttrs, useSlots } from 'vue';
+import { resolveTableClasses, resolveTableSections } from '@codemonster-ru/vueforge-shared-core';
 import { cx } from '@/utils/classes';
 
 defineOptions({
@@ -23,35 +24,50 @@ const props = withDefaults(defineProps<VfTableProps>(), {
 });
 
 const attrs = useAttrs();
+const slots = useSlots();
 
 const classes = computed(() =>
   cx(
-    'vf-table',
-    props.columnDividers && 'vf-table--column-dividers',
-    props.compact && 'vf-table--compact',
-    props.striped && 'vf-table--striped',
-    props.stickyHeader && 'vf-table--sticky-header',
+    ...resolveTableClasses({
+      columnDividers: props.columnDividers,
+      compact: props.compact,
+      striped: props.striped,
+      stickyHeader: props.stickyHeader,
+    }),
   ),
 );
+
+// A function, not a computed: the reference reads $slots in the template, so a
+// slot a parent adds or removes after mount opens or closes its section on the
+// next render. A computed over useSlots() would cache the first answer.
+function sections() {
+  return resolveTableSections({
+    caption: props.caption,
+    hasCaptionSlot: Boolean(slots.caption),
+    hasHeaderSlot: Boolean(slots.header),
+    hasDefaultSlot: Boolean(slots.default),
+    hasFooterSlot: Boolean(slots.footer),
+  });
+}
 </script>
 
 <template>
   <div class="vf-table-wrap" v-bind="attrs">
     <div class="vf-table-scroll">
       <table :class="classes">
-        <caption v-if="props.caption || $slots.caption" class="vf-table__caption">
+        <caption v-if="sections().caption" class="vf-table__caption">
           <slot name="caption">{{ props.caption }}</slot>
         </caption>
 
-        <thead v-if="$slots.header" class="vf-table__head">
+        <thead v-if="sections().head" class="vf-table__head">
           <slot name="header" />
         </thead>
 
-        <tbody v-if="$slots.default" class="vf-table__body">
+        <tbody v-if="sections().body" class="vf-table__body">
           <slot />
         </tbody>
 
-        <tfoot v-if="$slots.footer" class="vf-table__foot">
+        <tfoot v-if="sections().foot" class="vf-table__foot">
           <slot name="footer" />
         </tfoot>
       </table>

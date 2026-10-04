@@ -1,0 +1,182 @@
+{
+  "$comment": "Shared input/expected vectors for VfFieldset. The TypeScript rules in fieldset/state.ts and the PHP mirror in packages/razor/src/Support/FieldsetState.php both run this file. Props are raw strings: \"\" and \"0\" are both present because JavaScript truthiness and PHP truthiness disagree about the second. VfField and VfGroupBox are not in this file and must not be added to it: one shared catalog would let either component satisfy the other's evidence.",
+  "resolveFieldsetPresence": [
+    {
+      "$why": "A bare fieldset: no legend, no paragraphs.",
+      "label": null,
+      "description": null,
+      "error": null,
+      "hasLabelSlot": false,
+      "hasDescriptionSlot": false,
+      "hasErrorSlot": false,
+      "expected": {
+        "label": false,
+        "description": false,
+        "error": false
+      }
+    },
+    {
+      "$why": "All three props.",
+      "label": "Plan",
+      "description": "Choose one.",
+      "error": "Required.",
+      "hasLabelSlot": false,
+      "hasDescriptionSlot": false,
+      "hasErrorSlot": false,
+      "expected": {
+        "label": true,
+        "description": true,
+        "error": true
+      }
+    },
+    {
+      "$why": "An empty string is none; a single space is a non-empty string and counts.",
+      "label": "",
+      "description": "",
+      "error": " ",
+      "hasLabelSlot": false,
+      "hasDescriptionSlot": false,
+      "hasErrorSlot": false,
+      "expected": {
+        "label": false,
+        "description": false,
+        "error": true
+      }
+    },
+    {
+      "$why": "The quirk PHP truthiness would break: \"0\" is present.",
+      "label": "0",
+      "description": "0",
+      "error": "0",
+      "hasLabelSlot": false,
+      "hasDescriptionSlot": false,
+      "hasErrorSlot": false,
+      "expected": {
+        "label": true,
+        "description": true,
+        "error": true
+      }
+    },
+    {
+      "$why": "Slots alone open every part.",
+      "label": null,
+      "description": null,
+      "error": null,
+      "hasLabelSlot": true,
+      "hasDescriptionSlot": true,
+      "hasErrorSlot": true,
+      "expected": {
+        "label": true,
+        "description": true,
+        "error": true
+      }
+    },
+    {
+      "$why": "A slot counts whatever the prop says.",
+      "label": "",
+      "description": "",
+      "error": "",
+      "hasLabelSlot": true,
+      "hasDescriptionSlot": true,
+      "hasErrorSlot": true,
+      "expected": {
+        "label": true,
+        "description": true,
+        "error": true
+      }
+    },
+    {
+      "$why": "Prop and slot are independent per part.",
+      "label": "Plan",
+      "description": null,
+      "error": null,
+      "hasLabelSlot": false,
+      "hasDescriptionSlot": true,
+      "hasErrorSlot": false,
+      "expected": {
+        "label": true,
+        "description": true,
+        "error": false
+      }
+    },
+    {
+      "$why": "An error slot without a prop.",
+      "label": null,
+      "description": "Hint",
+      "error": null,
+      "hasLabelSlot": false,
+      "hasDescriptionSlot": false,
+      "hasErrorSlot": true,
+      "expected": {
+        "label": false,
+        "description": true,
+        "error": true
+      }
+    }
+  ],
+  "isFieldsetInvalid": [
+    {
+      "invalid": false,
+      "hasError": false,
+      "expected": false
+    },
+    {
+      "invalid": true,
+      "hasError": false,
+      "expected": true
+    },
+    {
+      "invalid": false,
+      "hasError": true,
+      "expected": true,
+      "$why": "An error is invalid without the prop."
+    },
+    {
+      "invalid": true,
+      "hasError": true,
+      "expected": true
+    }
+  ],
+  "resolveFieldsetDescribedBy": [
+    {
+      "descriptionId": "d",
+      "errorId": "e",
+      "hasDescription": false,
+      "hasError": false,
+      "expected": null,
+      "$why": "Nothing to describe: no attribute at all (undefined in TypeScript, null in PHP and JSON)."
+    },
+    {
+      "descriptionId": "d",
+      "errorId": "e",
+      "hasDescription": true,
+      "hasError": false,
+      "expected": "d"
+    },
+    {
+      "descriptionId": "d",
+      "errorId": "e",
+      "hasDescription": false,
+      "hasError": true,
+      "expected": "e"
+    },
+    {
+      "descriptionId": "d",
+      "errorId": "e",
+      "hasDescription": true,
+      "hasError": true,
+      "expected": "d e",
+      "$why": "Description first, then error."
+    }
+  ],
+  "resolveFieldsetClasses": [
+    {
+      "invalid": false,
+      "expected": ["vf-fieldset"]
+    },
+    {
+      "invalid": true,
+      "expected": ["vf-fieldset", "vf-fieldset--invalid"]
+    }
+  ]
+}
