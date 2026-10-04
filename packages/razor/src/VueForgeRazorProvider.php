@@ -16,6 +16,7 @@ use Codemonster\VueForge\Razor\Components\CheckboxComponent;
 use Codemonster\VueForge\Razor\Components\DividerComponent;
 use Codemonster\VueForge\Razor\Components\DropdownComponent;
 use Codemonster\VueForge\Razor\Components\FieldComponent;
+use Codemonster\VueForge\Razor\Components\FieldsetComponent;
 use Codemonster\VueForge\Razor\Components\GroupBoxComponent;
 use Codemonster\VueForge\Razor\Components\IconButtonComponent;
 use Codemonster\VueForge\Razor\Components\InputComponent;
@@ -34,6 +35,7 @@ use Codemonster\VueForge\Razor\Components\SkeletonGateComponent;
 use Codemonster\VueForge\Razor\Components\StepperComponent;
 use Codemonster\VueForge\Razor\Components\TabsComponent;
 use Codemonster\VueForge\Razor\Components\SwitchComponent;
+use Codemonster\VueForge\Razor\Components\TableComponent;
 use Codemonster\VueForge\Razor\Components\TagComponent;
 use Codemonster\VueForge\Razor\Components\TextareaComponent;
 use Codemonster\VueForge\Razor\Components\TooltipComponent;
@@ -107,6 +109,11 @@ final class VueForgeRazorProvider implements ComponentProviderInterface
             // DropdownComponent.
             'dropdown' => new DropdownComponent(),
             'field' => new FieldComponent(),
+            // Server-complete: a native fieldset that owns no interaction, and
+            // the second migrated fieldset - registered beside vf-group-box and
+            // never through it. `disabled` stays a native attribute here. The
+            // Vue default slot's scope has no counterpart; see FieldsetComponent.
+            'fieldset' => new FieldsetComponent(),
             // The fourth component that owns a control - the disclosure
             // trigger, a ghost vf-button, only when collapsible; its browser
             // enhancement lives in browser/group-box.ts. See GroupBoxComponent.
@@ -158,6 +165,10 @@ final class VueForgeRazorProvider implements ComponentProviderInterface
             // StepperComponent.
             'stepper' => new StepperComponent(),
             'switch' => new SwitchComponent(),
+            // Server-complete: two wrappers and a native table, no controller and
+            // no id. VfDataTable writes the same class vocabulary and is not
+            // migrated; nothing is shared with it. See TableComponent.
+            'table' => new TableComponent(),
             // The third component that owns controls, and the first whose
             // controls carry an explicit interactive role - one native
             // button[role=tab] per item, two scroll buttons and at most one

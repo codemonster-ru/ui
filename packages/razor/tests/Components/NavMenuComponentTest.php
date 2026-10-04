@@ -407,6 +407,6 @@ final class NavMenuComponentTest extends TestCase
 
         self::assertInstanceOf(NavMenuComponent::class, $components['nav-menu']);
         self::assertNull((new \ReflectionClass(NavMenuComponent::class))->getConstructor());
-        self::assertCount(32, $components);
+        self::assertCount(34, $components);
     }
 }

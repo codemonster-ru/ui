@@ -386,6 +386,6 @@ final class SelectComponentTest extends TestCase
 
         self::assertInstanceOf(SelectComponent::class, $components['select']);
         self::assertNull((new \ReflectionClass(SelectComponent::class))->getConstructor());
-        self::assertCount(32, $components);
+        self::assertCount(34, $components);
     }
 }
