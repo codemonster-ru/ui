@@ -223,4 +223,17 @@ export const styleSources = [
   // leading and trailing glyphs are `.vf-icon`s, laid out by icon.css above.
   // No selector here overlaps another file's. Listed last.
   'packages/styles/src/components/nav-menu.css',
+  // VfFieldset, M34: the grid fieldset with its border and padding reset,
+  // the legend, the control wrapper and the description and error captions.
+  // A standalone closure that imports nothing, and a separate file from
+  // group-box.css - the other migrated fieldset - with which it shares no
+  // selector. Listed last.
+  'packages/styles/src/components/fieldset.css',
+  // VfTable, M34: the bordered wrapper, the scroll container, the table and
+  // its cells, the caption, the head and foot paints, the row separators and
+  // the four modifiers - sticky-header is position: sticky on the head cells,
+  // the whole of that feature. A standalone closure that imports nothing.
+  // VfDataTable imports the same file in core and is not in this artifact.
+  // Listed last.
+  'packages/styles/src/components/table.css',
 ];

@@ -352,6 +352,35 @@ describe('component entry CSS parity', () => {
     expect(source).not.toContain('.vf-menu ');
   });
 
+  it('forwards the fieldset and table entries to their canonical sources in packages/styles, which import nothing', () => {
+    // The M34 move. Both files are the historical stylesheets byte for byte;
+    // neither imports anything, so no relative path had to change.
+    for (const name of ['fieldset.css', 'table.css']) {
+      const canonical = resolveStyleEntrySource(resolve(entriesDir, name));
+      expect(canonical).toBe(resolve(stylesDir, `../../../styles/src/components/${name}`));
+      expect(readFileSync(canonical, 'utf8')).not.toMatch(/^@import/m);
+    }
+
+    // The sticky header is this rule and nothing else - no script, no inline
+    // style - and the scroll container owns the overflow it sticks within.
+    const table = readFileSync(resolveStyleEntrySource(resolve(entriesDir, 'table.css')), 'utf8');
+    expect(table).toContain('.vf-table--sticky-header thead th {\n  position: sticky;\n  top: 0;\n  z-index: 1;\n}');
+    expect(table).toContain('.vf-table-scroll {\n  width: 100%;\n  overflow-x: auto;\n}');
+  });
+
+  it('keeps the data table reading the canonical table stylesheet through the forwarding entry', () => {
+    // VfDataTable is not migrated. Its entry still imports ./table.css, which
+    // is now a forward, so its artifact composes the same rules in the same
+    // place; baseline:css compares the built file against the reference.
+    const dataTable = readFileSync(resolve(entriesDir, 'data-table.css'), 'utf8');
+    expect(dataTable.split('\n')[0]).toBe("@import './table.css';");
+
+    const composed = inlineCssImports(resolve(entriesDir, 'data-table.css'));
+    const table = readFileSync(resolveStyleEntrySource(resolve(entriesDir, 'table.css')), 'utf8').trim();
+    expect(composed.split(table).length - 1).toBe(1);
+    expect(composed.indexOf(table)).toBeLessThan(composed.indexOf('.vf-data-table-wrap {'));
+  });
+
   it('keeps the menu and the menu item in one closure with no descendant coupling', () => {
     // VfMenu and VfMenuItem are one milestone because they are one stylesheet,
     // not because either needs the other. No selector here joins them: every
