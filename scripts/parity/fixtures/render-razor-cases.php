@@ -122,6 +122,14 @@ if ($selectComponent === null) {
     fwrite(STDERR, "The VueForge vf-select component is not registered.\n");
     exit(1);
 }
+// The M34 pair. Resolved on their own accounts: the fieldset never through
+// vf-group-box, the table never through anything a data table would use.
+$fieldsetComponent = $registry->resolve('vf-fieldset');
+$tableComponent = $registry->resolve('vf-table');
+if ($fieldsetComponent === null || $tableComponent === null) {
+    fwrite(STDERR, "The VueForge vf-fieldset and vf-table components are not registered.\n");
+    exit(1);
+}
 $popoverComponent = $registry->resolve('vf-popover');
 if ($popoverComponent === null) {
     fwrite(STDERR, "The VueForge vf-popover component is not registered.\n");
@@ -1594,6 +1602,168 @@ $renderNavMenu = static function (array $case) use ($navMenuComponent, $escape):
     return $instance($case['props'] ?? [], isset($content['box']) ? (int) $content['box'] : null);
 };
 
+/**
+ * One VfFieldset slot's markup, built the same way the Vue fixture builds it.
+ * The controls are real consumer controls bound to nothing the fieldset
+ * offers: the Vue scope has no Razor counterpart, so no case uses it.
+ */
+$fieldsetSlotMarkup = static function (array $slot, string $caseId) use ($escape): string {
+    $markup = '';
+    $key = str_replace('/', '-', $caseId);
+
+    if (isset($slot['text']) && $slot['text'] !== '') {
+        $markup .= $escape((string) $slot['text']);
+    }
+    if (($slot['markup'] ?? null) === 'rich') {
+        $markup .= '<strong>Rich</strong> <em>content</em>';
+    }
+    if (($slot['controls'] ?? null) === 'input-and-button') {
+        $markup .= '<label for="' . $key . '-email">Email</label>'
+            . '<input id="' . $key . '-email" type="email" name="email">'
+            . '<button type="button">Verify</button>';
+    }
+    if (($slot['controls'] ?? null) === 'radios') {
+        foreach (['standard', 'express'] as $option) {
+            $markup .= '<label><input type="radio" name="' . $key . '-delivery" value="' . $option . '"> ' . $option . '</label>';
+        }
+    }
+
+    return $markup;
+};
+
+/**
+ * One vf-fieldset render from neutral props, attrs and slots. Its own closure,
+ * never the group box's: the two fieldsets are the pair this fixture must not
+ * let one stand in for the other.
+ */
+$renderFieldsetInstance = static function (array $props, array $attrs, array $content, string $caseId) use (
+    $fieldsetComponent,
+    $fieldsetSlotMarkup,
+): string {
+    $slots = [];
+    foreach (['label' => 'label', 'description' => 'description', 'error' => 'error', 'body' => 'default'] as $from => $to) {
+        if (!array_key_exists($from, $content)) {
+            continue;
+        }
+        $markup = $fieldsetSlotMarkup($content[$from], $caseId);
+        $slots[$to] = static fn (): RenderedHtml => RenderedHtml::fromTrustedString($markup);
+    }
+
+    return $fieldsetComponent->render(new ComponentRenderContext([...$props, ...$attrs], $slots))->value();
+};
+
+/** VfFieldset, for the fieldset catalog. */
+$renderFieldset = static function (array $case) use ($renderFieldsetInstance): string {
+    $caseId = (string) $case['id'];
+    $markup = '';
+
+    if (isset($case['group'])) {
+        foreach ($case['group'] as $member) {
+            $markup .= $renderFieldsetInstance([], $case['attrs'] ?? [], [
+                'label' => ['text' => $member['label']],
+                'description' => ['text' => $member['description']],
+                'error' => ['text' => $member['error']],
+            ], $caseId);
+        }
+    } else {
+        $markup .= $renderFieldsetInstance($case['props'] ?? [], $case['attrs'] ?? [], $case['content'] ?? [], $caseId);
+    }
+
+    $hint = $case['attrs']['aria-describedby'] ?? null;
+    if (is_string($hint) && str_starts_with($hint, 'fieldset-consumer-hint')) {
+        $markup .= '<p id="' . $hint . '" class="parity-hint">Shown on the invoice.</p>';
+    }
+
+    return $markup;
+};
+
+/** The member rows the Vue fixture renders, in the same order. */
+$tableMembers = [
+    ['Ada Lovelace', 'Owner', 'Active'],
+    ['Grace Hopper', 'Admin', 'Active'],
+    ['Linus Pauling', 'Editor', 'Invited'],
+    ['Mary Somerville', 'Viewer', 'Active'],
+    ['Alan Turing', 'Editor', 'Suspended'],
+    ['Rosalind Franklin', 'Viewer', 'Active'],
+    ['Emmy Noether', 'Admin', 'Invited'],
+    ['Carl Gauss', 'Viewer', 'Active'],
+];
+
+/** One VfTable slot's markup: rows: 0 renders nothing, and the slot is still handed over. */
+$tableSlotMarkup = static function (string $slot, array $spec) use ($escape, $tableMembers): string {
+    $markup = '';
+
+    if ($slot === 'caption') {
+        if (isset($spec['text']) && $spec['text'] !== '') {
+            $markup .= $escape((string) $spec['text']);
+        }
+        if (($spec['markup'] ?? null) === 'rich') {
+            $markup .= '<strong>Team</strong> members';
+        }
+        return $markup;
+    }
+
+    for ($index = 0; $index < (int) ($spec['rows'] ?? 0); $index++) {
+        if ($slot === 'header') {
+            $markup .= '<tr><th>Name</th><th>Role</th><th>Status</th></tr>';
+        }
+        if ($slot === 'body') {
+            $markup .= '<tr>' . implode('', array_map(
+                static fn (string $cell): string => '<td>' . $escape($cell) . '</td>',
+                $tableMembers[$index % count($tableMembers)],
+            )) . '</tr>';
+        }
+        if ($slot === 'footer') {
+            $markup .= '<tr><td colspan="3">Seats used: 8 of 10</td></tr>';
+        }
+    }
+    if ($slot === 'body' && ($spec['control'] ?? false) === true) {
+        $markup .= '<tr><td colspan="3"><button type="button">Invite member</button></td></tr>';
+    }
+
+    return $markup;
+};
+
+/**
+ * One vf-table render from neutral props, attrs and slots, through the PHP
+ * API: a slot the case does not declare is not handed over at all, which a
+ * template invocation cannot express for the default slot (plan section У.8).
+ */
+$renderTableInstance = static function (array $props, array $attrs, array $content) use ($tableComponent, $tableSlotMarkup): string {
+    $slots = [];
+    foreach (['caption' => 'caption', 'header' => 'header', 'body' => 'default', 'footer' => 'footer'] as $from => $to) {
+        if (!array_key_exists($from, $content)) {
+            continue;
+        }
+        $markup = $tableSlotMarkup($from, $content[$from]);
+        $slots[$to] = static fn (): RenderedHtml => RenderedHtml::fromTrustedString($markup);
+    }
+
+    return $tableComponent->render(new ComponentRenderContext([...$props, ...$attrs], $slots))->value();
+};
+
+/** VfTable, for the table catalog. A group member carries its own props, attrs and content. */
+$renderTable = static function (array $case) use ($renderTableInstance): string {
+    $markup = '';
+
+    if (isset($case['group'])) {
+        foreach ($case['group'] as $member) {
+            $attrs = $member['attrs'] ?? [];
+            $content = $member['content'] ?? [];
+            unset($member['attrs'], $member['content']);
+            $markup .= $renderTableInstance($member, $attrs, $content);
+        }
+    } else {
+        $markup .= $renderTableInstance($case['props'] ?? [], $case['attrs'] ?? [], $case['content'] ?? []);
+    }
+
+    if (($case['attrs']['aria-describedby'] ?? null) === 'table-consumer-hint') {
+        $markup .= '<p id="table-consumer-hint" class="parity-hint">Seats renew monthly.</p>';
+    }
+
+    return $markup;
+};
+
 $sections = '';
 
 foreach ($catalog['cases'] as $case) {
@@ -1601,6 +1771,10 @@ foreach ($catalog['cases'] as $case) {
 
     if ($component === 'tooltip') {
         $body = $renderTooltip($case);
+    } elseif ($component === 'fieldset') {
+        $body = $renderFieldset($case);
+    } elseif ($component === 'table') {
+        $body = $renderTable($case);
     } elseif ($component === 'select') {
         $body = $renderSelect($case);
     } elseif ($component === 'nav-menu') {

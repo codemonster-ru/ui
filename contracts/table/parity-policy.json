@@ -1,0 +1,115 @@
+{
+  "$comment": "Parity policy for the shared VfTable cases. Plain data: no DSL, no waiver engine. The table owns no interaction, no id and ships no browser controller; approvedDivergences is empty and no dimension below may be approved for it.",
+  "classifications": {
+    "exact": "Must match literally across every target. Structure, canonical classes, native attributes, visible text, accessible names, computed geometry and colour.",
+    "semantic": "Framework mechanics may differ; the observable meaning must not. How content is composed, how a renderer marks its own output.",
+    "framework-specific": "Historical behaviour of one adapter that the other is not required to reproduce. Narrow, named, and covered by its own test."
+  },
+  "notCompared": {
+    "$comment": "Recorded so a reviewer can see what is deliberately outside the comparison, without leaving dead dimensions that look like live protection. Nothing here is a waiver: the extractor never produces these differences in the first place.",
+    "attributeOrder": "Attributes are extracted into a sorted map, so serialisation order cannot produce a difference.",
+    "classOrder": "Canonical classes are extracted as a sorted list. Where a consumer class lands relative to the canonical ones is pinned by the characterization suite and by the Razor component tests, not here.",
+    "rendererMarkers": "Vue scope attributes (data-v-*) and the Razor ownership marker (data-vf-razor*) are dropped by scripts/parity/extract.mjs. Neither adapter writes one for this component.",
+    "generatedIdLiterals": "Generated ids differ between adapters by construction (v-n against r-n); the extractor rewrites every id to its document position and every reference through the same map, so the relationship graph is compared and the literal is not.",
+    "stickyScroll": "No case scrolls. The sticky header is the vf-table--sticky-header class plus a stylesheet rule; the class is compared as DOM, the rule reaches both targets from the same canonical stylesheet, and the scroll container's computed overflow and box are compared as geometry in a height-limited case."
+  },
+  "outsideTheCatalog": {
+    "$comment": "Behaviour that is part of the contract and deliberately not represented as a parity case, each with where it is covered instead.",
+    "templateDefaultSlot": "A Razor template invocation with any content declares the default slot, even when the content is only named slots, so a template cannot express a header with no body (plan section У.8). The fixture hands slots over through the PHP API, where absence is explicit; the engine behaviour is executed by TableComponentTest.",
+    "slotsAfterMount": "The Vue sections follow the slots a parent passes on every render. A server render has no after-mount; pinned by the characterization suite and the mutation table-sections-cached.",
+    "consumerClassOrder": "A consumer class is appended after vf-table-wrap. Class order is not a parity dimension (notCompared.classOrder); pinned by the characterization suite and TableComponentTest."
+  },
+  "dimensions": {
+    "dom.structure": {
+      "classification": "exact",
+      "description": "An unexpected element, a wrapper or a tag mismatch: the wrapper or the scroll container dropped, the wrapper as a section, the caption outside the table, a row group missing, extra, reordered or rendered as another row group. Never approvable; comparison continues through tag differences so attribute diagnostics remain visible."
+    },
+    "dom.canonicalClasses": {
+      "classification": "exact",
+      "description": "vf-table-wrap and consumer classes on the wrapper, vf-table-scroll, vf-table and its four modifiers on the table, and the caption and row group classes. A modifier on the wrapper, or a consumer class on the table, is a difference here."
+    },
+    "dom.nativeAttributes": {
+      "classification": "exact",
+      "description": "class, style, id, tabindex and any native attribute a consumer forwards - on the wrapper only. The scroll container and the table carry their class and nothing else."
+    },
+    "dom.text": {
+      "classification": "exact",
+      "description": "Visible text content of every element."
+    },
+    "dom.aria": {
+      "classification": "exact",
+      "description": "aria-* attributes and role. The table writes none of its own; a consumer role and aria-label land on the wrapper, never on the table."
+    },
+    "dom.productData": {
+      "classification": "exact",
+      "description": "data-* attributes that belong to the product rather than to a renderer."
+    },
+    "dom.relationships": {
+      "classification": "semantic",
+      "description": "A consumer aria-describedby on the wrapper, resolved to the hint it names. The table generates no id, so there is nothing of its own to cross-wire."
+    },
+    "style.geometry": {
+      "classification": "exact",
+      "description": "Computed box metrics of every measured role."
+    },
+    "style.colour": {
+      "classification": "exact",
+      "description": "Computed colour, background and border colour of every measured role."
+    },
+    "visual": {
+      "classification": "exact",
+      "description": "Rendered screenshot of the case, per theme."
+    },
+    "a11y.role": {
+      "classification": "exact",
+      "description": "The role each measured node exposes: the table, its caption and row groups as Chrome exposes them, and a consumer role on the wrapper."
+    },
+    "a11y.name": {
+      "classification": "exact",
+      "description": "The accessible name: the table named by its caption, and the wrapper by a consumer aria-label."
+    },
+    "a11y.states": {
+      "classification": "exact",
+      "description": "Accessibility states exposed by each measured node, including the disabled state Chrome derives for controls inside a disabled fieldset."
+    },
+    "static.noInteraction": {
+      "classification": "exact",
+      "description": "The recorded fact that the component declares no interaction to drive, and that the harness measured this rather than skipping the stage. Consumer-provided controls are counted against the number each case declares; the component-owned count is required to be zero."
+    }
+  },
+  "historicalQuirks": [
+    {
+      "id": "attributes-land-on-the-wrapper",
+      "description": "inheritAttrs is false and the attributes are bound onto div.vf-table-wrap, so a consumer aria-label names a div and the table keeps only its class list.",
+      "classification": "exact",
+      "reason": "Moving them to the table would be the charitable reading and changes what every stylesheet and test selects.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/table/cases.json#table/consumer-aria"
+    },
+    {
+      "id": "row-groups-are-keyed-on-slot-presence",
+      "description": "thead, tbody and tfoot open for the presence of their slot, not for what it renders, so an empty slot is an empty row group.",
+      "classification": "exact",
+      "reason": "Keying them on content is the obvious tidy-up and a different DOM.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/table/cases.json#table/empty-sections"
+    },
+    {
+      "id": "the-caption-slot-falls-back-to-the-prop",
+      "description": "The caption opens for a truthy prop or a caption slot; the slot replaces the prop and, when it renders nothing, shows the prop text.",
+      "classification": "exact",
+      "reason": "Letting the prop win, or dropping the fallback, are both plausible ports.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/table/cases.json#table/caption-slot-empty-fallback"
+    },
+    {
+      "id": "modifiers-are-table-classes-in-a-fixed-order",
+      "description": "column-dividers, compact, striped, sticky-header, on the table, whatever order the props are written in.",
+      "classification": "exact",
+      "reason": "The class set is compared here; the order is pinned by the characterization suite and the shared vectors.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/table/cases.json#table/all-modifiers"
+    }
+  ],
+  "approvedDivergences": []
+}

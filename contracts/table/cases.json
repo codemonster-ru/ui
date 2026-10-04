@@ -1,0 +1,485 @@
+{
+  "$comment": "Shared VfTable cases. Plain data only. The vocabulary is the historical Vue contract at fd793696f50d3be0fcd3788f0f8f751c63869963. The table owns no interaction and no id: every case is static. A row group is opened by the presence of its slot, so the catalog spells presence explicitly - a slot with rows: 0 is present and renders nothing, an absent key is no slot at all - and the Razor fixture hands slots over through the PHP API, where absence is explicit, never through a template invocation, where any content declares the default slot (plan section У.8). Cases whose content or attributes add a focusable element declare consumerInteractive. VfDataTable has no cases here.",
+  "component": "table",
+  "propVocabulary": {
+    "caption": "string, default undefined. Opens the caption by JavaScript truthiness.",
+    "columnDividers": "boolean, default false.",
+    "compact": "boolean, default false.",
+    "striped": "boolean, default false.",
+    "stickyHeader": "boolean, default false. A class only; the stylesheet does the rest."
+  },
+  "slotVocabulary": {
+    "caption": "text or markup rich; replaces the prop and counts by presence.",
+    "header": "rows: the number of header rows (0 renders nothing).",
+    "body": "The default slot. rows: the number of member rows (0 renders nothing); control: true adds a row with a consumer button.",
+    "footer": "rows: the number of footer rows (0 renders nothing)."
+  },
+  "cases": [
+    {
+      "id": "table/minimal",
+      "title": "An empty table: two wrappers, a classed table, no caption and no row group",
+      "props": {},
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "table/body-only",
+      "title": "The default slot alone opens tbody",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "body": {
+          "rows": 3
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "table/head-only",
+      "title": "The header slot alone opens thead",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "header": {
+          "rows": 1
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "table/foot-only",
+      "title": "The footer slot alone opens tfoot",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "footer": {
+          "rows": 1
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "table/head-body",
+      "title": "Head and body without a foot",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "header": {
+          "rows": 1
+        },
+        "body": {
+          "rows": 3
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "table/body-foot",
+      "title": "Body and foot without a head",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "body": {
+          "rows": 3
+        },
+        "footer": {
+          "rows": 1
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "table/head-foot",
+      "title": "Head and foot without a body: the row groups are independent, and no tbody appears",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "header": {
+          "rows": 1
+        },
+        "footer": {
+          "rows": 1
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "table/full",
+      "title": "Caption, head, body and foot in their fixed order",
+      "props": {
+        "caption": "Team members"
+      },
+      "attrs": {},
+      "content": {
+        "header": {
+          "rows": 1
+        },
+        "body": {
+          "rows": 3
+        },
+        "footer": {
+          "rows": 1
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "table/empty-sections",
+      "title": "Three slots that render nothing: three empty row groups, keyed on presence",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "header": {
+          "rows": 0
+        },
+        "body": {
+          "rows": 0
+        },
+        "footer": {
+          "rows": 0
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "table/caption",
+      "title": "A caption prop: the first child of the table",
+      "props": {
+        "caption": "Team members"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "rows": 3
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "table/caption-empty",
+      "title": "An empty caption is none",
+      "props": {
+        "caption": ""
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "rows": 1
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "table/caption-zero",
+      "title": "The caption \"0\" is a caption, as JavaScript reads it",
+      "props": {
+        "caption": "0"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "rows": 1
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "table/caption-slot",
+      "title": "A caption slot alone, with rich content",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "caption": {
+          "markup": "rich"
+        },
+        "body": {
+          "rows": 1
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "table/caption-slot-over-prop",
+      "title": "A caption slot replaces the caption prop",
+      "props": {
+        "caption": "Prop caption"
+      },
+      "attrs": {},
+      "content": {
+        "caption": {
+          "text": "Slot caption"
+        },
+        "body": {
+          "rows": 1
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "table/caption-slot-empty-fallback",
+      "title": "A caption slot that renders nothing falls back to the prop text",
+      "props": {
+        "caption": "Fallback caption"
+      },
+      "attrs": {},
+      "content": {
+        "caption": {
+          "text": ""
+        },
+        "body": {
+          "rows": 1
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "table/caption-slot-empty-alone",
+      "title": "A caption slot that renders nothing with no prop: an empty caption",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "caption": {
+          "text": ""
+        },
+        "body": {
+          "rows": 1
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "table/column-dividers",
+      "title": "columnDividers: a table class, not a wrapper class",
+      "props": {
+        "columnDividers": true
+      },
+      "attrs": {},
+      "content": {
+        "header": {
+          "rows": 1
+        },
+        "body": {
+          "rows": 3
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "table/compact",
+      "title": "compact: the tighter cell padding",
+      "props": {
+        "compact": true
+      },
+      "attrs": {},
+      "content": {
+        "header": {
+          "rows": 1
+        },
+        "body": {
+          "rows": 3
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "table/striped",
+      "title": "striped: every even body row painted",
+      "props": {
+        "striped": true
+      },
+      "attrs": {},
+      "content": {
+        "header": {
+          "rows": 1
+        },
+        "body": {
+          "rows": 4
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "table/sticky-header",
+      "title": "stickyHeader: a class and a stylesheet rule, inside a height-limited wrapper whose scroll container scrolls",
+      "props": {
+        "stickyHeader": true,
+        "caption": "Activity"
+      },
+      "attrs": {
+        "style": "max-height: 12rem"
+      },
+      "content": {
+        "header": {
+          "rows": 1
+        },
+        "body": {
+          "rows": 8
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "table/all-modifiers",
+      "title": "All four modifiers in their fixed order",
+      "props": {
+        "stickyHeader": true,
+        "striped": true,
+        "compact": true,
+        "columnDividers": true
+      },
+      "attrs": {},
+      "content": {
+        "header": {
+          "rows": 1
+        },
+        "body": {
+          "rows": 4
+        },
+        "footer": {
+          "rows": 1
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "table/dividers-and-striped",
+      "title": "Two non-adjacent modifiers without the ones in between",
+      "props": {
+        "columnDividers": true,
+        "striped": true
+      },
+      "attrs": {},
+      "content": {
+        "header": {
+          "rows": 1
+        },
+        "body": {
+          "rows": 4
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "table/consumer-attrs",
+      "title": "Consumer class, style, id and data attributes land on the wrapper and never on the table",
+      "props": {
+        "striped": true
+      },
+      "attrs": {
+        "class": "consumer-table",
+        "style": "max-width: 32rem",
+        "id": "members-table",
+        "data-testid": "table"
+      },
+      "content": {
+        "header": {
+          "rows": 1
+        },
+        "body": {
+          "rows": 3
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "table/consumer-aria",
+      "title": "A consumer role, accessible name and tabindex land on the wrapper: the wrapper is named and focusable, the table is not",
+      "props": {
+        "caption": "Team members"
+      },
+      "attrs": {
+        "role": "region",
+        "aria-label": "Members region",
+        "tabindex": "0"
+      },
+      "content": {
+        "header": {
+          "rows": 1
+        },
+        "body": {
+          "rows": 2
+        }
+      },
+      "consumerInteractive": 1,
+      "visual": false
+    },
+    {
+      "id": "table/consumer-describedby",
+      "title": "A consumer aria-describedby lands on the wrapper and resolves to its target",
+      "props": {},
+      "attrs": {
+        "aria-describedby": "table-consumer-hint"
+      },
+      "content": {
+        "body": {
+          "rows": 1
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "table/body-control",
+      "title": "Consumer controls inside a body cell are the consumer's; the table owns none",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "header": {
+          "rows": 1
+        },
+        "body": {
+          "rows": 2,
+          "control": true
+        }
+      },
+      "consumerInteractive": 1,
+      "visual": false
+    },
+    {
+      "id": "table/two-instances",
+      "title": "Two tables side by side: attributes, modifiers and sections do not leak",
+      "props": {},
+      "attrs": {},
+      "group": [
+        {
+          "caption": "First",
+          "striped": true,
+          "attrs": {
+            "class": "first-table",
+            "data-testid": "first"
+          },
+          "content": {
+            "body": {
+              "rows": 2
+            }
+          }
+        },
+        {
+          "compact": true,
+          "attrs": {
+            "id": "second-table"
+          },
+          "content": {
+            "header": {
+              "rows": 1
+            }
+          }
+        }
+      ],
+      "visual": false
+    },
+    {
+      "id": "table/hostile-caption",
+      "title": "Caption text is escaped",
+      "props": {
+        "caption": "<i>Members</i> & \"guests\""
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "rows": 1
+        }
+      },
+      "visual": false
+    }
+  ]
+}

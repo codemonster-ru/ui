@@ -1,0 +1,122 @@
+{
+  "$comment": "Parity policy for the shared VfFieldset cases. Plain data: no DSL, no waiver engine. The fieldset owns no interaction and ships no browser controller; approvedDivergences is empty and no dimension below may be approved for it. The Vue default slot's scope is the one part of the public contract with no Razor counterpart, and it is recorded under outsideTheCatalog with where it is covered, not approved.",
+  "classifications": {
+    "exact": "Must match literally across every target. Structure, canonical classes, native attributes, visible text, accessible names, computed geometry and colour.",
+    "semantic": "Framework mechanics may differ; the observable meaning must not. How content is composed, how a renderer marks its own output.",
+    "framework-specific": "Historical behaviour of one adapter that the other is not required to reproduce. Narrow, named, and covered by its own test."
+  },
+  "notCompared": {
+    "$comment": "Recorded so a reviewer can see what is deliberately outside the comparison, without leaving dead dimensions that look like live protection. Nothing here is a waiver: the extractor never produces these differences in the first place.",
+    "attributeOrder": "Attributes are extracted into a sorted map, so serialisation order cannot produce a difference.",
+    "classOrder": "Canonical classes are extracted as a sorted list. Where a consumer class lands relative to the canonical ones is pinned by the characterization suite and by the Razor component tests, not here.",
+    "rendererMarkers": "Vue scope attributes (data-v-*) and the Razor ownership marker (data-vf-razor*) are dropped by scripts/parity/extract.mjs. Neither adapter writes one for this component.",
+    "generatedIdLiterals": "Generated ids differ between adapters by construction (v-n against r-n); the extractor rewrites every id to its document position and every reference through the same map, so the relationship graph is compared and the literal is not."
+  },
+  "outsideTheCatalog": {
+    "$comment": "Behaviour that is part of the contract and deliberately not represented as a parity case, each with where it is covered instead.",
+    "scopedDefaultSlot": "The Vue default slot is scoped with describedBy (the fieldset's computed aria-describedby) and invalid (invalid || hasError). A Razor slot is a pre-rendered closure with no scope, so the Razor adapter offers no counterpart and writes nothing onto consumer markup - the static slot policy of VfGroupBox (collapsed) and VfPopover (open/close). No case binds the scope. Pinned by VfFieldset.characterization.spec.ts (exact keys, values, the computed value surviving a consumer override, reactivity) and by the absence assertions in FieldsetComponentTest.",
+    "slotPresenceAfterMount": "The Vue presence tests are computed values over props and useSlots(), so a slot a parent adds after mount is only seen once that part's prop changes. A server render has no after-mount; pinned by the characterization suite and the mutation fieldset-presence-read-every-render.",
+    "consumerClassOrder": "A consumer class is appended after vf-fieldset and its modifier. Class order is not a parity dimension (notCompared.classOrder); pinned by the characterization suite and FieldsetComponentTest."
+  },
+  "dimensions": {
+    "dom.structure": {
+      "classification": "exact",
+      "description": "An unexpected element, a wrapper or a tag mismatch: the fieldset rendered as a div with role=group, the legend as a div, a title span in the legend, the control wrapper dropped, a paragraph missing, duplicated or moved before the control. Never approvable; comparison continues through tag differences so attribute diagnostics remain visible."
+    },
+    "dom.canonicalClasses": {
+      "classification": "exact",
+      "description": "vf-fieldset, its invalid modifier, the legend, control, description and error classes, and consumer classes on the fieldset. A group box class on the fieldset is a difference here."
+    },
+    "dom.nativeAttributes": {
+      "classification": "exact",
+      "description": "disabled, form and name on the fieldset as native attributes, plus class, style and any native attribute a consumer forwards. None of them on the legend, the control wrapper or the paragraphs."
+    },
+    "dom.text": {
+      "classification": "exact",
+      "description": "Visible text content of every element."
+    },
+    "dom.aria": {
+      "classification": "exact",
+      "description": "aria-* attributes and role. The fieldset writes none of its own beyond aria-describedby (compared as a relationship): no aria-invalid, no aria-labelledby, no role, and the error paragraph no role and no live region. Consumer role, aria-invalid and aria-label pass through to the fieldset."
+    },
+    "dom.productData": {
+      "classification": "exact",
+      "description": "data-* attributes that belong to the product rather than to a renderer."
+    },
+    "dom.relationships": {
+      "classification": "semantic",
+      "description": "The id graph: the fieldset's aria-describedby naming the description and then the error paragraph, as document-order tokens; a consumer aria-describedby replacing it and resolving to the consumer's hint; two instances each naming only their own paragraphs."
+    },
+    "style.geometry": {
+      "classification": "exact",
+      "description": "Computed box metrics of every measured role."
+    },
+    "style.colour": {
+      "classification": "exact",
+      "description": "Computed colour, background and border colour of every measured role."
+    },
+    "visual": {
+      "classification": "exact",
+      "description": "Rendered screenshot of the case, per theme."
+    },
+    "a11y.role": {
+      "classification": "exact",
+      "description": "The role each measured node exposes: the fieldset a group, the legend, the paragraphs, a consumer role on the fieldset."
+    },
+    "a11y.name": {
+      "classification": "exact",
+      "description": "The accessible name: the fieldset named by its legend - or by a consumer aria-label - and unnamed without either."
+    },
+    "a11y.states": {
+      "classification": "exact",
+      "description": "Accessibility states exposed by each measured node, including the disabled state Chrome derives for controls inside a disabled fieldset."
+    },
+    "static.noInteraction": {
+      "classification": "exact",
+      "description": "The recorded fact that the component declares no interaction to drive, and that the harness measured this rather than skipping the stage. Consumer-provided controls are counted against the number each case declares; the component-owned count is required to be zero."
+    }
+  },
+  "historicalQuirks": [
+    {
+      "id": "attributes-fall-through-and-a-consumer-describedby-wins",
+      "description": "inheritAttrs is not disabled: every attribute reaches the fieldset after the component's own, so a consumer aria-describedby replaces the computed one.",
+      "classification": "exact",
+      "reason": "Keeping both, or letting the computed value win, would be the charitable reading and is a different DOM.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/fieldset/cases.json#fieldset/consumer-describedby"
+    },
+    {
+      "id": "disabled-form-and-name-are-native",
+      "description": "disabled, form and name are not props: they stay native fieldset attributes, so the browser disables every nested control.",
+      "classification": "exact",
+      "reason": "VfGroupBox, the other migrated fieldset, consumes disabled and never forwards it; copying that here would remove native disabling.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/fieldset/cases.json#fieldset/disabled"
+    },
+    {
+      "id": "presence-is-javascript-truthiness-and-slot-presence",
+      "description": "\"\" is no label, description or error, \"0\" is one, and a slot counts by its presence - a slot that renders nothing shows the prop text.",
+      "classification": "exact",
+      "reason": "PHP truthiness drops \"0\"; the shared vectors and the zero cases exist to catch that port.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/fieldset/cases.json#fieldset/label-zero"
+    },
+    {
+      "id": "invalid-is-a-class-and-nothing-else",
+      "description": "invalid || hasError adds vf-fieldset--invalid and nothing else: no aria-invalid anywhere, no role or live region on the error.",
+      "classification": "exact",
+      "reason": "Announcing the invalid state would be adding what the reference leaves to the consumer's controls.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/fieldset/cases.json#fieldset/invalid"
+    },
+    {
+      "id": "description-and-error-follow-the-control",
+      "description": "The paragraphs come after div.vf-fieldset__control, description first, and the fieldset names them in that order.",
+      "classification": "exact",
+      "reason": "A form layout would put the description under the legend; the reference does not.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/fieldset/cases.json#fieldset/description-and-error"
+    }
+  ],
+  "approvedDivergences": []
+}

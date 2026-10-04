@@ -1623,6 +1623,99 @@ export const profiles = {
     },
     liveParity: true,
   },
+  // VfFieldset (M34): the second migrated fieldset, static. The legend, the
+  // control wrapper and the two paragraphs are measured; the fieldset is a group
+  // named by its legend and described through its own aria-describedby, which
+  // the extractor compares as a relationship graph. No controlOwnership: a
+  // fieldset owns no control, and a consumer control in its body is counted
+  // against the case's consumerInteractive by the static snapshot.
+  fieldset: {
+    id: 'fieldset',
+    label: 'VfFieldset',
+    component: 'fieldset',
+    casesPath: 'contracts/fieldset/cases.json',
+    policyPath: 'contracts/fieldset/parity-policy.json',
+    artifactDirectory: 'parity-fieldset',
+    reportName: 'fieldset-parity-report.json',
+    measuredRoles: {
+      root: '.vf-fieldset',
+      legend: '.vf-fieldset__legend',
+      control: '.vf-fieldset__control',
+      description: '.vf-fieldset__description',
+      error: '.vf-fieldset__error',
+    },
+    // The fieldset for its role and the name its legend gives it; the legend
+    // and the paragraphs for what Chrome exposes of them. The first consumer
+    // input for the disabled state a disabled fieldset hands down natively.
+    accessibilityRoles: {
+      root: '.vf-fieldset',
+      legend: '.vf-fieldset__legend',
+      description: '.vf-fieldset__description',
+      error: '.vf-fieldset__error',
+      nestedControl: '.vf-fieldset__control input',
+    },
+    // disabled, form and name are the native attributes the fieldset keeps;
+    // aria-invalid, aria-live and aria-labelledby are listed because their
+    // absence is the contract - the reference writes none of them.
+    semanticAttributes: [
+      'class',
+      'style',
+      'id',
+      'name',
+      'form',
+      'disabled',
+      'role',
+      'aria-describedby',
+      'aria-labelledby',
+      'aria-invalid',
+      'aria-live',
+      'aria-label',
+      'data-testid',
+    ],
+    snapshot: 'static',
+    staticOwnership: true,
+  },
+  // VfTable (M34): static, no id, no controller. The wrapper is measured as
+  // the root - never under the role name 'wrapper', which the comparator
+  // reserves for optional input wrappers - beside the scroll container, the
+  // table and each optional child, so a wrapper/table swap of attributes or
+  // modifiers is a difference on the node it landed on.
+  table: {
+    id: 'table',
+    label: 'VfTable',
+    component: 'table',
+    casesPath: 'contracts/table/cases.json',
+    policyPath: 'contracts/table/parity-policy.json',
+    artifactDirectory: 'parity-table',
+    reportName: 'table-parity-report.json',
+    measuredRoles: {
+      root: '.vf-table-wrap',
+      scroll: '.vf-table-scroll',
+      table: 'table.vf-table',
+      caption: '.vf-table__caption',
+      head: '.vf-table__head',
+      body: '.vf-table__body',
+      foot: '.vf-table__foot',
+      headCell: '.vf-table__head th',
+      bodyCell: '.vf-table__body td',
+    },
+    // The wrapper for a consumer role and name, which it carries instead of
+    // the table; the table for the name its caption gives it; the caption and
+    // the row groups for whatever Chrome exposes of them.
+    accessibilityRoles: {
+      root: '.vf-table-wrap',
+      scroll: '.vf-table-scroll',
+      table: 'table.vf-table',
+      caption: '.vf-table__caption',
+      head: '.vf-table__head',
+      body: '.vf-table__body',
+      foot: '.vf-table__foot',
+      headCell: '.vf-table__head th',
+    },
+    semanticAttributes: ['class', 'style', 'id', 'role', 'tabindex', 'aria-label', 'aria-describedby', 'data-testid'],
+    snapshot: 'static',
+    staticOwnership: true,
+  },
 };
 
 export function loadProfile(id) {

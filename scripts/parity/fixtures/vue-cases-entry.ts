@@ -39,6 +39,8 @@ import VfPopover from '@parity/core/components/popover/VfPopover.vue';
 import VfTooltip from '@parity/core/components/tooltip/VfTooltip.vue';
 import VfSelect from '@parity/core/components/select/VfSelect.vue';
 import VfNavMenu from '@parity/core/components/nav-menu/VfNavMenu.vue';
+import VfFieldset from '@parity/core/components/field/VfFieldset.vue';
+import VfTable from '@parity/core/components/table/VfTable.vue';
 import { VueIconify } from '@codemonster-ru/vueforge-icons';
 import '@parity/core/styles/components.css';
 import cases from '@parity/cases.json';
@@ -1940,6 +1942,179 @@ function renderGroupBox(parityCase: ParityCase): VNode[] {
   return [renderGroupBoxInstance(parityCase.id, parityCase.id, parityCase.props, parityCase.attrs, content)];
 }
 
+/**
+ * One VfFieldset slot, as the shared catalog spells it. `markup: 'rich'` is a
+ * strong and an em; an empty `text` is a slot that renders nothing.
+ */
+interface FieldsetSlot {
+  text?: string;
+  markup?: 'rich';
+  controls?: 'input-and-button' | 'radios';
+}
+
+function fieldsetSlotChildren(slot: FieldsetSlot, caseId: string): unknown[] {
+  const nodes: unknown[] = [];
+  const key = caseId.replace(/\//g, '-');
+
+  if (slot.text !== undefined && slot.text !== '') nodes.push(slot.text);
+  if (slot.markup === 'rich') nodes.push(h('strong', 'Rich'), ' ', h('em', 'content'));
+  // Real consumer controls, bound to nothing the fieldset offers: the scoped
+  // slot has no Razor counterpart, so no case uses it.
+  if (slot.controls === 'input-and-button') {
+    nodes.push(
+      h('label', { for: `${key}-email` }, 'Email'),
+      h('input', { id: `${key}-email`, type: 'email', name: 'email' }),
+      h('button', { type: 'button' }, 'Verify'),
+    );
+  }
+  if (slot.controls === 'radios') {
+    for (const option of ['standard', 'express']) {
+      nodes.push(h('label', [h('input', { type: 'radio', name: `${key}-delivery`, value: option }), ` ${option}`]));
+    }
+  }
+
+  return nodes;
+}
+
+function renderFieldsetInstance(
+  caseId: string,
+  props: Record<string, unknown>,
+  attrs: Record<string, unknown>,
+  content: Record<string, FieldsetSlot>,
+): VNode {
+  const slots: Record<string, () => unknown> = {};
+  for (const [from, to] of [
+    ['label', 'label'],
+    ['description', 'description'],
+    ['error', 'error'],
+    ['body', 'default'],
+  ] as const) {
+    if (content[from] !== undefined) slots[to] = () => fieldsetSlotChildren(content[from]!, caseId);
+  }
+
+  return h(VfFieldset, { ...props, ...attrs }, slots);
+}
+
+/**
+ * VfFieldset, for the fieldset catalog.
+ *
+ * Its own function and nothing shared with the group box's: the fixture is
+ * where a substitution between the two fieldsets would be easiest to write.
+ * Each slot is passed only when the case declares it, because presence is the
+ * contract. A case naming the consumer hint gets it inside the case root.
+ */
+function renderFieldset(parityCase: ParityCase): VNode[] {
+  const content = (parityCase.content ?? {}) as unknown as Record<string, FieldsetSlot>;
+  const nodes = Array.isArray(parityCase.group)
+    ? parityCase.group.map((member) => {
+        const { label, description, error } = member as Record<string, string>;
+        return renderFieldsetInstance(parityCase.id, {}, parityCase.attrs, {
+          label: { text: label },
+          description: { text: description },
+          error: { text: error },
+        });
+      })
+    : [renderFieldsetInstance(parityCase.id, parityCase.props, parityCase.attrs, content)];
+
+  // A consumer hint the case names, inside the case root, so the reference
+  // resolves on every target. Each case names its own: ids are unique per page.
+  const hint = parityCase.attrs['aria-describedby'];
+  if (typeof hint === 'string' && hint.startsWith('fieldset-consumer-hint')) {
+    nodes.push(h('p', { id: hint, class: 'parity-hint' }, 'Shown on the invoice.'));
+  }
+
+  return nodes;
+}
+
+/** One VfTable slot, as the shared catalog spells it. */
+interface TableSlot {
+  text?: string;
+  markup?: 'rich';
+  rows?: number;
+  control?: boolean;
+}
+
+const TABLE_MEMBERS = [
+  ['Ada Lovelace', 'Owner', 'Active'],
+  ['Grace Hopper', 'Admin', 'Active'],
+  ['Linus Pauling', 'Editor', 'Invited'],
+  ['Mary Somerville', 'Viewer', 'Active'],
+  ['Alan Turing', 'Editor', 'Suspended'],
+  ['Rosalind Franklin', 'Viewer', 'Active'],
+  ['Emmy Noether', 'Admin', 'Invited'],
+  ['Carl Gauss', 'Viewer', 'Active'],
+];
+
+function tableRows(slot: string, spec: TableSlot): unknown[] {
+  const rows: unknown[] = [];
+  if (slot === 'caption') {
+    if (spec.text !== undefined && spec.text !== '') rows.push(spec.text);
+    if (spec.markup === 'rich') rows.push(h('strong', 'Team'), ' members');
+    return rows;
+  }
+  for (let index = 0; index < (spec.rows ?? 0); index += 1) {
+    if (slot === 'header') rows.push(h('tr', [h('th', 'Name'), h('th', 'Role'), h('th', 'Status')]));
+    if (slot === 'body')
+      rows.push(
+        h(
+          'tr',
+          TABLE_MEMBERS[index % TABLE_MEMBERS.length].map((cell) => h('td', cell)),
+        ),
+      );
+    if (slot === 'footer') rows.push(h('tr', [h('td', { colspan: 3 }, 'Seats used: 8 of 10')]));
+  }
+  if (slot === 'body' && spec.control) {
+    rows.push(h('tr', [h('td', { colspan: 3 }, [h('button', { type: 'button' }, 'Invite member')])]));
+  }
+  return rows;
+}
+
+function renderTableInstance(
+  props: Record<string, unknown>,
+  attrs: Record<string, unknown>,
+  content: Record<string, TableSlot>,
+): VNode {
+  const slots: Record<string, () => unknown> = {};
+  for (const [from, to] of [
+    ['caption', 'caption'],
+    ['header', 'header'],
+    ['body', 'default'],
+    ['footer', 'footer'],
+  ] as const) {
+    if (content[from] !== undefined) slots[to] = () => tableRows(from, content[from]!);
+  }
+
+  return h(VfTable, { ...props, ...attrs }, slots);
+}
+
+/**
+ * VfTable, for the table catalog.
+ *
+ * Each slot is passed only when the case declares it - `rows: 0` is a slot
+ * that renders nothing, an absent key is no slot - because every row group is
+ * keyed on presence. A group member carries its own props, attrs and content.
+ */
+function renderTable(parityCase: ParityCase): VNode[] {
+  const nodes = Array.isArray(parityCase.group)
+    ? parityCase.group.map((member) => {
+        const { attrs = {}, content = {}, ...props } = member as Record<string, unknown>;
+        return renderTableInstance(props, attrs as Record<string, unknown>, content as Record<string, TableSlot>);
+      })
+    : [
+        renderTableInstance(
+          parityCase.props,
+          parityCase.attrs,
+          (parityCase.content ?? {}) as unknown as Record<string, TableSlot>,
+        ),
+      ];
+
+  if (parityCase.attrs['aria-describedby'] === 'table-consumer-hint') {
+    nodes.push(h('p', { id: 'table-consumer-hint', class: 'parity-hint' }, 'Seats renew monthly.'));
+  }
+
+  return nodes;
+}
+
 function renderIconButton(parityCase: ParityCase): VNode {
   // No slots and no wrapper: the historical VfIconButton renders one button
   // carrying one glyph, and the case root is the only element around it.
@@ -2032,6 +2207,14 @@ function renderCase(parityCase: ParityCase): VNode {
 
   if (catalog.component === 'select') {
     return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, renderSelect(parityCase));
+  }
+
+  if (catalog.component === 'fieldset') {
+    return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, renderFieldset(parityCase));
+  }
+
+  if (catalog.component === 'table') {
+    return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, renderTable(parityCase));
   }
 
   if (catalog.component === 'nav-menu') {

@@ -147,6 +147,11 @@ export const COMPARED_ATTRIBUTES = [
   // captures before being added: title is one of the four attribute kinds the
   // select forwards, and nothing compared it.
   'title',
+  // VfFieldset (M34). The fieldset's native form association: `form` is not a
+  // prop, it reaches the fieldset as an attribute, and nothing compared it -
+  // VfGroupBox recorded the same gap in outsideTheCatalog. A fieldset whose
+  // form attribute moved or vanished would have compared equal everywhere.
+  'form',
   // VfBreadcrumbs. Found missing by the attribute-coverage gate in M26 - the
   // thirteenth attribute it has caught nobody compared - and reproduced as a
   // false PASS on real captures before being added: the separator glyph is a

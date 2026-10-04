@@ -1,0 +1,462 @@
+{
+  "$comment": "Shared VfFieldset cases. Plain data only. The vocabulary is the historical Vue contract at fd793696f50d3be0fcd3788f0f8f751c63869963. The fieldset owns no interaction: every case is static, and a case whose body holds consumer controls declares consumerInteractive, the number of focusable controls the consumer put there, so a control the component itself grew still fails when every target grows it. The scoped default slot (describedBy, invalid) is a Vue mechanism with no Razor counterpart; no case binds it - see outsideTheCatalog in the policy. VfGroupBox has no cases here and must not be given any.",
+  "component": "fieldset",
+  "propVocabulary": {
+    "label": "string, default undefined. Opens the legend by JavaScript truthiness: \"\" is none, \"0\" is one.",
+    "description": "string, default undefined. Opens the description paragraph and its id in aria-describedby.",
+    "error": "string, default undefined. Opens the error paragraph, its id in aria-describedby, and the invalid modifier.",
+    "invalid": "boolean, default false. The invalid modifier only."
+  },
+  "slotVocabulary": {
+    "label": "Replaces the label prop; counts by presence, so a slot that renders nothing shows the prop text.",
+    "description": "As label, for the description paragraph.",
+    "error": "As label, for the error paragraph; also invalid by presence.",
+    "body": "The default slot, inside div.vf-fieldset__control. text, or controls: input-and-button (a labelled text input and a button) or radios (two labelled radio inputs)."
+  },
+  "cases": [
+    {
+      "id": "fieldset/minimal",
+      "title": "A bare fieldset: no legend, no paragraphs, no aria-describedby, the control wrapper alone",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Grouped controls"
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "fieldset/empty",
+      "title": "No default slot either: the control wrapper still renders, empty",
+      "props": {},
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "fieldset/label",
+      "title": "A label prop: a classed legend with plain text, no span, no id, no aria-labelledby",
+      "props": {
+        "label": "Shipping address"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Grouped controls"
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "fieldset/label-empty",
+      "title": "An empty label is no label: no legend at all",
+      "props": {
+        "label": ""
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Grouped controls"
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "fieldset/label-zero",
+      "title": "The label \"0\" is a label, as JavaScript reads it",
+      "props": {
+        "label": "0"
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "fieldset/label-slot",
+      "title": "A label slot alone opens the legend with rich content",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "label": {
+          "markup": "rich"
+        },
+        "body": {
+          "text": "Grouped controls"
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "fieldset/label-slot-over-prop",
+      "title": "A label slot replaces the label prop",
+      "props": {
+        "label": "Prop label"
+      },
+      "attrs": {},
+      "content": {
+        "label": {
+          "text": "Slot label"
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "fieldset/label-slot-empty-fallback",
+      "title": "A label slot that renders nothing counts, and the prop is its fallback text",
+      "props": {
+        "label": "Fallback label"
+      },
+      "attrs": {},
+      "content": {
+        "label": {
+          "text": ""
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "fieldset/label-slot-empty-alone",
+      "title": "A label slot that renders nothing with no prop: an empty legend",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "label": {
+          "text": ""
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "fieldset/description",
+      "title": "A description prop: a classed paragraph after the control wrapper, named by the fieldset",
+      "props": {
+        "description": "We ship to the address on file."
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Grouped controls"
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "fieldset/description-empty",
+      "title": "An empty description is none: no paragraph and no aria-describedby",
+      "props": {
+        "description": ""
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "fieldset/description-slot",
+      "title": "A description slot alone, with rich content, is named by the fieldset",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "description": {
+          "markup": "rich"
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "fieldset/description-slot-empty-fallback",
+      "title": "A description slot that renders nothing falls back to the prop text",
+      "props": {
+        "description": "Fallback description"
+      },
+      "attrs": {},
+      "content": {
+        "description": {
+          "text": ""
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "fieldset/error",
+      "title": "An error prop: a classed paragraph named by the fieldset and the invalid modifier, with no role and no aria-invalid",
+      "props": {
+        "error": "Choose a delivery option."
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Grouped controls"
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "fieldset/error-empty",
+      "title": "An empty error is none: no paragraph, no modifier",
+      "props": {
+        "error": ""
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "fieldset/error-zero",
+      "title": "The error \"0\" is an error, and so invalid",
+      "props": {
+        "error": "0"
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "fieldset/error-slot",
+      "title": "An error slot alone opens the paragraph and the invalid state",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "error": {
+          "markup": "rich"
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "fieldset/error-slot-empty",
+      "title": "An error slot that renders nothing: an empty named paragraph, and still invalid",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "error": {
+          "text": ""
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "fieldset/invalid",
+      "title": "invalid alone: the modifier and nothing else - no error paragraph, no aria-describedby, no aria-invalid",
+      "props": {
+        "invalid": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Grouped controls"
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "fieldset/invalid-false-with-error",
+      "title": "An error is invalid even with invalid explicitly false",
+      "props": {
+        "invalid": false,
+        "error": "Required."
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "fieldset/description-and-error",
+      "title": "Description first, then error, in the fieldset aria-describedby",
+      "props": {
+        "label": "Plan",
+        "description": "Choose one rollout option.",
+        "error": "Select one plan to continue."
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Grouped controls"
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "fieldset/slots-all",
+      "title": "Label, description and error slots alone",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "label": {
+          "text": "Slot label"
+        },
+        "description": {
+          "text": "Slot description"
+        },
+        "error": {
+          "text": "Slot error"
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "fieldset/full",
+      "title": "Every part with real consumer controls inside: the controls are the consumer's, the fieldset owns none",
+      "props": {
+        "label": "Contact",
+        "description": "We only use this to reach you.",
+        "error": "Enter an email address."
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "controls": "input-and-button"
+        }
+      },
+      "consumerInteractive": 2,
+      "visual": true
+    },
+    {
+      "id": "fieldset/nested-radios",
+      "title": "A radio group: the native grouping the fieldset exists for",
+      "props": {
+        "label": "Delivery"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "controls": "radios"
+        }
+      },
+      "consumerInteractive": 2,
+      "visual": true
+    },
+    {
+      "id": "fieldset/disabled",
+      "title": "A native disabled fieldset disables every nested control: disabled stays a fieldset attribute",
+      "props": {
+        "label": "Delivery",
+        "description": "Unavailable for this order."
+      },
+      "attrs": {
+        "disabled": true
+      },
+      "content": {
+        "body": {
+          "controls": "input-and-button"
+        }
+      },
+      "consumerInteractive": 2,
+      "visual": true
+    },
+    {
+      "id": "fieldset/native-attrs",
+      "title": "form and name reach the fieldset as native attributes",
+      "props": {
+        "label": "Billing"
+      },
+      "attrs": {
+        "form": "checkout",
+        "name": "billing"
+      },
+      "content": {
+        "body": {
+          "text": "Grouped controls"
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "fieldset/consumer-attrs",
+      "title": "Consumer class, style, id and data attributes land on the fieldset after the canonical classes",
+      "props": {
+        "label": "Billing",
+        "invalid": true
+      },
+      "attrs": {
+        "class": "consumer-fieldset",
+        "style": "max-width: 28rem",
+        "id": "billing-fieldset",
+        "data-testid": "fieldset"
+      },
+      "content": {
+        "body": {
+          "text": "Grouped controls"
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "fieldset/consumer-describedby",
+      "title": "A consumer aria-describedby replaces the computed one",
+      "props": {
+        "description": "Computed description",
+        "error": "Computed error"
+      },
+      "attrs": {
+        "aria-describedby": "fieldset-consumer-hint"
+      },
+      "visual": false
+    },
+    {
+      "id": "fieldset/consumer-describedby-alone",
+      "title": "A consumer aria-describedby is forwarded when the fieldset computed none",
+      "props": {},
+      "attrs": {
+        "aria-describedby": "fieldset-consumer-hint-alone"
+      },
+      "visual": false
+    },
+    {
+      "id": "fieldset/consumer-aria",
+      "title": "A consumer role, aria-invalid and accessible name pass through unchanged; the fieldset writes none of them",
+      "props": {
+        "label": "Plan"
+      },
+      "attrs": {
+        "role": "radiogroup",
+        "aria-invalid": "true",
+        "aria-label": "Rollout plan"
+      },
+      "content": {
+        "body": {
+          "text": "Grouped controls"
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "fieldset/two-instances",
+      "title": "Two fieldsets side by side: each names only its own paragraphs",
+      "props": {},
+      "attrs": {},
+      "group": [
+        {
+          "label": "First",
+          "description": "First description",
+          "error": "First error"
+        },
+        {
+          "label": "Second",
+          "description": "Second description",
+          "error": "Second error"
+        }
+      ],
+      "visual": false
+    },
+    {
+      "id": "fieldset/hostile-text",
+      "title": "Label, description and error text is escaped",
+      "props": {
+        "label": "<b>Bold</b> label",
+        "description": "\"Quoted\" & <i>tagged</i>",
+        "error": "<script>x</script>"
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "fieldset/group-box-shape",
+      "title": "A titled fieldset around plain content - the shape VfGroupBox also renders, which this one must not become",
+      "props": {
+        "label": "Details"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Invoice #1024"
+        }
+      },
+      "visual": true
+    }
+  ]
+}
