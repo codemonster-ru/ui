@@ -87,6 +87,8 @@ import { tooltipBrowserMutations, tooltipParityMutations, tooltipPolicyMutations
 import { selectBrowserMutations, selectParityMutations, selectPolicyMutations } from './select-mutations.mjs';
 import { navMenuBrowserMutations, navMenuParityMutations, navMenuPolicyMutations } from './nav-menu-mutations.mjs';
 import { groupBoxBrowserMutations, groupBoxParityMutations, groupBoxPolicyMutations } from './group-box-mutations.mjs';
+import { fieldsetBrowserMutations, fieldsetParityMutations, fieldsetPolicyMutations } from './fieldset-mutations.mjs';
+import { tableBrowserMutations, tableParityMutations, tablePolicyMutations } from './table-mutations.mjs';
 import {
   skeletonGateBrowserMutations,
   skeletonGateParityMutations,
@@ -234,6 +236,16 @@ const mutationSets = {
     policy: navMenuPolicyMutations,
     browser: navMenuBrowserMutations,
   },
+  // VfFieldset and VfTable (M34): static components whose defects are where
+  // things are - native identity, the relationship graph, attribute ownership,
+  // row-group presence, modifiers - and the group box standing in for the
+  // fieldset.
+  fieldset: {
+    capture: fieldsetParityMutations,
+    policy: fieldsetPolicyMutations,
+    browser: fieldsetBrowserMutations,
+  },
+  table: { capture: tableParityMutations, policy: tablePolicyMutations, browser: tableBrowserMutations },
   'skeleton-gate': {
     capture: skeletonGateParityMutations,
     policy: skeletonGatePolicyMutations,
