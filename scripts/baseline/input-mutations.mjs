@@ -127,6 +127,10 @@ export const navMenuNodeSourcePath = 'packages/core/src/components/nav-menu/VfNa
 /** The shared rules VfNavMenu, its Razor controller and the PHP adapter derive from. */
 export const navMenuRulePath = 'packages/shared-core/src/nav-menu/state.ts';
 const navMenuSuite = 'src/components/nav-menu/VfNavMenu.characterization.spec.ts';
+export const fieldsetSourcePath = 'packages/core/src/components/field/VfFieldset.vue';
+const fieldsetSuite = 'src/components/field/VfFieldset.characterization.spec.ts';
+export const tableSourcePath = 'packages/core/src/components/table/VfTable.vue';
+const tableSuite = 'src/components/table/VfTable.characterization.spec.ts';
 
 /**
  * The consumer suite a VfProgressSpinner defect is expected to reach.
@@ -8239,6 +8243,909 @@ export const navMenuMutations = [
 
 ];
 
+/**
+ * VfFieldset (M34). The fieldset is the second migrated component whose root
+ * is a native fieldset, so a third of these are the shapes a port copied from
+ * VfGroupBox would take: attributes consumed or moved off the fieldset,
+ * `disabled` declared as a prop, a title span in the legend, group box
+ * classes. The rest break the description/error topology the fieldset's own
+ * aria-describedby carries, the JavaScript presence tests, the invalid rule
+ * and the scoped default slot.
+ */
+export const fieldsetMutations = [
+  // ------------------------------------------------------------ element identity
+  {
+    id: "fieldset-root-becomes-a-div",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description:
+      "the fieldset becomes a div with role=group: the same accessible group, no native element",
+    edits: [
+      {
+        find: '  <fieldset :class="rootClasses" :aria-describedby="describedBy">',
+        replace:
+          '  <div role="group" :class="rootClasses" :aria-describedby="describedBy">',
+      },
+      { find: "  </fieldset>\n</template>", replace: "  </div>\n</template>" },
+    ],
+  },
+  {
+    id: "fieldset-legend-becomes-a-div",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description:
+      "the legend becomes a div, so the fieldset loses its native name",
+    edits: [
+      {
+        find: '    <legend v-if="hasLabel" class="vf-fieldset__legend">',
+        replace: '    <div v-if="hasLabel" class="vf-fieldset__legend">',
+      },
+      { find: "    </legend>\n", replace: "    </div>\n" },
+    ],
+  },
+  {
+    id: "fieldset-legend-gains-a-title-span",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description:
+      "the legend wraps its label in a title span, the group box legend shape",
+    find: '      <slot name="label">{{ props.label }}</slot>',
+    replace:
+      '      <span class="vf-fieldset__title"><slot name="label">{{ props.label }}</slot></span>',
+  },
+  {
+    id: "fieldset-control-wrapper-dropped",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description:
+      "the default slot renders straight into the fieldset, without the control wrapper",
+    find: '    <div class="vf-fieldset__control">\n      <slot :described-by="describedBy" :invalid="isInvalid" />\n    </div>',
+    replace: '    <slot :described-by="describedBy" :invalid="isInvalid" />',
+  },
+  {
+    id: "fieldset-description-before-control",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description:
+      "the description moves between the legend and the control, where a form layout would put it",
+    edits: [
+      {
+        find: '    <p v-if="hasDescription" :id="descriptionId" class="vf-fieldset__description">\n      <slot name="description">{{ props.description }}</slot>\n    </p>\n\n',
+        replace: "",
+      },
+      {
+        find: '    <div class="vf-fieldset__control">',
+        replace:
+          '    <p v-if="hasDescription" :id="descriptionId" class="vf-fieldset__description">\n      <slot name="description">{{ props.description }}</slot>\n    </p>\n    <div class="vf-fieldset__control">',
+      },
+    ],
+  },
+  {
+    id: "fieldset-group-box-classes",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description:
+      "the fieldset renders the group box root class, the confusion between the two fieldsets",
+    find: "cx('vf-fieldset', isInvalid.value && 'vf-fieldset--invalid')",
+    replace: "cx('vf-group-box', isInvalid.value && 'vf-fieldset--invalid')",
+  },
+
+  // ------------------------------------------------------------ attributes
+  {
+    id: "fieldset-attrs-moved-to-control",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description:
+      "inheritAttrs is disabled and the attributes are bound onto the control wrapper",
+    edits: [
+      {
+        find: "const slots = useSlots();",
+        replace:
+          "defineOptions({ inheritAttrs: false });\nconst slots = useSlots();",
+      },
+      {
+        find: '    <div class="vf-fieldset__control">',
+        replace: '    <div class="vf-fieldset__control" v-bind="$attrs">',
+      },
+    ],
+  },
+  {
+    id: "fieldset-attrs-dropped",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description:
+      "inheritAttrs is disabled and the attributes are bound nowhere: class, style, id and native attributes are lost",
+    find: "const slots = useSlots();",
+    replace:
+      "defineOptions({ inheritAttrs: false });\nconst slots = useSlots();",
+  },
+  {
+    id: "fieldset-disabled-consumed-as-prop",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description:
+      "disabled is declared as a prop, the group box way, so it never reaches the native fieldset",
+    find: "  invalid?: boolean;\n}",
+    replace: "  invalid?: boolean;\n  disabled?: boolean;\n}",
+  },
+  {
+    id: "fieldset-consumer-class-first",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description: "a consumer class lands before the canonical ones",
+    edits: [
+      {
+        find: "const slots = useSlots();",
+        replace:
+          "defineOptions({ inheritAttrs: false });\nconst slots = useSlots();",
+      },
+      {
+        find: '  <fieldset :class="rootClasses" :aria-describedby="describedBy">',
+        replace:
+          '  <fieldset :class="[$attrs.class, rootClasses]" v-bind="{ ...$attrs, class: undefined }" :aria-describedby="describedBy">',
+      },
+    ],
+  },
+  {
+    id: "fieldset-computed-describedby-overrides-consumer",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description: "the computed aria-describedby wins over a consumer's",
+    edits: [
+      {
+        find: "const slots = useSlots();",
+        replace:
+          "defineOptions({ inheritAttrs: false });\nconst slots = useSlots();",
+      },
+      {
+        find: '  <fieldset :class="rootClasses" :aria-describedby="describedBy">',
+        replace:
+          '  <fieldset :class="rootClasses" v-bind="$attrs" :aria-describedby="describedBy ?? $attrs[\'aria-describedby\']">',
+      },
+    ],
+  },
+
+  // ------------------------------------------------------------ presence
+  {
+    id: "fieldset-empty-label-counts",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description: "an empty label string counts, so an empty legend appears",
+    find: "Boolean(props.label) || Boolean(slots.label)",
+    replace: "props.label !== undefined || Boolean(slots.label)",
+  },
+  {
+    id: "fieldset-label-zero-dropped",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description: 'the label "0" is treated as falsy, as PHP truthiness would',
+    find: "Boolean(props.label) || Boolean(slots.label)",
+    replace:
+      "(Boolean(props.label) && props.label !== '0') || Boolean(slots.label)",
+  },
+  {
+    id: "fieldset-label-slot-ignored",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description: "a label slot no longer opens the legend",
+    find: "Boolean(props.label) || Boolean(slots.label)",
+    replace: "Boolean(props.label)",
+  },
+  {
+    id: "fieldset-label-prop-wins-over-slot",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description: "the label prop wins over the label slot",
+    find: '      <slot name="label">{{ props.label }}</slot>',
+    replace:
+      '      <template v-if="props.label">{{ props.label }}</template><slot v-else name="label" />',
+  },
+  {
+    id: "fieldset-label-fallback-lost",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description:
+      "the label prop is no longer the slot fallback, so a prop-only legend is empty",
+    find: '      <slot name="label">{{ props.label }}</slot>',
+    replace: '      <slot name="label" />',
+  },
+  {
+    id: "fieldset-description-zero-dropped",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description: 'the description "0" is treated as falsy',
+    find: "Boolean(props.description) || Boolean(slots.description)",
+    replace:
+      "(Boolean(props.description) && props.description !== '0') || Boolean(slots.description)",
+  },
+  {
+    id: "fieldset-description-slot-ignored",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description: "a description slot no longer counts",
+    find: "Boolean(props.description) || Boolean(slots.description)",
+    replace: "Boolean(props.description)",
+  },
+  {
+    id: "fieldset-description-slot-replaced-by-prop",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description:
+      "the description paragraph renders the prop and ignores the slot",
+    find: '      <slot name="description">{{ props.description }}</slot>',
+    replace: "      {{ props.description }}",
+  },
+  {
+    id: "fieldset-description-fallback-lost",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description: "the description prop is no longer the slot fallback",
+    find: '      <slot name="description">{{ props.description }}</slot>',
+    replace: '      <slot name="description" />',
+  },
+  {
+    id: "fieldset-empty-error-counts",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description:
+      "an empty error string counts, so an empty error and the invalid modifier appear",
+    find: "Boolean(props.error) || Boolean(slots.error)",
+    replace: "props.error !== undefined || Boolean(slots.error)",
+  },
+  {
+    id: "fieldset-error-slot-ignored",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description:
+      "an error slot no longer counts, for the paragraph or the invalid state",
+    find: "Boolean(props.error) || Boolean(slots.error)",
+    replace: "Boolean(props.error)",
+  },
+  {
+    id: "fieldset-error-slot-replaced-by-prop",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description: "the error paragraph renders the prop and ignores the slot",
+    find: '      <slot name="error">{{ props.error }}</slot>',
+    replace: "      {{ props.error }}",
+  },
+
+  // ------------------------------------------------------------ paragraphs and relationships
+  {
+    id: "fieldset-description-omitted",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description:
+      "the description paragraph never renders, though its id is still listed",
+    find: '    <p v-if="hasDescription" :id="descriptionId"',
+    replace: '    <p v-if="false" :id="descriptionId"',
+  },
+  {
+    id: "fieldset-error-omitted",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description:
+      "the error paragraph never renders, though the fieldset is still invalid",
+    find: '    <p v-if="hasError" :id="errorId"',
+    replace: '    <p v-if="false" :id="errorId"',
+  },
+  {
+    id: "fieldset-describedby-removed",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description: "the fieldset no longer points at its description and error",
+    find: '  <fieldset :class="rootClasses" :aria-describedby="describedBy">',
+    replace: '  <fieldset :class="rootClasses">',
+  },
+  {
+    id: "fieldset-description-not-listed",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description: "the description renders but is left out of aria-describedby",
+    find: "    hasDescription.value ? descriptionId.value : undefined,",
+    replace: "    undefined,",
+  },
+  {
+    id: "fieldset-error-not-listed",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description: "the error renders but is left out of aria-describedby",
+    find: "    hasError.value ? errorId.value : undefined,",
+    replace: "    undefined,",
+  },
+  {
+    id: "fieldset-describedby-order-reversed",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description: "the error is listed before the description",
+    find: "    hasDescription.value ? descriptionId.value : undefined,\n    hasError.value ? errorId.value : undefined,",
+    replace:
+      "    hasError.value ? errorId.value : undefined,\n    hasDescription.value ? descriptionId.value : undefined,",
+  },
+  {
+    id: "fieldset-ids-crossed",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description:
+      "the description and the error paragraphs carry each other's ids",
+    edits: [
+      {
+        find: '<p v-if="hasDescription" :id="descriptionId"',
+        replace: '<p v-if="hasDescription" :id="errorId"',
+      },
+      {
+        find: '<p v-if="hasError" :id="errorId"',
+        replace: '<p v-if="hasError" :id="descriptionId"',
+      },
+    ],
+  },
+  {
+    id: "fieldset-ids-collide",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description:
+      "the error reuses the description id, so the two references are one",
+    find: "const errorId = useId({ prefix: 'vf-fieldset-error' });",
+    replace: "const errorId = descriptionId;",
+  },
+  {
+    id: "fieldset-ids-shared-between-instances",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description:
+      "the ids are fixed strings, so two fieldsets on a page cross-wire their descriptions",
+    edits: [
+      {
+        find: "const descriptionId = useId({ prefix: 'vf-fieldset-description' });",
+        replace:
+          "const descriptionId = computed(() => 'vf-fieldset-description');",
+      },
+      {
+        find: "const errorId = useId({ prefix: 'vf-fieldset-error' });",
+        replace: "const errorId = computed(() => 'vf-fieldset-error');",
+      },
+    ],
+  },
+  {
+    id: "fieldset-id-prefix-changed",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description: "the description id loses its historical prefix",
+    find: "useId({ prefix: 'vf-fieldset-description' })",
+    replace: "useId({ prefix: 'vf-fieldset-hint' })",
+  },
+
+  // ------------------------------------------------------------ invalid
+  {
+    id: "fieldset-invalid-modifier-renamed",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description: "the invalid modifier is spelled --error",
+    find: "isInvalid.value && 'vf-fieldset--invalid'",
+    replace: "isInvalid.value && 'vf-fieldset--error'",
+  },
+  {
+    id: "fieldset-invalid-prop-ignored",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description: "only an error makes the fieldset invalid",
+    find: "const isInvalid = computed(() => props.invalid || hasError.value);",
+    replace: "const isInvalid = computed(() => hasError.value);",
+  },
+  {
+    id: "fieldset-error-no-longer-invalid",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description: "an error no longer implies the invalid state",
+    find: "const isInvalid = computed(() => props.invalid || hasError.value);",
+    replace: "const isInvalid = computed(() => props.invalid);",
+  },
+  {
+    id: "fieldset-invalid-default-true",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description: "invalid defaults to true",
+    find: "  invalid: false,\n});",
+    replace: "  invalid: true,\n});",
+  },
+  {
+    id: "fieldset-aria-invalid-added",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description: "the fieldset announces aria-invalid when it is invalid",
+    find: '  <fieldset :class="rootClasses" :aria-describedby="describedBy">',
+    replace:
+      '  <fieldset :class="rootClasses" :aria-describedby="describedBy" :aria-invalid="isInvalid ? \'true\' : undefined">',
+  },
+  {
+    id: "fieldset-error-role-alert",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description: "the error paragraph becomes an alert",
+    find: 'class="vf-fieldset__error">',
+    replace: 'class="vf-fieldset__error" role="alert">',
+  },
+  {
+    id: "fieldset-error-live-region",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description: "the error paragraph becomes a polite live region",
+    find: 'class="vf-fieldset__error">',
+    replace: 'class="vf-fieldset__error" aria-live="polite">',
+  },
+
+  // ------------------------------------------------------------ scoped slot
+  {
+    id: "fieldset-scoped-described-by-dropped",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description: "the default slot no longer receives describedBy",
+    find: '      <slot :described-by="describedBy" :invalid="isInvalid" />',
+    replace: '      <slot :invalid="isInvalid" />',
+  },
+  {
+    id: "fieldset-scoped-described-by-description-only",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description: "the default slot receives only the description id",
+    find: '      <slot :described-by="describedBy" :invalid="isInvalid" />',
+    replace:
+      '      <slot :described-by="hasDescription ? descriptionId : undefined" :invalid="isInvalid" />',
+  },
+  {
+    id: "fieldset-scoped-described-by-follows-consumer",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description:
+      "the default slot receives the consumer's aria-describedby instead of the computed one",
+    find: '      <slot :described-by="describedBy" :invalid="isInvalid" />',
+    replace:
+      '      <slot :described-by="$attrs[\'aria-describedby\'] ?? describedBy" :invalid="isInvalid" />',
+  },
+  {
+    id: "fieldset-scoped-invalid-prop-only",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description:
+      "the default slot receives the invalid prop rather than the resolved state",
+    find: '      <slot :described-by="describedBy" :invalid="isInvalid" />',
+    replace:
+      '      <slot :described-by="describedBy" :invalid="props.invalid" />',
+  },
+  {
+    id: "fieldset-scoped-extra-property",
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description: "the default slot grows a third property",
+    find: '      <slot :described-by="describedBy" :invalid="isInvalid" />',
+    replace:
+      '      <slot :described-by="describedBy" :invalid="isInvalid" :error-id="errorId" />',
+  },
+];
+
+/**
+ * VfTable (M34). The table owns no state, so its mutations are about where
+ * things are: the wrapper and the scroll container, which element the
+ * consumer's attributes reach, which slot opens which section, the caption's
+ * precedence and the four modifier classes in their fixed order.
+ */
+export const tableMutations = [
+  // ------------------------------------------------------------ wrappers
+  {
+    id: "table-wrapper-removed",
+    file: tableSourcePath,
+    suite: tableSuite,
+    description:
+      "the outer wrapper is dropped and the attributes land on the scroll container",
+    edits: [
+      {
+        find: '  <div class="vf-table-wrap" v-bind="attrs">\n    <div class="vf-table-scroll">',
+        replace: '  <div class="vf-table-scroll" v-bind="attrs">',
+      },
+      {
+        find: "    </div>\n  </div>\n</template>",
+        replace: "  </div>\n</template>",
+      },
+    ],
+  },
+  {
+    id: "table-wrapper-becomes-a-section",
+    file: tableSourcePath,
+    suite: tableSuite,
+    description: "the wrapper becomes a section with the same class",
+    edits: [
+      {
+        find: '  <div class="vf-table-wrap" v-bind="attrs">',
+        replace: '  <section class="vf-table-wrap" v-bind="attrs">',
+      },
+      {
+        find: "    </div>\n  </div>\n</template>",
+        replace: "    </div>\n  </section>\n</template>",
+      },
+    ],
+  },
+  {
+    id: "table-scroll-container-removed",
+    file: tableSourcePath,
+    suite: tableSuite,
+    description:
+      "the scroll container is dropped and the table sits directly in the wrapper",
+    edits: [
+      { find: '    <div class="vf-table-scroll">\n', replace: "" },
+      {
+        find: "    </div>\n  </div>\n</template>",
+        replace: "  </div>\n</template>",
+      },
+    ],
+  },
+  {
+    id: "table-scroll-container-focusable",
+    file: tableSourcePath,
+    suite: tableSuite,
+    description:
+      "the scroll container becomes keyboard scrollable with tabindex=0",
+    find: '    <div class="vf-table-scroll">',
+    replace: '    <div class="vf-table-scroll" tabindex="0">',
+  },
+
+  // ------------------------------------------------------------ attributes
+  {
+    id: "table-attrs-moved-to-table",
+    file: tableSourcePath,
+    suite: tableSuite,
+    description:
+      "the attributes are bound onto the table instead of the wrapper",
+    edits: [
+      {
+        find: '  <div class="vf-table-wrap" v-bind="attrs">',
+        replace: '  <div class="vf-table-wrap">',
+      },
+      {
+        find: '      <table :class="classes">',
+        replace: '      <table :class="classes" v-bind="attrs">',
+      },
+    ],
+  },
+  {
+    id: "table-attrs-moved-to-scroll-container",
+    file: tableSourcePath,
+    suite: tableSuite,
+    description: "the attributes are bound onto the scroll container",
+    edits: [
+      {
+        find: '  <div class="vf-table-wrap" v-bind="attrs">',
+        replace: '  <div class="vf-table-wrap">',
+      },
+      {
+        find: '    <div class="vf-table-scroll">',
+        replace: '    <div class="vf-table-scroll" v-bind="attrs">',
+      },
+    ],
+  },
+  {
+    id: "table-inherit-attrs-restored",
+    file: tableSourcePath,
+    suite: tableSuite,
+    description:
+      "inheritAttrs is left on, so the attributes are applied twice to the wrapper",
+    find: "defineOptions({\n  inheritAttrs: false,\n});\n",
+    replace: "",
+  },
+  {
+    id: "table-consumer-class-lost",
+    file: tableSourcePath,
+    suite: tableSuite,
+    description:
+      "a consumer class is dropped while every other attribute reaches the wrapper",
+    find: '  <div class="vf-table-wrap" v-bind="attrs">',
+    replace:
+      '  <div class="vf-table-wrap" v-bind="{ ...attrs, class: undefined }">',
+  },
+  {
+    id: "table-consumer-style-lost",
+    file: tableSourcePath,
+    suite: tableSuite,
+    description: "a consumer style is dropped",
+    find: '  <div class="vf-table-wrap" v-bind="attrs">',
+    replace:
+      '  <div class="vf-table-wrap" v-bind="{ ...attrs, style: undefined }">',
+  },
+  {
+    id: "table-consumer-class-first",
+    file: tableSourcePath,
+    suite: tableSuite,
+    description: "a consumer class lands before vf-table-wrap",
+    find: '  <div class="vf-table-wrap" v-bind="attrs">',
+    replace:
+      '  <div :class="[attrs.class, \'vf-table-wrap\']" v-bind="{ ...attrs, class: undefined }">',
+  },
+  {
+    id: "table-consumer-class-also-on-table",
+    file: tableSourcePath,
+    suite: tableSuite,
+    description: "a consumer class is copied onto the table as well",
+    find: '      <table :class="classes">',
+    replace: '      <table :class="[classes, attrs.class]">',
+  },
+
+  // ------------------------------------------------------------ caption
+  {
+    id: "table-caption-prop-ignored",
+    file: tableSourcePath,
+    suite: tableSuite,
+    description: "the caption prop no longer opens a caption",
+    find: '<caption v-if="props.caption || $slots.caption"',
+    replace: '<caption v-if="$slots.caption"',
+  },
+  {
+    id: "table-caption-slot-ignored",
+    file: tableSourcePath,
+    suite: tableSuite,
+    description: "a caption slot no longer opens a caption",
+    find: '<caption v-if="props.caption || $slots.caption"',
+    replace: '<caption v-if="props.caption"',
+  },
+  {
+    id: "table-empty-caption-counts",
+    file: tableSourcePath,
+    suite: tableSuite,
+    description: "an empty caption string counts, so an empty caption appears",
+    find: '<caption v-if="props.caption || $slots.caption"',
+    replace: '<caption v-if="props.caption !== undefined || $slots.caption"',
+  },
+  {
+    id: "table-caption-zero-dropped",
+    file: tableSourcePath,
+    suite: tableSuite,
+    description: 'the caption "0" is treated as falsy',
+    find: '<caption v-if="props.caption || $slots.caption"',
+    replace:
+      "<caption v-if=\"(props.caption && props.caption !== '0') || $slots.caption\"",
+  },
+  {
+    id: "table-caption-prop-wins-over-slot",
+    file: tableSourcePath,
+    suite: tableSuite,
+    description: "the caption prop wins over the caption slot",
+    find: '          <slot name="caption">{{ props.caption }}</slot>',
+    replace:
+      '          <template v-if="props.caption">{{ props.caption }}</template><slot v-else name="caption" />',
+  },
+  {
+    id: "table-caption-fallback-lost",
+    file: tableSourcePath,
+    suite: tableSuite,
+    description:
+      "the caption prop is no longer the slot fallback, so a prop-only caption is empty",
+    find: '          <slot name="caption">{{ props.caption }}</slot>',
+    replace: '          <slot name="caption" />',
+  },
+  {
+    id: "table-caption-moved-out-of-table",
+    file: tableSourcePath,
+    suite: tableSuite,
+    description:
+      "the caption is rendered above the table, inside the scroll container",
+    edits: [
+      {
+        find: '        <caption v-if="props.caption || $slots.caption" class="vf-table__caption">\n          <slot name="caption">{{ props.caption }}</slot>\n        </caption>\n\n',
+        replace: "",
+      },
+      {
+        find: '      <table :class="classes">',
+        replace:
+          '      <div v-if="props.caption || $slots.caption" class="vf-table__caption"><slot name="caption">{{ props.caption }}</slot></div>\n      <table :class="classes">',
+      },
+    ],
+  },
+  {
+    id: "table-caption-class-lost",
+    file: tableSourcePath,
+    suite: tableSuite,
+    description: "the caption loses its class",
+    find: ' class="vf-table__caption">',
+    replace: ">",
+  },
+
+  // ------------------------------------------------------------ sections
+  {
+    id: "table-head-always-rendered",
+    file: tableSourcePath,
+    suite: tableSuite,
+    description: "thead renders without a header slot",
+    find: '<thead v-if="$slots.header" class="vf-table__head">',
+    replace: '<thead class="vf-table__head">',
+  },
+  {
+    id: "table-head-keyed-on-default",
+    file: tableSourcePath,
+    suite: tableSuite,
+    description:
+      "thead is opened by the default slot instead of the header slot",
+    find: '<thead v-if="$slots.header" class="vf-table__head">',
+    replace: '<thead v-if="$slots.default" class="vf-table__head">',
+  },
+  {
+    id: "table-body-always-rendered",
+    file: tableSourcePath,
+    suite: tableSuite,
+    description: "tbody renders without a default slot",
+    find: '<tbody v-if="$slots.default" class="vf-table__body">',
+    replace: '<tbody class="vf-table__body">',
+  },
+  {
+    id: "table-body-keyed-on-content",
+    file: tableSourcePath,
+    suite: tableSuite,
+    description:
+      "tbody is keyed on what the default slot renders rather than on its presence",
+    find: '<tbody v-if="$slots.default" class="vf-table__body">',
+    replace: '<tbody v-if="$slots.default?.().length" class="vf-table__body">',
+  },
+  {
+    id: "table-foot-never-rendered",
+    file: tableSourcePath,
+    suite: tableSuite,
+    description: "tfoot never renders",
+    find: '<tfoot v-if="$slots.footer" class="vf-table__foot">',
+    replace: '<tfoot v-if="false" class="vf-table__foot">',
+  },
+  {
+    id: "table-foot-always-rendered",
+    file: tableSourcePath,
+    suite: tableSuite,
+    description: "tfoot renders without a footer slot",
+    find: '<tfoot v-if="$slots.footer" class="vf-table__foot">',
+    replace: '<tfoot class="vf-table__foot">',
+  },
+  {
+    id: "table-foot-becomes-a-body",
+    file: tableSourcePath,
+    suite: tableSuite,
+    description: "the footer renders in a second tbody with the foot class",
+    edits: [
+      {
+        find: '<tfoot v-if="$slots.footer" class="vf-table__foot">',
+        replace: '<tbody v-if="$slots.footer" class="vf-table__foot">',
+      },
+      { find: "        </tfoot>", replace: "        </tbody>" },
+    ],
+  },
+  {
+    id: "table-head-becomes-a-body",
+    file: tableSourcePath,
+    suite: tableSuite,
+    description: "the header renders in a tbody with the head class",
+    edits: [
+      {
+        find: '<thead v-if="$slots.header" class="vf-table__head">',
+        replace: '<tbody v-if="$slots.header" class="vf-table__head">',
+      },
+      { find: "        </thead>", replace: "        </tbody>" },
+    ],
+  },
+  {
+    id: "table-foot-before-body",
+    file: tableSourcePath,
+    suite: tableSuite,
+    description: "tfoot is rendered before tbody",
+    edits: [
+      {
+        find: '        <tfoot v-if="$slots.footer" class="vf-table__foot">\n          <slot name="footer" />\n        </tfoot>\n',
+        replace: "",
+      },
+      {
+        find: '        <tbody v-if="$slots.default" class="vf-table__body">',
+        replace:
+          '        <tfoot v-if="$slots.footer" class="vf-table__foot">\n          <slot name="footer" />\n        </tfoot>\n        <tbody v-if="$slots.default" class="vf-table__body">',
+      },
+    ],
+  },
+  {
+    id: "table-body-class-lost",
+    file: tableSourcePath,
+    suite: tableSuite,
+    description: "tbody loses its class",
+    find: '<tbody v-if="$slots.default" class="vf-table__body">',
+    replace: '<tbody v-if="$slots.default">',
+  },
+
+  // ------------------------------------------------------------ modifiers
+  {
+    id: "table-column-dividers-lost",
+    file: tableSourcePath,
+    suite: tableSuite,
+    description: "columnDividers no longer adds its class",
+    find: "    props.columnDividers && 'vf-table--column-dividers',\n",
+    replace: "",
+  },
+  {
+    id: "table-compact-inverted",
+    file: tableSourcePath,
+    suite: tableSuite,
+    description: "compact is applied when the prop is false",
+    find: "    props.compact && 'vf-table--compact',",
+    replace: "    !props.compact && 'vf-table--compact',",
+  },
+  {
+    id: "table-striped-lost",
+    file: tableSourcePath,
+    suite: tableSuite,
+    description: "striped no longer adds its class",
+    find: "    props.striped && 'vf-table--striped',\n",
+    replace: "",
+  },
+  {
+    id: "table-sticky-header-renamed",
+    file: tableSourcePath,
+    suite: tableSuite,
+    description: "the sticky header modifier is spelled --sticky",
+    find: "props.stickyHeader && 'vf-table--sticky-header'",
+    replace: "props.stickyHeader && 'vf-table--sticky'",
+  },
+  {
+    id: "table-sticky-header-inline-style",
+    file: tableSourcePath,
+    suite: tableSuite,
+    description:
+      "the sticky header is applied as an inline style on the scroll container instead of a class",
+    edits: [
+      {
+        find: "props.stickyHeader && 'vf-table--sticky-header'",
+        replace: "false",
+      },
+      {
+        find: '    <div class="vf-table-scroll">',
+        replace:
+          '    <div class="vf-table-scroll" :style="props.stickyHeader ? { position: \'relative\' } : undefined">',
+      },
+    ],
+  },
+  {
+    id: "table-modifier-order-changed",
+    file: tableSourcePath,
+    suite: tableSuite,
+    description: "the sticky header modifier comes first",
+    edits: [
+      {
+        find: "    props.stickyHeader && 'vf-table--sticky-header',\n",
+        replace: "",
+      },
+      {
+        find: "    'vf-table',\n    props.columnDividers",
+        replace:
+          "    'vf-table',\n    props.stickyHeader && 'vf-table--sticky-header',\n    props.columnDividers",
+      },
+    ],
+  },
+  {
+    id: "table-modifiers-on-wrapper",
+    file: tableSourcePath,
+    suite: tableSuite,
+    description:
+      "the modifier classes land on the wrapper and the table keeps the bare class",
+    edits: [
+      {
+        find: '  <div class="vf-table-wrap" v-bind="attrs">',
+        replace:
+          "  <div :class=\"['vf-table-wrap', classes.replace('vf-table', '').trim()]\" v-bind=\"attrs\">",
+      },
+      {
+        find: '      <table :class="classes">',
+        replace: '      <table class="vf-table">',
+      },
+    ],
+  },
+  {
+    id: "table-sticky-header-default-true",
+    file: tableSourcePath,
+    suite: tableSuite,
+    description: "stickyHeader defaults to true",
+    find: "  stickyHeader: false,\n});",
+    replace: "  stickyHeader: true,\n});",
+  },
+];
+
 export const componentMutations = [
   ...inputMutations,
   ...iconButtonMutations,
@@ -8271,4 +9178,6 @@ export const componentMutations = [
   ...tooltipMutations,
   ...selectMutations,
   ...navMenuMutations,
+  ...fieldsetMutations,
+  ...tableMutations,
 ];

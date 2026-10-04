@@ -113,6 +113,8 @@ export default defineConfig({
       'src/components/select/VfSelect.characterization.spec.ts',
       'src/components/nav-menu/VfNavMenu.characterization.spec.ts',
       'src/components/group-box/VfGroupBox.characterization.spec.ts',
+      'src/components/field/VfFieldset.characterization.spec.ts',
+      'src/components/table/VfTable.characterization.spec.ts',
       'src/components/skeleton-gate/VfSkeletonGate.characterization.spec.ts',
       'src/__tests__/fixtures/historical-input-consumer.spec.ts',
       'src/components/components.spec.ts',
