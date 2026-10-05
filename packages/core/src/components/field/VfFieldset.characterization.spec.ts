@@ -499,6 +499,17 @@ describe('VfFieldset characterization: consumer and native attributes', () => {
     expect(wrapper.get('fieldset').attributes('aria-describedby')).toBe('outside');
   });
 
+  it('lets a consumer aria-describedby passed explicitly as undefined or null erase the computed one', () => {
+    // Fallthrough attrs are merged after the component's own bindings, and an
+    // explicit undefined is still a key: the fieldset then names nothing.
+    for (const value of [undefined, null]) {
+      const wrapper = mountFieldset({ props: { description: 'D', error: 'E' }, attrs: { 'aria-describedby': value } });
+
+      expect(wrapper.get('fieldset').attributes()).not.toHaveProperty('aria-describedby');
+      expect(wrapper.find('.vf-fieldset__description').exists()).toBe(true);
+    }
+  });
+
   it('forwards a consumer aria-describedby when the component computed none', () => {
     expect(
       mountFieldset({ attrs: { 'aria-describedby': 'outside' } })

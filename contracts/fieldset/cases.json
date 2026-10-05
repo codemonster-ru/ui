@@ -397,6 +397,18 @@
       "visual": false
     },
     {
+      "id": "fieldset/consumer-describedby-null",
+      "title": "A consumer that explicitly passes aria-describedby as nothing replaces the computed value: the fieldset names nothing although it renders a description and an error",
+      "props": {
+        "description": "Computed description",
+        "error": "Computed error"
+      },
+      "attrs": {
+        "aria-describedby": null
+      },
+      "visual": false
+    },
+    {
       "id": "fieldset/consumer-aria",
       "title": "A consumer role, aria-invalid and accessible name pass through unchanged; the fieldset writes none of them",
       "props": {

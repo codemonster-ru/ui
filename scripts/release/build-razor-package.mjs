@@ -152,6 +152,13 @@ export const requiredEntries = [
   // depends on no overlay controller; its stylesheet is the last one inlined.
   'src/Components/NavMenuComponent.php',
   'src/Support/NavMenuState.php',
+  // The M34 pair: two server-complete components with no browser controller
+  // - nothing for either travels in dist/vueforge-razor.js - and their
+  // stylesheets inlined last into dist/vueforge-razor.css.
+  'src/Components/FieldsetComponent.php',
+  'src/Support/FieldsetState.php',
+  'src/Components/TableComponent.php',
+  'src/Support/TableState.php',
   'resources/icons/icon-registry.json',
   'dist/vueforge-razor.css',
   'dist/vueforge-razor.js',

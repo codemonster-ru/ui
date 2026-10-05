@@ -202,6 +202,15 @@ final class FieldsetComponentTest extends TestCase
         self::assertSame(1, substr_count($markup, 'aria-describedby'));
     }
 
+    public function testAConsumerDescribedByPassedAsNullErasesTheComputedOne(): void
+    {
+        // Vue drops the attribute for an explicit undefined or null the same way.
+        $markup = $this->render(['description' => 'D', 'error' => 'E', 'aria-describedby' => null]);
+
+        self::assertStringNotContainsString('aria-describedby', $markup);
+        self::assertStringContainsString('class="vf-fieldset__description"', $markup);
+    }
+
     public function testDisabledFormAndNameStayNativeFieldsetAttributes(): void
     {
         $markup = $this->render(['disabled' => true, 'form' => 'checkout', 'name' => 'shipping'], [

@@ -178,3 +178,13 @@ declare module '@vueforge/nav-menu-cases' {
   const cases: { cases: unknown[] };
   export default cases;
 }
+
+declare module '@vueforge/fieldset-cases' {
+  const cases: { cases: unknown[] };
+  export default cases;
+}
+
+declare module '@vueforge/table-cases' {
+  const cases: { cases: unknown[] };
+  export default cases;
+}

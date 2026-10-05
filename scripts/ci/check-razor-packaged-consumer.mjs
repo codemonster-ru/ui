@@ -199,6 +199,8 @@ $popover = $registry->resolve('vf-popover');
 $tooltip = $registry->resolve('vf-tooltip');
 $select = $registry->resolve('vf-select');
 $navMenu = $registry->resolve('vf-nav-menu');
+$fieldset = $registry->resolve('vf-fieldset');
+$table = $registry->resolve('vf-table');
 $assetPath = VueForgeRazorProvider::assetPath();
 $tabItems = [
     ['value' => 'overview', 'label' => 'Overview'],
@@ -250,6 +252,8 @@ echo json_encode([
         'vf-tooltip' => $registry->handles('vf-tooltip'),
         'vf-select' => $registry->handles('vf-select'),
         'vf-nav-menu' => $registry->handles('vf-nav-menu'),
+        'vf-fieldset' => $registry->handles('vf-fieldset'),
+        'vf-table' => $registry->handles('vf-table'),
     ],
     'markup' => $input->render(new ComponentRenderContext(
         ['name' => 'workspace', 'value' => 'Acme', 'clearable' => true, 'password-reveal' => false],
@@ -924,6 +928,25 @@ echo json_encode([
     'selectCss' => is_file($assetPath . '/vueforge-razor.css')
         && preg_match_all('/^\\.vf-select__menu \\{/m', (string) file_get_contents($assetPath . '/vueforge-razor.css')) === 1
         && preg_match_all('/^\\.vf-select-wrap \\{/m', (string) file_get_contents($assetPath . '/vueforge-razor.css')) === 1,
+    // VfFieldset and VfTable, M34: server-complete, no script. A disabled
+    // fieldset keeps disabled, form and name native and names its description
+    // and error; a table puts the consumer attributes on its wrapper and opens
+    // only the row groups whose slots it is given.
+    'fieldset' => $fieldset->render(new ComponentRenderContext(
+        ['label' => 'Delivery', 'description' => 'Choose one.', 'error' => '0', 'disabled' => true, 'form' => 'checkout', 'name' => 'delivery'],
+        ['default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('<input type="radio" name="d">')],
+    ))->value(),
+    'table' => $table->render(new ComponentRenderContext(
+        ['caption' => 'Members', 'sticky-header' => true, 'class' => 'consumer', 'id' => 'members'],
+        [
+            'header' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('<tr><th>Name</th></tr>'),
+            'footer' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('<tr><td>1 member</td></tr>'),
+        ],
+    ))->value(),
+    'fieldsetTableCss' => is_file($assetPath . '/vueforge-razor.css')
+        && preg_match_all('/^\\.vf-fieldset \\{/m', (string) file_get_contents($assetPath . '/vueforge-razor.css')) === 1
+        && preg_match_all('/^\\.vf-table-wrap \\{/m', (string) file_get_contents($assetPath . '/vueforge-razor.css')) === 1,
+    'fieldsetTableNoScript' => !str_contains($controllerSource, 'vf-fieldset') && !str_contains($controllerSource, 'vf-table'),
     // VfNavMenu, M33: the initial value's ancestry open on the server, every
     // closed subtree in an inert template, no script; [to] refused by name.
     'navMenuTree' => $navMenu->render(new ComponentRenderContext(
@@ -2272,6 +2295,30 @@ echo json_encode([
     'the packaged stylesheet carries the nav menu rules once',
     rendered.navMenuCss === true,
     'vueforge-razor.css is missing nav menu rules or duplicates them',
+  );
+  check(
+    'the registry resolves vf-fieldset and vf-table',
+    rendered.handles['vf-fieldset'] === true && rendered.handles['vf-table'] === true,
+  );
+  check(
+    'the consumer renders a native disabled fieldset that names its description and error and keeps form and name',
+    /^<fieldset class="vf-fieldset vf-fieldset--invalid" aria-describedby="(vf-fieldset-description-r-\d+) (vf-fieldset-error-r-\d+)" disabled form="checkout" name="delivery"><legend class="vf-fieldset__legend">Delivery<\/legend><div class="vf-fieldset__control"><input type="radio" name="d"><\/div><p id="\1" class="vf-fieldset__description">Choose one\.<\/p><p id="\2" class="vf-fieldset__error">0<\/p><\/fieldset>$/.test(
+      rendered.fieldset,
+    ),
+    rendered.fieldset,
+  );
+  check(
+    'the consumer renders a table with its attributes on the wrapper, a caption, head and foot, and no body',
+    rendered.table ===
+      '<div class="vf-table-wrap consumer" id="members"><div class="vf-table-scroll"><table class="vf-table vf-table--sticky-header">' +
+        '<caption class="vf-table__caption">Members</caption><thead class="vf-table__head"><tr><th>Name</th></tr></thead>' +
+        '<tfoot class="vf-table__foot"><tr><td>1 member</td></tr></tfoot></table></div></div>',
+    rendered.table,
+  );
+  check('the packaged stylesheet carries the fieldset and table rules once', rendered.fieldsetTableCss === true);
+  check(
+    'the packaged controller carries nothing for the fieldset or the table',
+    rendered.fieldsetTableNoScript === true,
   );
   check('the registry resolves vf-select', rendered.handles['vf-select'] === true);
   check(

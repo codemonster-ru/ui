@@ -469,7 +469,16 @@
           "status": "implemented"
         },
         "razor": {
-          "status": "not-implemented"
+          "status": "implemented",
+          "caseSource": "contracts/fieldset/cases.json"
+        }
+      },
+      "showcase": {
+        "caseSource": "contracts/fieldset/cases.json",
+        "caseIdField": "id",
+        "routes": {
+          "vue": "/fieldset",
+          "razor": "/"
         }
       }
     },
@@ -994,7 +1003,16 @@
           "status": "implemented"
         },
         "razor": {
-          "status": "not-implemented"
+          "status": "implemented",
+          "caseSource": "contracts/table/cases.json"
+        }
+      },
+      "showcase": {
+        "caseSource": "contracts/table/cases.json",
+        "caseIdField": "id",
+        "routes": {
+          "vue": "/table",
+          "razor": "/"
         }
       }
     },

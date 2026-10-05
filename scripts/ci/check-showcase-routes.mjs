@@ -195,6 +195,11 @@ const controlSelectors = {
   // M33: a nav menu's owned controls are its branch buttons, button leaves and
   // links; the empty-items case renders none.
   VfNavMenu: '.vf-nav-menu__item',
+  // M34: two static components that own no control. The selector is the
+  // root every case renders, as VfCard's is; the fieldset by its native tag
+  // and the table by its wrapper, which is where the consumer's attributes go.
+  VfFieldset: 'fieldset.vf-fieldset',
+  VfTable: 'div.vf-table-wrap',
 };
 
 /**
@@ -381,6 +386,7 @@ check(
       'VfDivider',
       'VfDropdown',
       'VfField',
+      'VfFieldset',
       'VfGroupBox',
       'VfIconButton',
       'VfInput',
@@ -398,6 +404,7 @@ check(
       'VfSkeletonGate',
       'VfStepper',
       'VfSwitch',
+      'VfTable',
       'VfTabs',
       'VfTag',
       'VfTextarea',
@@ -977,6 +984,153 @@ async function probeBreadcrumbsLinks(origin, path) {
     const hover = await page.evaluate(paint);
 
     return { ...statics, rest, focus, hover };
+  } finally {
+    await page.close();
+  }
+}
+
+/**
+ * The native semantics of the VfFieldset showcase on one platform (M34).
+ *
+ * Nothing here is driven through the component: a disabled fieldset disables
+ * its nested controls natively, so a real Tab from just before it skips them,
+ * while the same Tab lands on the email input of the enabled full case; the
+ * fieldset's own aria-describedby resolves to its description and then its
+ * error, inside itself, for one instance and for each of two; and nothing on
+ * the page carries aria-invalid. Read the same way on both platforms.
+ */
+async function probeFieldset(origin, path) {
+  const page = await openPage(chrome.endpoint);
+  try {
+    await page.send('Page.enable');
+    await page.send('Runtime.enable');
+    await page.send('Emulation.setDeviceMetricsOverride', { ...viewport, deviceScaleFactor: 1, mobile: false });
+    await page.send('Page.navigate', { url: `${origin}${path}` });
+    await page.waitFor(`Boolean(document.querySelector('[data-showcase-case="fieldset/full"] fieldset.vf-fieldset'))`);
+    await delay(200);
+
+    const statics = await page.evaluate(`(() => {
+      const resolve = (fieldset) =>
+        (fieldset.getAttribute('aria-describedby') ?? '').split(/\\s+/).filter(Boolean).map((id) => {
+          const target = document.getElementById(id);
+          return target && fieldset.contains(target) ? target.className : '#outside:' + id;
+        });
+      const disabled = document.querySelector('[data-showcase-case="fieldset/disabled"] fieldset.vf-fieldset');
+      return {
+        described: resolve(document.querySelector('[data-showcase-case="fieldset/description-and-error"] fieldset.vf-fieldset')),
+        pair: [...document.querySelectorAll('[data-showcase-case="fieldset/two-instances"] fieldset.vf-fieldset')].map(resolve),
+        disabledNative: disabled.disabled,
+        disabledControls: [...disabled.querySelectorAll('input, button')].map((control) => control.matches(':disabled')),
+        ariaInvalid: document.querySelectorAll('fieldset.vf-fieldset[aria-invalid]').length,
+        // The consumer input of the full case. The Vue showcase binds the scoped
+        // slot's describedBy and invalid to it; a Razor slot has no scope, so the
+        // same input there carries neither. Measured, not hidden.
+        scopedInput: (() => {
+          const fieldset = document.querySelector('[data-showcase-case="fieldset/full"] fieldset.vf-fieldset');
+          const input = fieldset.querySelector('input');
+          return {
+            describedBy: input.getAttribute('aria-describedby') === fieldset.getAttribute('aria-describedby') && input.hasAttribute('aria-describedby'),
+            invalid: input.getAttribute('aria-invalid'),
+          };
+        })(),
+        forwardedInvalid: document.querySelector('[data-showcase-case="fieldset/consumer-aria"] fieldset.vf-fieldset')?.getAttribute('aria-invalid') ?? null,
+        legendNames: [...document.querySelectorAll('[data-showcase-case="fieldset/full"] legend')].map((legend) => legend.textContent.trim()),
+        inlineScripts: [...document.querySelectorAll('script:not([src])')].filter((script) => /fieldset/i.test(script.textContent)).length,
+      };
+    })()`);
+
+    const tabFrom = async (caseId) => {
+      await page.evaluate(`(() => {
+        const fieldset = document.querySelector('[data-showcase-case="${caseId}"] fieldset.vf-fieldset');
+        fieldset.scrollIntoView({ block: 'center' });
+        const before = document.createElement('button');
+        before.type = 'button';
+        before.id = 'parity-focus-origin';
+        fieldset.before(before);
+        before.focus();
+      })()`);
+      await page.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9 });
+      await page.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9 });
+      await delay(100);
+      return page.evaluate(`(() => {
+        const fieldset = document.querySelector('[data-showcase-case="${caseId}"] fieldset.vf-fieldset');
+        const landed = fieldset.contains(document.activeElement) ? document.activeElement.tagName.toLowerCase() + '.' + (document.activeElement.getAttribute('type') ?? '') : 'outside';
+        document.getElementById('parity-focus-origin')?.remove();
+        document.activeElement?.blur();
+        return landed;
+      })()`);
+    };
+
+    return {
+      ...statics,
+      tabIntoFull: await tabFrom('fieldset/full'),
+      tabIntoDisabled: await tabFrom('fieldset/disabled'),
+    };
+  } finally {
+    await page.close();
+  }
+}
+
+/**
+ * The VfTable showcase on one platform (M34).
+ *
+ * Where the consumer attributes landed - the wrapper, never the table; which
+ * cases render each row group, so the template limit (plan section У.8) is a
+ * counted difference rather than an unseen one; and the sticky header, by a
+ * real scroll of the height-limited case's scroll container: the head cell
+ * stays at the container's top edge while the body scrolls under it.
+ */
+async function probeTable(origin, path) {
+  const page = await openPage(chrome.endpoint);
+  try {
+    await page.send('Page.enable');
+    await page.send('Runtime.enable');
+    await page.send('Emulation.setDeviceMetricsOverride', { ...viewport, deviceScaleFactor: 1, mobile: false });
+    await page.send('Page.navigate', { url: `${origin}${path}` });
+    await page.waitFor(`Boolean(document.querySelector('[data-showcase-case="table/sticky-header"] table.vf-table'))`);
+    await delay(200);
+
+    return await page.evaluate(`(async () => {
+      const sections = Object.fromEntries(
+        [...document.querySelectorAll('[data-showcase-case]')].map((element) => [
+          element.dataset.showcaseCase,
+          [...element.querySelectorAll('table.vf-table')].map((table) =>
+            [...table.children].map((child) => child.tagName.toLowerCase() + (child.children.length === 0 ? ':empty' : '')).join(','),
+          ),
+        ]),
+      );
+      const attrsCase = document.querySelector('[data-showcase-case="table/consumer-attrs"]');
+      const wrapper = attrsCase.querySelector('.vf-table-wrap');
+      const table = attrsCase.querySelector('table.vf-table');
+      const ariaWrapper = document.querySelector('[data-showcase-case="table/consumer-aria"] .vf-table-wrap');
+
+      const sticky = document.querySelector('[data-showcase-case="table/sticky-header"]');
+      const scroller = sticky.querySelector('.vf-table-scroll');
+      const head = sticky.querySelector('thead th');
+      const firstBody = sticky.querySelector('tbody tr');
+      scroller.scrollIntoView({ block: 'center' });
+      const offset = () => Math.round(head.getBoundingClientRect().top - scroller.getBoundingClientRect().top);
+      const before = { head: offset(), body: Math.round(firstBody.getBoundingClientRect().top - scroller.getBoundingClientRect().top) };
+      scroller.scrollTop = 80;
+      await new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)));
+      const after = { head: offset(), body: Math.round(firstBody.getBoundingClientRect().top - scroller.getBoundingClientRect().top) };
+
+      return {
+        sections,
+        wrapper: { id: wrapper.id, testid: wrapper.dataset.testid ?? null, style: wrapper.getAttribute('style'), consumer: wrapper.classList.contains('consumer-table') },
+        tableAttributes: [...table.attributes].map((attribute) => attribute.name + '=' + attribute.value),
+        ariaWrapper: [ariaWrapper.getAttribute('role'), ariaWrapper.getAttribute('aria-label'), ariaWrapper.getAttribute('tabindex')],
+        ariaTable: [...document.querySelector('[data-showcase-case="table/consumer-aria"] table.vf-table').attributes].map((attribute) => attribute.name),
+        sticky: {
+          position: getComputedStyle(head).position,
+          scrollable: scroller.scrollHeight > scroller.clientHeight,
+          scrolled: scroller.scrollTop,
+          before,
+          after,
+        },
+        inlineScripts: [...document.querySelectorAll('script:not([src])')].filter((script) => /vf-table/i.test(script.textContent)).length,
+      };
+    })()`);
   } finally {
     await page.close();
   }
@@ -2977,6 +3131,161 @@ try {
             JSON.stringify({ vue: painted.vue[state], razor: painted.razor[state] }),
           );
         }
+      }
+
+      // --------------------------------------------- the fieldset is a native fieldset
+      //
+      // M34: a disabled fieldset disables its controls natively - a real Tab
+      // from just before it skips them, the same Tab enters the enabled one -
+      // the fieldset names its description and then its error inside itself,
+      // for one instance and each of two, and nothing writes aria-invalid but
+      // the one consumer that forwards it. The same on both platforms.
+      if (name === 'VfFieldset') {
+        const read = {};
+        for (const [platform, origin, route] of [
+          ['vue', vueOrigin, `${vueRoute}&theme=${theme}`],
+          ['razor', razorOrigin, `${razorRoute}&theme=${theme}`],
+        ]) {
+          const fieldset = await probeFieldset(origin, route);
+          read[platform] = fieldset;
+          check(
+            `[${name}/${theme}] the ${platform} showcase's fieldset names its description, then its error, inside itself`,
+            JSON.stringify(fieldset.described) === '["vf-fieldset__description","vf-fieldset__error"]',
+            JSON.stringify(fieldset.described),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase's two fieldsets each name only their own paragraphs`,
+            fieldset.pair.length === 2 &&
+              fieldset.pair.every(
+                (targets) => JSON.stringify(targets) === '["vf-fieldset__description","vf-fieldset__error"]',
+              ),
+            JSON.stringify(fieldset.pair),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase's disabled fieldset disables its controls natively and a real Tab skips them`,
+            fieldset.disabledNative === true &&
+              JSON.stringify(fieldset.disabledControls) === '[true,true]' &&
+              fieldset.tabIntoDisabled === 'outside',
+            JSON.stringify({
+              native: fieldset.disabledNative,
+              controls: fieldset.disabledControls,
+              tab: fieldset.tabIntoDisabled,
+            }),
+          );
+          check(
+            `[${name}/${theme}] a real Tab enters the ${platform} showcase's enabled fieldset at the consumer input`,
+            fieldset.tabIntoFull === 'input.email',
+            fieldset.tabIntoFull,
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase's fieldsets carry aria-invalid only where a consumer forwards it`,
+            fieldset.ariaInvalid === 1 && fieldset.forwardedInvalid === 'true',
+            JSON.stringify({ count: fieldset.ariaInvalid, forwarded: fieldset.forwardedInvalid }),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase adds no script of its own to the fieldsets`,
+            fieldset.inlineScripts === 0,
+            `${fieldset.inlineScripts} inline script(s)`,
+          );
+        }
+        check(
+          `[${name}/${theme}] the two showcases read the same fieldset semantics`,
+          JSON.stringify({ ...read.vue, scopedInput: null }) === JSON.stringify({ ...read.razor, scopedInput: null }),
+          JSON.stringify(read),
+        );
+        // The one difference the two pages are allowed, and the reason it is:
+        // the Vue consumer binds the scoped slot, the Razor slot has no scope.
+        check(
+          `[${name}/${theme}] the Vue consumer input binds the scoped describedBy and invalid; the Razor one cannot`,
+          read.vue.scopedInput.describedBy === true &&
+            read.vue.scopedInput.invalid === 'true' &&
+            read.razor.scopedInput.describedBy === false &&
+            read.razor.scopedInput.invalid === null,
+          JSON.stringify({ vue: read.vue.scopedInput, razor: read.razor.scopedInput }),
+        );
+      }
+
+      // --------------------------------------------- the table owns its wrapper
+      //
+      // M34: the consumer's attributes are on the wrapper and the table keeps
+      // its class list; a real scroll of the height-limited case keeps the head
+      // cell at the scroll container's top edge; and the row groups match case
+      // for case - except where a Razor template with only named slots declares
+      // the default slot (plan section У.8), which this counts exactly.
+      if (name === 'VfTable') {
+        const read = {};
+        for (const [platform, origin, route] of [
+          ['vue', vueOrigin, `${vueRoute}&theme=${theme}`],
+          ['razor', razorOrigin, `${razorRoute}&theme=${theme}`],
+        ]) {
+          const table = await probeTable(origin, route);
+          read[platform] = table;
+          check(
+            `[${name}/${theme}] the ${platform} showcase puts the consumer attributes on the wrapper and none on the table`,
+            table.wrapper.id === 'members-table' &&
+              table.wrapper.testid === 'table' &&
+              table.wrapper.consumer === true &&
+              /max-width/.test(table.wrapper.style ?? '') &&
+              JSON.stringify(table.tableAttributes) === '["class=vf-table vf-table--striped"]' &&
+              JSON.stringify(table.ariaWrapper) === '["region","Members region","0"]' &&
+              JSON.stringify(table.ariaTable) === '["class"]',
+            JSON.stringify({ wrapper: table.wrapper, table: table.tableAttributes, aria: table.ariaWrapper }),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase's sticky header stays at the top of its scroll container while the body scrolls`,
+            table.sticky.position === 'sticky' &&
+              table.sticky.scrollable === true &&
+              table.sticky.scrolled > 0 &&
+              // Below the caption at rest; stuck to the top edge once scrolled,
+              // while the body moved by exactly the scrolled distance.
+              table.sticky.before.head > 0 &&
+              table.sticky.after.head === 0 &&
+              table.sticky.after.body === table.sticky.before.body - table.sticky.scrolled,
+            JSON.stringify(table.sticky),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase adds no script of its own to the tables`,
+            table.inlineScripts === 0,
+            `${table.inlineScripts} inline script(s)`,
+          );
+        }
+        const templateLimited = ['table/head-only', 'table/foot-only', 'table/head-foot', 'table/two-instances'];
+        const differing = Object.keys(read.vue.sections).filter(
+          (caseId) => JSON.stringify(read.vue.sections[caseId]) !== JSON.stringify(read.razor.sections[caseId]),
+        );
+        check(
+          `[${name}/${theme}] the two showcases render the same row groups in every case but the template-limited ones`,
+          JSON.stringify(differing) === JSON.stringify(templateLimited),
+          JSON.stringify(differing),
+        );
+        check(
+          `[${name}/${theme}] in the template-limited cases the Razor showcase differs only by an empty tbody`,
+          templateLimited.every(
+            (caseId) =>
+              JSON.stringify(
+                read.razor.sections[caseId].map((groups) =>
+                  groups
+                    .split(',')
+                    .filter((group) => group !== 'tbody:empty')
+                    .join(','),
+                ),
+              ) === JSON.stringify(read.vue.sections[caseId]) &&
+              read.razor.sections[caseId].some((groups) => groups.includes('tbody:empty')),
+          ),
+          JSON.stringify(
+            Object.fromEntries(
+              templateLimited.map((caseId) => [
+                caseId,
+                { vue: read.vue.sections[caseId], razor: read.razor.sections[caseId] },
+              ]),
+            ),
+          ),
+        );
+        check(
+          `[${name}/${theme}] the two showcases scroll the sticky header the same way`,
+          JSON.stringify(read.vue.sticky) === JSON.stringify(read.razor.sticky),
+          JSON.stringify({ vue: read.vue.sticky, razor: read.razor.sticky }),
+        );
       }
 
       // ------------------------------------------------------------- the catalog

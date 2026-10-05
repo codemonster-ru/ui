@@ -151,6 +151,8 @@ export default defineConfig({
         'menu-item': fileURLToPath(new URL('./menu-item.html', import.meta.url)),
         dropdown: fileURLToPath(new URL('./dropdown.html', import.meta.url)),
         groupBox: fileURLToPath(new URL('./group-box.html', import.meta.url)),
+        fieldset: fileURLToPath(new URL('./fieldset.html', import.meta.url)),
+        table: fileURLToPath(new URL('./table.html', import.meta.url)),
         popover: fileURLToPath(new URL('./popover.html', import.meta.url)),
         tooltip: fileURLToPath(new URL('./tooltip.html', import.meta.url)),
         select: fileURLToPath(new URL('./select.html', import.meta.url)),
@@ -285,6 +287,14 @@ export default defineConfig({
       {
         find: /^@vueforge\/dropdown-cases$/,
         replacement: fileURLToPath(new URL('../../contracts/dropdown/cases.json', import.meta.url)),
+      },
+      {
+        find: /^@vueforge\/fieldset-cases$/,
+        replacement: fileURLToPath(new URL('../../contracts/fieldset/cases.json', import.meta.url)),
+      },
+      {
+        find: /^@vueforge\/table-cases$/,
+        replacement: fileURLToPath(new URL('../../contracts/table/cases.json', import.meta.url)),
       },
       {
         find: /^@vueforge\/group-box-cases$/,

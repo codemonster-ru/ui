@@ -8405,6 +8405,24 @@ export const fieldsetMutations = [
 
   // ------------------------------------------------------------ presence
   {
+    id: 'fieldset-consumer-undefined-describedby-ignored',
+    file: fieldsetSourcePath,
+    suite: fieldsetSuite,
+    description:
+      'a consumer aria-describedby that is undefined or null falls back to the computed value instead of erasing it',
+    edits: [
+      {
+        find: 'const slots = useSlots();',
+        replace: 'defineOptions({ inheritAttrs: false });\nconst slots = useSlots();',
+      },
+      {
+        find: '  <fieldset :class="rootClasses" :aria-describedby="describedBy">',
+        replace:
+          '  <fieldset :class="rootClasses" v-bind="$attrs" :aria-describedby="($attrs[\'aria-describedby\'] as string | undefined) ?? describedBy">',
+      },
+    ],
+  },
+  {
     id: 'fieldset-empty-label-counts',
     file: fieldsetRulePath,
     suite: fieldsetSuite,

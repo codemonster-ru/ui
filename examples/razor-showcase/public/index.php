@@ -83,7 +83,7 @@ $showcaseIndex = readSharedJson($repositoryRoot . '/examples/shared/showcase-ind
  * view. The list is derived from the shared index rather than written here, so
  * this application cannot claim support the index does not record.
  */
-$views = ['VfInput' => 'input-showcase', 'VfIconButton' => 'icon-button-showcase', 'VfField' => 'field-showcase', 'VfButton' => 'button-showcase', 'VfTextarea' => 'textarea-showcase', 'VfCheckbox' => 'checkbox-showcase', 'VfRadio' => 'radio-showcase', 'VfSwitch' => 'switch-showcase', 'VfBadge' => 'badge-showcase', 'VfTag' => 'tag-showcase', 'VfDivider' => 'divider-showcase', 'VfSkeleton' => 'skeleton-showcase', 'VfAvatar' => 'avatar-showcase', 'VfCard' => 'card-showcase', 'VfSkeletonGate' => 'skeleton-gate-showcase', 'VfPanel' => 'panel-showcase', 'VfAlert' => 'alert-showcase', 'VfProgressSpinner' => 'progress-spinner-showcase', 'VfProgressBar' => 'progress-bar-showcase', 'VfAccordion' => 'accordion-showcase', 'VfStepper' => 'stepper-showcase', 'VfTabs' => 'tabs-showcase', 'VfLink' => 'link-showcase', 'VfBreadcrumbs' => 'breadcrumbs-showcase', 'VfMenu' => 'menu-showcase', 'VfMenuItem' => 'menu-item-showcase', 'VfDropdown' => 'dropdown-showcase', 'VfGroupBox' => 'group-box-showcase', 'VfPopover' => 'popover-showcase', 'VfTooltip' => 'tooltip-showcase', 'VfSelect' => 'select-showcase', 'VfNavMenu' => 'nav-menu-showcase'];
+$views = ['VfInput' => 'input-showcase', 'VfIconButton' => 'icon-button-showcase', 'VfField' => 'field-showcase', 'VfButton' => 'button-showcase', 'VfTextarea' => 'textarea-showcase', 'VfCheckbox' => 'checkbox-showcase', 'VfRadio' => 'radio-showcase', 'VfSwitch' => 'switch-showcase', 'VfBadge' => 'badge-showcase', 'VfTag' => 'tag-showcase', 'VfDivider' => 'divider-showcase', 'VfSkeleton' => 'skeleton-showcase', 'VfAvatar' => 'avatar-showcase', 'VfCard' => 'card-showcase', 'VfSkeletonGate' => 'skeleton-gate-showcase', 'VfPanel' => 'panel-showcase', 'VfAlert' => 'alert-showcase', 'VfProgressSpinner' => 'progress-spinner-showcase', 'VfProgressBar' => 'progress-bar-showcase', 'VfAccordion' => 'accordion-showcase', 'VfStepper' => 'stepper-showcase', 'VfTabs' => 'tabs-showcase', 'VfLink' => 'link-showcase', 'VfBreadcrumbs' => 'breadcrumbs-showcase', 'VfMenu' => 'menu-showcase', 'VfMenuItem' => 'menu-item-showcase', 'VfDropdown' => 'dropdown-showcase', 'VfGroupBox' => 'group-box-showcase', 'VfPopover' => 'popover-showcase', 'VfTooltip' => 'tooltip-showcase', 'VfSelect' => 'select-showcase', 'VfNavMenu' => 'nav-menu-showcase', 'VfFieldset' => 'fieldset-showcase', 'VfTable' => 'table-showcase'];
 $supported = [];
 
 foreach ($showcaseIndex['components'] as $entry) {
@@ -197,4 +197,16 @@ echo $engine->render($supported[$component]['view'], [
     'describedBy' => $describedBy,
     'fieldInvalid' => $fieldInvalid,
     'interactionSummaries' => $interactionSummaries,
+    // The member rows the VfTable showcase cases draw from, in the order the
+    // Vue showcase and both parity fixtures use. Consumer content, not product.
+    'tableMembers' => [
+        ['Ada Lovelace', 'Owner', 'Active'],
+        ['Grace Hopper', 'Admin', 'Active'],
+        ['Linus Pauling', 'Editor', 'Invited'],
+        ['Mary Somerville', 'Viewer', 'Active'],
+        ['Alan Turing', 'Editor', 'Suspended'],
+        ['Rosalind Franklin', 'Viewer', 'Active'],
+        ['Emmy Noether', 'Admin', 'Invited'],
+        ['Carl Gauss', 'Viewer', 'Active'],
+    ],
 ]);

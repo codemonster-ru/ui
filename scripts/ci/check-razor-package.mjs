@@ -243,6 +243,19 @@ check(
     (css.match(/^\.vf-nav-menu__compact-breakpoint-probe \{$/gm) ?? []).length === 1 &&
     (css.match(/^\.vf-nav-menu__collapse \{$/gm) ?? []).length === 1,
 );
+// M34: the fieldset and the table ship no controller - nothing of theirs is
+// in the packaged script - and their stylesheets are inlined exactly once.
+// VfDataTable is not migrated, so no data table selector may ride along
+// with table.css (its --vf-data-table-* tokens are the theme's, as before).
+check('the packaged controller carries nothing for the fieldset or the table', !/vf-fieldset|vf-table/.test(js));
+check(
+  'the packaged stylesheet carries the fieldset and table rules exactly once, and no data table rule',
+  (css.match(/^\.vf-fieldset \{$/gm) ?? []).length === 1 &&
+    (css.match(/^\.vf-fieldset__legend \{$/gm) ?? []).length === 1 &&
+    (css.match(/^\.vf-table-wrap \{$/gm) ?? []).length === 1 &&
+    (css.match(/^\.vf-table--sticky-header thead th \{$/gm) ?? []).length === 1 &&
+    !css.includes('.vf-data-table'),
+);
 check(
   'the packaged stylesheet carries the popover rules exactly once',
   (css.match(/^\.vf-popover__content \{$/gm) ?? []).length === 1 &&

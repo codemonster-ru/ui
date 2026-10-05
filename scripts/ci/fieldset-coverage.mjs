@@ -81,6 +81,12 @@ export function fieldsetCoverageViolations(cases) {
   require('no shared fieldset case forwards a consumer aria-describedby over a computed one, so nothing proves it replaces it', (
     entry,
   ) => attrs(entry)['aria-describedby'] !== undefined && (has(entry, 'description') || has(entry, 'error')));
+  require('no shared fieldset case passes aria-describedby explicitly as nothing, so nothing proves it erases the computed value', (
+    entry,
+  ) =>
+    Object.hasOwn(attrs(entry), 'aria-describedby') &&
+    attrs(entry)['aria-describedby'] === null &&
+    (has(entry, 'description') || has(entry, 'error')));
   require('no shared fieldset case forwards a consumer aria-describedby alone', (entry) =>
     attrs(entry)['aria-describedby'] !== undefined && bare(entry));
   require('no shared fieldset case renders two fieldsets with a description and an error each, so cross-wired ids would pass', (
