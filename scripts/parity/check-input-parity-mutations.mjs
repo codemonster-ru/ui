@@ -11,10 +11,16 @@
 // Nothing is written to the source tree, so an interrupted run cannot leave a
 // deliberate defect behind. A mutation that cannot find what it is supposed to
 // break fails the gate instead of counting as a detection.
+//
+// `--with-gate` (M35 P0-1, what `parity:check` runs) also runs the three-way
+// gate of check-input-parity.mjs on the same clean captures, first, and stops
+// if it fails - one build and one clean capture per profile instead of two.
+// Both reports are written exactly as the two scripts write them alone.
 import { relative, resolve } from 'node:path';
 import { writeFileSync } from 'node:fs';
 import { isDeepStrictEqual } from 'node:util';
 import { repositoryRoot, stableStringify } from '../baseline/reference.mjs';
+import { reportParity } from './check-input-parity.mjs';
 import { validatePolicy } from './compare.mjs';
 import { profileFromArgv } from './profiles.mjs';
 import {
@@ -350,6 +356,12 @@ const { captures, targets, browser, mutationCaptures } = await captureAll(catalo
   log: (line) => process.stdout.write(line),
   browserMutations: mutations.browser,
 });
+
+if (process.argv.includes('--with-gate')) {
+  process.stdout.write('\nThree-way gate on the clean captures\n');
+  if (!reportParity({ catalog, policy, targets, captures, browser })) process.exit(1);
+  process.stdout.write('\n');
+}
 
 const pageErrors = collectPageErrors(captures);
 if (pageErrors.length > 0) {
