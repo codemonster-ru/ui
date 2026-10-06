@@ -4,7 +4,8 @@
 // keeps the same approach but launches and owns its own headless browser so a
 // capture run is reproducible without a manually started Chrome.
 import { spawn } from 'node:child_process';
-import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync } from 'node:fs';
+import { rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { chromeArguments } from './reference.mjs';
@@ -50,6 +51,23 @@ async function waitForDevToolsEndpoint(profileDirectory, timeoutMs = 30_000) {
   throw new Error('Chrome did not report a DevTools port.');
 }
 
+/**
+ * Deletes the temporary profile a launched Chrome owned (M35.0c).
+ *
+ * Chrome 155 can still write into it after its main process has exited - its
+ * network service flushes `Network Persistent State` and `Reporting and
+ * NEL-journal` - so a deletion racing that write failed with ENOTEMPTY and took
+ * the whole capture down with it. Node retries ENOTEMPTY, EBUSY and EPERM with a
+ * linear backoff: 3 retries 50 ms apart give the flush 300 ms at the top level,
+ * and a failure that does not pass still throws - after a few seconds for a
+ * locked file two levels deep, because each level retries on its own.
+ * It is the asynchronous rm on purpose: Node 24's rmSync does not retry.
+ * Nothing else in the harness retries.
+ */
+export function removeProfile(directory) {
+  return rm(directory, { recursive: true, force: true, maxRetries: 3, retryDelay: 50 });
+}
+
 export async function launchChrome() {
   const executable = resolveChromeExecutable();
   const profileDirectory = mkdtempSync(resolve(tmpdir(), 'vueforge-baseline-chrome-'));
@@ -74,7 +92,7 @@ export async function launchChrome() {
     async close() {
       child.kill('SIGTERM');
       await new Promise((resolvePromise) => child.once('exit', resolvePromise));
-      rmSync(profileDirectory, { recursive: true, force: true });
+      await removeProfile(profileDirectory);
     },
     stderr: () => stderrChunks.join(''),
   };
