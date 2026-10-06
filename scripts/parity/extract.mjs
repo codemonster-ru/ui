@@ -884,11 +884,15 @@ async function pressKey(page, key) {
     throw new Error(`unsupported interaction key: ${JSON.stringify(key)}`);
   }
 
+  // No nativeVirtualKeyCode (M35.0c). It was the Windows code, which macOS
+  // reads as another physical key - 39 is the quote key, 40 the K - and an
+  // unconsumed one of those reached the browser as a shortcut that opened
+  // chrome://settings/help. The page sees key, code and keyCode, all of which
+  // come from the fields below.
   const base = {
     key,
     code: descriptor.code,
     windowsVirtualKeyCode: descriptor.virtualKeyCode,
-    nativeVirtualKeyCode: descriptor.virtualKeyCode,
   };
   // A key that produces a character is sent as one keyDown carrying it, which
   // Chrome expands into the keydown and the keypress itself. Until M24 it was

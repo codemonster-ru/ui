@@ -158,3 +158,97 @@ test('the swallowed keys are an explicit list of navigation keys, and none of th
   ]);
   for (const key of ['Enter', ' ', 'Tab']) assert.ok(!extract.browserDefaultKeys.includes(key), key);
 });
+
+// M35.0c. The window guard above only acts on a key that reaches window. A
+// mutation fixture that stops the key on its way - stepper's
+// browser-stepper-arrow-without-prevent-default intercepts ArrowRight on the
+// list and calls stopImmediatePropagation, deliberately without preventing it -
+// left the browser to answer it, and the browser opened chrome://settings/help
+// again. The cause was not the unconsumed key: pressKey sent the Windows key
+// code as nativeVirtualKeyCode, which macOS reads as another physical key (39
+// is the quote key), and that key reached the browser as a shortcut. The driver
+// no longer sends one.
+const interceptor = (prevent) =>
+  `window.__intercepted = 0; window.__windowSaw = 0;
+   addEventListener('keydown', () => { window.__windowSaw += 1; });
+   document.querySelector('[data-parity-case="c"]').addEventListener('keydown', (event) => {
+     if (event.key !== 'ArrowRight') return;
+     window.__intercepted += 1;
+     event.stopImmediatePropagation();
+     ${prevent ? 'event.preventDefault();' : ''}
+   }, true);`;
+
+test('a key a mutation stops before window, unprevented, stays unprevented and leaves the page visible', async () => {
+  await load(interceptor(false));
+  const inputEvents = await press('ArrowRight');
+
+  assert.equal(await page.evaluate('window.__intercepted'), 1, 'the interceptor ran');
+  assert.equal(await page.evaluate('window.__windowSaw'), 0, 'nothing on window saw the key, the guard included');
+  assert.deepEqual(keydownPrevented(inputEvents), [false]);
+  assert.deepEqual(await health(), healthy);
+});
+
+test('an interceptor that prevents the key is recorded as prevented - the evidence a preventDefault "fix" would change', async () => {
+  await load(interceptor(true));
+
+  assert.deepEqual(keydownPrevented(await press('ArrowRight')), [true]);
+  assert.equal(await page.evaluate('window.__windowSaw'), 0);
+});
+
+test(
+  'the old payload - the Windows code as nativeVirtualKeyCode - still makes the browser take the stopped key',
+  { skip: process.platform !== 'darwin' && 'the mismatch is macOS key codes; CI runs Linux' },
+  async () => {
+    // The positive control: what pressKey sent until M35.0c, by hand, on the
+    // same page. Without it the tests above could pass on a browser that never
+    // took such keys at all.
+    await load(interceptor(false));
+    await page.evaluate(`document.getElementById('a').focus()`);
+    const old = { key: 'ArrowRight', code: 'ArrowRight', windowsVirtualKeyCode: 39, nativeVirtualKeyCode: 39 };
+    await page.send('Input.dispatchKeyEvent', { type: 'rawKeyDown', ...old });
+    await page.send('Input.dispatchKeyEvent', { type: 'keyUp', ...old });
+
+    const after = await health();
+    assert.equal(after.visibility, 'hidden');
+    // chrome://help/ is the page before its redirect to chrome://settings/help.
+    assert.equal(after.browserPages.length, 1);
+    assert.match(after.browserPages[0], /^chrome:\/\/(settings\/)?help\/?$/);
+  },
+);
+
+test('pressKey sends key, code and the Windows key code - and no nativeVirtualKeyCode - for every key it knows', async () => {
+  const sent = [];
+  const recorder = {
+    send: async (method, params) => {
+      if (method === 'Input.dispatchKeyEvent') sent.push(params);
+      return {};
+    },
+    evaluate: async () => null,
+  };
+  const keys = {
+    Enter: 13,
+    ' ': 32,
+    Tab: 9,
+    Escape: 27,
+    Home: 36,
+    End: 35,
+    ArrowLeft: 37,
+    ArrowUp: 38,
+    ArrowRight: 39,
+    ArrowDown: 40,
+  };
+  for (const key of Object.keys(keys)) {
+    sent.length = 0;
+    await extract.driveInteraction(recorder, 'c', [{ action: 'pressKey', key }]);
+    assert.deepEqual(
+      sent.map((event) => event.type),
+      key === 'Enter' || key === ' ' ? ['keyDown', 'keyUp'] : ['rawKeyDown', 'keyUp'],
+      key,
+    );
+    for (const event of sent) {
+      assert.equal(event.key, key);
+      assert.equal(event.windowsVirtualKeyCode, keys[key], key);
+      assert.ok(!('nativeVirtualKeyCode' in event), `${key} ${event.type} carries a nativeVirtualKeyCode`);
+    }
+  }
+});
