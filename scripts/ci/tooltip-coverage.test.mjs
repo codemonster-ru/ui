@@ -22,6 +22,7 @@ import { fileURLToPath } from 'node:url';
 import { test } from 'node:test';
 
 import {
+  SCHEDULING_BEFORE_DELAY,
   SETTLE_AFTER_DELAY,
   TOOLTIP_REQUIREMENTS,
   stepProblem,
@@ -199,6 +200,34 @@ test('D: a scenario that ends before its timer could fire and settle is refused'
       return entry;
     }),
     /waits 0 ms after its last gesture/,
+  );
+});
+
+test('D2: a gesture that must land before the delay keeps the scheduling budget, and a re-entry still lands late enough (M35.0a)', () => {
+  const secondWait = (id, ms) =>
+    rewrite(id, (entry) => {
+      entry.interaction.steps[1].ms = ms;
+      return entry;
+    });
+  // The M31 re-entry: a 500 ms wait the harness's own scheduling pushed past
+  // the 600 ms delay at 30 frames per second.
+  assertFails(
+    secondWait('tooltip/interaction-reentry-restart', 500),
+    /proves a re-entry after a leave restarts the timer/,
+  );
+  // Too soon to tell a restarted delay from a surviving one.
+  assertFails(
+    secondWait('tooltip/interaction-reentry-restart', 250),
+    /proves a re-entry after a leave restarts the timer/,
+  );
+  // Waits the M31 margin accepted and the budget does not.
+  assertFails(
+    secondWait('tooltip/interaction-pending-cancel-pointer', 600 - SCHEDULING_BEFORE_DELAY + 1),
+    /cancels a pending open with a real unhover/,
+  );
+  assertFails(
+    secondWait('tooltip/interaction-activation-restart', 1500 - SCHEDULING_BEFORE_DELAY + 1),
+    /proves a second activation restarts the pending timer/,
   );
 });
 

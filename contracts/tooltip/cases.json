@@ -927,7 +927,7 @@
     {
       "id": "tooltip/interaction-reentry-restart",
       "title": "A re-entry after a leave starts a fresh timer: on time from the re-entry",
-      "$why": "The leave at 500 ms cancels; the re-entry starts 600 ms again. A timer the leave failed to cancel would open about 100 ms after the re-entry - early.",
+      "$why": "The leave after a 300 ms wait cancels; the re-entry starts 600 ms again. A timer the leave failed to cancel would open less than 300 ms after the re-entry - early. The wait is the harness's, not the component's: every step also settles on two frames, so the leave lands 300 ms plus that scheduling after the enter - about 390 ms at 60 frames per second, 434 at 30 - and the re-entry later still. M31 waited 500 ms, which left the leave about 10 ms inside the delay at 60 frames per second and outside it at 30 (M35.0a).",
       "props": {
         "text": "Slow hint",
         "openDelay": 600
@@ -949,7 +949,7 @@
           },
           {
             "action": "wait",
-            "ms": 500
+            "ms": 300
           },
           {
             "action": "unhover"

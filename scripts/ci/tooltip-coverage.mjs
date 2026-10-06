@@ -68,6 +68,18 @@ const EXPECT_FIELDS = [
 ];
 /** The leave the snapshot waits out, plus the margin every timing window keeps. */
 export const SETTLE_AFTER_DELAY = 320 + 150;
+/**
+ * What the harness may add between two gestures on top of the wait the catalog
+ * names (M35.0a): every step settles on two frames and every CDP call waits for
+ * the renderer - 134 ms at 30 frames per second, about 220 at 20. A gesture that
+ * must land before a pending delay expires has to fit with this to spare; one
+ * that must land late enough only gains from it and needs none. M31 kept 150 ms
+ * on both sides, and the re-entry case met it at 500 ms - its leave landed at
+ * 634 ms of a 600 ms delay when headless Chrome ran at 30 frames. A 600 ms
+ * delay leaves the re-entry no room for both, so its late side keeps none; the
+ * activation restart, with 1500 ms, keeps its 150.
+ */
+export const SCHEDULING_BEFORE_DELAY = 300;
 
 const content = (entry) => entry.content ?? {};
 const members = (entry) => (Array.isArray(entry.group) ? entry.group : [entry.props ?? {}]);
@@ -190,7 +202,7 @@ export const TOOLTIP_REQUIREMENTS = [
     'no scenario cancels a pending open with a real unhover',
     (entry) =>
       actionsOf(entry).join() === 'hover,wait,unhover,wait' &&
-      waitBefore(entry, 2) + 150 <= maxDelay(entry) &&
+      waitBefore(entry, 2) + SCHEDULING_BEFORE_DELAY <= maxDelay(entry) &&
       endsClosed(entry) &&
       JSON.stringify(openings(entry)) === '[]',
   ],
@@ -199,7 +211,7 @@ export const TOOLTIP_REQUIREMENTS = [
     (entry) =>
       actionsOf(entry).join() === 'focusButton,wait,focusButton,wait' &&
       drive(entry)[2].selector === '.parity-after-control' &&
-      waitBefore(entry, 2) + 150 <= maxDelay(entry) &&
+      waitBefore(entry, 2) + SCHEDULING_BEFORE_DELAY <= maxDelay(entry) &&
       endsClosed(entry) &&
       JSON.stringify(openings(entry)) === '[]',
   ],
@@ -207,7 +219,8 @@ export const TOOLTIP_REQUIREMENTS = [
     'no scenario proves a re-entry after a leave restarts the timer, late enough that a surviving one would be early',
     (entry) =>
       actionsOf(entry).join() === 'hover,wait,unhover,hover,wait' &&
-      waitBefore(entry, 2) >= maxDelay(entry) / 2 + 150 &&
+      waitBefore(entry, 2) >= maxDelay(entry) / 2 &&
+      waitBefore(entry, 2) + SCHEDULING_BEFORE_DELAY <= maxDelay(entry) &&
       endsOpen(entry) &&
       onlyOpening(entry, 'pointer'),
   ],
@@ -216,6 +229,7 @@ export const TOOLTIP_REQUIREMENTS = [
     (entry) =>
       actionsOf(entry).join() === 'hover,wait,focusButton,wait' &&
       waitBefore(entry, 2) >= maxDelay(entry) / 2 + 150 &&
+      waitBefore(entry, 2) + SCHEDULING_BEFORE_DELAY <= maxDelay(entry) &&
       endsOpen(entry) &&
       onlyOpening(entry, 'focus'),
   ],
