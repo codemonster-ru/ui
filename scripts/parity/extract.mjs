@@ -568,6 +568,14 @@ export async function driveInteraction(page, caseId, steps, activationSelector =
     // later, so that "Enter activated the button" is a recorded fact on both
     // adapters instead of an inference about which entry belongs to what.
     window.__parityActivations = 0;
+    // M35.0: a keydown's answer is read on window, in the bubble phase, after
+    // every product handler has run, and frozen there; only then is the
+    // browser default of an unconsumed navigation key swallowed - see
+    // browserDefaultKeys. Read later, like the other events, it would see the
+    // harness's own preventDefault and record [true] for a key the component
+    // left alone.
+    const keydowns = new WeakMap();
+    const frozen = new WeakSet();
     for (const type of ['pointerdown', 'mousedown', 'mouseup', 'click', 'input', 'keydown']) {
       document.addEventListener(type, (event) => {
         if (!root.contains(event.target)) return;
@@ -576,9 +584,20 @@ export async function driveInteraction(page, caseId, steps, activationSelector =
         }
         const entry = { type, trusted: event.isTrusted, defaultPrevented: false };
         window.__parityInputEvents.push(entry);
-        setTimeout(() => { entry.defaultPrevented = event.defaultPrevented; }, 0);
+        if (type === 'keydown') keydowns.set(event, entry);
+        setTimeout(() => { if (!frozen.has(entry)) entry.defaultPrevented = event.defaultPrevented; }, 0);
       }, true);
     }
+    window.addEventListener('keydown', (event) => {
+      const entry = keydowns.get(event);
+      if (entry) {
+        entry.defaultPrevented = event.defaultPrevented;
+        frozen.add(entry);
+      }
+      if (event.isTrusted && !event.defaultPrevented && ${JSON.stringify(browserDefaultKeys)}.includes(event.key)) {
+        event.preventDefault();
+      }
+    });
   })()`);
   // Same fallback as run.mjs settleExpression: a step that paints nothing -
   // pressing Enter on an already focused button - produces no frame, and a bare
@@ -831,6 +850,27 @@ const KEY_CODES = {
 };
 
 /**
+ * The keys whose browser default driveInteraction swallows once the page has
+ * answered them (M35.0) - the overlay fixtures' list since M28. Headless Chrome
+ * hands an unconsumed one to the browser, which opened chrome://settings/help
+ * as the active tab: the stepper's wrong-axis ArrowDown left the capture page
+ * hidden, without a frame, for every later scenario. None produces a
+ * character; Enter, Space and Tab keep their defaults, because native
+ * activation and focus moves are behaviour the scenarios measure.
+ */
+export const browserDefaultKeys = [
+  'ArrowUp',
+  'ArrowDown',
+  'ArrowLeft',
+  'ArrowRight',
+  'Home',
+  'End',
+  'PageUp',
+  'PageDown',
+  'Escape',
+];
+
+/**
  * A real key press on whatever currently has focus.
  *
  * A native button activates on keydown for Enter and on keyup for Space, so the
@@ -860,9 +900,11 @@ async function pressKey(page, key) {
   // when the tabs' readiness classes never appeared after the Enter case
   // (the stepper's Enter and Space scenarios had run that way in M23, with
   // nothing frame-dependent to notice). Any key the page leaves entirely to
-  // the browser does the same, which is why no scenario presses one. The
-  // activation contract is unchanged: one native click, keydown not
-  // prevented, as the Enter and Space scenarios of every profile still claim.
+  // the browser does the same; M35.0 found the stepper's wrong-axis ArrowDown
+  // doing it, which is why driveInteraction swallows browserDefaultKeys after
+  // recording the page's answer. The activation contract is unchanged: one
+  // native click, keydown not prevented, as the Enter and Space scenarios of
+  // every profile still claim.
   if (descriptor.text !== undefined) {
     await page.send('Input.dispatchKeyEvent', {
       type: 'keyDown',
