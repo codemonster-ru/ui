@@ -2087,6 +2087,14 @@ $html = <<<HTML
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>VueForge Razor parity cases</title>
+<script>
+  // The requested theme is set here, before a single case is parsed, as the Vue
+  // fixture sets it before it mounts (M35). Set at the end of the module below,
+  // it reached markup the browser had sometimes already styled in the default
+  // theme: every colour transition the components declare ran from light to
+  // dark, and the page declared itself ready in the middle of them.
+  document.documentElement.setAttribute('data-vf-theme', new URLSearchParams(window.location.search).get('theme') ?? 'light');
+</script>
 <link rel="stylesheet" href="./vueforge-razor.css">
 <link rel="stylesheet" href="./parity-page.css">
 </head>
@@ -2134,8 +2142,11 @@ $html = <<<HTML
 {$selectLogs}
 {$tooltipLogs}
 {$navMenuLogs}
+  // Ready only in the theme that was asked for, established before the cases.
   const theme = new URLSearchParams(window.location.search).get('theme') ?? 'light';
-  document.documentElement.setAttribute('data-vf-theme', theme);
+  if (document.documentElement.getAttribute('data-vf-theme') !== theme) {
+    throw new Error('The requested theme ' + theme + ' was not established before the cases rendered.');
+  }
   // A dropdown page is ready once every overlay that entered at bootstrap has
   // finished, as the Vue fixture waits for its appear transitions. Bounded;
   // every other catalog is ready at once, as before.
