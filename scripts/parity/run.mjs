@@ -206,6 +206,34 @@ async function screenshot(page, clip, directory, fileName) {
   return { fileName, sha256: createHash('sha256').update(bytes).digest('hex') };
 }
 
+/**
+ * Waits for the fixture's readiness mark by event rather than by polling (M35
+ * P1-1). cdp.mjs's waitFor looks every 100 ms, and the mark usually lands a few
+ * milliseconds after the navigation, so every one of a run's ~3 800
+ * navigations waited out most of a poll for nothing - about five minutes.
+ * The condition and its 60 s bound are the same. The page being left was marked
+ * before the navigation, so a wait that ran in it - where the mark of the last
+ * load still reads ready - fails instead of passing.
+ */
+export const readinessExpression = (timeoutMs = 60_000) => `new Promise((done, fail) => {
+  if (window.__parityNavigatedAway) return fail(new Error('readiness was read from the page being left'));
+  const ready = () => document.documentElement?.getAttribute('data-parity-ready') === 'true';
+  if (ready()) return done(true);
+  const timer = setTimeout(() => fail(new Error('Timed out waiting for data-parity-ready')), ${timeoutMs});
+  // The wait can start before the parser has made the root element: until it
+  // exists, watch the document for it, then watch its mark.
+  const watchRoot = () => document.documentElement && observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-parity-ready'] });
+  const observer = new MutationObserver(() => {
+    watchRoot();
+    if (!ready()) return;
+    observer.disconnect();
+    clearTimeout(timer);
+    done(true);
+  });
+  observer.observe(document, { childList: true });
+  watchRoot();
+})`;
+
 // Settling means "give the page a chance to paint, then carry on".
 //
 // A bare double requestAnimationFrame assumes a frame will be produced. That
@@ -269,8 +297,9 @@ async function captureTarget(
     });
 
     const navigate = async () => {
+      await page.evaluate('window.__parityNavigatedAway = true');
       await page.send('Page.navigate', { url: `${origin}/${targetPage}?theme=${theme}` });
-      await page.waitFor(`document.documentElement.getAttribute('data-parity-ready') === 'true'`);
+      await page.evaluate(readinessExpression());
       await page.waitFor(`document.querySelectorAll('[data-parity-case]').length === ${catalog.cases.length}`);
       await page.waitFor(`document.fonts.status === 'loaded'`);
       await page.evaluate(settleExpression);
