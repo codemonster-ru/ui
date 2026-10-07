@@ -5,6 +5,8 @@
 // same browser state, to compare nothing new (appendix АЛ.3). Now a profile is
 // one step: the mutation gate with `--with-gate` runs the three-way gate on the
 // clean captures it takes, first, and both reports are written as before.
+// Since P0-2 that chain is parity:check:profiles, which check-all.mjs runs
+// once it has built the reference for the whole run.
 //
 // The rewrite is the kind of change that fails silently. A step without
 // `--with-gate` passes while its three-way gate never runs; a dropped step
@@ -26,7 +28,7 @@ const componentOf = (command) => /--component=(\S+)/.exec(command)?.[1] ?? 'inpu
 function compositionProblems(scripts) {
   const problems = [];
   const gates = Object.keys(scripts).filter((name) => /^parity:[^:]+$/.test(name) && name !== 'parity:check');
-  const steps = scripts['parity:check'].split(' && ');
+  const steps = scripts['parity:check:profiles'].split(' && ');
   const seen = new Set();
 
   for (const step of steps) {
@@ -55,7 +57,14 @@ function compositionProblems(scripts) {
 
 test('parity:check runs every profile once: its mutation gate with the three-way gate on the same capture', () => {
   assert.deepEqual(compositionProblems(scripts), []);
-  assert.equal(scripts['parity:check'].split(' && ').length, Object.keys(profiles).length);
+  assert.equal(scripts['parity:check:profiles'].split(' && ').length, Object.keys(profiles).length);
+});
+
+test('parity:check is the orchestrator that builds the reference once and then runs exactly these steps (M35 P0-2)', () => {
+  assert.equal(scripts['parity:check'], 'node ./scripts/parity/check-all.mjs');
+  const orchestrator = readFileSync(resolve(repositoryRoot, 'scripts/parity/check-all.mjs'), 'utf8');
+  assert.match(orchestrator, /spawnSync\('npm', \['run', 'parity:check:profiles'\]/);
+  assert.equal(orchestrator.match(/prepareSharedReference\(/g).length, 1);
 });
 
 test('the separate scripts stay: every profile keeps its own gate and mutation gate', () => {
@@ -71,7 +80,7 @@ test('the separate scripts stay: every profile keeps its own gate and mutation g
 test('each silent way to get the composition wrong is refused', () => {
   const withCheck = (change) => ({
     ...scripts,
-    'parity:check': change(scripts['parity:check'].split(' && ')).join(' && '),
+    'parity:check:profiles': change(scripts['parity:check:profiles'].split(' && ')).join(' && '),
   });
   const expectProblem = (variant, pattern) =>
     assert.ok(
