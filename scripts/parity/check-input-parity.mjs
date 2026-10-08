@@ -127,6 +127,10 @@ export function reportParity({ catalog, policy, targets, captures, browser }) {
     failures: result.failures,
     approvedDivergences: result.approved,
     pageErrors,
+    // M35.1: a screenshot no acquisition produced. Cannot occur on the clean
+    // captures this gate reads - an unmutated acquisition fails closed - so the
+    // field exists only on a report that would otherwise have hidden one.
+    ...(result.acquisitionGaps.length > 0 ? { acquisitionGaps: result.acquisitionGaps } : {}),
   };
 
   const reportPath = resolve(runDirectory, profile.reportName);
@@ -183,7 +187,21 @@ export function reportParity({ catalog, policy, targets, captures, browser }) {
     }
   }
 
-  if (result.failures.length > 0 || pageErrors.length > 0 || result.approvalProblems.length > 0) {
+  if (result.acquisitionGaps.length > 0) {
+    process.stderr.write(
+      `\n[${profile.id}-parity] ${result.acquisitionGaps.length} screenshot comparison(s) without a screenshot:\n` +
+        result.acquisitionGaps
+          .map((gap) => `  - ${gap.caseId} [${gap.direction}/${gap.theme}] ${gap.dimension} on ${gap.target}\n`)
+          .join(''),
+    );
+  }
+
+  if (
+    result.failures.length > 0 ||
+    pageErrors.length > 0 ||
+    result.approvalProblems.length > 0 ||
+    result.acquisitionGaps.length > 0
+  ) {
     return false;
   }
 

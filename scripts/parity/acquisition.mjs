@@ -29,6 +29,7 @@
 //   and replaying Chrome's layer paint misses compositor effects). This is a
 //   documented exception, not a solved path: these captures still resize the
 //   frame while they are taken.
+import { createHash } from 'node:crypto';
 import { inflateSync } from 'node:zlib';
 
 export const SEMANTIC_SCROLL = 'semantic-scroll';
@@ -92,11 +93,81 @@ export function scrollCandidates(clip, scrollY, viewportHeight, maxScrollY) {
   return [...new Set(positions)];
 }
 
+/**
+ * Every way an acquisition can fail, and what kind of failure it is (M35.1).
+ *
+ *   infrastructure - the harness or the environment could not produce
+ *     trustworthy pixels: the viewport, the frame, the PNG or the timing was
+ *     wrong. Never evidence about the target.
+ *   rejection - the target's own geometry or behaviour under the acquisition
+ *     scroll ruled the capture out. It may be what a mutation caused, or not;
+ *     a mutation has to declare it to have it accepted as expected, and even
+ *     then it is not detection.
+ *
+ * Neither kind is a screenshot. A failed acquisition is never turned into a
+ * visual difference.
+ */
+export const INFRASTRUCTURE = 'infrastructure';
+export const REJECTION = 'rejection';
+export const ACQUISITION_FAILURES = Object.freeze({
+  'viewport-not-semantic': INFRASTRUCTURE,
+  'legacy-entry-stale': INFRASTRUCTURE,
+  'page-not-at-rest': INFRASTRUCTURE,
+  'viewport-resized-during-capture': INFRASTRUCTURE,
+  'viewport-resized-during-acquisition': INFRASTRUCTURE,
+  'page-changed-during-capture': INFRASTRUCTURE,
+  'screenshot-unreadable': INFRASTRUCTURE,
+  'screenshot-size-mismatch': INFRASTRUCTURE,
+  'clip-exceeds-viewport': REJECTION,
+  'clip-outside-viewport-horizontally': REJECTION,
+  'no-valid-scroll-position': REJECTION,
+  'restoration-failed': REJECTION,
+});
+
 export class AcquisitionError extends Error {
   constructor(message, diagnostics) {
     super(message);
     this.name = 'AcquisitionError';
     this.diagnostics = diagnostics;
+  }
+}
+
+/**
+ * The structured record of a failed acquisition, as a screenshot record and a
+ * mutation verdict carry it: which capture, which failure in full, and what it
+ * left behind. `obtainedSha256` is provenance of pixels that were taken and
+ * then refused - never parity evidence.
+ */
+export function acquisitionOutcome(diagnostics) {
+  return {
+    profile: diagnostics.profile,
+    caseId: diagnostics.caseId,
+    stage: diagnostics.stage,
+    target: diagnostics.target,
+    theme: diagnostics.theme,
+    mode: diagnostics.mode ?? null,
+    code: diagnostics.failureCode,
+    kind: diagnostics.failureKind,
+    reason: diagnostics.failure,
+    screenshotObtained: diagnostics.screenshotObtained,
+    obtainedSha256: diagnostics.obtainedSha256 ?? null,
+    restoration: diagnostics.restoration,
+    cleanupFailure: diagnostics.cleanupFailure ?? null,
+    pageUsable: diagnostics.pageUsable,
+  };
+}
+
+/**
+ * Thrown by the harness, not by acquisition, when a failed acquisition left a
+ * page it could not verifiably put back: nothing more may be measured on it.
+ * Carries the acquisition's diagnostics and the page's acquisition log so far.
+ */
+export class PageInvalidated extends Error {
+  constructor(error, acquisitions) {
+    super(`${error.message} The page is not usable for further evidence.`);
+    this.name = 'PageInvalidated';
+    this.diagnostics = error.diagnostics;
+    this.acquisitions = acquisitions;
   }
 }
 
@@ -324,9 +395,16 @@ export function inspectPng(bytes) {
 export async function acquireScreenshot(page, clip, context) {
   const { profile, caseId, stage, target, theme, viewport, followedReferences, settleExpression } = context;
   const diagnostics = { profile, caseId, stage, target, theme, clip: { ...clip } };
+  // What a failure leaves behind, kept current so a thrown error reports it:
+  // whether pixels were obtained at all, whether the page is back where the
+  // harness left it, and whether anything more may be measured on it.
+  diagnostics.screenshotObtained = false;
+  diagnostics.restoration = 'not-needed';
+  diagnostics.pageUsable = true;
   const resized = () => page.eventCounts['Page.frameResized'];
-  const fail = async (reason, extra = {}) => {
-    Object.assign(diagnostics, extra, { failure: reason });
+  const fail = async (code, reason, extra = {}) => {
+    if (!(code in ACQUISITION_FAILURES)) throw new Error(`acquisition: unknown failure code ${code}`);
+    Object.assign(diagnostics, extra, { failureCode: code, failureKind: ACQUISITION_FAILURES[code], failure: reason });
     throw new AcquisitionError(
       `Screenshot acquisition failed for ${caseId} [${stage}] on ${target} (${theme}): ${reason}.`,
       diagnostics,
@@ -340,14 +418,23 @@ export async function acquireScreenshot(page, clip, context) {
       fromSurface: true,
       clip: { ...clip, scale: 1 },
     });
-    return Buffer.from(shot.data, 'base64');
+    const bytes = Buffer.from(shot.data, 'base64');
+    // Provenance of the pixels actually obtained, whatever happens to them next.
+    diagnostics.screenshotObtained = true;
+    diagnostics.obtainedSha256 = createHash('sha256').update(bytes).digest('hex');
+    return bytes;
   };
   // A uniform image is recorded, not refused: the catalog has legitimate ones -
   // a skeleton that fills its case, a spinner with a zero stroke. What makes a
   // capture silently blank is a clip outside the painted viewport, and that is
   // excluded before and after the capture, not guessed from the pixels.
   const validate = async (bytes) => {
-    const png = inspectPng(bytes);
+    let png;
+    try {
+      png = inspectPng(bytes);
+    } catch (error) {
+      await fail('screenshot-unreadable', error.message);
+    }
     diagnostics.screenshot = {
       width: png.width,
       height: png.height,
@@ -355,7 +442,10 @@ export async function acquireScreenshot(page, clip, context) {
       uniformColour: png.uniformColour,
     };
     if (png.width !== clip.width || png.height !== clip.height) {
-      await fail(`the screenshot is ${png.width}x${png.height}, the clip ${clip.width}x${clip.height}`);
+      await fail(
+        'screenshot-size-mismatch',
+        `the screenshot is ${png.width}x${png.height}, the clip ${clip.width}x${clip.height}`,
+      );
     }
   };
 
@@ -363,7 +453,11 @@ export async function acquireScreenshot(page, clip, context) {
   diagnostics.viewport = { width: before.innerWidth, height: before.innerHeight };
   diagnostics.scrollBefore = { x: before.scrollX, y: before.scrollY };
   if (before.innerWidth !== viewport.width || before.innerHeight !== viewport.height || before.visual.scale !== 1) {
-    await fail(`the page does not have the semantic ${viewport.width}x${viewport.height} viewport`);
+    await fail(
+      'viewport-not-semantic',
+      `the page does not have the semantic ${viewport.width}x${viewport.height} viewport`,
+      { pageUsable: false },
+    );
   }
   const resizedAtStart = resized();
 
@@ -374,109 +468,149 @@ export async function acquireScreenshot(page, clip, context) {
     diagnostics.scrolled = false;
     if (clip.width <= before.innerWidth && clip.height <= before.innerHeight) {
       await fail(
+        'legacy-entry-stale',
         'an allowlisted legacy capture fits the semantic viewport - the allowlist entry is stale and must be removed',
       );
     }
     const bytes = await capture(true);
     diagnostics.frameResized = resized() - resizedAtStart;
-    diagnostics.restoration = 'not-needed';
     await validate(bytes);
     return { bytes, diagnostics };
   }
 
   diagnostics.mode = SEMANTIC_SCROLL;
   if (clip.width > before.innerWidth || clip.height > before.innerHeight) {
-    await fail('the clip is larger than the semantic viewport and the capture is not on the legacy allowlist');
-  }
-
-  let atCapture;
-  let rest = before;
-  diagnostics.scrolled = false;
-  diagnostics.candidates = [];
-  if (!visible(before, clip)) {
-    // An acquisition scroll is judged by what it changes, which can only be
-    // told apart from what the page changes by itself on a page at rest - a
-    // scenario may leave one in motion: Space on a disabled checkbox starts the
-    // browser's animated page scroll, which runs for several frames after the
-    // scenario's own settle. The existing settle is repeated, bounded, until
-    // two consecutive states agree; a page that never comes to rest fails.
-    diagnostics.restSettles = 0;
-    for (let previous = before; ;) {
-      await page.evaluate(settleExpression);
-      diagnostics.restSettles += 1;
-      rest = await readState();
-      if (stateChanges(previous, rest).length === 0) break;
-      if (diagnostics.restSettles >= REST_SETTLES) {
-        await fail(
-          `the page did not come to rest within ${REST_SETTLES} settles (${stateChanges(previous, rest).join(', ')})`,
-        );
-      }
-      previous = rest;
-    }
-    diagnostics.scrollAtRest = { x: rest.scrollX, y: rest.scrollY };
-  }
-  if (!visible(rest, clip)) {
-    const before = rest;
-    if (clip.x < before.visual.left || clip.x + clip.width > before.visual.left + before.visual.width) {
-      await fail('the clip is outside the viewport horizontally; acquisition only scrolls vertically');
-    }
-    let chosen = null;
-    for (const y of scrollCandidates(clip, before.scrollY, before.innerHeight, before.maxScrollY)) {
-      const resizedBefore = resized();
-      await page.evaluate(`window.scrollTo(${before.scrollX}, ${y})`);
-      await page.evaluate(settleExpression);
-      const state = await readState();
-      const rejected = candidateRejections(before, state, clip, resized() !== resizedBefore);
-      diagnostics.candidates.push({ y, scrollY: state.scrollY, rejected });
-      if (rejected.length === 0) {
-        chosen = state;
-        break;
-      }
-    }
-    if (!chosen) {
-      await page.evaluate(`window.scrollTo(${before.scrollX}, ${before.scrollY})`);
-      await page.evaluate(settleExpression);
-      await fail('no scroll position satisfied the acquisition invariants');
-    }
-    atCapture = chosen;
-    diagnostics.scrolled = true;
-    diagnostics.chosenScrollY = chosen.scrollY;
-  } else {
-    atCapture = rest;
-  }
-
-  const resizedBeforeCapture = resized();
-  const bytes = await capture(false);
-  if (resized() !== resizedBeforeCapture) await fail('the viewport was resized while the screenshot was taken');
-  // What acquisition answers for: the clip was inside the viewport when the
-  // pixels were taken, and - when it scrolled - the target it validated is the
-  // target it captured. A capture that needed no scroll took the page as the
-  // harness left it, as captures always have; whether that page was still
-  // changing is not something acquisition did.
-  const captured = await readState();
-  const moved =
-    captured.scrollX !== atCapture.scrollX || captured.scrollY !== atCapture.scrollY || !visible(captured, clip);
-  if (moved || (diagnostics.scrolled && captured.fingerprint !== atCapture.fingerprint)) {
     await fail(
-      `the page changed while the screenshot was taken (${stateChanges(atCapture, captured).join(', ') || 'the clip left the viewport'})`,
+      'clip-exceeds-viewport',
+      'the clip is larger than the semantic viewport and the capture is not on the legacy allowlist',
     );
   }
-  await validate(bytes);
 
-  if (diagnostics.scrolled) {
-    await page.evaluate(`window.scrollTo(${rest.scrollX}, ${rest.scrollY})`);
-    await page.evaluate(settleExpression);
-    const restored = await readState();
-    const changes = stateChanges(rest, restored);
-    diagnostics.restoration = changes.length === 0 ? 'verified' : 'failed';
-    if (changes.length)
-      await fail(
-        `the page did not return to its state before acquisition when the scroll was restored (${changes.join(', ')})`,
-      );
-  } else {
-    diagnostics.restoration = 'not-needed';
+  let rest = before;
+  let bytes;
+  // Set before the first acquisition scroll: from then on every exit, failed
+  // or not, goes through the restoration below.
+  let scrolledAway = false;
+  let primary = null;
+  diagnostics.scrolled = false;
+  diagnostics.candidates = [];
+  try {
+    bytes = await acquireInView();
+  } catch (error) {
+    primary = error;
+  }
+  if (scrolledAway) {
+    // Restoration is attempted and verified on every path that scrolled. A
+    // restoration that cannot be verified - it differs, or it threw - leaves a
+    // page nothing more may be measured on; its own failure is recorded beside
+    // the original error, never in its place.
+    try {
+      await page.evaluate(`window.scrollTo(${rest.scrollX}, ${rest.scrollY})`);
+      await page.evaluate(settleExpression);
+      const changes = stateChanges(rest, await readState());
+      diagnostics.restoration = changes.length === 0 ? 'verified' : 'failed';
+      if (changes.length) diagnostics.restorationChanges = changes;
+    } catch (error) {
+      diagnostics.restoration = 'failed';
+      diagnostics.cleanupFailure = String(error?.message ?? error);
+    }
+    if (diagnostics.restoration !== 'verified') diagnostics.pageUsable = false;
   }
   diagnostics.frameResized = resized() - resizedAtStart;
-  if (diagnostics.frameResized !== 0) await fail('the viewport was resized during semantic-scroll acquisition');
+  // A resize reached the page's own listeners, so what it measures next is not
+  // what it measured before.
+  if (diagnostics.frameResized !== 0) diagnostics.pageUsable = false;
+  if (primary) throw primary;
+  if (diagnostics.restoration === 'failed') {
+    await fail(
+      'restoration-failed',
+      'the page did not return to its state before acquisition when the scroll was restored ' +
+        `(${(diagnostics.restorationChanges ?? [diagnostics.cleanupFailure]).join(', ')})`,
+    );
+  }
+  if (diagnostics.frameResized !== 0) {
+    await fail('viewport-resized-during-acquisition', 'the viewport was resized during semantic-scroll acquisition');
+  }
   return { bytes, diagnostics };
+
+  /** The clip brought into view if it is not, captured once, and checked. */
+  async function acquireInView() {
+    let atCapture;
+    if (!visible(before, clip)) {
+      // An acquisition scroll is judged by what it changes, which can only be
+      // told apart from what the page changes by itself on a page at rest - a
+      // scenario may leave one in motion: Space on a disabled checkbox starts the
+      // browser's animated page scroll, which runs for several frames after the
+      // scenario's own settle. The existing settle is repeated, bounded, until
+      // two consecutive states agree; a page that never comes to rest fails.
+      diagnostics.restSettles = 0;
+      for (let previous = before; ;) {
+        await page.evaluate(settleExpression);
+        diagnostics.restSettles += 1;
+        rest = await readState();
+        if (stateChanges(previous, rest).length === 0) break;
+        if (diagnostics.restSettles >= REST_SETTLES) {
+          await fail(
+            'page-not-at-rest',
+            `the page did not come to rest within ${REST_SETTLES} settles (${stateChanges(previous, rest).join(', ')})`,
+          );
+        }
+        previous = rest;
+      }
+      diagnostics.scrollAtRest = { x: rest.scrollX, y: rest.scrollY };
+    }
+    if (!visible(rest, clip)) {
+      const before = rest;
+      if (clip.x < before.visual.left || clip.x + clip.width > before.visual.left + before.visual.width) {
+        await fail(
+          'clip-outside-viewport-horizontally',
+          'the clip is outside the viewport horizontally; acquisition only scrolls vertically',
+        );
+      }
+      let chosen = null;
+      for (const y of scrollCandidates(clip, before.scrollY, before.innerHeight, before.maxScrollY)) {
+        const resizedBefore = resized();
+        scrolledAway = true;
+        await page.evaluate(`window.scrollTo(${before.scrollX}, ${y})`);
+        await page.evaluate(settleExpression);
+        const state = await readState();
+        const rejected = candidateRejections(before, state, clip, resized() !== resizedBefore);
+        diagnostics.candidates.push({ y, scrollY: state.scrollY, rejected });
+        if (rejected.length === 0) {
+          chosen = state;
+          break;
+        }
+      }
+      if (!chosen) await fail('no-valid-scroll-position', 'no scroll position satisfied the acquisition invariants');
+      atCapture = chosen;
+      diagnostics.scrolled = true;
+      diagnostics.chosenScrollY = chosen.scrollY;
+    } else {
+      atCapture = rest;
+    }
+
+    const resizedBeforeCapture = resized();
+    const bytes = await capture(false);
+    if (resized() !== resizedBeforeCapture) {
+      await fail('viewport-resized-during-capture', 'the viewport was resized while the screenshot was taken', {
+        pageUsable: false,
+      });
+    }
+    // What acquisition answers for: the clip was inside the viewport when the
+    // pixels were taken, and - when it scrolled - the target it validated is the
+    // target it captured. A capture that needed no scroll took the page as the
+    // harness left it, as captures always have; whether that page was still
+    // changing is not something acquisition did.
+    const captured = await readState();
+    const moved =
+      captured.scrollX !== atCapture.scrollX || captured.scrollY !== atCapture.scrollY || !visible(captured, clip);
+    if (moved || (diagnostics.scrolled && captured.fingerprint !== atCapture.fingerprint)) {
+      await fail(
+        'page-changed-during-capture',
+        `the page changed while the screenshot was taken (${stateChanges(atCapture, captured).join(', ') || 'the clip left the viewport'})`,
+      );
+    }
+    await validate(bytes);
+    return bytes;
+  }
 }

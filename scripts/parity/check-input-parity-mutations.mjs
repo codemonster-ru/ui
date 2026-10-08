@@ -18,10 +18,10 @@
 // Both reports are written exactly as the two scripts write them alone.
 import { relative, resolve } from 'node:path';
 import { writeFileSync } from 'node:fs';
-import { isDeepStrictEqual } from 'node:util';
 import { repositoryRoot, stableStringify } from '../baseline/reference.mjs';
 import { reportParity } from './check-input-parity.mjs';
 import { validatePolicy } from './compare.mjs';
+import { judgeBrowserMutation } from './mutation-verdict.mjs';
 import { profileFromArgv } from './profiles.mjs';
 import {
   assertPolicyIsWellFormed,
@@ -303,9 +303,16 @@ function interactionEvidence(captured) {
   );
 }
 
+const MARKERS = {
+  detected: 'detected',
+  rejected: 'rejected',
+  'acquisition-rejected': 'ACQUISITION_REJECTED',
+  'infrastructure-error': 'INFRASTRUCTURE_ERROR',
+};
+
 function record(id, status, detail) {
   results.push({ id, status, detail });
-  const marker = status === 'detected' ? 'detected' : status === 'rejected' ? 'rejected' : 'MISSED  ';
+  const marker = MARKERS[status] ?? 'MISSED  ';
   process.stdout.write(`${marker}  ${id}${detail ? ` — ${detail}` : ''}\n`);
   if (status !== 'detected' && status !== 'rejected') failures.push(`${id}: ${detail}`);
 }
@@ -372,7 +379,7 @@ if (pageErrors.length > 0) {
 process.stdout.write('\nBaseline run (no mutation) — the comparison must pass.\n');
 const baseline = compareCaptures(captures, catalog, policy);
 
-if (baseline.failures.length > 0 || baseline.approvalProblems.length > 0) {
+if (baseline.failures.length > 0 || baseline.approvalProblems.length > 0 || baseline.acquisitionGaps.length > 0) {
   process.stderr.write('The unmutated parity comparison does not pass; nothing else is meaningful.\n');
   for (const failure of baseline.failures.slice(0, 20)) {
     process.stderr.write(`  - ${failure.caseId} [${failure.direction}] ${failure.dimension} at ${failure.path}\n`);
@@ -436,7 +443,9 @@ for (const mutation of mutations.capture) {
 process.stdout.write('\nBrowser mutations\n');
 for (const mutation of mutations.browser) {
   const captured = mutationCaptures.find((entry) => entry.id === mutation.id);
-  if (!captured || captured.applied <= 0) {
+  // A page invalidated before the mutation was applied is judged below, not
+  // reported as a mutation that could not be applied.
+  if (!captured || (captured.applied <= 0 && !captured.invalidated?.length)) {
     record(mutation.id, 'not-applied', 'browser did not confirm a mutation');
     continue;
   }
@@ -445,47 +454,20 @@ for (const mutation of mutations.browser) {
     record(mutation.id, 'infrastructure-error', pageErrors.join('; '));
     continue;
   }
-  const result = compareCaptures(captured.captures, catalog, policy);
-  const missing = assessMutation(mutation.expect, result.failures);
-  if (missing.length > 0) {
-    record(mutation.id, 'missed', `missing ${JSON.stringify(missing)}`);
-    continue;
-  }
-  const isolationEvidence = [];
-  if (mutation.verifyIsolation) {
-    let isolated = !result.failures.some((entry) => entry.direction === 'reference-vs-razor');
-    for (const target of ['reference', 'razor']) {
-      for (const theme of ['light', 'dark']) {
-        const fresh = captured.isolation?.[target]?.[theme];
-        const clean = captures[target][theme];
-        for (const caseId of mutation.caseIds) {
-          const matches =
-            fresh &&
-            isDeepStrictEqual(fresh.extracted[caseId], clean.extracted[caseId]) &&
-            isDeepStrictEqual(fresh.accessibility[caseId], clean.accessibility[caseId]) &&
-            fresh.screenshots[caseId]?.sha256 === clean.screenshots[caseId]?.sha256;
-          isolated &&= Boolean(matches);
-          isolationEvidence.push({
-            target,
-            theme,
-            caseId,
-            unchanged: Boolean(matches),
-            sha256: fresh?.screenshots[caseId]?.sha256,
-          });
-        }
-      }
-    }
-    if (!isolated) {
-      record(mutation.id, 'missed', 'fresh reference/Razor observations changed or isolation proof is missing');
-      continue;
-    }
-  }
-  record(mutation.id, 'detected', `${mutation.description}: ${result.failures.length} difference(s)`);
+  // M35.1: acquisition outcomes are judged apart from comparator evidence;
+  // see mutation-verdict.mjs. Only 'detected' passes.
+  const verdict = judgeBrowserMutation({ mutation, captured, clean: captures, catalog, policy });
+  record(mutation.id, verdict.status, verdict.detail);
   Object.assign(results.at(-1), {
-    summary: result.summary,
-    failures: result.failures,
-    evidence: captured.evidence,
-    isolationEvidence,
+    ...(verdict.status === 'detected'
+      ? {
+          summary: verdict.result.summary,
+          failures: verdict.result.failures,
+          evidence: captured.evidence,
+          isolationEvidence: verdict.isolationEvidence,
+        }
+      : {}),
+    ...(verdict.acquisition ? { acquisition: verdict.acquisition } : {}),
   });
 }
 

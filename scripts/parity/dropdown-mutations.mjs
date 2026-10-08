@@ -693,6 +693,12 @@ export const dropdownBrowserMutations = [
     description:
       "R: the real Razor menu is aligned to the trigger's right edge - bottom-end where bottom-start was asked for",
     expect: { dimensions: ['dom.nativeAttributes', 'interaction.state'], caseIds: [CLICK_OPEN] },
+    // M35.1: the pinned menu starts 112px left of the document (x = trigger
+    // right - menu width), so the post-interaction clip that contains it cannot
+    // be shown by any scroll. That rejection is this defect's, declared so it is
+    // reported as expected - it is not evidence: detection is the two
+    // dimensions above, and the missing screenshot is no visual difference.
+    acquisitionRejections: [{ caseId: CLICK_OPEN, stage: 'post', code: 'clip-outside-viewport-horizontally' }],
     beforeInteraction: onCases(
       [CLICK_OPEN],
       pinPosition(

@@ -37,7 +37,7 @@ import {
   skeletonGateIdentityExpression,
 } from './extract.mjs';
 import { buildCurrentTarget, buildRazorTarget, buildReferenceTarget } from './targets.mjs';
-import { AcquisitionError, acquireScreenshot } from './acquisition.mjs';
+import { AcquisitionError, PageInvalidated, acquireScreenshot, acquisitionOutcome } from './acquisition.mjs';
 
 export const themes = ['light', 'dark'];
 export const viewport = { width: 1000, height: 900 };
@@ -200,7 +200,7 @@ async function readAccessibility(page, caseId, roles) {
  * target, theme - and collects its acquisition diagnostics, which are kept out
  * of the report: they describe how the pixels were obtained, not what they are.
  */
-async function screenshot(page, clip, directory, fileName, capture) {
+export async function screenshot(page, clip, directory, fileName, capture) {
   let acquired;
   try {
     acquired = await acquireScreenshot(page, clip, {
@@ -214,15 +214,16 @@ async function screenshot(page, clip, directory, fileName, capture) {
       settleExpression,
     });
   } catch (error) {
-    // A mutated capture is a deliberate defect, and a case the defect makes
-    // impossible to acquire - a menu pinned off the left edge of the document -
-    // is one of its symptoms: recorded as a screenshot no real one can equal,
-    // so the comparison sees a difference and the mutation report still says
-    // what was caught, exactly as violations are left to the comparator on a
-    // mutated page. Every unmutated capture fails closed.
+    // Every unmutated capture fails closed. On a mutated page a failed
+    // acquisition is kept as what it is - no screenshot, with the failure
+    // that prevented one - so the mutation verdict can classify it. It is
+    // never given a hash: M35 recorded one no real screenshot could equal,
+    // and the comparator counted it as visual evidence (M35.1).
     if (!capture.mutated || !(error instanceof AcquisitionError)) throw error;
     capture.log.push({ fileName: null, ...error.diagnostics });
-    return { fileName: null, sha256: `acquisition-failed: ${error.diagnostics.failure}` };
+    // A page acquisition could not verifiably put back is not measured again.
+    if (!error.diagnostics.pageUsable) throw new PageInvalidated(error, capture.log);
+    return { fileName: null, sha256: null, acquisition: acquisitionOutcome(error.diagnostics) };
   }
   const { bytes, diagnostics } = acquired;
   writeFileSync(resolve(directory, fileName), bytes);
@@ -735,6 +736,10 @@ function writeAcquisitionLog(profile, acquisitionLog, log) {
   );
 }
 
+/** The failed acquisitions of a page's acquisition log, as structured outcomes. */
+export const failedAcquisitions = (acquisitions) =>
+  acquisitions.filter((entry) => entry.failure !== undefined).map(acquisitionOutcome);
+
 /** Builds all targets once, then captures clean and fresh browser-mutated pages. */
 export async function captureAll(catalog, { log = () => {}, browserMutations = [] } = {}) {
   const runDirectory = runDirectoryFor(catalog.profile);
@@ -790,22 +795,37 @@ export async function captureAll(catalog, { log = () => {}, browserMutations = [
       const mutated = structuredClone(captures);
       const evidence = [];
       log(`  browser mutation ${mutation.id} (${mutation.target})\n`);
+      // Failed acquisitions of the mutated target, in capture order, and the
+      // themes whose page a failed acquisition left unusable: those were not
+      // measured to the end, so their capture is not merged or compared.
+      const acquisitionFailures = [];
+      const invalidated = [];
       for (const theme of themes) {
         const target = targets[mutation.target];
-        const recaptured = await captureTarget(
-          chrome,
-          servers[mutation.target].origin,
-          target.page,
-          mutation.target,
-          theme,
-          screenshotDirectory,
-          catalog,
-          { selectedCases, mutation, evidence, filePrefix: `${mutation.id}-${mutation.target}` },
-        );
+        let recaptured;
+        try {
+          recaptured = await captureTarget(
+            chrome,
+            servers[mutation.target].origin,
+            target.page,
+            mutation.target,
+            theme,
+            screenshotDirectory,
+            catalog,
+            { selectedCases, mutation, evidence, filePrefix: `${mutation.id}-${mutation.target}` },
+          );
+        } catch (error) {
+          if (!(error instanceof PageInvalidated)) throw error;
+          logAcquisitions(mutation.id, { acquisitions: error.acquisitions });
+          acquisitionFailures.push(...failedAcquisitions(error.acquisitions));
+          invalidated.push(acquisitionOutcome(error.diagnostics));
+          continue;
+        }
         logAcquisitions(mutation.id, recaptured);
+        acquisitionFailures.push(...failedAcquisitions(recaptured.acquisitions));
         mergeCapture(mutated[mutation.target][theme], recaptured);
       }
-      if (evidence.length === 0) {
+      if (evidence.length === 0 && invalidated.length === 0) {
         throw new Error(`MUTATION_COULD_NOT_BE_APPLIED: no browser changes for ${mutation.id}`);
       }
       const isolation = {};
@@ -836,6 +856,8 @@ export async function captureAll(catalog, { log = () => {}, browserMutations = [
         applied: evidence.reduce((total, entry) => total + entry.applied, 0),
         evidence,
         isolation,
+        acquisitionFailures,
+        invalidated,
       });
     }
   } catch (error) {
@@ -861,6 +883,8 @@ export async function captureAll(catalog, { log = () => {}, browserMutations = [
 export function compareCaptures(captures, catalog, policy) {
   const failures = [];
   const approved = [];
+  // Screenshots a failed acquisition left missing; see compareShots.
+  const acquisitionGaps = [];
   let comparisons = 0;
   let visualComparisons = 0;
   let postInteractionComparisons = 0;
@@ -882,6 +906,38 @@ export function compareCaptures(captures, catalog, policy) {
           ...compareStyles(left.extracted[id].styles, right.extracted[id].styles),
           ...compareAccessibility(left.accessibility[id], right.accessibility[id]),
         ];
+        // Two screenshot records of one stage. A record without a hash is a
+        // failed acquisition (M35.1): it is neither a difference nor an
+        // equality, so it is reported apart from both and no caller can read
+        // a missing screenshot as visual evidence of either kind.
+        const compareShots = (leftShot, rightShot, entry) => {
+          const gaps = [
+            [leftShot, direction.from],
+            [rightShot, direction.to],
+          ].filter(([shot]) => shot.sha256 === null || shot.sha256 === undefined);
+          if (gaps.length > 0) {
+            for (const [shot, target] of gaps) {
+              acquisitionGaps.push({
+                caseId: id,
+                direction: direction.id,
+                theme,
+                dimension: entry.dimension,
+                path: entry.path,
+                target,
+                acquisition: shot.acquisition ?? null,
+              });
+            }
+            return;
+          }
+          if (leftShot.sha256 !== rightShot.sha256) {
+            visualDifferences += 1;
+            raw.push({
+              ...entry,
+              left: `${leftShot.fileName} ${leftShot.sha256.slice(0, 12)}`,
+              right: `${rightShot.fileName} ${rightShot.sha256.slice(0, 12)}`,
+            });
+          }
+        };
 
         // The static posture is compared for every case, not only for cases
         // that declared a scenario - a static profile has none by definition,
@@ -993,14 +1049,11 @@ export function compareCaptures(captures, catalog, policy) {
             if (parityCase.visual) {
               const leftShot = left.transitionScreenshots[id];
               const rightShot = right.transitionScreenshots[id];
-              if (leftShot && rightShot && leftShot.sha256 !== rightShot.sha256) {
-                visualDifferences += 1;
-                raw.push({
+              if (leftShot && rightShot) {
+                compareShots(leftShot, rightShot, {
                   dimension: 'visual.postInteraction',
                   path: `theme=${theme}/transitioned`,
                   detail: 'post-transition screenshot',
-                  left: `${leftShot.fileName} ${leftShot.sha256.slice(0, 12)}`,
-                  right: `${rightShot.fileName} ${rightShot.sha256.slice(0, 12)}`,
                 });
               }
             }
@@ -1069,46 +1122,27 @@ export function compareCaptures(captures, catalog, policy) {
             naturalPostInteractionComparisons += 1;
             const naturalLeft = left.naturalInteractionScreenshots[id];
             const naturalRight = right.naturalInteractionScreenshots[id];
-            if (naturalLeft.sha256 !== naturalRight.sha256) {
-              visualDifferences += 1;
-              raw.push({
-                dimension: 'visual.postInteraction',
-                path: `theme=${theme}/natural-focus`,
-                detail: 'natural post-interaction screenshot',
-                left: `${naturalLeft.fileName} ${naturalLeft.sha256.slice(0, 12)}`,
-                right: `${naturalRight.fileName} ${naturalRight.sha256.slice(0, 12)}`,
-              });
-            }
-          }
-          postInteractionComparisons += 1;
-          const leftShot = left.interactionScreenshots[id];
-          const rightShot = right.interactionScreenshots[id];
-          if (leftShot.sha256 !== rightShot.sha256) {
-            visualDifferences += 1;
-            raw.push({
+            compareShots(naturalLeft, naturalRight, {
               dimension: 'visual.postInteraction',
-              path: `theme=${theme}`,
-              detail: 'post-interaction screenshot',
-              left: `${leftShot.fileName} ${leftShot.sha256.slice(0, 12)}`,
-              right: `${rightShot.fileName} ${rightShot.sha256.slice(0, 12)}`,
+              path: `theme=${theme}/natural-focus`,
+              detail: 'natural post-interaction screenshot',
             });
           }
+          postInteractionComparisons += 1;
+          compareShots(left.interactionScreenshots[id], right.interactionScreenshots[id], {
+            dimension: 'visual.postInteraction',
+            path: `theme=${theme}`,
+            detail: 'post-interaction screenshot',
+          });
         }
 
         if (parityCase.visual) {
           visualComparisons += 1;
-          const leftShot = left.screenshots[id];
-          const rightShot = right.screenshots[id];
-          if (leftShot.sha256 !== rightShot.sha256) {
-            visualDifferences += 1;
-            raw.push({
-              dimension: 'visual',
-              path: `theme=${theme}`,
-              detail: 'screenshot',
-              left: `${leftShot.fileName} ${leftShot.sha256.slice(0, 12)}`,
-              right: `${rightShot.fileName} ${rightShot.sha256.slice(0, 12)}`,
-            });
-          }
+          compareShots(left.screenshots[id], right.screenshots[id], {
+            dimension: 'visual',
+            path: `theme=${theme}`,
+            detail: 'screenshot',
+          });
         }
 
         comparisons += 1;
@@ -1129,6 +1163,7 @@ export function compareCaptures(captures, catalog, policy) {
   return {
     failures,
     approved,
+    acquisitionGaps,
     approvalUsage: rows,
     approvalProblems: problems,
     summary: {

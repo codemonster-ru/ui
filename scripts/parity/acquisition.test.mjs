@@ -11,9 +11,12 @@ import { after, before, test } from 'node:test';
 
 import { launchChrome, openPage } from '../baseline/cdp.mjs';
 import {
+  ACQUISITION_FAILURES,
   AcquisitionError,
+  INFRASTRUCTURE,
   LEGACY,
   LEGACY_ACQUISITION,
+  REJECTION,
   SCROLL_CANDIDATE_STEPS,
   SEMANTIC_SCROLL,
   acquireScreenshot,
@@ -421,4 +424,97 @@ test('16. a scrollWindow on a page that cannot scroll fails instead of measuring
 
 test('17. a scrollWindow that moves less than requested fails', async () => {
   await assert.rejects(scrollScenario(910, 16), /requested 16px but the window moved from \(0, 0\) to \(0, 10\)/);
+});
+
+// ---------------------------------------------------------------- M35.1: what a failure leaves behind
+
+test('M35.1: every failure carries its code, its kind and the state it left the page in', async () => {
+  const page = await open(
+    tallPage(2000, 300) +
+      '<div id="f" style="position:fixed;left:0;top:0;width:500px;height:900px;background:rgba(255,0,0,.2)"></div>',
+  );
+  const diagnostics = await rejects(
+    acquireScreenshot(page, await clipOf(page, 'c'), context('c')),
+    /no scroll position/,
+  );
+  assert.equal(diagnostics.failureCode, 'no-valid-scroll-position');
+  assert.equal(diagnostics.failureKind, REJECTION);
+  assert.equal(ACQUISITION_FAILURES[diagnostics.failureCode], REJECTION);
+  assert.equal(diagnostics.screenshotObtained, false);
+  assert.equal(diagnostics.restoration, 'verified', 'the scroll it tried is put back and checked');
+  assert.equal(diagnostics.pageUsable, true);
+  await page.close();
+});
+
+test('M35.1: a failure after an acquisition scroll restores and verifies the scroll before it is reported', async () => {
+  // M35 checked the PNG size before restoring, so this failure left the page scrolled.
+  const page = await open(tallPage(2000, 300));
+  const clip = { ...(await clipOf(page, 'c')), width: 360.5 };
+  const diagnostics = await rejects(acquireScreenshot(page, clip, context('c')), /the screenshot is \d+x300/);
+  assert.equal(diagnostics.failureCode, 'screenshot-size-mismatch');
+  assert.equal(diagnostics.failureKind, INFRASTRUCTURE);
+  assert.equal(diagnostics.screenshotObtained, true);
+  assert.match(diagnostics.obtainedSha256, /^[0-9a-f]{64}$/);
+  assert.equal(diagnostics.restoration, 'verified');
+  assert.equal(diagnostics.pageUsable, true);
+  assert.equal(await page.evaluate('scrollY'), 0);
+  await page.close();
+});
+
+test('M35.1: a restoration that cannot run keeps the original error, records its own, and voids the page', async () => {
+  const page = await open(tallPage(2000, 300));
+  const clip = { ...(await clipOf(page, 'c')), width: 360.5 };
+  const evaluate = page.evaluate;
+  page.evaluate = (expression) =>
+    expression === 'window.scrollTo(0, 0)' ? Promise.reject(new Error('target closed')) : evaluate(expression);
+  const diagnostics = await rejects(acquireScreenshot(page, clip, context('c')), /the screenshot is \d+x300/);
+  assert.equal(diagnostics.failureCode, 'screenshot-size-mismatch', 'the original failure, not the cleanup one');
+  assert.equal(diagnostics.restoration, 'failed');
+  assert.equal(diagnostics.cleanupFailure, 'target closed');
+  assert.equal(diagnostics.pageUsable, false);
+  await page.close();
+});
+
+test('M35.1: a resize during the capture, and a failed restoration, leave a page nothing more may be measured on', async () => {
+  const resizedPage = await open(tallPage(100, 300));
+  const send = resizedPage.send;
+  resizedPage.send = async (method, params) => {
+    if (method === 'Page.captureScreenshot') {
+      await send('Emulation.setDeviceMetricsOverride', {
+        width: 1000,
+        height: 899,
+        deviceScaleFactor: 1,
+        mobile: false,
+      });
+      await resizedPage.evaluate(settleExpression);
+      await send('Emulation.setDeviceMetricsOverride', { ...viewport, deviceScaleFactor: 1, mobile: false });
+      await resizedPage.evaluate(settleExpression);
+    }
+    return send(method, params);
+  };
+  const resized = await rejects(
+    acquireScreenshot(resizedPage, await clipOf(resizedPage, 'c'), context('c')),
+    /resized/,
+  );
+  assert.deepEqual(
+    [resized.failureCode, resized.failureKind, resized.pageUsable],
+    ['viewport-resized-during-capture', INFRASTRUCTURE, false],
+  );
+  await resizedPage.close();
+
+  const restoredPage = await open(
+    tallPage(2000, 300),
+    `let away = false;
+    addEventListener('scroll', () => { if (scrollY > 0) away = true; else if (away) document.querySelector('[data-parity-case]').dataset.moved = 'yes'; });`,
+  );
+  const restoration = await rejects(
+    acquireScreenshot(restoredPage, await clipOf(restoredPage, 'c'), context('c')),
+    /did not return/,
+  );
+  assert.deepEqual(
+    [restoration.failureCode, restoration.failureKind, restoration.pageUsable],
+    ['restoration-failed', REJECTION, false],
+  );
+  assert.equal(restoration.screenshotObtained, true, 'the pixels were taken before the page was lost');
+  await restoredPage.close();
 });
