@@ -1309,6 +1309,14 @@
         "expect": {
           "expandedStates": ["true"],
           "focusRole": "panel",
+          "panelGeometry": [
+            {
+              "side": "below",
+              "left": 0,
+              "right": 300.391,
+              "gap": 17.063
+            }
+          ],
           "events": [
             {
               "component": "popover",

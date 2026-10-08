@@ -37,6 +37,7 @@ import {
   skeletonGateIdentityExpression,
 } from './extract.mjs';
 import { buildCurrentTarget, buildRazorTarget, buildReferenceTarget } from './targets.mjs';
+import { AcquisitionError, acquireScreenshot } from './acquisition.mjs';
 
 export const themes = ['light', 'dark'];
 export const viewport = { width: 1000, height: 900 };
@@ -193,15 +194,39 @@ async function readAccessibility(page, caseId, roles) {
   return exposed;
 }
 
-async function screenshot(page, clip, directory, fileName) {
-  const shot = await page.send('Page.captureScreenshot', {
-    format: 'png',
-    captureBeyondViewport: true,
-    fromSurface: true,
-    clip: { ...clip, scale: 1 },
-  });
-  const bytes = Buffer.from(shot.data, 'base64');
+/**
+ * One screenshot, acquired by acquisition.mjs (M35): semantic-scroll for every
+ * capture but its explicit legacy allowlist. `capture` names it - case, stage,
+ * target, theme - and collects its acquisition diagnostics, which are kept out
+ * of the report: they describe how the pixels were obtained, not what they are.
+ */
+async function screenshot(page, clip, directory, fileName, capture) {
+  let acquired;
+  try {
+    acquired = await acquireScreenshot(page, clip, {
+      profile: capture.catalog.profile.id,
+      caseId: capture.caseId,
+      stage: capture.stage,
+      target: capture.target,
+      theme: capture.theme,
+      viewport,
+      followedReferences: capture.catalog.profile.followedReferences,
+      settleExpression,
+    });
+  } catch (error) {
+    // A mutated capture is a deliberate defect, and a case the defect makes
+    // impossible to acquire - a menu pinned off the left edge of the document -
+    // is one of its symptoms: recorded as a screenshot no real one can equal,
+    // so the comparison sees a difference and the mutation report still says
+    // what was caught, exactly as violations are left to the comparator on a
+    // mutated page. Every unmutated capture fails closed.
+    if (!capture.mutated || !(error instanceof AcquisitionError)) throw error;
+    capture.log.push({ fileName: null, ...error.diagnostics });
+    return { fileName: null, sha256: `acquisition-failed: ${error.diagnostics.failure}` };
+  }
+  const { bytes, diagnostics } = acquired;
   writeFileSync(resolve(directory, fileName), bytes);
+  capture.log.push({ fileName, ...diagnostics });
 
   return { fileName, sha256: createHash('sha256').update(bytes).digest('hex') };
 }
@@ -247,7 +272,7 @@ export const readinessExpression = (timeoutMs = 60_000) => `new Promise((done, f
 // The fallback resolves only when no frame arrived, and it is far longer than
 // a frame interval, so a page that does paint still settles on rAF exactly as
 // before. No frame means nothing changed, which is the settled state anyway.
-const settleExpression = `new Promise((done) => {
+export const settleExpression = `new Promise((done) => {
   let settled = false;
   const finish = () => { if (!settled) { settled = true; done(); } };
   requestAnimationFrame(() => requestAnimationFrame(finish));
@@ -322,6 +347,17 @@ async function captureTarget(
     }
     const accessibility = {};
     const screenshots = {};
+    // How every screenshot of this page was acquired (see acquisition.mjs).
+    const acquisitions = [];
+    const shot = (caseId, stage) => ({
+      catalog,
+      caseId,
+      stage,
+      target: label,
+      theme,
+      mutated: Boolean(mutation),
+      log: acquisitions,
+    });
 
     for (const parityCase of selectedCases) {
       accessibility[parityCase.id] = await readAccessibility(page, parityCase.id, catalog.profile.accessibilityRoles);
@@ -331,6 +367,7 @@ async function captureTarget(
         extracted[parityCase.id].clip,
         screenshotDirectory,
         `${filePrefix}-${theme}-${parityCase.id.replace(/\//g, '_')}.png`,
+        shot(parityCase.id, 'initial'),
       );
     }
 
@@ -462,6 +499,7 @@ async function captureTarget(
           after.cases[parityCase.id].clip,
           screenshotDirectory,
           `${filePrefix}-${theme}-transitioned-${parityCase.id.replace(/\//g, '_')}.png`,
+          shot(parityCase.id, 'transitioned'),
         );
       }
 
@@ -611,6 +649,7 @@ async function captureTarget(
         result.clip,
         screenshotDirectory,
         `${filePrefix}-${theme}-post-${parityCase.id.replace(/\//g, '_')}.png`,
+        shot(parityCase.id, 'post'),
       );
       naturalInteractionScreenshots[parityCase.id] = naturalShot;
       interactionScreenshots[parityCase.id] = naturalShot;
@@ -631,6 +670,7 @@ async function captureTarget(
           blurred.clip,
           screenshotDirectory,
           `${filePrefix}-${theme}-post-blurred-${parityCase.id.replace(/\//g, '_')}.png`,
+          shot(parityCase.id, 'post-blurred'),
         );
       } else if (parityCase.interaction.visualFocus !== undefined) {
         throw new Error(`Unknown visualFocus: ${parityCase.interaction.visualFocus}`);
@@ -648,6 +688,7 @@ async function captureTarget(
       transitionScreenshots,
       interactionDom,
       interactionAccessibility,
+      acquisitions,
       diagnostics: page.diagnostics,
     };
   } finally {
@@ -674,6 +715,26 @@ function mergeCapture(target, recaptured) {
   }
 }
 
+/**
+ * The acquisition diagnostics of a profile run, beside its report rather than
+ * in it: the report is the parity payload compared byte for byte between runs,
+ * and how a screenshot was acquired is not parity evidence. Written even when a
+ * capture failed, so a failed acquisition can be read back.
+ */
+function writeAcquisitionLog(profile, acquisitionLog, log) {
+  const clean = acquisitionLog.filter((entry) => entry.run === 'clean');
+  const legacy = clean.filter((entry) => entry.mode === 'legacy');
+  const scrolled = clean.filter((entry) => entry.mode === 'semantic-scroll' && entry.scrolled);
+  writeFileSync(
+    resolve(runDirectoryFor(profile), `${profile.id}-capture-acquisition.json`),
+    `${JSON.stringify({ profile: profile.id, captures: acquisitionLog }, null, 2)}\n`,
+  );
+  log(
+    `  acquisition (clean): ${clean.length - legacy.length} semantic-scroll (${scrolled.length} scrolled), ` +
+      `${legacy.length} legacy\n`,
+  );
+}
+
 /** Builds all targets once, then captures clean and fresh browser-mutated pages. */
 export async function captureAll(catalog, { log = () => {}, browserMutations = [] } = {}) {
   const runDirectory = runDirectoryFor(catalog.profile);
@@ -695,6 +756,9 @@ export async function captureAll(catalog, { log = () => {}, browserMutations = [
   const captures = {};
   const servers = {};
   const mutationCaptures = [];
+  // Every screenshot's acquisition, clean and mutated, in capture order.
+  const acquisitionLog = [];
+  const logAcquisitions = (run, capture) => acquisitionLog.push(...capture.acquisitions.map((entry) => ({ run, ...entry })));
 
   try {
     for (const [label, target] of Object.entries(targets)) {
@@ -711,6 +775,7 @@ export async function captureAll(catalog, { log = () => {}, browserMutations = [
           screenshotDirectory,
           catalog,
         );
+        logAcquisitions('clean', captures[label][theme]);
       }
     }
 
@@ -737,6 +802,7 @@ export async function captureAll(catalog, { log = () => {}, browserMutations = [
           catalog,
           { selectedCases, mutation, evidence, filePrefix: `${mutation.id}-${mutation.target}` },
         );
+        logAcquisitions(mutation.id, recaptured);
         mergeCapture(mutated[mutation.target][theme], recaptured);
       }
       if (evidence.length === 0) {
@@ -760,6 +826,7 @@ export async function captureAll(catalog, { log = () => {}, browserMutations = [
               catalog,
               { selectedCases, filePrefix: `${mutation.id}-isolation-${label}` },
             );
+            logAcquisitions(`${mutation.id}:isolation`, isolation[label][theme]);
           }
         }
       }
@@ -771,12 +838,18 @@ export async function captureAll(catalog, { log = () => {}, browserMutations = [
         isolation,
       });
     }
+  } catch (error) {
+    // A failed acquisition carries its diagnostics - candidates and why each
+    // was rejected; they belong in the log the failure points at.
+    if (error.diagnostics) acquisitionLog.push({ run: 'failed', ...error.diagnostics });
+    throw error;
   } finally {
     await chrome.close();
     for (const server of Object.values(servers)) await server.close();
+    writeAcquisitionLog(catalog.profile, acquisitionLog, log);
   }
 
-  return { targets, captures, mutationCaptures, browser: chrome.browser, screenshotDirectory };
+  return { targets, captures, mutationCaptures, browser: chrome.browser, screenshotDirectory, acquisitions: acquisitionLog };
 }
 
 /**

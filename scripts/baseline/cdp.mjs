@@ -112,6 +112,9 @@ export async function openPage(endpoint) {
   const consoleErrors = [];
   const pageErrors = [];
   const failedRequests = [];
+  // Counted, not interpreted: parity acquisition (M35) proves with it that a
+  // screenshot did not resize the frame. Needs Page.enable, as the harness does.
+  const eventCounts = { 'Page.frameResized': 0 };
 
   socket.addEventListener('message', (event) => {
     const message = JSON.parse(event.data);
@@ -126,6 +129,7 @@ export async function openPage(endpoint) {
       return;
     }
 
+    if (message.method in eventCounts) eventCounts[message.method] += 1;
     if (message.method === 'Runtime.exceptionThrown') {
       pageErrors.push(
         message.params.exceptionDetails.exception?.description ?? message.params.exceptionDetails.text ?? 'exception',
@@ -180,6 +184,7 @@ export async function openPage(endpoint) {
     evaluate,
     waitFor,
     diagnostics: { consoleErrors, pageErrors, failedRequests },
+    eventCounts,
     async close() {
       socket.close();
       await fetch(`${endpoint}/json/close/${target.id}`);

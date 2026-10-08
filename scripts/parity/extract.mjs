@@ -612,6 +612,13 @@ export async function driveInteraction(page, caseId, steps, activationSelector =
   // M31: a scroll under a held pointer makes Chrome re-hit-test and move the
   // hover by itself, so a scenario must release a hover before it scrolls.
   let hovering = false;
+  // M35: a scrollWindow step is checked against the page, not trusted. scrollBy
+  // on a page with no room to scroll is a silent no-op, and a scenario whose
+  // whole point is the scroll - an overlay following its trigger - then
+  // measured an unscrolled page on all three targets alike, which no
+  // three-way comparison can notice. The position is read before the step and
+  // after the step's settle; anything but the requested displacement fails.
+  let pendingScroll = null;
   for (const step of steps) {
     if (step.action === 'type') {
       await page.evaluate(`(() => {
@@ -692,6 +699,7 @@ export async function driveInteraction(page, caseId, steps, activationSelector =
       await pointerClick(page, selector, step.selector ?? '.vf-icon-button', step.index ?? 0, step.through);
     } else if (step.action === 'scrollWindow') {
       if (hovering) throw new Error('scrollWindow while a hover is held; unhover first');
+      pendingScroll = { requested: Number(step.y), before: await page.evaluate('[scrollX, scrollY]') };
       await page.evaluate(`window.scrollBy(0, ${Number(step.y)})`);
     } else if (step.action === 'hover' || step.action === 'unhover') {
       hovering = step.action === 'hover';
@@ -720,6 +728,22 @@ export async function driveInteraction(page, caseId, steps, activationSelector =
       throw new Error(`unknown interaction step: ${step.action}`);
     }
     await settle();
+    if (pendingScroll) {
+      const [x, y] = await page.evaluate('[scrollX, scrollY]');
+      const { requested, before } = pendingScroll;
+      pendingScroll = null;
+      // Kept with the input events: evidence of what the scenario did, which
+      // the comparator does not read as state (see IGNORED_INTERACTION_FIELDS).
+      await page.evaluate(
+        `window.__parityInputEvents.push(${JSON.stringify({ type: 'scrollWindow', requested, before: before[1], after: y })})`,
+      );
+      if (x !== before[0] || y - before[1] !== requested) {
+        throw new Error(
+          `scrollWindow in ${caseId} requested ${requested}px but the window moved from ` +
+            `(${before[0]}, ${before[1]}) to (${x}, ${y}); a scenario that scrolls needs a page that can.`,
+        );
+      }
+    }
   }
   return page.evaluate('window.__parityInputEvents');
 }

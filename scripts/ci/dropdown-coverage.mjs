@@ -48,6 +48,9 @@ const EXPECT_FIELDS = [
   'focusItem',
   'events',
   'menuStates',
+  // M35: the follow geometry of the scroll scenario, so a regression all three
+  // targets share - an overlay that did not follow, or followed wrongly - fails.
+  'menuGeometry',
   'menuRelationships',
   'settled',
   'transitions',

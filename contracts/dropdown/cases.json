@@ -3105,6 +3105,14 @@
               "items": ["Edit", "Duplicate", "Archive"]
             }
           ],
+          "menuGeometry": [
+            {
+              "side": "below",
+              "left": 0,
+              "right": 135.828,
+              "gap": 17.063
+            }
+          ],
           "events": [
             {
               "instance": 0,
