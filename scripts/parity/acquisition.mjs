@@ -195,6 +195,17 @@ export class PageInvalidated extends Error {
  * names them through aria-controls, aria-describedby or a followed reference.
  * Their offset to the case root is recorded: an overlay that follows its
  * anchor keeps it under a scroll.
+ *
+ * `animations` (M35.2) lists what will still change that fingerprint by
+ * itself: every finite animation or transition, running at a non-zero rate,
+ * whose target is the case or an element it owns. A delayed transition is
+ * listed from the moment it is created, before its delay elapses and the
+ * computed style it drives changes - the NavMenu compact collapse's
+ * `visibility` waits 320ms under reduced motion, which two equal fingerprints
+ * a settle apart cannot see. Infinite, paused, cancelled (idle) and finished
+ * animations are not listed: none of them is going to finish changing
+ * anything, and an infinite one that moves the fingerprint already keeps the
+ * page from coming to rest.
  */
 function stateExpression(caseId, followedReferences) {
   return `(() => {
@@ -244,6 +255,21 @@ function stateExpression(caseId, followedReferences) {
           dx: box.x - rootBox.x, dy: box.y - rootBox.y,
         };
       });
+    const animations = document
+      .getAnimations()
+      .filter((animation) => animation.effect?.target && owned(animation.effect.target))
+      .filter((animation) => animation.playState === 'running' && animation.playbackRate !== 0)
+      .map((animation) => ({ animation, timing: animation.effect.getComputedTiming() }))
+      .filter(({ animation, timing }) => Number.isFinite(timing.endTime) && (animation.currentTime ?? 0) < timing.endTime)
+      .map(({ animation, timing }) => ({
+        type: animation.constructor.name,
+        property: animation.transitionProperty ?? animation.animationName ?? null,
+        target: animation.effect.target.tagName.toLowerCase() + '.' + String(animation.effect.target.getAttribute('class') ?? '').trim().split(/\\s+/).join('.'),
+        delay: timing.delay,
+        duration: timing.duration,
+        currentTime: animation.currentTime,
+        endTime: timing.endTime,
+      }));
     const viewport = window.visualViewport;
     return {
       scrollX, scrollY, innerWidth, innerHeight,
@@ -251,6 +277,7 @@ function stateExpression(caseId, followedReferences) {
       maxScrollY: document.documentElement.scrollHeight - innerHeight,
       fingerprint: fnv(root.outerHTML) + '/' + fnv(boxes) + '/' + fnv(styles),
       fixed,
+      animations,
     };
   })()`;
 }
@@ -542,17 +569,22 @@ export async function acquireScreenshot(page, clip, context) {
       // scenario may leave one in motion: Space on a disabled checkbox starts the
       // browser's animated page scroll, which runs for several frames after the
       // scenario's own settle. The existing settle is repeated, bounded, until
-      // two consecutive states agree; a page that never comes to rest fails.
+      // two consecutive states agree and no finite animation of the case is
+      // still due to change it (M35.2, see stateExpression); a page that never
+      // comes to rest fails.
       diagnostics.restSettles = 0;
       for (let previous = before; ;) {
         await page.evaluate(settleExpression);
         diagnostics.restSettles += 1;
         rest = await readState();
-        if (stateChanges(previous, rest).length === 0) break;
+        const changes = stateChanges(previous, rest);
+        if (rest.animations.length > 0) diagnostics.awaitedAnimations ??= rest.animations;
+        if (changes.length === 0 && rest.animations.length === 0) break;
         if (diagnostics.restSettles >= REST_SETTLES) {
+          const animating = rest.animations.map((a) => `${a.type} ${a.property} on ${a.target} until ${a.endTime}ms`);
           await fail(
             'page-not-at-rest',
-            `the page did not come to rest within ${REST_SETTLES} settles (${stateChanges(previous, rest).join(', ')})`,
+            `the page did not come to rest within ${REST_SETTLES} settles (${[...changes, ...animating].join(', ')})`,
           );
         }
         previous = rest;

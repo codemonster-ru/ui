@@ -17,6 +17,7 @@ import {
   LEGACY,
   LEGACY_ACQUISITION,
   REJECTION,
+  REST_SETTLES,
   SCROLL_CANDIDATE_STEPS,
   SEMANTIC_SCROLL,
   acquireScreenshot,
@@ -517,4 +518,170 @@ test('M35.1: a resize during the capture, and a failed restoration, leave a page
   );
   assert.equal(restoration.screenshotObtained, true, 'the pixels were taken before the page was lost');
   await restoredPage.close();
+});
+
+// ---------------------------------------------------------------- M35.2: transitions and readiness
+
+// The NavMenu compact collapse under reduced motion, reduced to its shape: a
+// visibility change that waits 320ms, then takes 0.01ms.
+const delayedHide =
+  '<style>.fade{visibility:visible;transition:visibility 0.01ms linear 320ms}.fade.gone{visibility:hidden}</style>';
+const fadingCase = (top = 2000) =>
+  `${delayedHide}${tallPage(top, 300, '<b class="fade" style="display:block;height:40px;background:#08f">label</b>')}`;
+const startHiding = (page) => page.evaluate(`document.querySelector('.fade').classList.add('gone')`);
+const visibilityOf = (page) => page.evaluate(`getComputedStyle(document.querySelector('.fade')).visibility`);
+/** What the case looks like once the transition is over, rendered without one. */
+async function settledShot(top = 2000) {
+  const page = await open(
+    tallPage(top, 300, '<b style="display:block;height:40px;background:#08f;visibility:hidden">label</b>'),
+  );
+  const { bytes } = await acquireScreenshot(page, await clipOf(page, 'c'), context('c'));
+  await page.close();
+  return sha(bytes);
+}
+
+test('M35.2-1. a delayed visibility transition that has not changed anything yet is waited for', async () => {
+  const page = await open(fadingCase());
+  await startHiding(page);
+  assert.equal(await visibilityOf(page), 'visible', 'nothing has changed when acquisition starts');
+  const { bytes, diagnostics } = await acquireScreenshot(page, await clipOf(page, 'c'), context('c'));
+  assert.ok(diagnostics.restSettles > 1, 'it waited');
+  assert.deepEqual(
+    diagnostics.awaitedAnimations.map(({ type, property, delay }) => [type, property, delay]),
+    [['CSSTransition', 'visibility', 320]],
+  );
+  assert.equal(await visibilityOf(page), 'hidden');
+  assert.equal(sha(bytes), await settledShot(), 'the pixels are the settled state');
+  assert.equal(diagnostics.restoration, 'verified');
+  await page.close();
+});
+
+test('M35.2-2. a running transition of an acquisition-sensitive style is waited for', async () => {
+  const page = await open(
+    `<style>.slide{transition:margin-left 250ms linear}</style>${tallPage(2000, 300, '<b class="slide" style="display:block;width:40px;height:40px;background:#08f">x</b>')}`,
+  );
+  await page.evaluate(`document.querySelector('.slide').style.marginLeft = '200px'`);
+  const { bytes, diagnostics } = await acquireScreenshot(page, await clipOf(page, 'c'), context('c'));
+  assert.ok(diagnostics.restSettles > 1);
+  const still = await open(
+    tallPage(2000, 300, '<b style="display:block;width:40px;height:40px;background:#08f;margin-left:200px">x</b>'),
+  );
+  assert.equal(sha(bytes), sha((await acquireScreenshot(still, await clipOf(still, 'c'), context('c'))).bytes));
+  await still.close();
+  await page.close();
+});
+
+test('M35.2-3. a transition that has already finished costs nothing', async () => {
+  const page = await open(fadingCase());
+  await startHiding(page);
+  await page.waitFor(`document.getAnimations().length === 0`);
+  const { diagnostics } = await acquireScreenshot(page, await clipOf(page, 'c'), context('c'));
+  assert.equal(diagnostics.restSettles, 1, 'the existing timing of a stable page');
+  assert.equal(diagnostics.awaitedAnimations, undefined);
+  await page.close();
+});
+
+test('M35.2-4. an infinite animation is never waited for: outside the case it is ignored, inside it still blocks rest by what it changes', async () => {
+  const spin = '<style>@keyframes spin{to{transform:rotate(360deg)}}.spin{animation:spin 1s linear infinite}</style>';
+  const outside = await open(
+    `${spin}<div class="spin" style="position:absolute;top:10px;left:600px;width:20px;height:20px;background:#000"></div>${tallPage(2000, 300)}`,
+  );
+  const { diagnostics } = await acquireScreenshot(outside, await clipOf(outside, 'c'), context('c'));
+  assert.equal(diagnostics.restSettles, 1);
+  assert.equal(diagnostics.awaitedAnimations, undefined);
+  await outside.close();
+
+  const inside = await open(
+    `${spin}${tallPage(2000, 300, '<b class="spin" style="display:block;width:20px;height:20px">x</b>')}`,
+  );
+  const failed = await rejects(
+    acquireScreenshot(inside, await clipOf(inside, 'c'), context('c')),
+    /did not come to rest/,
+  );
+  assert.equal(failed.failureCode, 'page-not-at-rest');
+  assert.equal(failed.awaitedAnimations, undefined, 'not listed as something that will finish');
+  assert.doesNotMatch(failed.failure, /CSSAnimation/);
+  await inside.close();
+});
+
+test('M35.2-5. a finite animation longer than the bound fails closed, naming it', async () => {
+  const page = await open(
+    `<style>.slow{visibility:visible;transition:visibility 0.01ms linear 60s}.slow.gone{visibility:hidden}</style>${tallPage(2000, 300, '<b class="slow">x</b>')}`,
+  );
+  await page.evaluate(`document.querySelector('.slow').classList.add('gone')`);
+  const diagnostics = await rejects(
+    acquireScreenshot(page, await clipOf(page, 'c'), context('c')),
+    new RegExp(
+      `did not come to rest within ${REST_SETTLES} settles \\(CSSTransition visibility on b\\.slow\\.gone until 60000\\.01ms\\)`,
+    ),
+  );
+  assert.equal(diagnostics.failureKind, INFRASTRUCTURE);
+  assert.equal(diagnostics.restSettles, REST_SETTLES);
+  assert.equal(diagnostics.scrolled, false, 'nothing was scrolled for a page that was not at rest');
+  await page.close();
+});
+
+test('M35.2-6. a cancelled animation is not waited for', async () => {
+  const page = await open(fadingCase());
+  await startHiding(page);
+  await page.evaluate(`document.getAnimations().forEach((animation) => animation.cancel())`);
+  const { diagnostics } = await acquireScreenshot(page, await clipOf(page, 'c'), context('c'));
+  assert.equal(diagnostics.restSettles, 1);
+  assert.equal(diagnostics.awaitedAnimations, undefined);
+  await page.close();
+});
+
+test('M35.2-7. an animation that starts after the first stable state is still waited for', async () => {
+  const page = await open(fadingCase());
+  // Starts once acquisition has read its first state.
+  await page.evaluate(`setTimeout(() => document.querySelector('.fade').classList.add('gone'), 5)`);
+  const { bytes, diagnostics } = await acquireScreenshot(page, await clipOf(page, 'c'), context('c'));
+  assert.ok(diagnostics.awaitedAnimations?.length > 0, 'seen after the first state');
+  assert.equal(sha(bytes), await settledShot());
+  await page.close();
+});
+
+test('M35.2-8. the same end state reached with different animation timing is the same screenshot', async () => {
+  // A clean page already at rest and a mutated one still in its delay agree once both have settled.
+  const animated = await open(fadingCase());
+  await startHiding(animated);
+  const late = sha((await acquireScreenshot(animated, await clipOf(animated, 'c'), context('c'))).bytes);
+  await animated.close();
+  assert.equal(late, await settledShot());
+});
+
+test('M35.2-9. a page whose transition keeps restarting never reaches a valid state and fails closed', async () => {
+  // Restarted through the stylesheet, so the markup never changes, and always
+  // towards a new width before the delay ends, so the computed width never
+  // moves: only the animation says the page is not at rest.
+  const page = await open(
+    `<style>.loop{display:block;width:30px;transition:width 0.01ms linear 320ms}</style>${tallPage(2000, 300, '<b class="loop">x</b>')}`,
+    `const rule = [...document.styleSheets].flatMap((sheet) => [...sheet.cssRules]).find((r) => r.selectorText === '.loop');
+     const toggle = () => { rule.style.width = rule.style.width === '10px' ? '20px' : '10px'; };
+     requestAnimationFrame(() => requestAnimationFrame(() => { toggle(); setInterval(toggle, 150); }));`,
+  );
+  const diagnostics = await rejects(
+    acquireScreenshot(page, await clipOf(page, 'c'), context('c')),
+    /did not come to rest within \d+ settles \(.*CSSTransition width on b\.loop/,
+  );
+  assert.equal(diagnostics.failureCode, 'page-not-at-rest');
+  assert.equal(diagnostics.failureKind, INFRASTRUCTURE);
+  assert.equal(diagnostics.pageUsable, true, 'nothing was scrolled, so the page is as the harness left it');
+  await page.close();
+});
+
+test('M35.2-10. a real defect stays visible after readiness: a frozen class is captured frozen', async () => {
+  const clean = await open(fadingCase());
+  await startHiding(clean);
+  const cleanShot = sha((await acquireScreenshot(clean, await clipOf(clean, 'c'), context('c'))).bytes);
+  await clean.close();
+  // The observer-stale shape: the class change is reverted, so the transition never runs.
+  const mutated = await open(fadingCase());
+  await mutated.evaluate(`const b = document.querySelector('.fade');
+    new MutationObserver(() => { if (b.classList.contains('gone')) b.classList.remove('gone'); }).observe(b, { attributes: true });`);
+  await startHiding(mutated);
+  const mutatedShot = sha((await acquireScreenshot(mutated, await clipOf(mutated, 'c'), context('c'))).bytes);
+  assert.equal(await visibilityOf(mutated), 'visible');
+  await mutated.close();
+  assert.notEqual(mutatedShot, cleanShot, 'waiting for the clean transition does not wait the defect away');
 });

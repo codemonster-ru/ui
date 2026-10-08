@@ -505,3 +505,28 @@ test('a declared rejection must name a case of the mutation, a screenshot stage 
     /not an acquisition rejection/,
   );
 });
+
+test('M35.2: a mutated page whose own transition outlasts the readiness bound is an infrastructure error, not detection', async () => {
+  // The Razor spinner case differs in pixels and starts a 60s-delayed
+  // transition: readiness gives up before any pixel is taken.
+  const slow =
+    '<style>.slow{visibility:visible;transition:visibility 0.01ms linear 60s}.slow.gone{visibility:hidden}</style>';
+  const { verdict, compared } = await capture({
+    mutation: spinner,
+    profile: 'button',
+    stage: 'initial',
+    cleanPage: { cases: loading(false) },
+    mutatedPage: {
+      cases: [{ id: 'button/loading', top: 2000, html: 'Saving <b class="slow">◌</b>' }],
+      extra: slow,
+      hook: (page) => page.evaluate(`document.querySelector('.slow').classList.add('gone')`),
+    },
+  });
+  assert.equal(verdict.status, INFRASTRUCTURE_ERROR, verdict.detail);
+  for (const outcome of verdict.acquisition.infrastructure) {
+    assert.equal(outcome.code, 'page-not-at-rest');
+    assert.match(outcome.reason, /CSSTransition visibility on b\.slow\.gone until 60000\.01ms/);
+    assert.equal(outcome.screenshotObtained, false);
+  }
+  assert.deepEqual(visualFailures(compared), []);
+});
