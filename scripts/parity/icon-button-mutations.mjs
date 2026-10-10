@@ -376,7 +376,7 @@ export const iconButtonPolicyMutations = [
   {
     id: 'smuggled-dead-rule',
     description: 'an approval that matches nothing, so nobody can audit what it tolerates',
-    rejectedBy: 'usage',
+    rejectedBy: 'occurrences',
     apply(policy) {
       // Well formed on purpose: it has to survive validation so that the
       // occurrence accounting is what rejects it. A rule rejected earlier

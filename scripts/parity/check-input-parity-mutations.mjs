@@ -21,6 +21,7 @@ import { writeFileSync } from 'node:fs';
 import { repositoryRoot, stableStringify } from '../baseline/reference.mjs';
 import { reportParity } from './check-input-parity.mjs';
 import { validatePolicy } from './compare.mjs';
+import { accountSuite, policyMutationsBeforeRun, policyMutationsOnRun } from './mutation-accounting.mjs';
 import { judgeBrowserMutation } from './mutation-verdict.mjs';
 import { profileFromArgv } from './profiles.mjs';
 import {
@@ -322,35 +323,12 @@ function record(id, status, detail) {
 // The registry mutations need no browser, so they run first and fail fast.
 process.stdout.write('Divergence registry mutations\n');
 
-for (const mutation of mutations.policy) {
-  const mutated = structuredClone(policy);
-  try {
-    mutation.apply(mutated);
-  } catch (error) {
-    record(mutation.id, 'not-applied', `could not be applied: ${error.message}`);
-    continue;
-  }
-
-  const problems = validatePolicy(mutated, caseIds);
-
-  if (mutation.rejectedBy === 'validation') {
-    if (problems.length > 0) {
-      record(mutation.id, 'rejected', `${mutation.description} → ${problems[0]}`);
-    } else {
-      record(mutation.id, 'missed', `${mutation.description} → the validator accepted it`);
-    }
-    continue;
-  }
-
-  // Rejected by occurrence accounting instead: it has to survive validation,
-  // or the run below would never reach the accounting.
-  if (problems.length > 0) {
-    record(mutation.id, 'missed', `${mutation.description} → rejected by validation before the run: ${problems[0]}`);
-    continue;
-  }
-  // A valid rule with deliberately wrong usage is evaluated after capture.
-  // Pending work is neither a successful detection nor a harness failure.
-}
+// A mutation declaring a rejection kind the driver does not run fails here
+// (M35.5c); see mutation-accounting.mjs.
+const policyBeforeRun = policyMutationsBeforeRun(mutations.policy, policy, (mutated) =>
+  validatePolicy(mutated, caseIds),
+);
+for (const result of policyBeforeRun.results) record(result.id, result.status, result.detail);
 
 if (failures.length > 0) {
   process.stderr.write(`\n[parity-mutations] FAILED before capture:\n  - ${failures.join('\n  - ')}\n`);
@@ -394,17 +372,10 @@ process.stdout.write(
 
 // ------------------------------------------- registry mutations, on real data
 process.stdout.write('Divergence registry mutations rejected by occurrence accounting\n');
-for (const mutation of mutations.policy.filter((entry) => entry.rejectedBy === 'occurrences')) {
-  const mutated = structuredClone(policy);
-  mutation.apply(mutated);
-  const result = compareCaptures(captures, catalog, mutated);
-
-  if (result.approvalProblems.length > 0 || result.failures.length > 0) {
-    const reason = result.approvalProblems[0] ?? `${result.failures.length} unapproved difference(s)`;
-    record(mutation.id, 'rejected', `${mutation.description} → ${reason}`);
-  } else {
-    record(mutation.id, 'missed', `${mutation.description} → the run accepted it`);
-  }
+for (const result of policyMutationsOnRun(policyBeforeRun.pending, policy, (mutated) =>
+  compareCaptures(captures, catalog, mutated),
+)) {
+  record(result.id, result.status, result.detail);
 }
 
 // ---------------------------------------------------------- target mutations
@@ -471,6 +442,14 @@ for (const mutation of mutations.browser) {
   });
 }
 
+// Every registered mutation has exactly one result, and every count below is
+// read from the results (M35.5c).
+const accounting = accountSuite(mutations, results);
+failures.push(...accounting.problems);
+if (failures.length === 0 && !accounting.complete) {
+  failures.push('the results do not account for every registered mutation');
+}
+
 const reportPath = resolve(runDirectory, `${profile.id}-parity-mutations.json`);
 writeFileSync(
   reportPath,
@@ -480,6 +459,7 @@ writeFileSync(
     provenance: Object.fromEntries(Object.entries(targets).map(([label, target]) => [label, target.provenance])),
     baseline: baseline.summary,
     approvalUsage: baseline.approvalUsage,
+    accounting,
     interactionEvidence: interactionEvidence(captures),
     results,
   }),
@@ -494,6 +474,7 @@ if (failures.length > 0) {
 }
 
 process.stdout.write(
-  `\n[parity-mutations] OK: ${mutations.policy.length} registry mutation(s) rejected, ` +
-    `${mutations.capture.length} capture and ${mutations.browser.length} browser mutation(s) caught by the intended dimension.\n`,
+  `\n[parity-mutations] OK: ${accounting.passing.policy} registry mutation(s) rejected, ` +
+    `${accounting.passing.capture} capture and ${accounting.passing.browser} browser mutation(s) caught by the intended dimension ` +
+    `(${accounting.accounted} result(s) for ${accounting.registered} registered).\n`,
 );
