@@ -9,14 +9,17 @@
 // run on its own still builds its own.
 //
 // The directory and its run token exist only for this process: an interrupted
-// run leaves a directory no later run is ever pointed at.
+// run leaves a directory no later run is ever pointed at. Its parent,
+// .baseline-artifacts, is created here as by every other entry point: a clean
+// clone has none until something writes there (M35.5a).
 import { spawnSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
-import { mkdtempSync, rmSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { artifactsDirectory } from '../baseline/reference.mjs';
 import { prepareSharedReference } from './targets.mjs';
 
+mkdirSync(artifactsDirectory, { recursive: true });
 const directory = mkdtempSync(resolve(artifactsDirectory, 'parity-shared-reference-'));
 const checkout = resolve(directory, 'reference-checkout');
 const run = randomUUID();
