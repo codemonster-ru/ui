@@ -190,8 +190,8 @@ function toPortablePath(filePath) {
 
 function createConsumerManifest(tarballs) {
   const dependencies = {
-    '@vue/server-renderer': '3.5.35',
-    vue: '3.5.35',
+    '@vue/server-renderer': '3.5.42',
+    vue: '3.5.42',
   };
   const packedPackageResolutions = {};
 

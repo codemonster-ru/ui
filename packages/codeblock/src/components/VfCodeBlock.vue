@@ -1,4 +1,3 @@
-<!-- eslint-disable vue/no-v-html -->
 <template>
   <section
     ref="rootElement"
@@ -36,9 +35,9 @@
               :key="index"
               class="vf-codeblock__line"
           ><span v-if="showLineNumbers" class="vf-codeblock__line-number">{{ index + 1 }}</span><span
+              v-line-html="renderedLines[index] ?? ''"
               class="vf-codeblock__line-content"
               data-allow-mismatch="children"
-              v-html="renderedLines[index] ?? ''"
               /></span></code></pre>
     </div>
   </section>
@@ -46,13 +45,33 @@
 
 <script setup lang="ts">
 import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
-import { computed, inject, onBeforeUnmount, onMounted, onServerPrefetch, ref, watch } from 'vue';
+import { computed, inject, onBeforeUnmount, onMounted, onServerPrefetch, ref, watch, type Directive } from 'vue';
 import { CODE_BLOCK_LANGUAGE_OPTIONS_KEY } from '../config';
 import { renderPlainCodeLines } from '../utils/plain-code';
 import type { CodeBlockCopyPayload, CodeBlockLanguageRuntimeOptions, CodeBlockProps } from '../types';
 import { SUPPORTED_CODE_BLOCK_LANGUAGES } from '../types';
 
 defineOptions({ name: 'VfCodeBlock' });
+
+// Line markup is escaped by renderPlainCodeLines or the highlighter, as it was under v-html.
+// v-html cannot be used here: since Vue 3.5.39 hydration force-patches a dynamic innerHTML prop,
+// which replaced the server-rendered Shiki output with the client fallback. This directive
+// renders the same innerHTML on the server, writes it on a client mount and on every change,
+// and leaves server-rendered children in place while hydrating; syncServerRenderedHighlight
+// then adopts them as the reactive state.
+const vLineHtml: Directive<HTMLElement, string> = {
+  getSSRProps: (binding) => ({ innerHTML: binding.value }),
+  beforeMount(element, binding) {
+    if (!element.hasChildNodes()) {
+      element.innerHTML = binding.value;
+    }
+  },
+  updated(element, binding) {
+    if (binding.value !== binding.oldValue) {
+      element.innerHTML = binding.value;
+    }
+  },
+};
 
 const props = withDefaults(defineProps<CodeBlockProps>(), {
   code: '',

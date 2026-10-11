@@ -3,7 +3,7 @@ import type { VueWrapper } from '@vue/test-utils';
 import { renderToString } from '@vue/server-renderer';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { createSSRApp, h, nextTick } from 'vue';
+import { createSSRApp, h, nextTick, ref } from 'vue';
 import { afterAll, beforeAll, vi } from 'vitest';
 import VfCodeBlock from '../VfCodeBlock.vue';
 import {
@@ -339,6 +339,50 @@ body {
       host.remove();
       warn.mockRestore();
       error.mockRestore();
+    }
+  });
+
+  it('rewrites the line markup when the code changes after a client mount', async () => {
+    const wrapper = mount(VfCodeBlock, {
+      props: { code: 'first\nsecond', highlight: false, showHeader: false, copyable: false },
+    });
+    const lineTexts = () => wrapper.findAll('.vf-codeblock__line-content').map((line) => line.text());
+
+    expect(lineTexts()).toEqual(['first', 'second']);
+
+    await wrapper.setProps({ code: 'third <b>' });
+
+    expect(lineTexts()).toEqual(['third <b>']);
+    expect(wrapper.find('.vf-codeblock__line-content').html()).toContain('third &lt;b&gt;');
+    wrapper.unmount();
+  });
+
+  it('follows code changes after hydrating server-highlighted code', async () => {
+    const code = ref('const before = 1;');
+    const render = () =>
+      h(VfCodeBlock, { code: code.value, language: 'ts', theme: 'dark', showHeader: false, copyable: false });
+    const html = await renderToString(createSSRApp({ render }));
+    const host = document.createElement('div');
+    host.innerHTML = html;
+    document.body.appendChild(host);
+    const app = createSSRApp({ render });
+
+    try {
+      app.mount(host);
+      code.value = 'const after = 2;';
+
+      for (let index = 0; index < 20 && !host.textContent?.includes('after'); index += 1) {
+        await new Promise((resolve) => setTimeout(resolve, 10));
+      }
+      for (let index = 0; index < 20 && !host.querySelector('.vf-codeblock__shiki-token'); index += 1) {
+        await new Promise((resolve) => setTimeout(resolve, 10));
+      }
+
+      expect(host.querySelector('.vf-codeblock__line-content')?.textContent).toBe('const after = 2;');
+      expect(host.querySelector('.vf-codeblock__shiki-token')).not.toBeNull();
+    } finally {
+      app.unmount();
+      host.remove();
     }
   });
 
