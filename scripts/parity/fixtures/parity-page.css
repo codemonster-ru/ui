@@ -76,8 +76,7 @@ body {
    difference between them. The menu's geometry still comes from floater.js
    and dropdown.css and is still what the comparison measures. */
 .parity-cases:has(> .parity-case > .vf-dropdown) {
-  flex-direction: row;
-  flex-wrap: wrap;
+  flex-flow: row wrap;
 }
 
 .parity-case:has(> .vf-dropdown) {
@@ -92,8 +91,7 @@ body {
    Page chrome, applied identically to all three targets. The panel's geometry
    still comes from floater.js and popover.css. */
 .parity-cases:has(> .parity-case > .vf-popover) {
-  flex-direction: row;
-  flex-wrap: wrap;
+  flex-flow: row wrap;
 }
 
 .parity-case:has(> .vf-popover) {
@@ -140,6 +138,7 @@ body {
   margin-left: 590px;
   justify-content: flex-end;
 }
+
 /* The M32 select catalog. Sibling selects - a group, or the select beside a
    popover - sit in a row, so an open listbox, which lies below its own
    trigger, never covers the next trigger a scenario clicks. A select alone
