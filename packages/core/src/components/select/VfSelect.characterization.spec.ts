@@ -801,17 +801,30 @@ describe('VfSelect characterization: trigger keyboard', () => {
   });
 
   it('moves focus only after a nextTick and an animation frame', async () => {
-    const wrapper = mountSelect({ props: { modelValue: 'pro' } });
-    triggerOf(wrapper).focus();
-    key(triggerOf(wrapper), 'ArrowDown');
-    await flushPromises();
+    // The test releases the frame itself. jsdom runs frames on a 16 ms timer, which on a loaded
+    // machine could fire inside flushPromises() and move focus before the first assertion.
+    const frames: FrameRequestCallback[] = [];
+    const requestFrame = vi.spyOn(window, 'requestAnimationFrame').mockImplementation((callback) => {
+      frames.push(callback);
+      return frames.length;
+    });
 
-    expect(listboxOf(wrapper)).not.toBeNull();
-    expect(document.activeElement).toBe(triggerOf(wrapper));
+    try {
+      const wrapper = mountSelect({ props: { modelValue: 'pro' } });
+      triggerOf(wrapper).focus();
+      key(triggerOf(wrapper), 'ArrowDown');
+      await flushPromises();
 
-    await new Promise((resolve) => requestAnimationFrame(() => resolve(undefined)));
-    await flushPromises();
-    expect(labelOf(document.activeElement)).toBe('Pro');
+      expect(listboxOf(wrapper)).not.toBeNull();
+      expect(document.activeElement).toBe(triggerOf(wrapper));
+      expect(frames.length).toBeGreaterThan(0);
+
+      frames.splice(0).forEach((callback) => callback(performance.now()));
+      await flushPromises();
+      expect(labelOf(document.activeElement)).toBe('Pro');
+    } finally {
+      requestFrame.mockRestore();
+    }
   });
 
   it('leaves focus on the trigger when there is no enabled option', async () => {
