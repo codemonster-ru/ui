@@ -41,6 +41,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # verify runs test:parity, whose Razor suites render through PHP and
+      # packages/razor/vendor/autoload.php, so both have to exist before it.
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Install Razor adapter dependencies
+        run: composer install --no-interaction --no-progress --working-dir=packages/razor
+
       - name: Verify repository
         run: npm run verify
 
@@ -49,14 +59,6 @@ jobs:
       # jsdom suites, no recorded screenshots.
       - name: Verify against the reference implementation
         run: npm run baseline:ci
-
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-
-      - name: Install Razor adapter dependencies
-        run: composer install --no-interaction --no-progress --working-dir=packages/razor
 
       - name: Verify the Razor adapter
         run: npm run razor:check
