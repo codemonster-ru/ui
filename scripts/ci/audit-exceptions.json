@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "exceptions": [
+    {
+      "advisory": "GHSA-vfj7-8cjw-p6xm",
+      "source": 1240992,
+      "package": "braces",
+      "versions": ["3.0.3"],
+      "severity": "high",
+      "advisoryRange": "<=3.0.3",
+      "nodes": ["node_modules/braces"],
+      "dependents": [
+        {
+          "path": "node_modules/micromatch",
+          "version": "4.0.8"
+        }
+      ],
+      "propagatesTo": [
+        "fast-glob",
+        "globby",
+        "markdownlint-cli2",
+        "micromatch",
+        "stylelint",
+        "stylelint-config-html",
+        "stylelint-config-recommended",
+        "stylelint-config-recommended-scss",
+        "stylelint-config-standard",
+        "stylelint-config-standard-scss",
+        "stylelint-scss"
+      ],
+      "scope": "dev",
+      "reason": "No patched braces exists (3.0.3 is the latest release, upstream declined a fix, the advisory is disputed in github/advisory-database#10132). braces is reached only through micromatch@4.0.8 in stylelint and markdownlint-cli2, which expand glob patterns from this repository's own configuration and command lines; no untrusted input reaches it and it is absent from the production graph.",
+      "acceptedAt": "2026-10-11",
+      "reviewBy": "2027-01-11",
+      "documentation": "docs/security-audit-exceptions.md"
+    }
+  ]
+}

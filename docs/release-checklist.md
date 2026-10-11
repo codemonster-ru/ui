@@ -47,7 +47,9 @@ All commands must pass on the release commit. Also confirm:
 
 - CSS/export/consumer contracts pass for Core, Layouts, CodeBlock, and Playground.
 - The production dependency graph has no known vulnerabilities, and no high/critical development
-  advisory remains accepted.
+  advisory remains accepted except those listed in
+  [security-audit-exceptions.md](./security-audit-exceptions.md), each before its review date;
+  `npm run audit:release` enforces both.
 - `npm ls --all` reports a valid dependency graph after the clean lockfile installation.
 - ESM, CommonJS, Node ESM, SSR, and declaration-resolution smokes pass.
 - Tree-shaking and deferred-runtime budgets pass.
