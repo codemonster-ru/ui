@@ -160,7 +160,7 @@
     "globals": "^16.5.0",
     "htmlhint": "^1.7.1",
     "jsdom": "^26.1.0",
-    "markdownlint-cli2": "^0.23.1",
+    "markdownlint-cli2": "^0.23.3",
     "prettier": "^3.6.2",
     "semver": "^7.7.4",
     "stylelint": "^16.25.0",
@@ -169,6 +169,7 @@
     "stylelint-config-standard-scss": "^16.0.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.65.0",
+    "vite-node": "^3.2.4",
     "vue": "3.5.42",
     "vue-eslint-parser": "^10.4.0",
     "vue-tsc": "^3.3.8"
@@ -177,7 +178,7 @@
     "@vitejs/plugin-vue": "5.2.4",
     "js-beautify": "npm:js-beautify@2.0.3",
     "markdownlint-cli2": {
-      "js-yaml": "5.2.2"
+      "js-yaml": "5.4.1"
     },
     "tsup": {
       "esbuild": "0.27.2"

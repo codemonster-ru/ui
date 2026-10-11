@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import vue from '@vitejs/plugin-vue';
 import dts from 'vite-plugin-dts';
 import { defineConfig } from 'vite';
