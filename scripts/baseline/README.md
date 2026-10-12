@@ -21,7 +21,7 @@ here, and no contract DSL.
 | `npm run baseline:control`                  | Reference → reference control run: two independent checkouts, two capture sets, zero tolerated differences.                                |
 | `npm run baseline:showcase:ci`              | Fresh immutable reference → current captures on the same runner; zero tolerated differences, no baseline rewriting.                        |
 | `npm run baseline:input`                    | Runs the VfInput characterization suite unmutated, then once per known regression, and requires every mutation to be detected.             |
-| `npm run baseline:test`                     | Unit tests proving the comparison fails on missing/unexpected cases, census loss, dimension mismatch and font drift.                       |
+| `npm run baseline:test`                     | Unit tests: the comparison fails on lost cases, census, dimensions and fonts; the acquisition contract is pinned.                          |
 
 ## Isolation
 
@@ -70,6 +70,50 @@ controls the environment rather than masking components out of the frame:
 `Date` is pinned to 2025-01-01T00:00:00Z but still advances with
 `performance.now()`, because `PlaygroundShowcase.vue` gates its ready events on
 `Date.now()` deltas. `Math.random` is seeded.
+
+## Full-page acquisition (M35.6d)
+
+Every capture is a full-page PNG of the document as measured at the route
+viewport (`scrollWidth × scrollHeight`). Until M35.6d it was taken with
+`captureBeyondViewport: true`, which resizes the frame to the document inside
+the screenshot call and copies the first frame produced at that size. On Linux
+with Chrome 154, that frame drew the composited sticky header cells of the
+`/core` tables either at their exact subpixel position or snapped by a fraction
+of a pixel, decided per capture. Those cells have left edges at x = 922.297 and
+1119.047. Two of ten reference → reference runs failed, and so did CI run 38120371890.
+
+`capture.mjs` now acquires every capture the same way:
+
+1. The page has to be at rest at the route viewport.
+2. The frame is resized to the measured document with
+   `Emulation.setDeviceMetricsOverride`, and `innerWidth × innerHeight` has to
+   report that size.
+3. The page has to be at rest again at the full-page size.
+4. Two frames are copied one after the other with
+   `captureBeyondViewport: false`. Both must be exactly the measured size, no
+   `Page.frameResized` may occur between them, and they must be byte-identical.
+5. The frame is put back to the route viewport.
+
+At rest means that for three consecutive animation frames:
+
+- no finite animation or transition runs;
+- the DOM does not mutate;
+- the document size does not change;
+- every image is complete;
+- every `VfCodeBlock` carries Shiki tokens. Blocks in a plain-text language
+  (`plaintext`, `text` or `txt`) are the only exception.
+
+The wait is bounded at 900 frames.
+
+Anything else rejects the capture and stops the run. `<id>.rejected.json` records
+the reason and the measurements, and any frames obtained are kept as
+`<id>.rejected-<n>.png`. Nothing is retried, and no frame is chosen by comparing
+it with another run.
+
+Capture sets record `environment.acquisition` as `expanded-viewport-at-rest`.
+They therefore never compare equal to a set acquired the old way. That includes
+the hashes in `baseline/reference-showcase.json`: they were recorded before
+M35.6d and are left unchanged.
 
 ## VfInput characterization (M01)
 

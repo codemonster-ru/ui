@@ -3,6 +3,20 @@
 // Every capture records the case inventory it saw, the resolved fonts, the
 // emulated environment and a screenshot hash. Missing or unexpected cases are
 // reported by the comparison step as failures; they never shrink a denominator.
+//
+// How the full-page pixels are acquired (M35.6d). Until M35.6d every capture
+// used captureBeyondViewport:true. Chrome implements it by resizing the frame
+// to the document and copying the first frame produced at that size. In that
+// frame the composited sticky header cells of the /core tables, whose left
+// edges sit at fractional x (922.297, 1119.047), were rasterised either at
+// their exact subpixel position or snapped by a fraction of a pixel - chosen
+// per capture, not by the page (2 of 10 Linux reference->reference runs,
+// including CI run 38120371890). The same resize issued explicitly, followed by
+// a wait for the page to be at rest at that size, gave the exact raster in
+// every launch - byte-identical to the frame with those cells not composited.
+// So the frame is now resized explicitly, the page has to come to rest, and the
+// capture is accepted only if two frames taken one after the other are
+// byte-identical; anything else fails the capture. Nothing is retried.
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { delay, launchChrome, openPage } from './cdp.mjs';
@@ -198,6 +212,166 @@ async function settle(page, readySelector) {
   })()`);
 }
 
+// A page is at rest when, for restQuietFrames consecutive animation frames,
+// nothing that changes pixels by itself is pending: no finite animation or
+// transition is running, the DOM did not mutate, the document size did not
+// change, every image finished loading and every code block carries its Shiki
+// tokens. VfCodeBlock renders a plain fallback first and highlights
+// asynchronously, loading each grammar on demand - on /codeblock the html, php
+// and scss blocks are still plain 500 ms after load - and the route
+// readySelector does not wait for it. Only the plain-text languages are
+// rendered without tokens by design (code-highlight.ts maps plaintext, text and
+// txt to no grammar); a block in any other language that stays plain, because
+// highlighting is late or failed, keeps the page from rest. Infinite
+// animations are not waited for - the two-frame identity check below rejects
+// any that are visible. The wait is bounded; reaching the bound is a failure.
+export const restQuietFrames = 3;
+export const restFrameLimit = 900;
+
+export const restExpression = `(async () => {
+  const frame = () => new Promise((done) => requestAnimationFrame(() => done()));
+  let mutations = 0;
+  const observer = new MutationObserver((records) => { mutations += records.length; });
+  observer.observe(document, { subtree: true, childList: true, attributes: true, characterData: true });
+  const sample = () => {
+    const finite = document.getAnimations().filter(
+      (animation) => animation.playState === 'running' && Number.isFinite(animation.effect?.getComputedTiming?.().endTime),
+    );
+    const codeBlocks = [...document.querySelectorAll('.vf-codeblock')];
+    const plainLanguages = ['plaintext', 'text', 'txt'];
+    const language = (block) =>
+      (block.querySelector('.vf-codeblock__language')?.textContent ?? '').split(':').pop().trim().toLowerCase();
+    return {
+      fonts: document.fonts.status,
+      finiteAnimations: finite.length,
+      animationSample: finite.slice(0, 5).map((animation) =>
+        animation.constructor.name + ':' + (animation.transitionProperty ?? animation.animationName) + '@' +
+        (animation.effect?.target?.tagName ?? '?') + '.' + String(animation.effect?.target?.className ?? '').slice(0, 60)),
+      scrollHeight: document.documentElement.scrollHeight,
+      scrollWidth: document.documentElement.scrollWidth,
+      incompleteImages: [...document.images].filter((image) => !image.complete).length,
+      codeBlocks: codeBlocks.length,
+      unhighlightedCodeBlocks: codeBlocks.filter(
+        (block) => !block.querySelector('.vf-codeblock__shiki-token') && !plainLanguages.includes(language(block)),
+      ).length,
+    };
+  };
+  let previous = sample();
+  let quiet = 0;
+  let frames = 0;
+  try {
+    for (; frames < ${restFrameLimit} && quiet < ${restQuietFrames}; frames += 1) {
+      mutations = 0;
+      await frame();
+      observer.takeRecords().forEach(() => { mutations += 1; });
+      const current = sample();
+      const atRest =
+        current.fonts === 'loaded' &&
+        current.finiteAnimations === 0 &&
+        mutations === 0 &&
+        current.scrollHeight === previous.scrollHeight &&
+        current.scrollWidth === previous.scrollWidth &&
+        current.incompleteImages === 0 &&
+        current.unhighlightedCodeBlocks === 0;
+      quiet = atRest ? quiet + 1 : 0;
+      previous = { ...current, mutations };
+    }
+  } finally {
+    observer.disconnect();
+  }
+  return { atRest: quiet >= ${restQuietFrames}, frames, last: previous };
+})()`;
+
+async function waitForRest(page, phase) {
+  const rest = await page.evaluate(restExpression);
+  if (!rest.atRest) {
+    throw new CaptureRejected(`the page did not come to rest ${phase} within ${restFrameLimit} frames`, {
+      phase,
+      rest,
+    });
+  }
+  return { phase, frames: rest.frames };
+}
+
+// A capture the harness refuses to use. It carries what was measured and any
+// frames obtained, so the refusal can be diagnosed from the run artifacts.
+class CaptureRejected extends Error {
+  constructor(reason, diagnostics, frames = []) {
+    super(reason);
+    this.name = 'CaptureRejected';
+    this.diagnostics = diagnostics;
+    this.frames = frames;
+  }
+}
+
+export function pngSize(buffer) {
+  // IHDR is the first chunk: width and height are the big-endian words at 16 and 20.
+  const signature = '89504e470d0a1a0a';
+  if (buffer.length < 24 || buffer.subarray(0, 8).toString('hex') !== signature) return null;
+  return { width: buffer.readUInt32BE(16), height: buffer.readUInt32BE(20) };
+}
+
+// The frame is resized to the document measured at the capture viewport - the
+// same size captureBeyondViewport used - and the page has to come to rest at
+// that size. Two frames are then copied one after the other without any
+// resize; they have to be byte-identical and exactly the measured size. The
+// frame is put back afterwards.
+async function acquireFullPage(page, viewport) {
+  const size = await page.evaluate(
+    `({ width: document.documentElement.scrollWidth, height: document.documentElement.scrollHeight })`,
+  );
+  if (size.width !== viewport.width) {
+    throw new CaptureRejected(
+      `the document is ${size.width}px wide in a ${viewport.width}px viewport; the full-page geometry is undefined`,
+      { size },
+    );
+  }
+
+  const metrics = { deviceScaleFactor: captureEnvironment.deviceScaleFactor, mobile: viewport.mobile };
+  await page.send('Emulation.setDeviceMetricsOverride', { ...metrics, width: size.width, height: size.height });
+
+  try {
+    await page.waitFor(`window.innerWidth === ${size.width} && window.innerHeight === ${size.height}`, 10_000);
+    const rest = await waitForRest(page, 'at the full-page size');
+
+    const resizedBefore = page.eventCounts['Page.frameResized'];
+    const parameters = { format: captureEnvironment.screenshotFormat, captureBeyondViewport: false, fromSurface: true };
+    const first = Buffer.from((await page.send('Page.captureScreenshot', parameters)).data, 'base64');
+    await page.evaluate(`new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(() => done(true))))`);
+    const second = Buffer.from((await page.send('Page.captureScreenshot', parameters)).data, 'base64');
+    const resizedDuringCapture = page.eventCounts['Page.frameResized'] - resizedBefore;
+
+    const diagnostics = {
+      size,
+      rest,
+      resizedDuringCapture,
+      first: { bytes: first.length, sha256: sha256(first), size: pngSize(first) },
+      second: { bytes: second.length, sha256: sha256(second), size: pngSize(second) },
+    };
+    const rejected = (reason) => new CaptureRejected(reason, diagnostics, [first, second]);
+
+    if (resizedDuringCapture !== 0) {
+      throw rejected(`the frame was resized ${resizedDuringCapture} time(s) during the capture`);
+    }
+    for (const shot of [diagnostics.first, diagnostics.second]) {
+      if (!shot.size || shot.size.width !== size.width || shot.size.height !== size.height) {
+        throw rejected(`a screenshot is ${JSON.stringify(shot.size)}, not ${size.width}x${size.height}`);
+      }
+    }
+    if (!first.equals(second)) {
+      throw rejected('two consecutive frames differ; the page is not at rest');
+    }
+
+    return { contents: first, acquisition: { method: 'expanded-viewport', size, rest, stabilityFrames: 2 } };
+  } finally {
+    await page.send('Emulation.setDeviceMetricsOverride', {
+      ...metrics,
+      width: viewport.width,
+      height: viewport.height,
+    });
+  }
+}
+
 export async function captureShowcase({ origin, outputDirectory, label }) {
   mkdirSync(outputDirectory, { recursive: true });
 
@@ -242,19 +416,40 @@ export async function captureShowcase({ origin, outputDirectory, label }) {
           await page.send('Page.navigate', { url: `${origin}${route.path}` });
           await settle(page, route.readySelector);
           await page.waitFor(`document.documentElement.dataset.vfTheme === ${JSON.stringify(theme)}`);
-
-          const cases = await page.evaluate(caseInventoryExpression(route));
-          const componentCensus = await page.evaluate(componentCensusExpression);
-          const fonts = await page.evaluate(fontProbeExpression);
-          const layout = await page.evaluate(layoutExpression);
-
-          const screenshot = await page.send('Page.captureScreenshot', {
-            format: captureEnvironment.screenshotFormat,
-            captureBeyondViewport: true,
-            fromSurface: true,
-          });
-          const contents = Buffer.from(screenshot.data, 'base64');
           const id = captureId(route.id, viewport.id, theme);
+
+          let acquired;
+          let cases;
+          let componentCensus;
+          let fonts;
+          let layout;
+          try {
+            const rest = await waitForRest(page, 'at the capture viewport');
+
+            cases = await page.evaluate(caseInventoryExpression(route));
+            componentCensus = await page.evaluate(componentCensusExpression);
+            fonts = await page.evaluate(fontProbeExpression);
+            layout = await page.evaluate(layoutExpression);
+
+            acquired = await acquireFullPage(page, viewport);
+            acquired.acquisition.restAtViewport = rest;
+          } catch (error) {
+            if (error instanceof CaptureRejected) {
+              // Fail closed and keep the evidence: no frame of a rejected capture
+              // is written as a capture, and the run stops here.
+              writeFileSync(
+                resolve(outputDirectory, `${id}.rejected.json`),
+                `${JSON.stringify({ id, reason: error.message, diagnostics: error.diagnostics }, null, 2)}\n`,
+              );
+              error.frames.forEach((frame, index) =>
+                writeFileSync(resolve(outputDirectory, `${id}.rejected-${index + 1}.png`), frame),
+              );
+              error.message = `capture ${id} rejected: ${error.message}`;
+            }
+            throw error;
+          }
+
+          const { contents, acquisition } = acquired;
           const filename = `${id}.png`;
           writeFileSync(resolve(outputDirectory, filename), contents);
 
@@ -269,6 +464,7 @@ export async function captureShowcase({ origin, outputDirectory, label }) {
             componentCensus,
             layout,
             fonts,
+            acquisition,
             screenshot: { filename, bytes: contents.length, sha256: sha256(contents) },
           });
 
@@ -286,6 +482,8 @@ export async function captureShowcase({ origin, outputDirectory, label }) {
     origin,
     environment: {
       ...captureEnvironment,
+      // Recorded so a capture set acquired another way never compares as equal.
+      acquisition: 'expanded-viewport-at-rest',
       browser: chrome.browser,
       userAgent: chrome.userAgent,
       protocolVersion: chrome.protocolVersion,
