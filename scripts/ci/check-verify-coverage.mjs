@@ -16,25 +16,13 @@ import {
  * what everyone reads as "this branch is good" — and twice now that reading was wrong.
  */
 const ciOnlyJobs = {
-  razor: 'runs the PHP adapter suite in a container; verify runs the same suite when PHP is installed',
   visual:
     'downloads a pinned Chrome build and captures against live servers; a different browser reports differences that are not real',
 };
 
-/**
- * `verify` steps CI performs by other means, with how.
- *
- * The Razor suite is the case: `verify` shells out to a local PHP toolchain, while CI runs the same
- * `composer check` inside a container that is guaranteed to have one.
- */
-const coveredElsewhere = {
-  'check:razor-package': 'the razor job runs the same composer check inside a container',
-};
-
 const ciOnlySteps = {
   'visual:cross-platform:capture':
-    'drives a pinned Chrome build against two live servers; a different browser reports differences that are not real',
-  'visual:cross-platform:razor-render': 'renders through the PHP adapter, which verify cannot assume is installed',
+    'drives a pinned Chrome build against the live fixture server; a different browser reports differences that are not real',
   'visual:cross-platform:serve': 'serves the cross-platform cases for a pinned browser to capture',
 };
 
@@ -49,7 +37,7 @@ if (typeof verifyScript !== 'string' || verifyScript.trim() === '') {
 }
 
 const workflowText = readFileSync(workflowPath, 'utf8');
-const uncovered = findUncoveredVerifySteps(verifyScript, workflowText, coveredElsewhere);
+const uncovered = findUncoveredVerifySteps(verifyScript, workflowText);
 const gaps = findVerifyGaps(verifyScript, workflowText, ciOnlySteps);
 const uncoveredJobs = findUncoveredJobs(verifyScript, parseYaml(workflowText).jobs ?? {}, ciOnlyJobs);
 
@@ -92,6 +80,5 @@ if (uncovered.length > 0) {
 
 console.log(
   `[verify-coverage] OK: all ${parseVerifySteps(verifyScript).length} verify step(s) run in CI, and the ` +
-    `${Object.keys(ciOnlySteps).length} step(s) and ${Object.keys(ciOnlyJobs).length} job(s) only CI runs, ` +
-    `plus ${Object.keys(coveredElsewhere).length} covered by other means, are declared with a reason.`,
+    `${Object.keys(ciOnlySteps).length} step(s) and ${Object.keys(ciOnlyJobs).length} job(s) only CI runs are declared with a reason.`,
 );

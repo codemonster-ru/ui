@@ -41,27 +41,7 @@ from the information hierarchy. If a product needs an additional tinted surface,
 application class using public `--cm-*` tokens after design review rather than introducing a
 cross-platform boolean with no semantic meaning.
 
-## Annabel Razor
+## Vanilla HTML
 
-```razor
-<cm-card element="section" aria-labelledby="recent-activity-title">
-    <razor-slot name="header">
-        <h2 id="recent-activity-title">Recent activity</h2>
-    </razor-slot>
-
-    <p>No recent deployments.</p>
-
-    <razor-slot name="footer">
-        <cm-button variant="secondary">Refresh</cm-button>
-    </razor-slot>
-</cm-card>
-
-<cm-section element="section" aria-labelledby="account-notes-title">
-    <h2 id="account-notes-title">Account notes</h2>
-    <p>Notes use page background and shared section inset without another card surface.</p>
-</cm-section>
-```
-
-Both compositions render complete server HTML and require no shared runtime. Callers own heading
-levels and accessible names; do not select a level merely to match the old `VfPanel` default.
-Fallback prop strings remain escaped, while authored Razor slots are trusted composition regions.
+Compose the same layout using the canonical markup for [card](../../contracts/card/contract.md).
+Load styles and initialize interactive components as described in the [Vanilla guide](../vanilla.md).

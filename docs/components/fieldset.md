@@ -46,24 +46,6 @@ The default slot exposes `{ describedBy, invalid }` when individual controls nee
 </CmFieldset>
 ```
 
-## Annabel Razor
+## Vanilla HTML
 
-Razor callers use the same deterministic supporting ids when a descendant control needs them:
-
-```razor
-<cm-fieldset
-    id="contact-method"
-    label="Contact method"
-    description="Choose every acceptable method."
-    :error="$errors['contact_method'] ?? null"
->
-    <cm-checkbox
-        name="contact_method"
-        aria-describedby="contact-method-description contact-method-error"
-        :aria-invalid="isset($errors['contact_method'])"
-    >Email</cm-checkbox>
-</cm-fieldset>
-```
-
-Do not turn untrusted strings into `RenderedHtml`. Fallback props remain escaped, while slot markup
-is trusted application composition.
+Use the canonical HTML for [fieldset](../../contracts/fieldset/contract.md).

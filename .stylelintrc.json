@@ -1,15 +1,6 @@
 {
   "extends": ["stylelint-config-standard", "stylelint-config-html"],
-  "ignoreFiles": [
-    "**/dist/**",
-    "**/showcase-dist/**",
-    "**/coverage/**",
-    "**/node_modules/**",
-    "examples/razor/public/vendor/**",
-    "examples/razor/vendor/**",
-    "packages/razor/vendor/**",
-    "packages/razor/resources/assets/**"
-  ],
+  "ignoreFiles": ["**/dist/**", "**/showcase-dist/**", "**/coverage/**", "**/node_modules/**"],
   "rules": {
     "import-notation": null,
     "selector-class-pattern": [

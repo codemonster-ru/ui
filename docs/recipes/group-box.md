@@ -45,43 +45,7 @@ assistive technology, and the portable Fieldset contract intentionally owns a vi
 non-interactive legend. This recipe therefore does not preserve the exact VueForge title-on-border
 toggle markup or its `toggle-icon` slot.
 
-## Annabel Razor
+## Vanilla HTML
 
-```razor
-<?php
-$invoiceSections = [
-    ['id' => 'details', 'title' => 'Show or hide invoice fields', 'content' => ''],
-];
-$invoiceOpenItems = ['details'];
-?>
-
-<cm-fieldset id="shipping-address" label="Shipping address">
-    <label>
-        Street
-        <input name="shipping_street" autocomplete="shipping street-address">
-    </label>
-</cm-fieldset>
-
-<cm-fieldset id="invoice-details" label="Invoice details">
-    <cm-accordion
-        id="invoice-disclosure"
-        :items="$invoiceSections"
-        :default-open-items="$invoiceOpenItems"
-    >
-        <razor-slot name="panelDetails">
-            <label>
-                Purchase order
-                <input name="purchase_order">
-            </label>
-        </razor-slot>
-    </cm-accordion>
-</cm-fieldset>
-```
-
-Register `createCmAccordionController` once as described in
-[Accordion integration](../components/accordion.md). Server-rendered content remains available
-without JavaScript; enhancement only changes disclosure state. Persist `cm:open-change` when the
-chosen open section must survive navigation. No runtime is required for the static Fieldset case.
-
-If the content is not a related form-control group, do not use Fieldset merely to reproduce an
-outline. Use `CmCard` or `CmSection` and give the section an application-authored heading instead.
+Compose the same layout using the canonical markup for [fieldset](../../contracts/fieldset/contract.md).
+Load styles and initialize interactive components as described in the [Vanilla guide](../vanilla.md).

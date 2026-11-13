@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "name": "TableOfContents",
   "slug": "table-of-contents",
-  "razorTag": "cm-table-of-contents",
   "description": "A nav of anchor links to headings on the page. It works without JavaScript through native anchor navigation; smooth scrolling and a header offset are an enhancement layered over that.",
   "props": {
     "items": {

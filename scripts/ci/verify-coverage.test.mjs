@@ -80,18 +80,18 @@ test('reports a declared exception that no longer describes anything', () => {
 test('reports a job built from commands that are not npm run', () => {
   const jobs = {
     lint: { steps: [{ run: 'npm run lint:all' }] },
-    razor: { steps: [{ run: 'docker run composer:2 sh -lc "composer check"' }] },
+    integration: { steps: [{ run: 'docker run test-runner run-checks' }] },
   };
-  assert.deepEqual(findUncoveredJobs('npm run lint:all', jobs), ['razor']);
-  assert.deepEqual(findUncoveredJobs('npm run lint:all', jobs, { razor: 'runs in a container' }), []);
+  assert.deepEqual(findUncoveredJobs('npm run lint:all', jobs), ['integration']);
+  assert.deepEqual(findUncoveredJobs('npm run lint:all', jobs, { integration: 'runs in a container' }), []);
 });
 
 test('treats a verify step CI covers by other means as covered', () => {
-  const verify = 'npm run lint:all && npm run check:razor-package';
+  const verify = 'npm run lint:all && npm run check:integration-package';
   const workflow = '      - run: npm run lint:all\n';
-  assert.deepEqual(findUncoveredVerifySteps(verify, workflow), ['check:razor-package']);
+  assert.deepEqual(findUncoveredVerifySteps(verify, workflow), ['check:integration-package']);
   assert.deepEqual(
-    findUncoveredVerifySteps(verify, workflow, { 'check:razor-package': 'a container runs it' }),
+    findUncoveredVerifySteps(verify, workflow, { 'check:integration-package': 'a container runs it' }),
     [],
   );
 });

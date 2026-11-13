@@ -19,12 +19,7 @@ Table accepts `caption`, `density` (`default` or `compact`), `striped`, `columnD
 </CmTable>
 ```
 
-```razor
-<cm-table caption="Invoices" :striped="true">
-  <razor-slot name="header"><tr><th scope="col">Number</th><th scope="col">Total</th></tr></razor-slot>
-  <tr><th scope="row">INV-42</th><td>$120</td></tr>
-</cm-table>
-```
+Vanilla markup: [table HTML](../../contracts/table/cases/default.html).
 
 Table supplies `<thead>`, `<tbody>`, and `<tfoot>` wrappers but does not infer headers, scopes, or
 relationships. Its outer element owns forwarded attributes and horizontal scrolling. No runtime is
@@ -81,26 +76,14 @@ selected until the application changes the controlled selection.
 
 Localize selection and sorting accessible names with `selectAllLabel`, `selectRowLabelTemplate`,
 `sortAscendingLabelTemplate`, `sortDescendingLabelTemplate`, and `clearSortLabelTemplate`. The row
-template must contain `{row}`; each sort template must contain `{column}`. Razor uses the equivalent
+template must contain `{row}`; each sort template must contain `{column}`. Vanilla HTML uses the equivalent
 kebab-case props and the shared runtime preserves those labels as sorting cycles.
 
-## Razor and progressive enhancement
+## Vanilla HTML and progressive enhancement
 
-Razor renders the current server-owned page and state:
+Vanilla HTML renders the current server-owned page and state:
 
-```razor
-<cm-data-table
-  id="accounts"
-  caption="Accounts"
-  :columns="$columns"
-  :rows="$rows"
-  :selected-row-ids="$selectedRowIds"
-  :sort="$sort"
-  :page="$page"
-  :page-count="$pageCount"
-  :selectable="true"
-/>
-```
+Vanilla markup: [data-table HTML](../../contracts/data-table/cases/default.html).
 
 Register only the DataTable controller, then translate custom events into navigation, a request, or
 another server render:
@@ -124,13 +107,13 @@ count and render `firstRow-lastRow of totalRows`; omit it when the application o
 The page and range summary templates plus visible previous/next text can be localized independently
 from the buttons' accessible labels.
 
-The Razor adapter accepts `visible-column-keys` in the same ordered form as Vue. The application can
+Vanilla templates render visible columns in the same order in the header and each row. The application can
 render `CmCheckbox` controls inside a `CmPopover` or dialog and persist that array wherever its
 product requires. Keep required column keys in every update, normalize selected keys back to the
 original column order, and derive the chooser's checked/indeterminate aggregate state from the
 optional columns. The application owns the trigger and placement, required-column policy,
 authorization, persistence, optimistic updates, rollback, and any server rerender. This composition
-is intentionally not a standalone DataTableColumnChooser contract without matching Vue and Razor
+is intentionally not a standalone DataTableColumnChooser contract without matching Vue and Vanilla HTML
 product demand.
 
 The controller cycles one sortable column through ascending, descending, and unsorted states. It
@@ -147,7 +130,7 @@ hide, or replace rows. Without JavaScript, users retain a readable semantic tabl
 - Treat row and column values as untrusted. Both adapters escape them and reject arbitrary HTML,
   executable accessors, unknown cell keys, duplicate identifiers, and non-finite numbers.
 - Rich cells, headers, state actions, footers, and expanded rows belong in an application-owned
-  `CmTable` composition, where trusted Vue or Razor markup remains explicit.
+  `CmTable` composition, where trusted Vue or Vanilla HTML markup remains explicit.
 - Multi-sort query semantics and interactive column pinning, resizing, and reordering remain
   application-owned policy. `visibleColumnKeys` covers the stable shared visibility/order state.
 - For skeleton rows, compose `CmSkeleton` with `CmTable`; DataTable's portable loading state remains
@@ -192,6 +175,4 @@ const rows = [
 </template>
 ```
 
-```php
-<cm-column-chooser id="projects-columns" :columns="$columns" :required-column-keys="['name']" />
-```
+Vanilla markup: [column-chooser HTML](../../contracts/column-chooser/cases/default.html).

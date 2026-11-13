@@ -64,73 +64,10 @@ If the product supports a `system` preference, store `system` as the preference 
 resolved `light` or `dark` value to `data-cm-theme`. Listen to `matchMedia` only while that preference
 is active. This distinction prevents a system change from overwriting an explicit user choice.
 
-## Annabel Razor recipe
+## Vanilla HTML
 
-Prefer a server-readable cookie when Razor must render the resolved theme before JavaScript. The
-application validates the cookie against its finite preference set and writes the initial root
-attribute:
-
-```php
-$preference = ($_COOKIE['app_theme'] ?? null) === 'dark' ? 'dark' : 'light';
-echo $razor->render('layout', ['theme' => $preference]);
-```
-
-```razor
-<!doctype html>
-<html lang="en" data-cm-theme="{{ $theme }}">
-    <head>
-        <link rel="stylesheet" href="/vendor/codemonster-ui/css/tokens/tokens.css" />
-        <link rel="stylesheet" href="/vendor/codemonster-ui/css/css/styles.css" />
-    </head>
-    <body>
-        <cm-button
-            type="button"
-            variant="secondary"
-            aria-label="Switch to {{ $theme === 'dark' ? 'light' : 'dark' }} theme"
-            data-theme-toggle
-        >
-            <span aria-hidden="true">{{ $theme === 'dark' ? '☾' : '☀' }}</span>
-            Theme
-        </cm-button>
-    </body>
-</html>
-```
-
-Enhance the authored marker in the application's frontend entry. This is application code, not a
-CodeMonster UI runtime controller:
-
-```ts file=/razor-theme-toggle.ts
-type Theme = 'light' | 'dark';
-
-export {};
-
-function opposite(theme: Theme): Theme {
-  return theme === 'dark' ? 'light' : 'dark';
-}
-
-document.addEventListener('click', (event) => {
-  const target = event.target;
-  if (!(target instanceof Element)) return;
-
-  const button = target.closest<HTMLButtonElement>('[data-theme-toggle]');
-  if (!button) return;
-
-  const current: Theme = document.documentElement.getAttribute('data-cm-theme') === 'dark' ? 'dark' : 'light';
-  const next = opposite(current);
-  document.documentElement.setAttribute('data-cm-theme', next);
-  button.setAttribute('aria-label', `Switch to ${opposite(next)} theme`);
-  document.cookie = `app_theme=${next}; Path=/; Max-Age=31536000; SameSite=Lax`;
-});
-```
-
-Use HTTPS and add `Secure` to the cookie in production. If the preference belongs to an account,
-persist it through the application's authenticated endpoint instead of treating this example cookie
-as the source of truth.
-
-During a migration that still renders retained VueForge CodeBlock or Playground products, mirror
-the resolved value to their separate `data-vf-theme` boundary as application compatibility state.
-Remove that mirror when those retained products no longer share the page; CodeMonster UI itself
-reads only `data-cm-theme`.
+Compose the same layout using the canonical markup for [theme-switch](../../contracts/theme-switch/cases/default.html).
+Load styles and initialize interactive components as described in the [Vanilla guide](../vanilla.md).
 
 ## Ownership and accessibility
 

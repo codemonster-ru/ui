@@ -45,15 +45,13 @@ const options = [
 </template>
 ```
 
-```razor
-<cm-select id="frequency" name="frequency" aria-label="Frequency" :options="$options" :value="$submitted['frequency'] ?? ''" placeholder="Choose" :clearable="true" clear-label="Clear frequency" :required="true" />
-```
+Vanilla markup: [select HTML](../../contracts/select/cases/default.html).
 
-Vue emits `update:modelValue` and `valueChange` when a choice is committed. Razor expects the
+Vue emits `update:modelValue` and `valueChange` when a choice is committed. Vanilla HTML expects the
 current submitted or application value. The clear action stays in the markup, is hidden while the
 value is empty, emits the same bubbling `change`, and restores focus to the trigger.
 
-Register `createCmSelectController` in Razor: it owns opening, keyboard movement, selection,
+Register `createCmSelectController` in Vanilla HTML: it owns opening, keyboard movement, selection,
 clearing, and listbox placement. Without it the control renders its current value and a form still
 submits that value through the hidden input, but the value cannot be changed.
 
@@ -79,14 +77,12 @@ plus `clearable` and localized `clearLabel`.
 />
 ```
 
-```razor
-<cm-date-picker name="launch_date" aria-label="Launch date" :value="$submitted['launch_date'] ?? ''" min="2026-01-01" :clearable="true" clear-label="Clear launch date" :required="true" />
-```
+Vanilla markup: [date-picker HTML](../../contracts/date-picker/cases/default.html).
 
 The browser owns calendar UI and localized presentation, so its popup appearance can differ by
 platform. The successful form value remains ISO `YYYY-MM-DD`. The portable contract does not add a
 custom calendar, multiple/range or month/year/time modes, display formatting, first-day policy, or
-calendar labels. Register the existing `createCmInputController` in Razor to enhance the clear
+calendar labels. Register the existing `createCmInputController` in Vanilla HTML to enhance the clear
 action; the date input and submission remain native without it. Validate submitted dates again on
 the server.
 
@@ -132,12 +128,9 @@ function runCommand(command: string): void {
 </template>
 ```
 
-For Razor, render initial state and register only the CommandPalette controller:
+For Vanilla HTML, render initial state and register only the CommandPalette controller:
 
-```razor
-<button id="open-commands" type="button">Commands</button>
-<cm-command-palette id="workspace" title="Commands" :commands="$commands" />
-```
+Vanilla markup: [command-palette HTML](../../contracts/command-palette/cases/default.html).
 
 ```ts
 import { CmRuntime, createCmCommandPaletteController } from '@codemonster-ru/ui-runtime';
@@ -159,7 +152,7 @@ Enter reports the enabled command id and closes. Escape and the close button dis
 focus. Filtering is case-insensitive substring matching over labels and keywords, in original
 order. `actions`, `loading`, `idle`, `empty`, and `footer` accept trusted authored content;
 `command{UpperCamelId}` replaces one label inside its component-owned option and receives
-`{ command, active }` in Vue. Razor accepts the same named regions as trusted `RenderedHtml`.
+`{ command, active }` in Vue. Vanilla templates fill the corresponding regions with escaped text and authored markup.
 Applications own command execution, authorization, global shortcuts, persistence, arbitrary result
 renderers, fuzzy highlighting, unmatched-query submission, and dialog sizing or close policy.
 

@@ -197,22 +197,6 @@ jobs:
       - name: Audit release dependencies
         run: npm run audit:release
 
-  razor:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-
-      - name: Install and verify Razor package
-        run: |
-          docker run --rm \
-            --volume "${GITHUB_WORKSPACE}:/workspace/JS/ui" \
-            --workdir /workspace/JS/ui/packages/razor \
-            --env COMPOSER_MAX_PARALLEL_HTTP=1 \
-            composer:2 \
-            sh -lc 'composer install --no-interaction --prefer-dist --no-progress && composer check'
-
   visual:
     runs-on: macos-26
     env:
@@ -228,20 +212,11 @@ jobs:
           node-version: 24
           cache: npm
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.4'
-          tools: composer
-
       - name: Install dependencies
         run: npm ci
 
       - name: Build packages
         run: npm run build
-
-      - name: Install Razor visual runtime
-        run: composer --working-dir=packages/razor update --no-dev --no-interaction --prefer-dist
 
       - name: Install pinned Chrome for visual checks
         run: |
@@ -255,15 +230,13 @@ jobs:
       - name: Verify cross-platform adapter visuals
         env:
           CROSS_PLATFORM_CAPTURE: ${{ runner.temp }}/codemonster-cross-platform-current
-          CROSS_PLATFORM_RAZOR_DIFF: ${{ runner.temp }}/codemonster-cross-platform-razor-diff
-          CROSS_PLATFORM_RAZOR_FIXTURES: ${{ runner.temp }}/codemonster-cross-platform-razor.json
+          CROSS_PLATFORM_VANILLA_DIFF: ${{ runner.temp }}/codemonster-cross-platform-vanilla-diff
           CROSS_PLATFORM_VUE_DIFF: ${{ runner.temp }}/codemonster-cross-platform-vue-diff
         run: |
           set -euo pipefail
           chrome_for_testing_path="${RUNNER_TEMP}/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing"
 
-          npm run visual:cross-platform:razor-render -- --output="${CROSS_PLATFORM_RAZOR_FIXTURES}"
-          npm run visual:cross-platform:serve -- --razor-fixtures="${CROSS_PLATFORM_RAZOR_FIXTURES}" --port=5176 > "${RUNNER_TEMP}/codemonster-cross-platform-vite.log" 2>&1 &
+          npm run visual:cross-platform:serve -- --port=5176 > "${RUNNER_TEMP}/codemonster-cross-platform-vite.log" 2>&1 &
           adapter_pid=$!
           "${chrome_for_testing_path}" --headless=new --remote-debugging-port=9226 --user-data-dir="${RUNNER_TEMP}/codemonster-showcase-chrome" --disable-gpu --no-first-run --no-default-browser-check about:blank > "${RUNNER_TEMP}/codemonster-showcase-chrome.log" 2>&1 &
           chrome_pid=$!
@@ -287,7 +260,10 @@ jobs:
 
           npm run visual:cross-platform:capture -- --origin=http://127.0.0.1:5176 --output="${CROSS_PLATFORM_CAPTURE}" --label=ci-actual-adapters
           node scripts/visual/compare-showcase.mjs --baseline=visual-baselines/vueforge-cross-platform --current="${CROSS_PLATFORM_CAPTURE}/vue" --diff="${CROSS_PLATFORM_VUE_DIFF}" --threshold=4
-          node scripts/visual/compare-showcase.mjs --baseline=visual-baselines/vueforge-cross-platform --current="${CROSS_PLATFORM_CAPTURE}/razor" --diff="${CROSS_PLATFORM_RAZOR_DIFF}" --threshold=4
+          node scripts/visual/compare-showcase.mjs --baseline=visual-baselines/vueforge-cross-platform --current="${CROSS_PLATFORM_CAPTURE}/vanilla" --diff="${CROSS_PLATFORM_VANILLA_DIFF}" --threshold=4
+
+          CHROME_PATH="${chrome_for_testing_path}" CM_PARITY_REPORT="${RUNNER_TEMP}/codemonster-pair-visual.json" node scripts/visual/check-vanilla-parity.mjs
+          CHROME_PATH="${chrome_for_testing_path}" CM_PARITY_REPORT="${RUNNER_TEMP}/codemonster-pair-behavior.json" CM_PARITY_BEHAVIOR=1 node scripts/visual/check-vanilla-parity.mjs
 
       - name: Upload cross-platform visual differences
         if: failure()
@@ -297,7 +273,8 @@ jobs:
           path: |
             ${{ runner.temp }}/codemonster-cross-platform-current
             ${{ runner.temp }}/codemonster-cross-platform-vue-diff
-            ${{ runner.temp }}/codemonster-cross-platform-razor-diff
+            ${{ runner.temp }}/codemonster-cross-platform-vanilla-diff
+            ${{ runner.temp }}/codemonster-pair-*.json
             ${{ runner.temp }}/codemonster-cross-platform-vite.log
             ${{ runner.temp }}/codemonster-showcase-chrome.log
           if-no-files-found: ignore

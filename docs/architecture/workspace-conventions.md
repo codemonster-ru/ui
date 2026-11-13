@@ -6,7 +6,7 @@ Roadmap item: `CMUI-016`
 
 ## Purpose
 
-These conventions define how npm packages, the Composer adapter, contracts, examples, generated
+These conventions define how npm packages, contracts, examples, generated
 artifacts, and repository tooling coexist while VueForge and CodeMonster UI share this monorepo.
 
 They establish repository shape and ownership. Package metadata validation, contract fixtures, and
@@ -17,7 +17,7 @@ root orchestration are implemented by their later roadmap items.
 | Path                 | Responsibility                                                                  |
 | -------------------- | ------------------------------------------------------------------------------- |
 | `contracts/`         | Framework-independent component manifests, cases, canonical HTML, and scenarios |
-| `packages/`          | Publishable npm packages and the Composer UI package                            |
+| `packages/`          | Publishable npm packages                                                        |
 | `examples/`          | Runnable consumer examples by platform                                          |
 | `docs/architecture/` | Accepted product and engineering decisions                                      |
 | `docs/`              | User guides, migration documentation, audits, and the roadmap                   |
@@ -41,7 +41,6 @@ packages/runtime
 packages/vue
 packages/react
 packages/angular
-packages/razor
 ```
 
 Existing VueForge directory names remain unchanged during migration. A CodeMonster UI package does
@@ -92,24 +91,6 @@ Standard scripts are:
 
 A package may add focused smoke or generation scripts. Root orchestration is added only after the
 package can run independently.
-
-## Composer workspace conventions
-
-`packages/razor` is the publishable `codemonster-ru/ui-razor` Composer library. It has no `package.json`
-unless a later decision gives it an independently justified npm responsibility; copied frontend
-artifacts do not justify making it an npm package.
-
-The Composer package owns:
-
-- `composer.json` and PHP autoloading;
-- `src/` PHP component and integration code;
-- `resources/views/` Annabel Razor templates;
-- `resources/assets/` verified copied CodeMonster UI artifacts;
-- PHP unit, static-analysis, rendering, and archive tests.
-
-Composer dependencies install into an ignored `vendor/` directory. Composer caches, PHPUnit caches,
-PHPStan caches, and local `composer.phar` files remain untracked. The package must be testable from a
-fresh Composer install without npm workspace resolution.
 
 ## Source and test placement
 

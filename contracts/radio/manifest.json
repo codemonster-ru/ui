@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "name": "Radio",
   "slug": "radio",
-  "razorTag": "cm-radio",
   "description": "One labeled native option in a same-name radio group.",
   "props": {
     "checked": { "type": "boolean", "required": false, "default": false },

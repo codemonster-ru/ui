@@ -4,8 +4,6 @@ Status: Active
 
 Component: `Input`
 
-Razor tag: `cm-input`
-
 ## Purpose
 
 Input is a thin adapter over one native single-line `<input>`. It shares visual sizing and invalid
@@ -27,7 +25,7 @@ stable contract classes. Adapters do not replace native `name`, `id`, `autocompl
 ## Value and platform mapping
 
 The semantic `value` is always a string. Vue exposes it through `modelValue` and emits
-`update:modelValue` from the native input event. Annabel Razor accepts `value`, renders the escaped
+`update:modelValue` from the native input event. Vanilla HTML accepts `value`, renders the escaped
 native value attribute, and relies on the submitted request value for the next render. Both mappings
 must produce the same significant DOM for the same current value.
 

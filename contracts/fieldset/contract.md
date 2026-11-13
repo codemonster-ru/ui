@@ -4,8 +4,6 @@ Status: Active
 
 Component: `Fieldset`
 
-Razor tag: `cm-fieldset`
-
 ## Purpose and identity
 
 Fieldset groups related controls under one visible legend. `id` and `label` are required, non-empty,
@@ -28,7 +26,7 @@ The root references every rendered supporting region through `aria-describedby` 
 description-then-error order. An error implies invalid state. Explicit `invalid=true` also adds
 `cm-fieldset--invalid` and `aria-invalid="true"` when no error is rendered. Vue exposes the same
 derived `describedBy` and `invalid` values to the default scoped slot so consumers can associate
-individual controls when required; Razor callers can use the deterministic ids directly.
+individual controls when required; Vanilla HTML callers can use the deterministic ids directly.
 
 Fieldset does not infer native `required`, `disabled`, or per-control validity. Applications retain
 those control states and validation policy.

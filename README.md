@@ -1,7 +1,7 @@
 # CodeMonster UI
 
 CodeMonster UI is a cross-platform design system with shared tokens, CSS, browser behavior, and
-supported adapters for Vue 3 and Annabel Razor.
+two integration modes: Vue 3 and Vanilla HTML + CSS + JavaScript.
 
 ## CodeMonster UI 1.1
 
@@ -11,18 +11,13 @@ Install the stable Vue packages:
 npm install vue@^3.5.0 @codemonster-ru/ui-vue@^1.1.0 @codemonster-ru/ui-css@^1.1.0
 ```
 
-Install the stable Annabel Razor package:
-
-```bash
-composer require codemonster-ru/ui-razor:^1.1.0
-```
-
 See the [CodeMonster UI 1.1 release notes](./docs/codemonster-ui-1.1-release-notes.md),
 [component documentation](./docs/components/button.md), and
 [CSS-only guide](./docs/css/getting-started.md).
 
 Local runnable examples are available in [`examples/ui-showcase`](./examples/ui-showcase) for Vue
-and [`examples/razor`](./examples/razor) for Annabel Razor/PHP.
+and [`examples/vanilla`](./examples/vanilla/index.html) for plain HTML. Follow the
+[Vanilla guide](./docs/vanilla.md) to build and serve the browser assets without a consumer bundler.
 
 ## VueForge
 

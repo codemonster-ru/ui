@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "name": "CommandPalette",
   "slug": "command-palette",
-  "razorTag": "cm-command-palette",
   "description": "A modal searchable list of application commands.",
   "props": {
     "id": { "type": "string", "required": true },

@@ -52,7 +52,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.4",
-    "@vue/server-renderer": "3.5.35",
+    "@vue/server-renderer": "3.5.45",
     "@vue/test-utils": "2.4.11",
     "eslint": "^10.8.0",
     "jsdom": "^26.1.0",
@@ -60,8 +60,8 @@
     "typescript": "^5.9.3",
     "vite": "^6.4.3",
     "vite-plugin-dts": "^5.0.3",
-    "vitest": "^3.2.4",
-    "vue": "3.5.35",
+    "vitest": "^4.1.11",
+    "vue": "3.5.45",
     "vue-tsc": "^3.3.8"
   }
 }

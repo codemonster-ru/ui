@@ -121,7 +121,7 @@ Every state is controlled by exactly one of these sources:
 - a consumer-controlled prop;
 - component-internal state initialized by a default prop;
 - native browser state;
-- server-rendered Razor data followed by DOM runtime state.
+- server-rendered Vanilla data followed by DOM runtime state.
 
 The contract defines controlled and uncontrolled behavior, allowed transitions, and change events.
 Consumer attribute forwarding cannot override component-owned ARIA or `data-cm-state` values into an

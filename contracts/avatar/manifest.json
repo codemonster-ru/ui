@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "name": "Avatar",
   "slug": "avatar",
-  "razorTag": "cm-avatar",
   "description": "A compact image or text identity fallback.",
   "props": {
     "image": { "type": "nullable-string", "required": false, "default": null },

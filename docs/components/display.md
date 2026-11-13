@@ -1,7 +1,7 @@
 # Display components
 
 Badge, Tag, Alert, Avatar, Divider, and Skeleton are framework-independent display primitives with
-the same significant DOM in Vue and Annabel Razor. Import shared styles once with
+the same significant DOM in Vue and Vanilla HTML. Import shared styles once with
 `@codemonster-ru/ui-css/styles.css`.
 
 Badge and Tag differ only in how a tone reads. A tone fills a Badge, which suits a status; it
@@ -25,16 +25,9 @@ import { CmAlert, CmAvatar, CmBadge, CmDivider, CmSkeleton, CmTag } from '@codem
 </template>
 ```
 
-## Annabel Razor
+## Vanilla HTML
 
-```php
-<cm-badge tone="success">Published</cm-badge>
-<cm-tag tone="primary">Platform</cm-tag>
-<cm-alert tone="warning" title="Review required">Check the highlighted fields.</cm-alert>
-<cm-avatar label="AK" shape="circle" />
-<cm-divider />
-<cm-skeleton min-height="6rem" />
-```
+Use the canonical HTML for [alert](../../contracts/alert/contract.md), [avatar](../../contracts/avatar/contract.md), [badge](../../contracts/badge/contract.md), [divider](../../contracts/divider/contract.md), [skeleton](../../contracts/skeleton/contract.md), [tag](../../contracts/tag/cases/default.html) in Vanilla.
 
 Badge text and Alert body/title carry meaning independently of color. Alert defaults to
 `role="status"`; use `role="alert"` only for urgent asynchronously inserted feedback. Alert icon
