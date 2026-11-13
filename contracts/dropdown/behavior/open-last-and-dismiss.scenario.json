@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "dropdown-open-last-and-dismiss",
+  "case": "dropdown-default",
+  "steps": [
+    { "action": "focus", "target": "trigger" },
+    { "expect": "attribute", "target": "trigger", "name": "aria-haspopup", "value": "menu" },
+    { "expect": "attribute", "target": "trigger", "name": "aria-expanded", "value": "false" },
+    { "action": "press", "target": "trigger", "key": "ArrowUp" },
+    { "expect": "focus", "target": "item-last", "value": true },
+    { "expect": "visible", "target": "menu", "value": true },
+    { "expect": "attribute", "target": "trigger", "name": "aria-expanded", "value": "true" },
+    { "expect": "attribute", "target": "trigger", "name": "aria-controls", "value": "project-actions-menu" },
+    { "expect": "attribute", "target": "menu", "name": "id", "value": "project-actions-menu" },
+    { "expect": "attribute", "target": "menu", "name": "role", "value": "menu" },
+    { "expect": "attribute", "target": "menu", "name": "aria-labelledby", "value": "project-actions-trigger" },
+    { "action": "press", "target": "item-last", "key": "Escape" },
+    { "expect": "focus", "target": "trigger", "value": true },
+    { "expect": "visible", "target": "menu", "value": false },
+    { "expect": "attribute", "target": "trigger", "name": "aria-expanded", "value": "false" }
+  ]
+}

@@ -8,6 +8,18 @@
     { "expect": "focus", "target": "tab-last", "value": true },
     { "action": "press", "target": "tab-last", "key": "Home" },
     { "expect": "focus", "target": "tab-first", "value": true },
+    { "expect": "attribute", "target": "tab-first", "name": "aria-selected", "value": "true" },
+    { "expect": "attribute", "target": "tab-first", "name": "tabindex", "value": "0" },
+    { "expect": "attribute", "target": "tab-last", "name": "aria-selected", "value": "false" },
+    { "expect": "attribute", "target": "tab-last", "name": "tabindex", "value": "-1" },
+    { "expect": "attribute", "target": "tab-second", "name": "tabindex", "value": "-1" },
+    { "expect": "visible", "target": "panel-first", "value": true },
+    { "expect": "visible", "target": "panel-last", "value": false },
+    { "expect": "attribute", "target": "tab-first", "name": "aria-controls", "value": "settings-panel-general" },
+    { "expect": "attribute", "target": "panel-first", "name": "aria-labelledby", "value": "settings-tab-general" },
+    { "action": "press", "target": "tab-first", "key": "Tab" },
+    { "expect": "focus", "target": "panel-first", "value": true },
+    { "action": "focus", "target": "tab-first" },
     { "action": "press", "target": "tab-first", "key": "End" },
     { "expect": "focus", "target": "tab-last", "value": true }
   ]
