@@ -78,7 +78,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@vue/compiler-sfc": "3.5.35",
+    "@vue/compiler-sfc": "3.5.45",
     "@vue/language-core": "~3.3.8",
     "ajv": "^8.17.1",
     "axe-core": "^4.13.0",
@@ -100,7 +100,7 @@
     "stylelint-config-standard-scss": "^16.0.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.65.0",
-    "vue": "3.5.35",
+    "vue": "3.5.45",
     "vue-eslint-parser": "^10.4.0",
     "vue-tsc": "^3.3.8"
   },
@@ -108,14 +108,15 @@
     "@vitejs/plugin-vue": "5.2.4",
     "js-beautify": "npm:js-beautify@2.0.3",
     "markdownlint-cli2": {
-      "js-yaml": "5.2.2"
+      "js-yaml": "5.2.2",
+      "markdown-it": "15.0.3"
     },
     "tsup": {
       "esbuild": "0.27.2"
     },
-    "vite": "6.4.3",
+    "vite": "6.4.6",
     "ws": "8.21.0",
-    "vue": "3.5.35",
-    "@vue/server-renderer": "3.5.35"
+    "vue": "3.5.45",
+    "@vue/server-renderer": "3.5.45"
   }
 }
