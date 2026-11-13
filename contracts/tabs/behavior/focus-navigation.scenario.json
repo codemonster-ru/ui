@@ -17,8 +17,8 @@
     { "expect": "visible", "target": "panel-last", "value": false },
     { "expect": "attribute", "target": "tab-first", "name": "aria-controls", "value": "settings-panel-general" },
     { "expect": "attribute", "target": "panel-first", "name": "aria-labelledby", "value": "settings-tab-general" },
-    { "action": "press", "target": "tab-first", "key": "Tab" },
-    { "expect": "focus", "target": "panel-first", "value": true },
+    { "action": "press", "target": "tab-first", "key": "Tab", "browserOnly": true },
+    { "expect": "focus", "target": "panel-first", "value": true, "browserOnly": true },
     { "action": "focus", "target": "tab-first" },
     { "action": "press", "target": "tab-first", "key": "End" },
     { "expect": "focus", "target": "tab-last", "value": true }

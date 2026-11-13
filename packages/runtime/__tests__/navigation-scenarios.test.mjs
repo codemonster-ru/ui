@@ -42,7 +42,10 @@ for (const [slug, registrations] of Object.entries(factories)) {
       registrations.forEach(([name, factory]) => runtime.register(name, factory));
       runtime.start(dom.window.document);
 
-      for (const step of scenario.steps) executeStep({ dom, events, root, slug, step });
+      // Chrome executes native browser actions such as Tab in the full scenario.
+      for (const step of scenario.steps.filter(({ browserOnly }) => !browserOnly)) {
+        executeStep({ dom, events, root, slug, step });
+      }
     });
   }
 }
@@ -65,8 +68,9 @@ function executeStep({ dom, events, root, slug, step }) {
 
 function resolveTarget(root, slug, name) {
   if (name === 'root') return root;
-  if (name === 'panel-second') {
-    const panel = root.querySelectorAll('.cm-tabs__panel')[1];
+  const panelIndex = { 'panel-first': 0, 'panel-second': 1, 'panel-last': -1 }[name];
+  if (panelIndex !== undefined) {
+    const panel = [...root.querySelectorAll('.cm-tabs__panel')].at(panelIndex);
     assert.ok(panel, `Missing ${slug} scenario target ${name}.`);
     return panel;
   }
