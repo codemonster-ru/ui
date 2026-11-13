@@ -1,3 +1,6 @@
+import * as UiIcons from '@codemonster-ru/ui-icons';
+import * as UiLayouts from '@codemonster-ru/ui-layouts';
+
 import * as UiVue from '@codemonster-ru/ui-vue';
 import { createApp, createStaticVNode, h, nextTick, type Component, type VNodeChild } from 'vue';
 
@@ -25,7 +28,7 @@ const casesById = new Map(
     return [componentCase.id, { componentCase, componentSlug }];
   }),
 );
-const components = UiVue as Record<string, Component>;
+const components = { ...UiVue, ...UiLayouts } as Record<string, Component>;
 const parameters = new URLSearchParams(location.search);
 const caseId = parameters.get('case');
 const platform = parameters.get('platform');
@@ -35,11 +38,13 @@ const root = document.querySelector<HTMLElement>('#visual-root');
 if (
   !root ||
   !caseId ||
-  !baselineManifest.caseIds.includes(caseId) ||
-  !['vue', 'razor'].includes(platform ?? '') ||
+  (platform !== 'vanilla' && parameters.get('catalog') !== 'all' && !baselineManifest.caseIds.includes(caseId)) ||
+  !['vue', 'razor', 'vanilla'].includes(platform ?? '') ||
   !['light', 'dark'].includes(theme ?? '')
 ) {
-  throw new Error('Cross-platform fixture requires a registered case, platform=vue|razor, and theme=light|dark.');
+  throw new Error(
+    'Cross-platform fixture requires a registered case, platform=vue|razor|vanilla, and theme=light|dark.',
+  );
 }
 
 const resolvedCase = casesById.get(caseId);
@@ -50,17 +55,24 @@ const componentName = `Cm${componentSlug
   .map((part) => `${part[0]?.toUpperCase() ?? ''}${part.slice(1)}`)
   .join('')}`;
 const component = components[componentName];
-if (!component) throw new Error(`Vue adapter ${componentName} is unavailable for ${caseId}.`);
+if (!component && platform === 'vue') throw new Error(`Vue adapter ${componentName} is unavailable for ${caseId}.`);
 
 function resolveVueProps(): Record<string, unknown> {
   const props = { ...componentCase.props };
-  if (['input', 'select', 'date-picker'].includes(componentSlug) && Object.hasOwn(props, 'value')) {
+  if (['input', 'select', 'date-picker', 'tabs', 'textarea'].includes(componentSlug) && Object.hasOwn(props, 'value')) {
     props.modelValue = props.value;
     delete props.value;
   }
-  if (componentSlug === 'checkbox' && Object.hasOwn(props, 'checked')) {
+  if (['checkbox', 'switch'].includes(componentSlug) && Object.hasOwn(props, 'checked')) {
     props.modelValue = props.checked;
     delete props.checked;
+  }
+  if (componentSlug === 'radio' && props.checked) props.modelValue = props.value;
+  if (componentSlug === 'radio') delete props.checked;
+  if (componentSlug === 'icon' && typeof props.icon === 'string') {
+    const geometry = (UiIcons as Record<string, unknown>)[props.icon];
+    if (!geometry) throw new Error(`Unknown icon geometry ${props.icon}.`);
+    props.icon = geometry;
   }
   return { ...props, ...componentCase.attributes };
 }
@@ -79,9 +91,17 @@ if (platform === 'vue') {
   const slots = Object.fromEntries(
     Object.entries(componentCase.slots).map(([name, contents]) => [name, staticSlot(contents)]),
   );
-  createApp({ render: () => h(component, resolveVueProps(), slots) }).mount(root);
+  createApp({ render: () => h(component!, resolveVueProps(), slots) }).mount(root);
   await nextTick();
   root.dataset.visualRenderer = 'vue-mounted';
+} else if (platform === 'vanilla') {
+  const response = await fetch(`/__visual/vanilla/${encodeURIComponent(caseId)}`);
+  if (!response.ok) throw new Error(`Vanilla fixture endpoint returned ${response.status} for ${caseId}.`);
+  root.innerHTML = await response.text();
+  const runtimeUrl = '/__visual/vanilla-runtime.js';
+  const { createRuntime } = await import(/* @vite-ignore */ runtimeUrl);
+  createRuntime().start(root);
+  root.dataset.visualRenderer = 'vanilla-enhanced';
 } else {
   const response = await fetch(`/__visual/razor/${caseId}`);
   if (!response.ok) throw new Error(`Razor fixture endpoint returned ${response.status} for ${caseId}.`);

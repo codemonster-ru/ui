@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CodeMonster UI Vanilla</title>
+    <link rel="stylesheet" href="./tokens/tokens.css" />
+    <link rel="stylesheet" href="./css/styles.css" />
+    <script type="module" src="./start.js"></script>
+  </head>
+  <body>
+    <main class="cm-container">
+      <h1>Account FAQ</h1>
+      <div class="cm-accordion" data-cm-controller="accordion">
+        <section class="cm-accordion__item" data-cm-accordion-item="account">
+          <h3 class="cm-accordion__heading">
+            <button
+              class="cm-accordion__trigger"
+              id="faq-account-trigger"
+              type="button"
+              aria-expanded="false"
+              aria-controls="faq-account-panel"
+            >
+              Account
+            </button>
+          </h3>
+          <div
+            class="cm-accordion__panel"
+            id="faq-account-panel"
+            role="region"
+            aria-labelledby="faq-account-trigger"
+            hidden
+          >
+            Account answer.
+          </div>
+        </section>
+        <section class="cm-accordion__item" data-cm-accordion-item="billing">
+          <h3 class="cm-accordion__heading">
+            <button
+              class="cm-accordion__trigger"
+              id="faq-billing-trigger"
+              type="button"
+              aria-expanded="false"
+              aria-controls="faq-billing-panel"
+            >
+              Billing
+            </button>
+          </h3>
+          <div
+            class="cm-accordion__panel"
+            id="faq-billing-panel"
+            role="region"
+            aria-labelledby="faq-billing-trigger"
+            hidden
+          >
+            Billing answer.
+          </div>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>

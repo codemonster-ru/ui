@@ -13,6 +13,7 @@
   "scripts": {
     "audit:release": "npm audit --omit=dev && npm audit --audit-level=high",
     "build": "npm run build:ui",
+    "build:vanilla": "npm run build -w @codemonster-ru/ui-tokens && npm run build -w @codemonster-ru/ui-css && npm run build -w @codemonster-ru/ui-runtime && node ./scripts/build/build-vanilla.mjs",
     "build:demo": "npm run build -w @codemonster-ru/ui-showcase-example",
     "build:ui": "node ./scripts/ci/run-code-monster-ui-workspaces.mjs build",
     "check": "npm run check:docs && npm run check:ui-packages",
