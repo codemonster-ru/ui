@@ -1,7 +1,7 @@
 # Utility CSS
 
 `@codemonster-ru/ui-utilities` provides a generated, prefixed set of layout and presentation
-helpers for Vue, Razor, plain HTML, and other CSS consumers. It has no framework runtime.
+helpers for Vue, Vanilla, plain HTML, and other CSS consumers. It has no framework runtime.
 
 ## Installation
 

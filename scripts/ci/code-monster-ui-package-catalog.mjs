@@ -33,14 +33,6 @@ export const codeMonsterUiNpmPackages = Object.freeze([
   },
 ]);
 
-export const codeMonsterUiComposerPackage = Object.freeze({
-  directory: 'razor',
-  name: 'codemonster-ru/ui-razor',
-  php: '>=8.2',
-  razor: '^2.1',
-  releaseOrder: 5,
-});
-
 export const codeMonsterUiPackageSizeBudgets = Object.freeze({
   '@codemonster-ru/ui-tokens': { cssGzip: 12 * 1024, cssRaw: 64 * 1024, jsGzip: 24 * 1024 },
   '@codemonster-ru/ui-icons': { cssGzip: 0, cssRaw: 0, jsGzip: 256 * 1024 },

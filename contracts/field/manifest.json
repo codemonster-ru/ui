@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "name": "Field",
   "slug": "field",
-  "razorTag": "cm-field",
   "description": "A form-field layout that associates one control with visible label, help, required, and error content.",
   "props": {
     "controlId": {

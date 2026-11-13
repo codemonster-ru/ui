@@ -49,31 +49,10 @@ function revealReport() {
 The example button only makes the documentation example operable. In an application, set `ready`
 from the owning request, lazy module, image decode, or editor-ready signal.
 
-## Annabel Razor
+## Vanilla HTML
 
-Server-rendered pages can use the same persistent-content structure when a progressive enhancement
-updates readiness in place. The application script owns removal of `hidden` and `inert` together.
-
-```razor
-<section class="loading-gate" aria-busy="{{ $ready ? 'false' : 'true' }}" aria-labelledby="report-title">
-  <h2 id="report-title">Usage report</h2>
-
-  @if (!$ready)
-    <div class="loading-gate__placeholder">
-      <cm-skeleton min-height="10rem" radius="surface" />
-    </div>
-  @endif
-
-  <div @if (!$ready) hidden inert @endif>
-    <p>Requests: {{ $requestCount }}</p>
-    <a href="/reports/usage">Open detailed report</a>
-  </div>
-</section>
-```
-
-If readiness is known before rendering and the content need not remain mounted, render either the
-skeleton or the content. In that server-only variant, `inert` is unnecessary because unavailable
-controls never enter the document.
+Compose the same layout using the canonical markup for [skeleton](../../contracts/skeleton/contract.md).
+Load styles and initialize interactive components as described in the [Vanilla guide](../vanilla.md).
 
 ## Application-owned policy
 
@@ -88,4 +67,3 @@ controls never enter the document.
   lifecycle and presentation policies, not CodeMonster UI behavior.
 - Prefer CSS that respects reduced motion. Shared Skeleton shimmer already stops under the user's
   reduced-motion preference.
-

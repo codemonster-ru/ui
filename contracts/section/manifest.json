@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "name": "Section",
   "slug": "section",
-  "razorTag": "cm-section",
   "description": "An inset content region with an optional shared surface treatment.",
   "props": {
     "element": {

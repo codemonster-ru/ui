@@ -4,8 +4,6 @@ Status: Active
 
 Component: `IconButton`
 
-Razor tag: `cm-icon-button`
-
 ## Purpose
 
 IconButton represents one compact action whose visible content is a single trusted icon. It is a
@@ -39,7 +37,7 @@ cm-icon-button--sm | cm-icon-button--md | cm-icon-button--lg
 
 `variant` defaults to `ghost`, `size` to `md`, and `type` to `button`. Adapters accept only the
 finite values listed in the manifest. Vue diagnoses invalid values and normalizes them to defaults;
-Razor rejects invalid values before rendering.
+Vanilla consumers validate values before rendering.
 
 ## Security and ownership boundary
 
@@ -52,5 +50,5 @@ this contract.
 
 - Vue maps the props and required default slot idiomatically and forwards native root attributes and
   listeners.
-- Annabel Razor maps kebab-case attributes and the default slot, rendering the same significant DOM.
+- Vanilla consumers render the canonical fixture with their content.
 - Both adapters own the decorative wrapper and accessible label; neither adds a runtime dependency.

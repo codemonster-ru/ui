@@ -35,7 +35,7 @@ your application.
 After `npm run build`, start the fixture server:
 
 ```bash
-node scripts/visual/serve-cross-platform-cases.mjs --vanilla=true
+node scripts/visual/serve-cross-platform-cases.mjs
 ```
 
 In another shell, run the comparison with an installed Chrome:

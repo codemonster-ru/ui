@@ -28,18 +28,18 @@ const componentCases = [
 ];
 const manifest = {
   schemaVersion: 1,
-  platforms: ['vue', 'razor'],
+  platforms: ['vue', 'vanilla'],
   caseIds: ['button-default'],
 };
 
-test('routes Vue and Razor fixtures to one immutable reviewed baseline', () => {
+test('routes Vue and Vanilla fixtures to one immutable reviewed baseline', () => {
   const fixtures = createCrossPlatformBaselineMatrix(componentCases, config, manifest);
 
   assert.deepEqual(
     fixtures.map(({ platform, snapshotPath }) => [platform, snapshotPath]),
     [
       ['vue', 'vue/button-default--light--desktop.png'],
-      ['razor', 'razor/button-default--light--desktop.png'],
+      ['vanilla', 'vanilla/button-default--light--desktop.png'],
     ],
   );
   assert.equal(fixtures[0].baselineId, fixtures[1].baselineId);
@@ -50,7 +50,7 @@ test('routes Vue and Razor fixtures to one immutable reviewed baseline', () => {
 test('rejects missing adapters, duplicate cases, and unknown cases', () => {
   assert.ok(
     validateCrossPlatformBaselineManifest({ ...manifest, platforms: ['vue'] }, componentCases).includes(
-      'Cross-platform baseline manifest must include razor.',
+      'Cross-platform baseline manifest must include vanilla.',
     ),
   );
   assert.ok(
@@ -94,6 +94,6 @@ test('builds the reviewed repository first slice for both adapters', () => {
       'checkbox-checked',
     ]),
   );
-  assert.deepEqual(new Set(fixtures.map(({ platform }) => platform)), new Set(['vue', 'razor']));
+  assert.deepEqual(new Set(fixtures.map(({ platform }) => platform)), new Set(['vue', 'vanilla']));
   assert.equal(new Set(fixtures.map(({ baselineId }) => baselineId)).size, 48);
 });

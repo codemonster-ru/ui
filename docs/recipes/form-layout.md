@@ -109,51 +109,10 @@ const email = ref('ada@example.com');
 Remove the media query for a permanently horizontal form. Remove all alignment rules for a stacked
 form. Align form-level actions separately when the product requires it; they are not field rows.
 
-## Annabel Razor recipe
+## Vanilla HTML
 
-Use the same classes and CSS without Vue's `:deep()` selector:
-
-```razor
-<form method="post" action="/profile">
-    <cm-stack class="profile-form">
-        <cm-field class="profile-form__field" control-id="display-name" label="Display name" required>
-            <cm-input
-                id="display-name"
-                name="display_name"
-                autocomplete="name"
-                :value="$submitted['display_name'] ?? ''"
-                :required="true"
-            />
-        </cm-field>
-
-        <cm-field
-            class="profile-form__field"
-            control-id="email"
-            label="Email"
-            description="Used for account notifications."
-            :error="$errors['email'] ?? null"
-        >
-            <cm-input
-                id="email"
-                name="email"
-                type="email"
-                autocomplete="email"
-                :value="$submitted['email'] ?? ''"
-                :invalid="isset($errors['email'])"
-                :aria-describedby="isset($errors['email']) ? 'email-error' : 'email-description'"
-            />
-        </cm-field>
-
-        <div class="profile-form__actions">
-            <cm-button type="submit">Save profile</cm-button>
-        </div>
-    </cm-stack>
-</form>
-```
-
-Razor renders request values and errors from server-owned state; it does not need a layout runtime.
-Keep request strings in escaped props. The component's named/default slots are trusted application
-markup and must not be built from untrusted HTML.
+Compose the same layout using the canonical markup for [fieldset](../../contracts/fieldset/contract.md), [field](../../contracts/field/contract.md), [input](../../contracts/input/contract.md), [button](../../contracts/button/contract.md).
+Load styles and initialize interactive components as described in the [Vanilla guide](../vanilla.md).
 
 ## Migration boundary
 

@@ -45,7 +45,6 @@ components do not add an empty behavior directory.
 - Directory and file identifiers use lowercase kebab-case.
 - `manifest.json` `slug` matches its directory name.
 - The public component name uses PascalCase without the `Cm` platform prefix.
-- The Razor tag uses the approved `cm-` prefix.
 - A case input and its canonical HTML share the same basename.
 - Scenario IDs and case IDs are unique across the owning component.
 

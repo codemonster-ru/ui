@@ -40,11 +40,11 @@ if (
   !root ||
   !caseId ||
   (platform !== 'vanilla' && parameters.get('catalog') !== 'all' && !baselineManifest.caseIds.includes(caseId)) ||
-  !['vue', 'razor', 'vanilla'].includes(platform ?? '') ||
+  !['vue', 'vanilla'].includes(platform ?? '') ||
   !['light', 'dark'].includes(theme ?? '')
 ) {
   throw new Error(
-    'Cross-platform fixture requires a registered case, platform=vue|razor|vanilla, and theme=light|dark.',
+    'Cross-platform fixture requires a registered case, platform=vue|vanilla, and theme=light|dark.',
   );
 }
 
@@ -134,7 +134,7 @@ if (platform === 'vue') {
   createApp({ render: () => h(component!, props, slots) }).mount(root);
   await nextTick();
   root.dataset.visualRenderer = 'vue-mounted';
-} else if (platform === 'vanilla') {
+} else {
   const response = await fetch(`/__visual/vanilla/${encodeURIComponent(caseId)}`);
   if (!response.ok) throw new Error(`Vanilla fixture endpoint returned ${response.status} for ${caseId}.`);
   root.innerHTML = await response.text();
@@ -142,11 +142,6 @@ if (platform === 'vue') {
   const { createRuntime } = await import(/* @vite-ignore */ runtimeUrl);
   if (parameters.get('enhance') !== 'false') createRuntime().start(root);
   root.dataset.visualRenderer = 'vanilla-enhanced';
-} else {
-  const response = await fetch(`/__visual/razor/${caseId}`);
-  if (!response.ok) throw new Error(`Razor fixture endpoint returned ${response.status} for ${caseId}.`);
-  root.innerHTML = await response.text();
-  root.dataset.visualRenderer = 'razor-rendered';
 }
 
 root.dataset.visualReady = 'true';

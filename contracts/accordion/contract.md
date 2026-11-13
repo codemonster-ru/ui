@@ -4,8 +4,6 @@ Status: Active
 
 Component: `Accordion`
 
-Razor tag: `cm-accordion`
-
 ## Purpose
 
 Accordion presents an ordered list of disclosure triggers and associated content panels. The
@@ -62,7 +60,7 @@ focusable by default. The runtime does not move focus when expansion changes.
 ## Controlled state and enhancement
 
 In controlled mode, an adapter reports the requested next state but renders the state supplied by
-the owner. In uncontrolled mode, it updates local state. Razor output uses the current server state;
+the owner. In uncontrolled mode, it updates local state. Vanilla HTML output uses the current server state;
 the DOM runtime owns client state after progressive enhancement and emits changes for application
 integration.
 

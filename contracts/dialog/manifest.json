@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "name": "Dialog",
   "slug": "dialog",
-  "razorTag": "cm-dialog",
   "description": "A native modal dialog with deterministic focus management.",
   "props": {
     "id": { "type": "string", "required": true },

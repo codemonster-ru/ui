@@ -80,43 +80,10 @@ import { CmButton, CmContainer, CmSection, CmStack } from '@codemonster-ru/ui-vu
 </style>
 ```
 
-## Annabel Razor
+## Vanilla HTML
 
-The same recipe uses native form semantics. Interpolated product text and validation output remain
-escaped by Razor.
-
-```razor
-<cm-container element="main" size="md" class="auth-page" aria-labelledby="sign-in-title">
-  <cm-stack>
-    <a class="auth-page__brand" href="/" aria-label="Acme home">Acme</a>
-
-    <header>
-      <h1 id="sign-in-title">Sign in</h1>
-      <p class="auth-page__description">Use your account to continue.</p>
-    </header>
-
-    <cm-section element="section" :surface="true" aria-label="Sign-in form">
-      <form class="auth-page__form" action="/sessions" method="post">
-        <label for="email">Email</label>
-        <input id="email" name="email" type="email" autocomplete="email" required />
-
-        <label for="password">Password</label>
-        <input id="password" name="password" type="password" autocomplete="current-password" required />
-
-        <cm-button type="submit">Sign in</cm-button>
-      </form>
-    </cm-section>
-
-    <footer class="auth-page__footer">
-      <a href="/password/reset">Forgot password?</a>
-      <a href="/register">Create account</a>
-    </footer>
-  </cm-stack>
-</cm-container>
-```
-
-Reuse the application CSS from the Vue example; none of its selectors are part of the CodeMonster
-UI contract.
+Compose the same layout using the canonical markup for [card](../../contracts/card/contract.md), [field](../../contracts/field/contract.md), [input](../../contracts/input/contract.md), [button](../../contracts/button/contract.md).
+Load styles and initialize interactive components as described in the [Vanilla guide](../vanilla.md).
 
 ## Application-owned policy
 
@@ -129,4 +96,3 @@ UI contract.
   name from optional props.
 - Product branding, recovery links, registration policy, viewport centering, and responsive spacing
   are application content and CSS, not adapter behavior.
-

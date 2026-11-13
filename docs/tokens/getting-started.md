@@ -8,7 +8,7 @@ order: 1
 
 `@codemonster-ru/ui-tokens` provides the framework-independent CodeMonster UI token schema,
 light and dark presets, generated CSS custom properties, and a pure TypeScript serializer. It has
-no Vue or browser runtime dependency, so the same package can support Vue, server-rendered Razor,
+no Vue or browser runtime dependency, so the same package can support Vue, server-rendered Vanilla,
 and CSS-only applications.
 
 ## Installation
@@ -124,7 +124,7 @@ breakpoint values.
 
 Choose `data-cm-theme` before rendering the response when the mode is known. This avoids changing
 the mode after first paint. If no attribute is rendered, the light `:root` preset is deterministic.
-Razor applications can publish the same CSS artifacts without executing package JavaScript in the
+Vanilla applications can publish the same CSS artifacts without executing package JavaScript in the
 browser.
 
 ## Public entries

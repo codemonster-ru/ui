@@ -4,8 +4,6 @@ Status: Active
 
 Component: `Breadcrumbs`
 
-Razor tag: `cm-breadcrumbs`
-
 ## Purpose and structure
 
 Breadcrumbs communicates the current page's position in a hierarchy. The root is

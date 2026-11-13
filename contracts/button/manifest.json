@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "name": "Button",
   "slug": "button",
-  "razorTag": "cm-button",
   "description": "A native button or explicit link action with shared variants, sizes, content regions, and busy semantics.",
   "props": {
     "variant": {

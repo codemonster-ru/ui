@@ -4,8 +4,6 @@ Status: Active
 
 Component: `Popover`
 
-Razor tag: `cm-popover`
-
 ## Purpose and structure
 
 Popover is a non-modal button disclosure for supplemental interactive content. `id` is a stable
@@ -18,8 +16,8 @@ CSS modifier. Popover does not calculate coordinates or teleport content.
 
 ## Interaction
 
-`open` is controlled through Vue `v-model:open` and supplies Razor's initial server state. Pointer
+`open` is controlled through Vue `v-model:open` and supplies Vanilla HTML's initial server state. Pointer
 or Enter/Space trigger activation toggles it. ArrowDown opens it and focuses the first focusable
 panel descendant when one exists. Escape and outside pointer activation close it and restore focus
 to the trigger. Focus may otherwise leave the non-modal panel naturally. The shared runtime owns
-enhanced Razor state and reports `openChange`; closed server markup is hidden safely.
+enhanced Vanilla HTML state and reports `openChange`; closed server markup is hidden safely.

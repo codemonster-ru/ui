@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "name": "Switch",
   "slug": "switch",
-  "razorTag": "cm-switch",
   "description": "A labeled native checkbox presented with switch semantics.",
   "props": {
     "checked": { "type": "boolean", "required": false, "default": false },

@@ -1,1 +1,0 @@
-<div class="{{ $classes }}" data-cm-controller="dropdown"{!! $attributes !!}><button class="cm-dropdown__trigger" id="{{ $id }}-trigger" type="button" aria-haspopup="menu"@if ($customTrigger) aria-label="{{ $label }}"@endif aria-controls="{{ $id }}-menu" aria-expanded="{{ $open ? 'true' : 'false' }}"@if ($disabled) disabled@endif>{{ $trigger }}</button>{{ $menu }}</div>

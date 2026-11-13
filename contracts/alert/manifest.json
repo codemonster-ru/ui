@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "name": "Alert",
   "slug": "alert",
-  "razorTag": "cm-alert",
   "description": "A text-first status or contextual message.",
   "props": {
     "tone": {

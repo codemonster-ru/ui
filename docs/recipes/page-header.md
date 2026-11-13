@@ -80,37 +80,10 @@ Choose the native heading level from the surrounding document. A page title is n
 header nested inside a larger document section may need another level. This replaces
 `heading-level` with an explicit semantic decision visible in the template.
 
-## Annabel Razor recipe
+## Vanilla HTML
 
-```razor
-<header class="page-header">
-    <cm-stack>
-        <cm-breadcrumbs
-            :items="[
-                ['label' => 'Projects', 'href' => '/projects'],
-                ['label' => $project->name, 'current' => true],
-            ]"
-            aria-label="Project breadcrumb"
-        />
-
-        <cm-inline class="page-header__row">
-            <div class="page-header__content">
-                <h1 class="page-header__title">{{ $project->name }}</h1>
-                <p class="page-header__description">{{ $project->summary }}</p>
-            </div>
-
-            <cm-inline class="page-header__actions" aria-label="Project actions">
-                <cm-button href="{{ $settingsUrl }}" variant="secondary">Settings</cm-button>
-                <cm-button type="button" data-create-release>Create release</cm-button>
-            </cm-inline>
-        </cm-inline>
-    </cm-stack>
-</header>
-```
-
-Use the same unscoped application CSS selectors from the Vue recipe. Interpolated Razor values stay
-escaped; application code remains responsible for allowing safe navigation destinations. No shared
-client runtime is required unless one of the composed actions needs its own enhancement.
+Compose the same layout using the canonical markup for [breadcrumbs](../../contracts/breadcrumbs/contract.md), [button](../../contracts/button/contract.md).
+Load styles and initialize interactive components as described in the [Vanilla guide](../vanilla.md).
 
 ## Migration boundary
 

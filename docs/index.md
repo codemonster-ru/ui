@@ -1,18 +1,17 @@
 ---
 title: 'CodeMonster UI'
-description: 'Cross-platform design-system components for Vue and Annabel Razor'
+description: 'Cross-platform design-system components for Vue and Vanilla HTML'
 order: 1
 ---
 
 # CodeMonster UI
 
-CodeMonster UI is a shared design system for Vue 3 applications and server-rendered Annabel Razor
-templates. Framework-independent tokens, CSS, canonical HTML, and interaction contracts keep both
+CodeMonster UI is a shared design system for Vue 3 applications and Vanilla HTML pages, including server-rendered templates. Framework-independent tokens, CSS, canonical HTML, and interaction contracts keep both
 adapters aligned without hiding their native composition models.
 
 ## Start here
 
-- [Install CodeMonster UI for Vue or Razor](./getting-started.md).
+- [Install CodeMonster UI for Vue or Vanilla](./getting-started.md).
 - [Serve Vanilla HTML and JavaScript](./vanilla.md).
 - [Review the CodeMonster UI 1.1 release cohort](./codemonster-ui-1.1-release-notes.md).
 - [Configure design tokens and themes](./tokens/getting-started.md).
@@ -30,9 +29,8 @@ adapters aligned without hiding their native composition models.
 - [Table and DataTable](./components/data-tables.md).
 - [Layout primitives](./components/layout-primitives.md).
 
-Every component guide documents both Vue and Razor. Interactive Razor examples identify the
-specific `@codemonster-ru/ui-runtime` controller required for progressive enhancement; Vue
-components own their interaction directly.
+The [canonical catalog](../contracts/README.md) provides the Vanilla markup for every component.
+The shared browser runtime enhances interactive HTML, and Vue components own their interaction.
 
 ## Maintained recipes
 

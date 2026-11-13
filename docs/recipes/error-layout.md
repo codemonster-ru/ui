@@ -52,28 +52,10 @@ import { CmButton, CmContainer, CmInline, CmSection, CmStack } from '@codemonste
 </style>
 ```
 
-## Annabel Razor
+## Vanilla HTML
 
-```razor
-<cm-container element="main" size="md" class="error-page" aria-labelledby="error-title">
-  <cm-section element="article" :surface="true">
-    <cm-stack>
-      <p class="error-page__code" aria-hidden="true">404</p>
-      <h1 id="error-title">Page not found</h1>
-      <p class="error-page__description">
-        The page you requested does not exist or may have moved.
-      </p>
-      <cm-inline class="error-page__actions" aria-label="Recovery actions">
-        <cm-button href="/" variant="primary">Go home</cm-button>
-        <cm-button href="/support" variant="secondary">Contact support</cm-button>
-      </cm-inline>
-    </cm-stack>
-  </cm-section>
-</cm-container>
-```
-
-Reuse the application CSS from the Vue example. The CodeMonster UI adapters only own the stable
-component classes that they render.
+Compose the same layout using the canonical markup for [section](../../contracts/section/contract.md), [alert](../../contracts/alert/contract.md), [link component](../../contracts/link/contract.md).
+Load styles and initialize interactive components as described in the [Vanilla guide](../vanilla.md).
 
 ## Application-owned policy
 
@@ -86,4 +68,3 @@ component classes that they render.
   keep the host shell's existing landmark instead.
 - Recovery actions use links because they navigate. Use a button only for an immediate application
   action such as retry, and keep its pending/error state in that application.
-
