@@ -94,6 +94,13 @@ try {
     await send('Emulation.setEmulatedMedia', {
       features: [{ name: 'prefers-reduced-motion', value: 'no-preference' }],
     });
+    // Commit each visual state before the next input can reverse its transitions.
+    const settleMotion = `(async () => {
+      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      const finiteAnimations = document.getAnimations().filter(animation =>
+        Number.isFinite(animation.effect?.getComputedTiming().endTime));
+      await Promise.allSettled(finiteAnimations.map(animation => animation.finished));
+    })()`;
     const result = [];
     for (const { componentSlug, data } of scenarios.filter(
       ({ data }) => !process.argv[2] || process.argv.slice(2).includes(data.id),
@@ -117,6 +124,7 @@ try {
             document.querySelector('[data-visual-ready="true"]')?.dataset.visualRenderer === ${JSON.stringify(platform === 'vue' ? 'vue-mounted' : 'vanilla-enhanced')}`),
           );
           await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 350, y: 650 });
+          await evaluate(settleMotion);
           await evaluate(`(() => {
             window.motionTrace = [];
             for (const type of ['transitionrun','animationstart']) document.addEventListener(type, event => {
@@ -189,7 +197,10 @@ try {
                 const expected = step.expect === 'eventCount' ? step.count : step.value;
                 if (actual !== expected) row.failures.push({ index, step, actual });
               }
-              if (step.action) await delay(componentSlug === 'tooltip' ? 650 : 45);
+              if (step.action) {
+                if (componentSlug === 'tooltip') await delay(650);
+                await evaluate(settleMotion);
+              }
             } catch (error) {
               row.failures.push({ index, step, error: error.message });
             }
