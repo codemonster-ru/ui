@@ -33,16 +33,6 @@ import { CmIconButton } from '@codemonster-ru/ui-vue';
 </template>
 ```
 
-## Annabel Razor
+## Vanilla HTML
 
-After registering `UiComponentProvider`, use the same contract with trusted template content:
-
-```razor
-<cm-icon-button label="Settings" variant="ghost">
-    <svg viewBox="0 0 24 24"><!-- authored icon paths --></svg>
-</cm-icon-button>
-```
-
-Fallback props and root attributes remain escaped. Do not convert user-controlled strings into
-trusted `RenderedHtml` for the default slot. Native button keyboard, focus, form, and disabled
-behavior is preserved by both adapters.
+Use the canonical HTML for [icon-button](../../contracts/icon-button/contract.md).

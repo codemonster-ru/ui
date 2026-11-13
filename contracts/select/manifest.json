@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "name": "Select",
   "slug": "select",
-  "razorTag": "cm-select",
   "description": "A component-owned single-value select control.",
   "props": {
     "id": {

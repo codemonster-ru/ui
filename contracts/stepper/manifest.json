@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "name": "Stepper",
   "slug": "stepper",
-  "razorTag": "cm-stepper",
   "description": "A navigable sequence of steps. Each step reads as complete, current or upcoming relative to the active one, and a disabled step stays disabled wherever it sits.",
   "props": {
     "items": { "type": "collection", "required": true, "valueContract": "stepper-item" },

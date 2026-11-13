@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "name": "ProgressBar",
   "slug": "progress-bar",
-  "razorTag": "cm-progress-bar",
   "description": "A labelled linear indicator for determinate or indeterminate progress.",
   "props": {
     "label": { "type": "string", "required": true },

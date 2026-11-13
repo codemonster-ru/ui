@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "name": "Fieldset",
   "slug": "fieldset",
-  "razorTag": "cm-fieldset",
   "description": "A named native fieldset with shared description and validation relationships.",
   "props": {
     "id": {

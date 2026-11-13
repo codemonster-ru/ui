@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "name": "DatePicker",
   "slug": "date-picker",
-  "razorTag": "cm-date-picker",
   "description": "A styled native ISO calendar-date input.",
   "props": {
     "value": { "type": "string", "required": false, "default": "" },

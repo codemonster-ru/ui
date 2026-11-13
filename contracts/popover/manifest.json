@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "name": "Popover",
   "slug": "popover",
-  "razorTag": "cm-popover",
   "description": "A non-modal button disclosure for supplemental interactive content.",
   "props": {
     "id": { "type": "string", "required": true },

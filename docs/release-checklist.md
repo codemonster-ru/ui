@@ -1,7 +1,7 @@
 # Package release checklist
 
 This is the canonical checklist for VueForge and CodeMonster UI npm releases plus the CodeMonster
-UI Razor split release. Run it from the repository root on the exact commit that will receive the
+UI package release. Run it from the repository root on the exact commit that will receive the
 package tags.
 
 ## 1. Choose the release channel
@@ -41,7 +41,6 @@ npm run build
 npm run check:packed-consumers
 npm run build:demo
 npm run prepublish:all
-npm run check:composer-packed-consumer
 ```
 
 All commands must pass on the release commit. Also confirm:
@@ -120,8 +119,7 @@ wait for each workflow and registry smoke to pass, then continue. Never use `git
 this release.
 
 CodeMonster UI packages use independent SemVer. Publish only packages included in the reviewed
-cohort, in dependency order: tokens, runtime, CSS, utilities, then Vue. The Razor package uses the
-separate `ui-razor/vX.Y.Z` split tag after its npm dependencies are verified. Historical aggregate
+cohort, in dependency order: tokens, runtime, CSS, utilities, then Vue. Historical aggregate
 `ui/vX.Y.Z` tags do not trigger either current publication workflow.
 
 The workflow treats the packed archive as immutable: after verification builds the package, it packs

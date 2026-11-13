@@ -2,7 +2,7 @@
 
 `Dialog` and `Drawer` are modal native-dialog surfaces. `Popover` is a non-modal disclosure, and
 `Tooltip` provides short non-interactive text on both focus and hover. Vue owns interaction inside
-its component tree; Annabel Razor uses the shared progressive-enhancement runtime.
+its component tree; Vanilla HTML uses the shared progressive-enhancement runtime.
 
 Load the token and complete component stylesheets described in the [Button guide](./button.md).
 Individual styles are also available from the `dialog.css`, `drawer.css`, `popover.css`, and
@@ -62,20 +62,9 @@ Dialog `dismissible` to `false` while an asynchronous action must lock user-init
 Popover emits the same events after trigger, Escape, or outside-pointer changes. Keep the Vue model
 as application state and do not initialize the shared runtime over these components.
 
-## Annabel Razor and runtime
+## Vanilla HTML and runtime
 
-```razor
-<button id="open-confirm" type="button">Delete project</button>
-<cm-dialog id="delete-project" title="Delete project?" size="lg" :dividers="true">
-    <razor-slot name="header">Delete <strong>project</strong>?</razor-slot>
-    <razor-slot name="actions"><button type="button">Preview impact</button></razor-slot>
-    This action cannot be undone.
-    <razor-slot name="footer"><button type="button">Delete</button></razor-slot>
-</cm-dialog>
-<cm-drawer id="filters" title="Filters" side="end">Filter controls.</cm-drawer>
-<cm-popover id="profile-help" label="Profile help"><razor-slot name="trigger"><span aria-hidden="true">?</span></razor-slot>Profile details are visible to your team.</cm-popover>
-<cm-tooltip id="save-help" label="Save" content="Save changes"><razor-slot name="content">Save <strong>all changes</strong></razor-slot></cm-tooltip>
-```
+Use the canonical HTML for [dialog](../../contracts/dialog/contract.md), [drawer](../../contracts/drawer/contract.md), [dropdown](../../contracts/dropdown/contract.md), [popover](../../contracts/popover/contract.md), [tooltip](../../contracts/tooltip/contract.md) in Vanilla.
 
 Register all four controllers once in a frontend entry:
 
@@ -96,7 +85,7 @@ new CmRuntime()
   .start(document);
 ```
 
-An application-owned Razor trigger can request a state change without reaching into controller
+An application-owned Vanilla HTML trigger can request a state change without reaching into controller
 internals:
 
 ```ts

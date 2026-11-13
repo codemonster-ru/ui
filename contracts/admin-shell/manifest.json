@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "name": "AdminShell",
   "slug": "admin-shell",
-  "razorTag": "cm-admin-shell",
   "description": "A fixed administrative frame: a topbar above a sidebar and workspace. It holds no state, so it is regions and nothing else.",
   "props": {},
   "slots": {

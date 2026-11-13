@@ -3,7 +3,6 @@ import { join, resolve } from 'node:path';
 import {
   collectDeclaredControllers,
   collectImplementedControllers,
-  collectRazorCoveredSlugs,
   collectSsrCoveredSlugs,
   factoryNameFor,
   findContractsWithoutSsrCoverage,
@@ -86,36 +85,10 @@ if (withoutSsr.length > 0) {
   for (const slug of withoutSsr) {
     console.error(`[controller-coverage]   contracts/${slug} has no Vue SSR comparison`);
   }
-  console.error(
-    '[controller-coverage] The Razor adapter is compared against every fixture, so these are enforced on one side only.',
-  );
-  process.exit(1);
-}
-
-const slugs = contracts.map(({ slug }) => slug);
-const razorSources = ['packages/razor/tests/Components', 'packages/razor/tests/Layouts'].flatMap((directory) => {
-  try {
-    return readdirSync(join(repositoryRoot, directory))
-      .filter((entry) => entry.endsWith('.php'))
-      .map((entry) => readFileSync(join(repositoryRoot, directory, entry), 'utf8'));
-  } catch {
-    return [];
-  }
-});
-const withoutRazor = findContractsWithoutSsrCoverage(slugs, collectRazorCoveredSlugs(razorSources, slugs));
-
-if (withoutRazor.length > 0) {
-  console.error('[controller-coverage] Contracts whose Razor output is never compared to the canonical fixture:');
-  for (const slug of withoutRazor) {
-    console.error(`[controller-coverage]   contracts/${slug} has no Razor parity test`);
-  }
-  console.error(
-    '[controller-coverage] A fixture stops being a contract between two platforms the moment one of them may skip it.',
-  );
   process.exit(1);
 }
 
 console.log(
   `[controller-coverage] OK: all ${declared.size} declared controller(s) are implemented in ui-runtime, ` +
-    `every interactive contract states its behaviour, and all ${contracts.length} contract(s) are compared on both adapters.`,
+    `every interactive contract states its behaviour, and all ${contracts.length} contract(s) are compared to Vue SSR.`,
 );

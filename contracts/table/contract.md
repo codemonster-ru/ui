@@ -4,8 +4,6 @@ Status: Active
 
 Component: `Table`
 
-Razor tag: `cm-table`
-
 ## Purpose and structure
 
 Table provides a responsive visual frame around an authored native `<table>`. Its stable structure is

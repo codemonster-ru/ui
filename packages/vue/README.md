@@ -37,7 +37,7 @@ handlers.
 ## Documentation
 
 See the cross-platform [Button guide](../../docs/components/button.md) for props, slots, forms,
-links, accessibility, and matching Annabel Razor usage.
+links, accessibility, and matching Vanilla HTML usage.
 See the [Card guide](../../docs/components/card.md) for semantic roots and region composition.
 See the [form components guide](../../docs/components/forms.md) for Vue binding, choice controls, and accessible forms.
 See the [Accordion guide](../../docs/components/accordion.md) for controlled state and keyboard behavior.

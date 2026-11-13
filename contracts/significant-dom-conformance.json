@@ -1,5 +1,5 @@
 {
-  "$comment": "Cases both SignificantDom implementations must agree on. The JavaScript comparator judges the Vue adapter and the PHP one judges Razor, against the same canonical markup, so a disagreement here means the two adapters are held to different standards. Every case names the rule it pins.",
+  "$comment": "Cases that pin the significant DOM rules used to compare Vue SSR with canonical HTML.",
   "cases": [
     {
       "name": "a bare boolean attribute equals its repeated-name form",

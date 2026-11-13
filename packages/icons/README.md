@@ -12,8 +12,7 @@ Current version: `@codemonster-ru/ui-icons@2.0.0-dev.0` — in development, not 
 ## Status
 
 This package owns the rendered geometry of 116 icons across two families and four variants, as data
-rather than as a rendering engine. The Vue and Annabel Razor adapters read the same geometry and
-emit it; neither draws anything.
+rather than as a rendering engine. Vue consumes the stored geometry directly. Vanilla templates can embed the corresponding SVG.
 
 That is the point. The VueForge renderer is 2,135 lines carrying per-icon masks, duotone exceptions,
 solid-body overrides and optical offsets. Reimplementing it in PHP would have meant two engines
@@ -37,11 +36,7 @@ import { arrowLeft } from '@codemonster-ru/ui-icons';
 Without a `label` the icon is `aria-hidden`, which is right for decoration sitting beside text that
 already names the action.
 
-On the Annabel Razor side the name is enough, because the adapter reads the same geometry from disk:
-
-```php
-<cm-icon icon="arrowLeft" variant="solid" label="Back" />
-```
+Vanilla templates can use the [canonical SVG markup](../../contracts/icon/cases/default.html).
 
 ## Installation
 
@@ -58,10 +53,7 @@ npm run generate -w @codemonster-ru/ui-icons
 ```
 
 The generator renders every combination from `@codemonster-ru/vueforge-icons` headlessly — no
-browser, no bundler — and writes one module per icon, plus one JSON file per icon for the Razor
-adapter. `src/generated/provenance.json` records the source version and the commit it was read at.
-
-Both outputs are committed, because the Razor adapter reads its copy without running Node.
+browser, no bundler — and writes one module per icon. `src/generated/provenance.json` records the source version and the commit it was read at.
 
 ## Shape
 

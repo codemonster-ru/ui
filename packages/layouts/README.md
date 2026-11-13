@@ -17,14 +17,9 @@ npm install vue@^3.5.0 @codemonster-ru/ui-layouts@^2.0.0-dev.0 @codemonster-ru/u
 
 ## Quick start
 
-The package carries no layouts yet. `AdminLayout`, `AdminShell`, and `SetupLayout` arrive once the
-attribute contract that lets the Annabel Razor adapter express their state is designed, and this
-section will show them then.
-
-```ts
-// Nothing is exported yet.
-import {} from '@codemonster-ru/ui-layouts';
-```
+The package exports `CmAdminLayout`, `CmAdminShell`, `CmAppShell`, `CmDocumentLayout`, and
+`CmSetupLayout`. See the [layout guide](../../docs/components/layouts.md) for Vue examples and
+canonical HTML.
 
 ## What belongs here
 
@@ -32,7 +27,7 @@ A layout composes components into a page shell: its regions, their geometry, and
 whether a region is shown. Components live in [`ui-vue`](../vue/README.md); the two are separate
 packages so that the two things can be named apart.
 
-Layouts render the same canonical DOM as the Annabel Razor adapter, and their state is expressed as
+Layouts render the same canonical DOM as Vanilla templates, and their state is expressed as
 `data-cm-*` attributes rather than framework-specific slot scopes, so both adapters can carry it.
 
 ## Documentation

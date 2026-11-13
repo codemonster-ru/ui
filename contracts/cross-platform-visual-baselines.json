@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "platforms": ["vue", "razor"],
+  "platforms": ["vue", "vanilla"],
   "caseIds": [
     "alert-danger-icon",
     "avatar-label",

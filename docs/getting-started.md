@@ -1,12 +1,12 @@
 ---
 title: 'Getting started with CodeMonster UI'
-description: 'Install CodeMonster UI in Vue or Annabel Razor applications'
+description: 'Install CodeMonster UI in Vue or Vanilla applications'
 order: 2
 ---
 
 # Getting started with CodeMonster UI
 
-CodeMonster UI publishes one shared token and CSS layer, a Vue adapter, an Annabel Razor adapter,
+CodeMonster UI publishes one shared token and CSS layer, a Vue adapter,
 and an optional browser runtime for progressively enhanced server markup.
 
 ## Vue quick start
@@ -61,40 +61,11 @@ const email = ref('');
 CodeMonster UI has no global Vue plugin. Import only the components used by each module, and do not
 start the shared DOM runtime over Vue-owned component trees.
 
-## Annabel Razor quick start
+## Vanilla HTML, CSS, and JavaScript
 
-Install the Composer adapter:
-
-```bash
-composer require codemonster-ru/ui-razor
-```
-
-Register its component provider during application bootstrap:
-
-```php
-<?php
-
-use Codemonster\Razor\Components\ComponentRegistry;
-use Codemonster\Ui\UiComponentProvider;
-
-$components = new ComponentRegistry();
-$components->register(new UiComponentProvider());
-```
-
-Render `cm` components with Razor's native attributes and slots:
-
-```razor
-<form method="post">
-  <cm-field control-id="account-email" label="Email" :required="true">
-    <cm-input id="account-email" name="email" type="email" :required="true" />
-  </cm-field>
-  <cm-button type="submit">Save account</cm-button>
-</form>
-```
-
-Publish the packaged token, CSS, and runtime assets with the adapter's `AssetPublisher`. Static
-components need no browser JavaScript. Register only the controllers named by an interactive
-component guide, scoped away from Vue-owned subtrees.
+Follow the [Vanilla guide](./vanilla.md) to build and serve the static assets. Render the
+[canonical HTML](../contracts/README.md) directly in your application or with your template engine.
+Load the shared styles and start the browser runtime for interactive components.
 
 ## Next steps
 

@@ -4,8 +4,6 @@ Status: Active
 
 Component: `Card`
 
-Razor tag: `cm-card`
-
 ## Purpose
 
 Card groups related presentation content on one visual surface. It does not become an interactive

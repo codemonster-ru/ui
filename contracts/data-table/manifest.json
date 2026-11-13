@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "name": "DataTable",
   "slug": "data-table",
-  "razorTag": "cm-data-table",
   "description": "A server-friendly tabular data view with sorting, row selection, and pagination requests.",
   "props": {
     "id": { "type": "string", "required": true },

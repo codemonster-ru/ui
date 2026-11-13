@@ -26,28 +26,12 @@ The approved npm package family is:
 @codemonster-ru/ui-angular
 ```
 
-The approved Composer package is:
-
-```text
-codemonster-ru/ui-razor
-```
-
-The `ui-razor` suffix makes the platform boundary explicit and leaves `codemonster-ru/ui` available
-as the canonical monorepo path. The PHP namespace root remains `Codemonster\Ui`. The package provides the Annabel Razor adapter and
-packages the same built CSS and runtime artifacts used by npm consumers; it does not own a separate
-style implementation.
-
-No generic npm package named `@codemonster-ru/ui` is approved initially. An umbrella package would
-blur the boundary between the framework-independent foundation and platform adapters. It may be
-proposed later only with a concrete consumer need.
-
 ## Code and markup prefixes
 
 | Surface                  | Convention              | Example                 |
 | ------------------------ | ----------------------- | ----------------------- |
 | Vue and React components | `Cm` PascalCase prefix  | `CmButton`              |
 | Angular selectors        | `cm-` kebab-case prefix | `<cm-button>`           |
-| Annabel Razor tags       | `cm-` kebab-case prefix | `<cm-button>`           |
 | CSS blocks               | `cm-` prefix            | `.cm-button`            |
 | CSS elements             | BEM `__` separator      | `.cm-button__content`   |
 | CSS modifiers            | BEM `--` separator      | `.cm-button--primary`   |
@@ -74,15 +58,14 @@ to the events contract in `CMUI-007`.
 On 2026-08-11, the npm registry returned `404 Not Found` for every approved npm package name above,
 and Packagist returned `404` for `codemonster-ru/ui`. This confirmed that no public package occupied
 those names before the first release. On 2026-08-13, the five active npm package names and the
-original Composer package name were claimed by their coordinated `1.0.0-rc.1` prereleases. The
-Razor-specific Composer name supersedes that original package after the 1.0 migration.
+original Composer package name were claimed by their coordinated `1.0.0-rc.1` prereleases.
 
 ## Rationale
 
 - `cm` is short enough for authored HTML and utility-heavy templates.
-- One prefix makes Vue output, Razor output, CSS, and runtime hooks visibly related.
+- One prefix makes Vue output, Vanilla HTML, CSS, and runtime hooks visibly related.
 - Platform-specific package suffixes keep peer dependencies and release ownership explicit.
-- Reusing the existing npm scope and Composer vendor avoids a second organization identity.
+- Reusing the existing npm scope avoids a second organization identity.
 
 ## Consequences
 

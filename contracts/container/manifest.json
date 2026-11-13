@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "name": "Container",
   "slug": "container",
-  "razorTag": "cm-container",
   "description": "A centered responsive inline-size constraint with stable gutters.",
   "props": {
     "element": { "type": "enum", "required": false, "default": "div", "values": ["div", "main", "section"] },

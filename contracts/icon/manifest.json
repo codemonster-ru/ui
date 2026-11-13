@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "name": "Icon",
   "slug": "icon",
-  "razorTag": "cm-icon",
   "description": "Draws generated icon geometry. Neither adapter renders an icon: the geometry is precomputed from one source and both emit it, so there is no second drawing engine to drift. Without a label the icon is hidden from assistive technology, which is right for decoration.",
   "props": {
     "icon": {

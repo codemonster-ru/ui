@@ -4,8 +4,6 @@ Status: Active
 
 Component: `Dialog`
 
-Razor tag: `cm-dialog`
-
 ## Purpose and structure
 
 Dialog presents a modal task in a native `<dialog>`. `id` is a required stable prefix, `title` is
@@ -27,12 +25,12 @@ description ids are derived from `id`. Adapters own the native `open` attribute 
 Opening stores the previously focused element, displays the modal, and focuses the first focusable
 descendant or the close button. Tab and Shift+Tab remain inside the open Dialog. When `dismissible`
 is true, Escape and the close button request closure. Closing restores focus to the stored connected element. Vue reports
-`openChange` and maps state to `v-model:open`; Razor renders initial state and the shared runtime
+`openChange` and maps state to `v-model:open`; Vanilla HTML renders initial state and the shared runtime
 owns subsequent DOM state.
 
 Vue body, actions, and footer slots receive a `close()` callback. Like the owned close button, this
 user-dismissal callback does nothing while `dismissible=false`; controlled application state can
-still close the Dialog. Razor content can use the contract-owned `data-cm-dialog-close` hook when it
+still close the Dialog. Vanilla HTML content can use the contract-owned `data-cm-dialog-close` hook when it
 needs an additional dismiss action, with the same lock behavior.
 
 Dialog does not close from backdrop pointer activation and does not render a trigger. The

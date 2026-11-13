@@ -4,8 +4,6 @@ Status: Active
 
 Component: `Tabs`
 
-Razor tag: `cm-tabs`
-
 ## Purpose and item model
 
 Tabs switches among related content panels. `id` is a required stable DOM prefix. `items` is a
@@ -15,7 +13,7 @@ content or a trusted panel slot.
 
 `value` is the active enabled item value. `defaultValue` selects the initial uncontrolled value.
 When both are omitted or invalid, the first enabled item is active.
-Vue maps it to `modelValue`; Razor renders the current server state. User activation reports the
+Vue maps it to `modelValue`; Vanilla HTML renders the current server state. User activation reports the
 next value but adapters do not invent application content state.
 
 ## Structure and relationships
@@ -26,7 +24,7 @@ panel ids are `{id}-tab-{value}` and `{id}-panel-{value}`. Only the active panel
 tabs use the native disabled attribute and are never active.
 
 Each item accepts trusted `tab{UpperCamelValue}` and `panel{UpperCamelValue}` platform content, such
-as `tabAccountDetails`. Vue slots receive `{ item, active }`; Razor receives `RenderedHtml`. Escaped
+as `tabAccountDetails`. Vue slots receive `{ item, active }`; Vanilla HTML uses explicit markup. Escaped
 label and content remain fallbacks while the component retains tab and panel semantics.
 
 ## Keyboard behavior

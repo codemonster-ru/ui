@@ -67,7 +67,7 @@ export function findStaleCiOnlyDeclarations(verifyScript, workflowText, ciOnlySt
  * Reports CI jobs that run no `verify` step at all and are not declared.
  *
  * A job built entirely from commands that are not `npm run` — a container, a browser download — is
- * invisible to the step-level checks above. The Razor job is exactly that shape, which is how
+ * invisible to the step-level checks above. A container-only job has that shape, which is how
  * "verify is green" came to mean less than it looked like it meant.
  */
 export function findUncoveredJobs(verifyScript, jobs, ciOnlyJobs = {}) {

@@ -57,29 +57,6 @@ Use the `title` prop for a simple fallback heading:
 <CmCard title="Project"><p>Deployment is ready.</p></CmCard>
 ```
 
-## Annabel Razor
+## Vanilla HTML
 
-`UiComponentProvider` registers `<cm-card>` alongside `<cm-button>`. Named slots are direct
-`<razor-slot>` children:
-
-```razor
-<cm-card element="article" compact data-testid="project-card">
-    <razor-slot name="header"><h2>{{ $project->name }}</h2></razor-slot>
-
-    <p>{{ $project->summary }}</p>
-
-    <razor-slot name="footer">
-        <cm-button :disabled="$project->locked">Deploy</cm-button>
-    </razor-slot>
-</cm-card>
-```
-
-Cards and other registered components may be nested in any slot. Ordinary expressions remain
-escaped at their originating template boundary; nested component output composes through
-`RenderedHtml` without double escaping. Do not turn untrusted strings into `RenderedHtml`.
-
-For a simple fallback heading:
-
-```razor
-<cm-card :title="$project->name"><p>{{ $project->summary }}</p></cm-card>
-```
+Use the canonical HTML for [card](../../contracts/card/contract.md).

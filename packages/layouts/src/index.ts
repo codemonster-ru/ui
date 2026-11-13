@@ -6,7 +6,7 @@
  * different package — see docs/architecture/layout-line-ownership.md.
  *
  * Layout state is expressed as `data-cm-*` attributes on the layout root rather than a slot scope,
- * because a scope is exactly what the Annabel Razor adapter cannot consume. The decisions live in
+ * because a scope is exactly what Vanilla templates cannot consume. The decisions live in
  * `@codemonster-ru/ui-runtime/core` and both adapters render from them.
  */
 

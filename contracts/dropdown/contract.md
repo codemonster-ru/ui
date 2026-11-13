@@ -4,8 +4,6 @@ Status: Active
 
 Component: `Dropdown`
 
-Razor tag: `cm-dropdown`
-
 ## Purpose and composition
 
 Dropdown is a button disclosure that owns one action Menu. `id` is a required stable prefix;
@@ -20,12 +18,11 @@ keyboard contract.
 
 The trusted `trigger` slot replaces visible trigger content inside the component-owned button, so
 arbitrary icons and markup cannot replace its button semantics. Vue receives `{ open, disabled,
-toggle }`; an icon-only trigger still uses `label` through `aria-label`, while Razor receives
-`RenderedHtml`. Dropdown keeps its Menu collection and menuitem semantics component-owned.
+toggle }`; an icon-only trigger still uses `label` through `aria-label`, and Vanilla templates place authored markup inside the button. Dropdown keeps its Menu collection and menuitem semantics component-owned.
 
 ## State and interaction
 
-`open` is the semantic current state. Vue maps it to `v-model:open`; Razor renders server state and
+`open` is the semantic current state. Vue maps it to `v-model:open`; Vanilla HTML renders server state and
 the shared runtime manages the current client disclosure state. Clicking the trigger toggles.
 ArrowDown, Enter, or Space opens and focuses the first enabled item; ArrowUp opens and focuses the
 last. Escape, outside pointer activation, or enabled item selection closes and restores trigger

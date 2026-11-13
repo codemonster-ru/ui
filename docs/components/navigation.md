@@ -1,7 +1,7 @@
 # Navigation components
 
 `Link` and `Breadcrumbs` preserve native navigation. `Tabs`, `Menu`, and `Dropdown` share the same
-canonical DOM and keyboard behavior in Vue and Annabel Razor. Razor markup uses the
+canonical DOM and keyboard behavior in Vue and Vanilla HTML. Vanilla HTML markup uses the
 framework-independent runtime for progressive enhancement; Vue owns its interaction directly.
 
 Load the token and complete component stylesheets described in the [Button guide](./button.md).
@@ -17,7 +17,7 @@ Individual styles are also available from the `link.css`, `breadcrumbs.css`, `ta
   `current`. At most one item is current; otherwise the last item is inferred. `ariaLabel`
   defaults to `Breadcrumb`, and the `separator` slot replaces the visual `/`.
 - `Tabs` requires a stable `id` and items with unique kebab-case `value`, non-empty `label`, optional
-  `content`, and `disabled`. Vue binds the active value with `v-model`; Razor receives `value`.
+  `content`, and `disabled`. Vue binds the active value with `v-model`; Vanilla HTML receives `value`.
   `defaultValue` initializes uncontrolled state. Per-item
   `tab{UpperCamelValue}`/`panel{UpperCamelValue}` slots provide trusted rich content inside owned
   panels. Invalid or missing values fall back to the first enabled tab.
@@ -29,7 +29,7 @@ Individual styles are also available from the `link.css`, `breadcrumbs.css`, `ta
 - `Dropdown` requires `id`, `label`, and Menu items. It accepts `disabled` and `placement`
   (`bottom-start` or `bottom-end`). Its `trigger` slot stays inside the owned button and `label`
   remains its accessible name. Vue binds disclosure state with `v-model:open` and emits `select`;
-  Razor receives `open` as its initial state.
+  Vanilla HTML receives `open` as its initial state.
 
 ## Vue
 
@@ -63,14 +63,9 @@ Home, and End both focus and select an enabled tab. Menu uses Up/Down, Home, End
 Dropdown opens from its trigger with ArrowDown, ArrowUp, Enter, or Space and closes after selection,
 Escape, or an outside pointer activation.
 
-## Annabel Razor and runtime
+## Vanilla HTML and runtime
 
-```razor
-<cm-breadcrumbs :items="[['label' => 'Home', 'href' => '/'], ['label' => 'Settings']]" />
-<cm-link href="/help" underline="hover">Help</cm-link>
-<cm-tabs id="settings" value="profile" :items="$tabs" />
-<cm-dropdown id="actions" label="Actions" :items="$actions" />
-```
+Vanilla markup: [tabs HTML](../../contracts/tabs/cases/default.html), [menu HTML](../../contracts/menu/cases/default.html), [breadcrumbs HTML](../../contracts/breadcrumbs/cases/default.html).
 
 Register the interactive controllers once in a frontend entry that is scoped away from Vue-owned
 trees:
@@ -132,9 +127,7 @@ const items = [
 </template>
 ```
 
-```php
-<cm-table-of-contents :items="$items" active-id="install" />
-```
+Vanilla markup: [table-of-contents HTML](../../contracts/table-of-contents/cases/default.html).
 
 ## Stepper
 
@@ -164,9 +157,7 @@ const step = ref('billing');
 </template>
 ```
 
-```php
-<cm-stepper :items="$items" value="billing" />
-```
+Vanilla markup: [stepper HTML](../../contracts/stepper/cases/default.html).
 
 ## Nested navigation
 
@@ -204,9 +195,7 @@ const items = [
 </template>
 ```
 
-```php
-<cm-nav-menu :items="$items" value="active" />
-```
+Vanilla markup: [nav-menu HTML](../../contracts/nav-menu/cases/default.html).
 
 ## Menu bar
 
@@ -237,7 +226,4 @@ const items = [
 </template>
 ```
 
-```php
-<cm-menu-bar :items="$items" :open-path="['file']" />
-```
-
+Vanilla markup: [menu-bar HTML](../../contracts/menu-bar/cases/default.html).

@@ -4,8 +4,6 @@ Status: Active
 
 Component: `Field`
 
-Razor tag: `cm-field`
-
 ## Purpose
 
 Field groups one form control with its visible label, optional help text, and optional validation
@@ -34,7 +32,7 @@ Non-empty description content renders after the control in `p.cm-field__descript
 
 The control must reference every rendered supporting region through a space-separated
 `aria-describedby` value in description-then-error order. An invalid control must expose
-`aria-invalid="true"`. Vue may provide these derived values through scoped-slot data; Razor callers
+`aria-invalid="true"`. Vue may provide these derived values through scoped-slot data; Vanilla HTML callers
 pass the same deterministic values explicitly. This platform mapping may differ, but significant
 DOM may not.
 

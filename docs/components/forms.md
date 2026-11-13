@@ -2,7 +2,7 @@
 
 `Field` associates a control with its label and messages. `Input`, `Textarea`, `Checkbox`, `Radio`,
 and `Switch` preserve native browser editing, focus, validation, events, and form submission. Vue
-uses idiomatic model binding; Annabel Razor renders values from application state or the submitted
+uses idiomatic model binding; Vanilla HTML renders values from application state or the submitted
 request.
 
 Load the token and complete component stylesheets described in the [Button guide](./button.md).
@@ -47,13 +47,13 @@ be overridden through forwarded attributes.
 
 The `leading` and `trailing` slots accept framework-native trusted content, including icons. Hide
 decorative content from assistive technology; slots do not replace the input's label. The shared
-API intentionally accepts content instead of VueForge icon registry names so Vue and Razor use the
+API intentionally accepts content instead of VueForge icon registry names so Vue and Vanilla HTML use the
 same contract without coupling to one renderer.
 
 ## Textarea and choice APIs
 
 `Textarea` accepts the Input state and size props except `type`; its string `value` maps to Vue
-`modelValue` and renders as escaped textarea content in Razor. Native attributes such as `name`,
+`modelValue` and renders as escaped textarea content in Vanilla HTML. Native attributes such as `name`,
 `rows`, `maxlength`, and `wrap` reach the `<textarea>`.
 
 Checkbox and Switch share these props:
@@ -70,7 +70,7 @@ Checkbox and Switch share these props:
 | `indeterminate` | boolean          | `false` | Checkbox only: native mixed visual state, not a third value. |
 
 Radio requires a string `value` and otherwise shares `label`, `size`, `invalid`, `disabled`, and
-`required`. Vue compares `modelValue` with each option value. Razor receives `checked` for the
+`required`. Vue compares `modelValue` with each option value. Vanilla HTML receives `checked` for the
 current option. Give related radios the same non-empty native `name`.
 
 Switch represents an immediate setting and renders a native checkbox with `role="switch"`. Use
@@ -79,7 +79,7 @@ unchecked value is absent from submitted form data.
 
 Switch accepts trusted decorative content through its `thumb` slot. The wrapper is hidden from
 assistive technology, so keep the visible setting name in the default slot or `label` prop. Vue
-provides the current `{ checked }` state to the thumb slot; Razor renders the named slot for the
+provides the current `{ checked }` state to the thumb slot; Vanilla templates render thumb content for the
 current server response.
 
 ## Vue binding
@@ -133,55 +133,13 @@ and native constraints still govern browser submission.
 Textarea follows the same string binding. Checkbox and Switch emit booleans; Radio emits its string
 option value. Keep the model as the single Vue source of truth.
 
-## Annabel Razor submission
+## Vanilla form submission
 
-Read scalar request input, validate it in application code, and pass both collections back to the
-view. Ordinary strings remain untrusted:
+Render initial values and validation state using the canonical HTML for [field](../../contracts/field/contract.md), [input](../../contracts/input/contract.md), [textarea](../../contracts/textarea/contract.md), [checkbox](../../contracts/checkbox/contract.md), [radio](../../contracts/radio/contract.md), [switch](../../contracts/switch/contract.md), [theme-switch](../../contracts/theme-switch/cases/default.html).
 
-```php
-$submitted = ['email' => (string) ($request->input('email') ?? '')];
-$errors = $validator->errors();
+## Indeterminate Checkbox in Vanilla HTML
 
-echo $razor->render('account.form', compact('submitted', 'errors'));
-```
-
-Render the current value and relationships explicitly in the Razor template:
-
-```razor
-<form method="post">
-    <cm-field control-id="email" label="Email" :error="$errors['email'] ?? null" required>
-        <cm-input
-            id="email"
-            name="email"
-            type="email"
-            autocomplete="email"
-            :value="$submitted['email'] ?? ''"
-            :invalid="isset($errors['email'])"
-            :required="true"
-            :aria-describedby="isset($errors['email']) ? 'email-error' : null"
-        />
-    </cm-field>
-    <cm-textarea name="notes" :value="$submitted['notes'] ?? ''" aria-label="Notes" />
-    <cm-checkbox name="topics" value="updates" :checked="in_array('updates', $submitted['topics'] ?? [], true)">
-        Product updates
-    </cm-checkbox>
-    <cm-radio name="frequency" value="daily" :checked="($submitted['frequency'] ?? 'daily') === 'daily'">Daily</cm-radio>
-    <cm-radio name="frequency" value="weekly" :checked="($submitted['frequency'] ?? '') === 'weekly'">Weekly</cm-radio>
-    <cm-switch name="theme" value="dark" :checked="($submitted['theme'] ?? null) === 'dark'">Dark mode</cm-switch>
-    <cm-switch name="theme-preview" :checked="($submitted['theme-preview'] ?? null) === 'on'">
-        <razor-slot name="thumb"><span aria-hidden="true">●</span></razor-slot>
-        Theme preview
-    </cm-switch>
-    <cm-button type="submit">Save</cm-button>
-</form>
-```
-
-The server-rendered `value` is HTML-escaped. Error text is escaped unless authored as trusted slot
-markup. Never convert request values or validation messages to `RenderedHtml`.
-
-## Indeterminate Checkbox in Razor
-
-HTML cannot serialize the native `indeterminate` DOM property. When Razor renders
+HTML cannot serialize the native `indeterminate` DOM property. When Vanilla HTML renders
 `<cm-checkbox :indeterminate="true">`, register the framework-independent Checkbox controller in
 the frontend bundle:
 
@@ -191,7 +149,7 @@ import { CmRuntime, createCmCheckboxController } from '@codemonster-ru/ui-runtim
 new CmRuntime().register('checkbox', createCmCheckboxController).start(document);
 ```
 
-Clear and password-reveal actions in Razor use the same progressive enhancement pattern:
+Clear and password-reveal actions in Vanilla HTML use the same progressive enhancement pattern:
 
 ```ts
 import { CmRuntime, createCmInputController } from '@codemonster-ru/ui-runtime';
@@ -234,9 +192,7 @@ const mode = ref<CmThemeMode>('system');
 
 On the server, read the cookie and stamp the root before anything renders:
 
-```php
-<html <?= Codemonster\Ui\Support\Theme::rootAttribute($_COOKIE) ?>>
-```
+Vanilla markup: [theme-switch HTML](../../contracts/theme-switch/cases/default.html).
 
 `name` renames the radio group, `legend` labels it, and `cookieName` changes where the preference is
 stored. Nothing about `VfThemeSwitch`'s `size`, `variant`, `buttonVariant`, or `thumbContrast`

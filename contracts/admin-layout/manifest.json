@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "name": "AdminLayout",
   "slug": "admin-layout",
-  "razorTag": "cm-admin-layout",
   "description": "An application shell with a collapsible sidebar, a header, and a mobile drawer. State lives in attributes on the root rather than a slot scope, so both adapters render it and one controller flips it.",
   "props": {
     "id": {

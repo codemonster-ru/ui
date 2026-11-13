@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "name": "Drawer",
   "slug": "drawer",
-  "razorTag": "cm-drawer",
   "description": "A logical-side modal sheet with Dialog focus behavior.",
   "props": {
     "id": { "type": "string", "required": true },

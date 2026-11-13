@@ -10,7 +10,7 @@ CodeMonster UI supports static HTML, server rendering, progressive enhancement, 
 hydration as distinct rendering modes. Canonical HTML and native browser behavior provide the
 baseline; JavaScript adds only the interaction that the selected component requires.
 
-Annabel Razor output is progressively enhanced by the framework-independent DOM runtime. It is not
+Vanilla HTML is progressively enhanced by the framework-independent DOM runtime. It is not
 implicitly hydrated by Vue, React, or Angular.
 
 ## Rendering modes
@@ -18,7 +18,7 @@ implicitly hydrated by Vue, React, or Angular.
 | Mode | Renderer | Client behavior |
 | --- | --- | --- |
 | CSS-only | Authored or generated HTML | Native browser behavior only |
-| Server-rendered | Annabel Razor or framework SSR | Complete initial content and semantic state |
+| Server-rendered | Vanilla templates or framework SSR | Complete initial content and semantic state |
 | Progressively enhanced | Server HTML plus `ui-runtime` | Scoped DOM controllers add interaction |
 | Framework hydrated | Matching framework server and client adapters | Framework resumes component ownership |
 
@@ -39,7 +39,7 @@ JavaScript. Interactive components document their native fallback and enhancemen
 - Browser event listeners are not represented as required server markup.
 - Multiple component instances do not share mutable request state.
 
-Node ESM, CommonJS where supported, and Composer consumers receive explicit server-safe entry points
+Node ESM and CommonJS consumers, where supported, receive explicit server-safe entry points
 when a default browser entry has side effects.
 
 ## Native baseline
@@ -80,7 +80,7 @@ Each framework hydrates only markup rendered by its matching adapter:
 - Vue server output is hydrated by `ui-vue`;
 - React server output is hydrated by `ui-react`;
 - Angular server output is hydrated by `ui-angular`;
-- Annabel Razor output is enhanced by `ui-runtime` unless an application explicitly mounts an
+- Vanilla HTML is enhanced by `ui-runtime` unless an application explicitly mounts an
   independently designed framework island.
 
 Cross-framework hydration is unsupported. Matching canonical HTML does not make framework-internal
@@ -131,7 +131,7 @@ imports in server entry points.
 
 ## Consequences
 
-- Public Razor templates remain useful without adopting a frontend framework.
+- Vanilla templates remain useful without adopting a frontend framework.
 - Framework applications keep native lifecycle and hydration behavior.
 - Shared HTML enables visual and semantic parity without claiming cross-framework hydration.
 - Browser-only code has explicit initialization boundaries and can be tested independently.

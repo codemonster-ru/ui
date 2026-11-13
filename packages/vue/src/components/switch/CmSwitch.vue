@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, useAttrs, type PropType } from 'vue';
 
+import { useCmHydrated } from '../../internal/hydration';
+
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import type { CmSwitchSize } from './switch.types';
 
@@ -57,10 +59,11 @@ function updateChecked(event: Event): void {
   emit('update:modelValue', (event.target as HTMLInputElement).checked);
   emit('change', event);
 }
+useCmHydrated();
 </script>
 
 <template>
-  <label v-bind="rootAttrs" :class="classes">
+  <label v-bind="rootAttrs" :class="classes" data-cm-controller="switch">
     <input
       v-bind="controlAttrs"
       class="cm-switch__input"

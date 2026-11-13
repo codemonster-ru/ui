@@ -4,8 +4,6 @@ Status: Active
 
 Component: `Button`
 
-Razor tag: `cm-button`
-
 ## Purpose
 
 Button represents one immediate action or one explicit navigation action. It uses native HTML for
@@ -88,12 +86,12 @@ states do not activate or submit. Adapters do not emit a redundant custom activa
 ## Security
 
 Ordinary props and attributes are escaped for their HTML context. Slots use each adapter's trusted
-component-composition boundary. Annabel Razor does not treat ordinary strings as trusted markup.
+component-composition boundary. Vanilla templates must escape ordinary strings.
 
 ## Platform mapping
 
 - Vue maps props and named slots idiomatically and forwards native root attributes and listeners.
-- Annabel Razor maps kebab-case attributes and named slots, rendering the same significant DOM.
+- Vanilla consumers render the canonical fixture with their content.
 - No platform-specific element or wrapper is allowed for ordinary cases.
 
 ## Behavior scenarios

@@ -4,8 +4,6 @@ Status: Active
 
 Component: `Checkbox`
 
-Razor tag: `cm-checkbox`
-
 ## Purpose
 
 Checkbox presents one native boolean form control with a visible label. It preserves browser focus,
@@ -25,10 +23,10 @@ used when the default slot is empty; trusted slot content otherwise takes preced
 ## Checked state and platform mapping
 
 The semantic `checked` value is boolean. Vue exposes it through boolean `modelValue` and emits
-`update:modelValue` after native changes. Annabel Razor renders the current `checked` attribute and
+`update:modelValue` after native changes. Vanilla HTML renders the current `checked` attribute and
 uses submitted form data for the next render. `indeterminate` adds
 `data-cm-controller="checkbox"` and `data-cm-checkbox-indeterminate="true"` to the root. Vue sets the
-native DOM property directly; Razor consumers register the shared Checkbox controller to restore it
+native DOM property directly; Vanilla consumers register the shared Checkbox controller to restore it
 after server rendering. The browser then exposes the mixed state to assistive technology. It is a
 visual state, not a third submitted value, and degrades to unchecked when enhancement is absent.
 

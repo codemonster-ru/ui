@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "name": "Input",
   "slug": "input",
-  "razorTag": "cm-input",
   "description": "A native single-line input with shared sizing and invalid presentation.",
   "props": {
     "value": {

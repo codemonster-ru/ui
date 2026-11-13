@@ -4,8 +4,6 @@ Status: Active
 
 Component: `Container`
 
-Razor tag: `cm-container`
-
 ## Purpose and semantics
 
 Container centers content, applies responsive inline gutters, and limits readable page width. Its

@@ -4,8 +4,6 @@ Status: Active
 
 Component: `CommandPalette`
 
-Razor tag: `cm-command-palette`
-
 ## Purpose and model
 
 CommandPalette is a modal command search built on native `<dialog>`. `id` is a stable prefix,
@@ -18,7 +16,7 @@ An empty collection with an empty query renders the localized `idleText`; a non-
 matches renders `emptyText`. `loading` replaces results with the localized live `loadingText` status.
 The `actions`, `loading`, `idle`, `empty`, and `footer` slots accept trusted platform content.
 `command{UpperCamelId}` replaces only one command's escaped label inside the component-owned option;
-Vue receives `{ command, active }` while Razor receives trusted `RenderedHtml`.
+Vue receives `{ command, active }` while Vanilla HTML uses explicit markup.
 
 The search input uses the ARIA combobox pattern and keeps DOM focus. Its `aria-activedescendant`
 references the current enabled matching `role="option"` in the listbox. Non-matches use native
@@ -26,13 +24,13 @@ references the current enabled matching `role="option"` in the listbox. Non-matc
 
 ## State and interaction
 
-`open` maps to Vue `v-model:open` and Razor initial state. Opening focuses the input. Input updates
+`open` maps to Vue `v-model:open` and Vanilla HTML initial state. Opening focuses the input. Input updates
 filter results and reports `queryChange`. ArrowDown and ArrowUp wrap the active enabled match; Home
 and End move to its boundaries. Enter reports the active command id and closes. Pointer selection
 does the same. Disabled commands never become active or select. Escape and the close button dismiss
 and restore prior focus. Tab remains inside the modal.
 
-Vue owns interaction directly. Razor uses the shared controller and may request opening with
+Vue owns interaction directly. Vanilla HTML uses the shared controller and may request opening with
 `cm:command-palette-open-request`. The component does not execute commands, implement global
 shortcuts, persist history, perform fuzzy ranking or match highlighting, submit an unmatched query,
 or expose teleport, maximum-height, default-open, and close-policy controls. Applications that need

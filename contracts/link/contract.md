@@ -4,8 +4,6 @@ Status: Active
 
 Component: `Link`
 
-Razor tag: `cm-link`
-
 ## Purpose and native element
 
 Link renders one native `<a>` for navigation. `href` is required and non-empty. The anchor owns

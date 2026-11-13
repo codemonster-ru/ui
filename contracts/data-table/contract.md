@@ -4,8 +4,6 @@ Status: Active
 
 Component: `DataTable`
 
-Razor tag: `cm-data-table`
-
 ## Purpose and data model
 
 DataTable renders application-owned tabular data with portable sorting, selection, and pagination
@@ -41,7 +39,7 @@ rendered rows and exposes native checked, indeterminate, or disabled state. Sele
 already selected disabled rows while adding or removing only eligible rows.
 Selection and sorting accessible names are localizable through required-placeholder templates:
 `selectRowLabelTemplate` uses `{row}`, while the ascending, descending, and clear-sort templates use
-`{column}`. Razor carries the sort templates in data attributes so the shared runtime can preserve
+`{column}`. Vanilla HTML carries the sort templates in data attributes so the shared runtime can preserve
 the localized name throughout the sort cycle.
 
 ## Interaction and ownership
@@ -56,9 +54,9 @@ change when necessary. DataTable calculates page count only when `totalRows` is 
 slices or fetches rows. Summary templates require their documented placeholders. Visible previous
 and next text is independent from the buttons' accessible labels so both can be localized.
 
-Vue owns interaction directly. Server-rendered Razor markup uses the shared DataTable controller.
+Vue owns interaction directly. Server-rendered Vanilla HTML markup uses the shared DataTable controller.
 The initial HTML remains a readable native table without JavaScript. Controlled Vue props are
-authoritative on rerender, while Razor applications are authoritative when replacing server markup.
+authoritative on rerender, while Vanilla applications are authoritative when replacing server markup.
 
 ## Accessibility and security
 

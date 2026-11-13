@@ -1,6 +1,5 @@
 import semver from 'semver';
 import {
-  codeMonsterUiComposerPackage,
   codeMonsterUiNodeEngine,
   codeMonsterUiNpmPackages,
   codeMonsterUiPackageSizeBudgets,
@@ -56,10 +55,6 @@ export function validateCodeMonsterUiPackageCatalog() {
         }
       }
     }
-  }
-
-  if (codeMonsterUiComposerPackage.name !== 'codemonster-ru/ui-razor') {
-    errors.push('The Composer adapter must use the approved codemonster-ru/ui-razor package name.');
   }
 
   return errors;
@@ -129,43 +124,6 @@ export function validateCodeMonsterUiNpmManifest(packageContract, manifest) {
       if (dependencyField !== 'peerDependencies' || !Object.hasOwn(expectedFrameworkPeers, packageName)) {
         errors.push(`${label} must not declare ${packageName} in ${dependencyField}.`);
       }
-    }
-  }
-
-  return errors;
-}
-
-export function validateCodeMonsterUiComposerManifest(packageContract, manifest) {
-  const errors = [];
-  const label = packageContract.name;
-
-  if (!isPlainObject(manifest)) {
-    return [`${label} manifest must be a JSON object.`];
-  }
-  if (manifest.name !== label) {
-    errors.push(`${label} manifest name must be ${label} (received ${manifest.name}).`);
-  }
-  if (manifest.type !== 'library') {
-    errors.push(`${label} type must be library.`);
-  }
-  if (manifest.license !== 'MIT') {
-    errors.push(`${label} license must be MIT.`);
-  }
-  if (typeof manifest.description !== 'string' || manifest.description.trim() === '') {
-    errors.push(`${label} description is required.`);
-  }
-  if (manifest.require?.php !== packageContract.php) {
-    errors.push(`${label} require.php must be ${packageContract.php}.`);
-  }
-  if (manifest.require?.['codemonster-ru/razor'] !== packageContract.razor) {
-    errors.push(`${label} require.codemonster-ru/razor must be ${packageContract.razor}.`);
-  }
-  if (manifest.autoload?.['psr-4']?.['Codemonster\\Ui\\'] !== 'src/') {
-    errors.push(`${label} must map Codemonster\\Ui\\ to src/.`);
-  }
-  for (const scriptName of ['analyse', 'check', 'test']) {
-    if (!manifest.scripts?.[scriptName]) {
-      errors.push(`${label} scripts.${scriptName} is required.`);
     }
   }
 

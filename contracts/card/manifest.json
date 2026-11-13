@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "name": "Card",
   "slug": "card",
-  "razorTag": "cm-card",
   "description": "A structural surface with optional header, body, and footer regions.",
   "props": {
     "element": {

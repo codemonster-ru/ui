@@ -5,7 +5,7 @@ import test from 'node:test';
 import { compareSignificantDom } from './significant-dom.mjs';
 
 // The PHP comparator runs these same cases in SignificantDomConformanceTest. Both must agree, or
-// the Vue and Razor adapters are being judged against different notions of the same canonical DOM.
+// the Vue and Vanilla checks are being judged against different notions of the same canonical DOM.
 const { cases } = JSON.parse(
   readFileSync(resolve(import.meta.dirname, '../../contracts/significant-dom-conformance.json'), 'utf8'),
 );

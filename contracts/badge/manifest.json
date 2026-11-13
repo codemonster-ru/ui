@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "name": "Badge",
   "slug": "badge",
-  "razorTag": "cm-badge",
   "description": "A compact inline text label for status or categorization.",
   "props": {
     "tone": {

@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "name": "Menu",
   "slug": "menu",
-  "razorTag": "cm-menu",
   "description": "A keyboard-navigable application action menu.",
   "props": {
     "items": { "type": "collection", "required": true, "valueContract": "menu-item" },

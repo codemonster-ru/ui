@@ -1,12 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
-  codeMonsterUiComposerPackage,
   codeMonsterUiNodeEngine,
   codeMonsterUiNpmPackages,
 } from './code-monster-ui-package-catalog.mjs';
 import {
-  validateCodeMonsterUiComposerManifest,
   validateCodeMonsterUiNpmManifest,
   validateCodeMonsterUiPackageCatalog,
 } from './code-monster-ui-package-metadata.mjs';
@@ -68,21 +66,4 @@ test('reports incomplete npm publication metadata', () => {
     '@codemonster-ru/ui-tokens must declare explicit package exports.',
     '@codemonster-ru/ui-tokens scripts.test is required.',
   ]);
-});
-
-test('accepts the approved Composer package metadata', () => {
-  const manifest = {
-    name: codeMonsterUiComposerPackage.name,
-    description: 'CodeMonster UI Annabel adapter.',
-    type: 'library',
-    license: 'MIT',
-    require: {
-      php: codeMonsterUiComposerPackage.php,
-      'codemonster-ru/razor': codeMonsterUiComposerPackage.razor,
-    },
-    autoload: { 'psr-4': { 'Codemonster\\Ui\\': 'src/' } },
-    scripts: { analyse: 'example', check: 'example', test: 'example' },
-  };
-
-  assert.deepEqual(validateCodeMonsterUiComposerManifest(codeMonsterUiComposerPackage, manifest), []);
 });

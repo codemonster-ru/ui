@@ -22,7 +22,7 @@
       {
         "id": "tokens",
         "title": "Shared tokens",
-        "content": "The same design tokens feed Vue and Razor."
+        "content": "The same design tokens feed Vue and Vanilla."
       },
       {
         "id": "css",

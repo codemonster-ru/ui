@@ -7,7 +7,7 @@ import '@codemonster-ru/ui-css/fonts.css';
 // it to track what App.vue uses. It also carries `foundation.css`, which is what paints `:root`/
 // `body` from the theme tokens and responds to `data-cm-theme` in the first place -- without it,
 // CmThemeSwitch was flipping the attribute and the token values correctly, but nothing on the page
-// was ever reading them. The Razor example already loads this same bundle wholesale.
+// was ever reading them.
 import '@codemonster-ru/ui-css/styles.css';
 import '@codemonster-ru/ui-utilities/utilities.css';
 import App from './App.vue';

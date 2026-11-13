@@ -46,3 +46,4 @@ export type { MenuBarSelectDetail } from './menu-bar.js';
 export { CmAdminLayoutController, createCmAdminLayoutController } from './admin-layout.js';
 export type { AdminLayoutStateChangeDetail } from './admin-layout.js';
 export { CmSetupLayoutController, createCmSetupLayoutController } from './setup-layout.js';
+export { createCmSwitchController } from './switch.js';

@@ -92,33 +92,7 @@ export function collectSsrCoveredSlugs(testSources) {
 
 /**
  * Reports contracts whose Vue output is never compared against the canonical fixture.
- *
- * The Razor adapter has a parity test per component, so a contract missing from here is one where
- * the canonical markup is enforced on one adapter only — and the fixture stops being a contract
- * between two platforms the moment just one of them has to satisfy it.
  */
 export function findContractsWithoutSsrCoverage(slugs, covered) {
   return slugs.filter((slug) => !covered.has(slug)).sort();
-}
-
-/**
- * Reads the contract slugs a set of Razor parity test sources compares against the canonical
- * fixtures.
- *
- * Slugs are matched anywhere in a file rather than through one path shape, because the grouped
- * parity tests name several contracts at once. A narrower pattern reported 33 of 47 contracts as
- * uncovered when all 47 were covered, which is the failure mode worth avoiding in a check whose
- * whole job is to be believed.
- */
-export function collectRazorCoveredSlugs(testSources, slugs) {
-  const covered = new Set();
-
-  for (const source of testSources) {
-    if (!source.includes('SignificantDom')) continue;
-    for (const slug of slugs) {
-      if (new RegExp(`contracts/${slug}\\b|'${slug}'|/${slug}/`, 'u').test(source)) covered.add(slug);
-    }
-  }
-
-  return covered;
 }

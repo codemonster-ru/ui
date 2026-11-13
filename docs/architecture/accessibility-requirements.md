@@ -82,7 +82,7 @@ section.
 - Labels remain programmatically associated with controls in every adapter.
 - Required and invalid states use native semantics and ARIA consistently.
 - Validation messages identify the affected field and are not communicated by color alone.
-- Server-rendered Razor validation produces the same meaningful relationships as client-rendered
+- Server-rendered Vanilla validation produces the same meaningful relationships as client-rendered
   validation.
 - Components preserve native form name, value, submission, reset, and autofill behavior unless the
   contract explicitly defines a composite alternative.
@@ -140,5 +140,5 @@ test updates.
 
 - Accessibility is part of each component's public behavior, not a final audit phase.
 - Canonical fixtures and behavior scenarios include accessibility state from the beginning.
-- CSS-only and Razor consumers receive a usable semantic baseline without framework JavaScript.
+- CSS-only and Vanilla consumers receive a usable semantic baseline without framework JavaScript.
 - Adapter parity includes user outcomes, not only matching visual output.

@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "name": "Checkbox",
   "slug": "checkbox",
-  "razorTag": "cm-checkbox",
   "description": "A labeled native checkbox with shared sizing and validation presentation.",
   "props": {
     "checked": { "type": "boolean", "required": false, "default": false },

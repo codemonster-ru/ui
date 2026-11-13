@@ -11,16 +11,12 @@ adapters. They are not custom elements, and they do not use Shadow DOM.
 `packages/runtime/src/core/` holds the rules — which item is active, where a key moves focus, what a
 set of props reduces to — as pure functions over plain data. Adapters translate: the Vue components
 bind those results declaratively, the DOM controllers in `ui-runtime` write them onto
-server-rendered markup, and the Annabel Razor adapter renders the same canonical HTML from PHP.
+Vanilla markup, including server-rendered pages.
 
 ## Context
 
-Web Components are the obvious alternative and were considered directly. The question is worth
-recording because the surface looks superficially like custom elements: contracts carry a
-`razorTag` such as `cm-select`, and CSS classes are named `cm-select`, `cm-tabs`. Neither is a
-custom element. `razorTag` names a Razor template that compiles to plain HTML on the server, and no
-`<cm-*>` tag reaches any canonical fixture. There is no `customElements.define`, no `attachShadow`,
-and no `HTMLElement` subclass anywhere in `packages/*/src`.
+Canonical fixtures and Vanilla templates use native HTML elements with shared classes such as
+`cm-select` and `cm-tabs`.
 
 ## Why not Web Components
 
@@ -28,8 +24,7 @@ and no `HTMLElement` subclass anywhere in `packages/*/src`.
 that already works: a select submits through its hidden input, links navigate, a table reads. The
 runtime only adds interaction to markup that is already correct. A custom element does nothing until
 `customElements.define` runs. Declarative Shadow DOM addresses the visual half of that gap, not the
-behavioral half, and would require the PHP adapter to emit it — a markedly less settled path than
-the one in place. See [rendering strategy](./rendering-strategy.md) for the modes this would weaken.
+behavioral half, and would require additional server markup. See [rendering strategy](./rendering-strategy.md) for the modes this would weaken.
 
 **It would add a layer rather than remove one.** Framework adapters would still be needed: React's
 interop with custom elements remains awkward around props and events. The result is
@@ -45,10 +40,8 @@ carry the upgrade gap.
 
 ## What the current model costs
 
-Canonical markup is written three times: the Vue template, the Razor template, and the canonical
-fixture. That is the price of two platforms, and it is governed rather than assumed — each adapter
-is compared against the fixture, and both comparators are held to one shared rule set by
-`contracts/significant-dom-conformance.json`.
+Vue SSR is compared with the canonical HTML fixture. Browser tests render that HTML with the
+Vanilla runtime and compare appearance and behavior with the mounted Vue component.
 
 Both adapters render `data-cm-controller` to match the canonical DOM, so a page running `CmRuntime`
 alongside framework components has two candidate owners for the same element. Components claim their
@@ -67,8 +60,7 @@ harder.
 
 ## Consequences
 
-- A Web Components adapter remains possible as a fifth adapter beside Vue, Razor, and the reserved
-  React and Angular entries in the package catalog. It is not the component model itself.
+- A Web Components adapter remains possible as a future integration. It is not the component model itself.
 - Adapters stay thin enough that a framework major version is an adapter-sized change, not a
   system-sized one.
 - New behavioral components follow the split described in `ARCHITECTURE.md`; the rules go in the

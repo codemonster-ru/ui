@@ -61,7 +61,6 @@ complete values.
   "schemaVersion": 1,
   "name": "Button",
   "slug": "button",
-  "razorTag": "cm-button",
   "props": {
     "variant": {
       "type": "enum",
@@ -85,7 +84,7 @@ complete values.
 
 The initial manifest vocabulary supports:
 
-- canonical component name, slug, and Razor tag;
+- canonical component name and slug;
 - props with primitive, enum, nullable, collection, and structured-value shapes;
 - required and optional slots;
 - semantic events without platform-specific handler syntax;

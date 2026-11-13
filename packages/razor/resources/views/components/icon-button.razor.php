@@ -1,1 +1,0 @@
-<button class="{{ $classes }}" type="{{ $type }}" aria-label="{{ $label }}"@if ($disabled) disabled@endif{!! $attributes !!}><span class="cm-icon-button__icon" aria-hidden="true">{{ $icon }}</span></button>

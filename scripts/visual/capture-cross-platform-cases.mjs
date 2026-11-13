@@ -22,7 +22,7 @@ const crossPlatformManifest = JSON.parse(
   readFileSync(resolve(import.meta.dirname, '../../contracts/cross-platform-visual-baselines.json'), 'utf8'),
 );
 const caseIds = crossPlatformManifest.caseIds;
-const platforms = ['vue', 'razor'];
+const platforms = ['vue', 'vanilla'];
 const fontFaceCss = options.font === 'inject' ? readCaptureFontFaceCss() : '';
 const sleep = (milliseconds) => new Promise((resolvePromise) => setTimeout(resolvePromise, milliseconds));
 
@@ -121,7 +121,7 @@ for (const platform of platforms) {
         const url = `${origin.replace(/\/$/u, '')}/?case=${caseId}&platform=${platform}&theme=${theme.name}`;
         await send('Page.navigate', { url });
         await waitFor(
-          `document.readyState === "complete" && document.querySelector("#visual-root")?.dataset.visualCase === ${JSON.stringify(caseId)} && document.querySelector("#visual-root")?.dataset.visualRenderer === ${JSON.stringify(platform === 'vue' ? 'vue-mounted' : 'razor-rendered')} && document.querySelector("#visual-root")?.dataset.visualReady === "true"`,
+          `document.readyState === "complete" && document.querySelector("#visual-root")?.dataset.visualCase === ${JSON.stringify(caseId)} && document.querySelector("#visual-root")?.dataset.visualRenderer === ${JSON.stringify(platform === 'vue' ? 'vue-mounted' : 'vanilla-enhanced')} && document.querySelector("#visual-root")?.dataset.visualReady === "true"`,
         );
 
         await evaluate(`(() => {

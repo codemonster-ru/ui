@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "name": "Tooltip",
   "slug": "tooltip",
-  "razorTag": "cm-tooltip",
   "description": "A focus and hover explanation for a native button trigger.",
   "props": {
     "id": { "type": "string", "required": true },

@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "name": "MenuBar",
   "slug": "menu-bar",
-  "razorTag": "cm-menu-bar",
   "description": "A horizontal bar of menus. role=menubar with nested role=menu submenus, where the same arrow means different things along the bar and inside a submenu.",
   "props": {
     "items": { "type": "collection", "required": true, "valueContract": "menu-bar-item" },

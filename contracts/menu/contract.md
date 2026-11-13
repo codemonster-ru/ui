@@ -4,8 +4,6 @@ Status: Active
 
 Component: `Menu`
 
-Razor tag: `cm-menu`
-
 ## Purpose and item model
 
 Menu presents application actions using the ARIA menu pattern. It is not site navigation. `items`
@@ -16,7 +14,7 @@ Links opened with `target="_blank"` receive `rel="noopener noreferrer"` unless t
 an explicit relationship.
 
 Each item accepts trusted platform content through `item{UpperCamelId}`, such as `itemAccountDetails`.
-Vue receives `{ item }`; Razor receives `RenderedHtml`. The escaped label remains the fallback and
+Vue receives `{ item }`; Vanilla HTML uses explicit markup. The escaped label remains the fallback and
 accessible item shell, states, and keyboard behavior remain component-owned. This collection slot
 replaces the legacy standalone MenuItem component rather than introducing another public adapter.
 

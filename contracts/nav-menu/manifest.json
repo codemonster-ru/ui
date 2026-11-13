@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "name": "NavMenu",
   "slug": "nav-menu",
-  "razorTag": "cm-nav-menu",
   "description": "A nested navigation menu. Branches expand in place, the path to the active item is opened for it, and a collapsed branch stays in the markup so a page without JavaScript still shows the whole tree.",
   "props": {
     "items": {

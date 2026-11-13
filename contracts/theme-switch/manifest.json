@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "name": "ThemeSwitch",
   "slug": "theme-switch",
-  "razorTag": "cm-theme-switch",
   "description": "A three-state theme preference: an explicit light, an explicit dark, or deferring to the operating system. Native radios carry the semantics, so the control works inside a form with no JavaScript. The chosen mode is written to the document root verbatim, `system` included, because the stylesheet resolves that case through a media query.",
   "props": {
     "options": { "type": "collection", "required": false, "valueContract": "theme-switch-option" },

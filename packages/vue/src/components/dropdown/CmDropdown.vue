@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, useAttrs, useSlots, watch, type PropType } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, useAttrs, useSlots, watch, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
@@ -62,7 +62,7 @@ function setOpen(open: boolean, restoreFocus = false): void {
   if (restoreFocus) trigger.value?.focus();
 }
 
-function onTriggerKeydown(event: KeyboardEvent): void {
+async function onTriggerKeydown(event: KeyboardEvent): Promise<void> {
   const action = dropdownKeyAction(event.key, {
     disabled: props.disabled,
     onTrigger: true,
@@ -76,6 +76,7 @@ function onTriggerKeydown(event: KeyboardEvent): void {
     return;
   }
   setOpen(true);
+  await nextTick();
   const items = root.value?.querySelectorAll<HTMLElement>(
     '[data-cm-menu-item]:not([disabled]):not([aria-disabled="true"])',
   );

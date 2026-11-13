@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "name": "Dropdown",
   "slug": "dropdown",
-  "razorTag": "cm-dropdown",
   "description": "A native button disclosure containing an action Menu.",
   "props": {
     "id": { "type": "string", "required": true },

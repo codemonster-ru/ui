@@ -40,7 +40,7 @@ disposal. Scope runtime initialization away from Vue-owned component trees.
 
 ## Documentation
 
-See the cross-platform [Accordion guide](../../docs/components/accordion.md) for Razor rendering,
+See the cross-platform [Accordion guide](../../docs/components/accordion.md) for Vanilla rendering,
 events, keyboard behavior, and state ownership.
 See the [form components guide](../../docs/components/forms.md) for the narrow Checkbox runtime
 requirement and native submission rules.

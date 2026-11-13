@@ -4,8 +4,6 @@ Status: Active
 
 Component: `Switch`
 
-Razor tag: `cm-switch`
-
 ## Purpose and structure
 
 Switch presents an immediate boolean setting through a native checkbox with `role="switch"`. The
@@ -19,15 +17,15 @@ replacement for Checkbox when the action represents multi-selection or acceptanc
 
 The optional trusted `thumb` slot renders decorative content inside `span.cm-switch__thumb`; the
 control wrapper continues to expose `aria-hidden="true"`. Vue provides `{ checked: boolean }` to the
-slot so its content can follow the current model. Annabel Razor resolves the same named slot from the
+slot so its content can follow the current model. Vanilla HTML resolves the same named slot from the
 current server-rendered state without adding client behavior.
 
 ## Checked state and platform mapping
 
 The semantic `checked` value is boolean and is mirrored through `aria-checked` because the native
 control has switch semantics. Vue exposes boolean `modelValue` and emits `update:modelValue` after
-native changes. Annabel Razor renders the current `checked` state and relies on submitted form data
-for the next render.
+native changes. Vanilla HTML renders the current `checked` state and relies on submitted form data
+for the next render. The `switch` controller updates the ARIA mirror after native changes and form reset.
 
 ## Validation and submission
 

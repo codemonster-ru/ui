@@ -102,18 +102,6 @@ await writeFile(
   'utf8',
 );
 
-// The Razor adapter reads the same geometry, one file per icon: PHP has no tree shaking, so a
-// single bundle would make drawing one arrow cost the whole set.
-const razorDirectory = resolve(packageDirectory, '../razor/resources/icons');
-await rm(razorDirectory, { force: true, recursive: true });
-await mkdir(razorDirectory, { recursive: true });
-
-for (const [name, rendered] of Object.entries(icons)) {
-  await writeFile(resolve(razorDirectory, `${name}.json`), `${JSON.stringify(rendered, null, 2)}\n`, 'utf8');
-}
-
-await writeFile(resolve(razorDirectory, 'index.json'), `${JSON.stringify(names, null, 2)}\n`, 'utf8');
-
 await writeFile(
   resolve(outputDirectory, 'provenance.json'),
   `${JSON.stringify({ commit, icons: names.length, skipped: skipped.length, source: `@codemonster-ru/vueforge-icons@${version}` }, null, 2)}\n`,

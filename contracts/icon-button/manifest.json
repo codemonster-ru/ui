@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "name": "IconButton",
   "slug": "icon-button",
-  "razorTag": "cm-icon-button",
   "description": "A square native button for one trusted icon with a required accessible label.",
   "props": {
     "label": {

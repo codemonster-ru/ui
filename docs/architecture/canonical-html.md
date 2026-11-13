@@ -102,6 +102,6 @@ canonical HTML without an explicit reviewed diff.
 ## Consequences
 
 - CSS and runtime behavior can rely on one stable semantic structure.
-- Razor server output is evaluated by the same meaningful rules as framework SSR output.
+- Vanilla server output is evaluated by the same meaningful rules as framework SSR output.
 - Framework implementation details do not create false parity failures.
 - DOM changes become explicit contract changes instead of incidental adapter refactors.
