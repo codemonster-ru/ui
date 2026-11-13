@@ -27,7 +27,7 @@ current server-rendered state without adding client behavior.
 The semantic `checked` value is boolean and is mirrored through `aria-checked` because the native
 control has switch semantics. Vue exposes boolean `modelValue` and emits `update:modelValue` after
 native changes. Annabel Razor renders the current `checked` state and relies on submitted form data
-for the next render.
+for the next render. The `switch` controller updates the ARIA mirror after native changes and form reset.
 
 ## Validation and submission
 

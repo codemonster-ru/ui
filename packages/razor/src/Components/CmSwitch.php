@@ -38,7 +38,7 @@ final class CmSwitch implements ComponentInterface
 
         return RenderedHtml::fromTrustedString(rtrim($this->views->render('components.switch', [
             'classes' => $classes,
-            'rootAttributes' => (new AttributeBag(['style' => $attributes->get('style')]))->render(),
+            'rootAttributes' => (new AttributeBag(['style' => $attributes->get('style'), 'data-cm-controller' => 'switch']))->render(),
             'stateAttributes' => (new AttributeBag([
                 'checked' => $checked,
                 'disabled' => $disabled,
@@ -48,7 +48,7 @@ final class CmSwitch implements ComponentInterface
             ]))->render(),
             'attributes' => $attributes->without([
                 'class', 'style', 'type', 'role', 'value', 'checked', 'disabled', 'required',
-                'aria-checked', 'aria-invalid',
+                'aria-checked', 'aria-invalid', 'data-cm-controller',
             ])->render(),
             'checked' => $checked,
             'value' => $value,

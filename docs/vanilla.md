@@ -48,3 +48,13 @@ The script compares the initial Vue and Vanilla render of every canonical case i
 themes at a 360 × 660 viewport with reduced motion. It also checks opening and keyboard
 focus for the default accordion on both platforms. Pass case IDs to rerun a subset.
 Set `CM_PARITY_REPORT` to change the JSON report path.
+
+To exercise the browser behavior contracts with normal motion enabled, run:
+
+```bash
+CM_PARITY_BEHAVIOR=1 CHROME_PATH=/path/to/chrome node scripts/visual/check-vanilla-parity.mjs
+```
+
+This compares each adapter with the same action and assertion sequence, and compares the distinct
+transition and animation signatures recorded during those actions. The visual mode also compares
+initial CSS animation signatures with normal motion enabled.

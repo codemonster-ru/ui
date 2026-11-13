@@ -1,8 +1,9 @@
+import { initializeBehavior, recordEvent } from './behavior';
 import * as UiIcons from '@codemonster-ru/ui-icons';
 import * as UiLayouts from '@codemonster-ru/ui-layouts';
 
 import * as UiVue from '@codemonster-ru/ui-vue';
-import { createApp, createStaticVNode, h, nextTick, type Component, type VNodeChild } from 'vue';
+import { createApp, createStaticVNode, h, nextTick, reactive, type Component, type VNodeChild } from 'vue';
 
 import '@codemonster-ru/ui-tokens/tokens.css';
 import '@codemonster-ru/ui-css/fonts.css';
@@ -86,12 +87,51 @@ function staticSlot(contents: string): () => VNodeChild {
 
 document.documentElement.dataset.cmTheme = theme ?? 'light';
 root.dataset.visualCase = caseId;
+const behavior = parameters.get('behavior') === 'true';
+if (behavior) initializeBehavior(root);
 
 if (platform === 'vue') {
   const slots = Object.fromEntries(
     Object.entries(componentCase.slots).map(([name, contents]) => [name, staticSlot(contents)]),
   );
-  createApp({ render: () => h(component!, resolveVueProps(), slots) }).mount(root);
+  const props = reactive(resolveVueProps());
+  if (behavior) {
+    const prefix = ['accordion', 'theme-switch', 'setup-layout'].includes(componentSlug) ? '' : componentSlug + '-';
+    const names =
+      componentSlug === 'setup-layout'
+        ? ['next', 'back']
+        : [
+            'open-change',
+            'value-change',
+            'select',
+            'query-change',
+            'theme-change',
+            'page-change',
+            'page-size-change',
+            'selection-change',
+            'sort-change',
+          ];
+    for (const name of names) {
+      const listener = 'on' + name.replace(/(^|-)([a-z])/gu, (_, _separator, char: string) => char.toUpperCase());
+      props[listener] = () => recordEvent((componentSlug === 'setup-layout' ? 'setup-layout-' : prefix) + name);
+    }
+    for (const key of [
+      'modelValue',
+      'open',
+      'openItems',
+      'query',
+      'sort',
+      'page',
+      'pageSize',
+      'selectedRowIds',
+      'openPath',
+    ]) {
+      props['onUpdate:' + key] = (value: unknown) => {
+        props[key] = value;
+      };
+    }
+  }
+  createApp({ render: () => h(component!, props, slots) }).mount(root);
   await nextTick();
   root.dataset.visualRenderer = 'vue-mounted';
 } else if (platform === 'vanilla') {
@@ -100,7 +140,7 @@ if (platform === 'vue') {
   root.innerHTML = await response.text();
   const runtimeUrl = '/__visual/vanilla-runtime.js';
   const { createRuntime } = await import(/* @vite-ignore */ runtimeUrl);
-  createRuntime().start(root);
+  if (parameters.get('enhance') !== 'false') createRuntime().start(root);
   root.dataset.visualRenderer = 'vanilla-enhanced';
 } else {
   const response = await fetch(`/__visual/razor/${caseId}`);

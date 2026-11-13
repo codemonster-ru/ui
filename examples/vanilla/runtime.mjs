@@ -19,6 +19,7 @@ import {
   createCmSetupLayoutController,
   createCmShellMetricsController,
   createCmStepperController,
+  createCmSwitchController,
   createCmTabsController,
   createCmThemeSwitchController,
   createCmTooltipController,
@@ -45,6 +46,7 @@ export function createRuntime() {
     .register('setup-layout', createCmSetupLayoutController)
     .register('shell-metrics', createCmShellMetricsController)
     .register('stepper', createCmStepperController)
+    .register('switch', createCmSwitchController)
     .register('tabs', createCmTabsController)
     .register('theme-switch', createCmThemeSwitchController)
     .register('tooltip', createCmTooltipController);
