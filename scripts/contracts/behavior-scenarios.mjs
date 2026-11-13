@@ -39,6 +39,9 @@ function validateStep(step, path, index) {
   }
 
   const errors = [];
+  if (step.browserOnly !== undefined && typeof step.browserOnly !== 'boolean') {
+    errors.push(`${label} browserOnly must be a boolean.`);
+  }
   if (hasAction && !actionNames.has(step.action)) {
     errors.push(`${label} uses unsupported action ${step.action}.`);
   }
