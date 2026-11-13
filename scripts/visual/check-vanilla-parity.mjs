@@ -91,7 +91,9 @@ try {
       resolve(import.meta.dirname, '../../contracts'),
     );
     if (scenarioErrors.length) throw new Error(scenarioErrors.join('\n'));
-    await send('Emulation.setEmulatedMedia', { features: [] });
+    await send('Emulation.setEmulatedMedia', {
+      features: [{ name: 'prefers-reduced-motion', value: 'no-preference' }],
+    });
     const result = [];
     for (const { componentSlug, data } of scenarios.filter(
       ({ data }) => !process.argv[2] || process.argv.slice(2).includes(data.id),
@@ -252,7 +254,9 @@ try {
             await evaluate('new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))');
             const data = await send('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
             captures.push(PNG.sync.read(Buffer.from(data.data, 'base64')));
-            await send('Emulation.setEmulatedMedia', { features: [] });
+            await send('Emulation.setEmulatedMedia', {
+              features: [{ name: 'prefers-reduced-motion', value: 'no-preference' }],
+            });
             motion.push(
               await evaluate(`(() => {
               const root = document.querySelector('#visual-root');
