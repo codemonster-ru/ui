@@ -102,6 +102,11 @@ try {
             evaluate(`document.querySelector('[data-visual-ready="true"]')?.dataset.visualCase === ${JSON.stringify(id)} &&
             document.querySelector('[data-visual-ready="true"]')?.dataset.visualRenderer === ${JSON.stringify(platform === 'vue' ? 'vue-mounted' : 'vanilla-enhanced')}`),
           );
+          await evaluate(`(() => {
+            const style = document.createElement('style');
+            style.textContent = '*{caret-color:transparent!important}';
+            document.head.append(style);
+          })()`);
           await evaluate(
             'document.fonts.ready.then(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))))',
           );
