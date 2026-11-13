@@ -1,7 +1,7 @@
 # Layout primitives
 
 Container, Stack, Inline, Section, and Grid provide a small responsive layout vocabulary with the
-same significant DOM in Vue and Annabel Razor. They only own layout and surface styling: landmarks,
+same significant DOM in Vue and Vanilla HTML. They only own layout and surface styling: landmarks,
 headings, lists, navigation, and application-shell behavior remain explicit application choices.
 
 Load the token and complete component stylesheets described in the [Button guide](./button.md).
@@ -34,28 +34,9 @@ import { CmContainer, CmGrid, CmInline, CmSection, CmStack } from '@codemonster-
 </template>
 ```
 
-## Annabel Razor
+## Vanilla HTML
 
-```razor
-<cm-container element="main" size="xl">
-  <cm-stack>
-    <cm-inline element="nav" aria-label="Project actions">
-      <a href="/projects">Projects</a>
-      <button type="button">Create project</button>
-    </cm-inline>
-    <cm-section :surface="true">
-      <h1>Projects</h1>
-      <cm-grid element="ul">
-        <li>Atlas</li>
-        <li>Nova</li>
-      </cm-grid>
-    </cm-section>
-  </cm-stack>
-</cm-container>
-```
-
-Default slots are required and compose through each adapter's trusted rendered-markup boundary.
-Ordinary interpolated values inside those slots remain escaped by Vue or Razor.
+Use the canonical HTML for [container](../../contracts/container/contract.md), [section](../../contracts/section/contract.md), [grid](../../contracts/grid/contract.md), [inline](../../contracts/inline/contract.md), [stack](../../contracts/stack/contract.md).
 
 ## Contracts and semantics
 

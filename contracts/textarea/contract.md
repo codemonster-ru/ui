@@ -4,8 +4,6 @@ Status: Active
 
 Component: `Textarea`
 
-Razor tag: `cm-textarea`
-
 ## Purpose and native control
 
 Textarea is a thin adapter over one native multiline `<textarea>`. The semantic root owns
@@ -16,7 +14,7 @@ forwarded to it, including `name`, `id`, `rows`, `autocomplete`, `placeholder`, 
 ## Value and platform mapping
 
 The semantic value is a string rendered as escaped text content, never as a `value` attribute. Vue
-exposes it through `modelValue` and emits `update:modelValue` from native input. Annabel Razor accepts
+exposes it through `modelValue` and emits `update:modelValue` from native input. Vanilla HTML accepts
 the current `value` and relies on submitted request data for the next render. Neither adapter adds
 local uncontrolled state, automatic resizing, or character counters.
 

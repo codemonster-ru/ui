@@ -5,9 +5,9 @@ import test from 'node:test';
 
 const read = (path) => readFileSync(resolve(import.meta.dirname, path), 'utf8');
 
-test('uses generic executable Vue and Annabel Razor adapters instead of canonical HTML aliases', () => {
+test('mounts the Vue component and enhances canonical HTML with the Vanilla runtime', () => {
   const vueFixture = read('cross-platform-fixture/main.ts');
-  const razorRenderer = read('render-cross-platform-cases.php');
+  const server = read('serve-cross-platform-cases.mjs');
 
   assert.match(vueFixture, /import \* as UiVue from '@codemonster-ru\/ui-vue';/u);
   assert.match(vueFixture, /import\.meta\.glob/u);
@@ -16,27 +16,16 @@ test('uses generic executable Vue and Annabel Razor adapters instead of canonica
   assert.match(vueFixture, /componentCase\.props/u);
   assert.match(vueFixture, /componentCase\.slots/u);
   assert.match(vueFixture, /createStaticVNode/u);
-  assert.match(razorRenderer, /new UiComponentProvider\(\)/u);
-  assert.match(razorRenderer, /foreach \(\$manifest\['caseIds'\] as \$caseId\)/u);
-  assert.match(razorRenderer, /new ComponentRenderContext\(/u);
-  assert.match(razorRenderer, /->render\(/u);
+  assert.match(server, /response.end\(componentCase.canonicalHtml\)/u);
+  assert.match(vueFixture, /createRuntime\(\).start\(root\)/u);
   assert.doesNotMatch(vueFixture, /canonicalHtml|default\.html/u);
-  assert.doesNotMatch(razorRenderer, /canonicalHtml|default\.html/u);
-});
-
-test('fails clearly when local PHP or Composer dependencies are unavailable', () => {
-  const wrapper = read('render-cross-platform-cases.mjs');
-
-  assert.match(wrapper, /PHP is unavailable/u);
-  assert.match(wrapper, /Razor Composer dependencies are unavailable/u);
-  assert.match(wrapper, /Razor visual output was not generated/u);
 });
 
 test('keeps one baseline filename matrix for both current platforms', () => {
   const capture = read('capture-cross-platform-cases.mjs');
   const fixtureCss = read('cross-platform-fixture/fixture.css');
 
-  assert.match(capture, /const platforms = \['vue', 'razor'\];/u);
+  assert.match(capture, /const platforms = \['vue', 'vanilla'\];/u);
   assert.match(capture, /\$\{caseId\}--\$\{theme\.name\}--\$\{viewport\.name\}\.png/u);
   assert.match(capture, /routes: caseIds/u);
   // compare-showcase.mjs requires an exact match on referenceCommit between the baseline manifest
@@ -46,7 +35,7 @@ test('keeps one baseline filename matrix for both current platforms', () => {
   assert.match(fixtureCss, /\.cm-visual-adapter-root \{[^}]*line-height: normal;/su);
 });
 
-test('checks both actual adapters against the reviewed fd baseline in macOS visual CI', () => {
+test('checks both platforms against the reviewed fd baseline in macOS visual CI', () => {
   const workflow = read('../../.github/workflows/ci.yml');
   const baselineDirectory = resolve(import.meta.dirname, '../../visual-baselines/vueforge-cross-platform');
   const baselineManifest = JSON.parse(readFileSync(resolve(baselineDirectory, 'manifest.json'), 'utf8'));
@@ -73,7 +62,8 @@ test('checks both actual adapters against the reviewed fd baseline in macOS visu
   });
   assert.equal(screenshots.length, 48);
   assert.match(workflow, /runs-on: macos-26/u);
-  assert.match(workflow, /visual:cross-platform:razor-render/u);
+  assert.match(workflow, /visual:cross-platform:serve/u);
+  assert.match(workflow, /CM_PARITY_BEHAVIOR=1 node scripts\/visual\/check-vanilla-parity.mjs/u);
   assert.match(workflow, /current="\$\{CROSS_PLATFORM_CAPTURE\}\/vue"/u);
-  assert.match(workflow, /current="\$\{CROSS_PLATFORM_CAPTURE\}\/razor"/u);
+  assert.match(workflow, /current="\$\{CROSS_PLATFORM_CAPTURE\}\/vanilla"/u);
 });

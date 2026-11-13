@@ -652,7 +652,7 @@ const tableOfContentsItems = [
     <section id="demo-admin-layout" class="ui-showcase__demo">
       <h2>Admin layout</h2>
       <p class="ui-showcase__note">
-        Regions plus a collapsible sidebar. State lives on the root as <code>data-cm-*</code>, so the Razor adapter and
+        Regions plus a collapsible sidebar. State lives on the root as <code>data-cm-*</code>, so Vanilla HTML and
         the runtime controller read the same thing Vue binds. A collapsed sidebar still opens on hover or keyboard
         focus, without leaving the collapsed state.
       </p>

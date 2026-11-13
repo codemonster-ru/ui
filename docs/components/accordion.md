@@ -1,6 +1,6 @@
 # Accordion integration
 
-Accordion shares one rendering and interaction contract between Vue and Annabel Razor. It renders
+Accordion shares one rendering and interaction contract between Vue and Vanilla HTML. It renders
 native buttons and labelled regions, supports one or many open items, skips disabled items during
 managed focus navigation, and escapes every item string.
 
@@ -43,27 +43,11 @@ component emits the requested `update:openItems` and `openChange` values but con
 owner-supplied state. Do not initialize `@codemonster-ru/ui-runtime` over a Vue-owned Accordion;
 Vue already owns its listeners and state.
 
-## Annabel Razor
+## Vanilla HTML
 
-```php
-<?php
-$items = [
-    ['id' => 'account', 'title' => 'Account', 'content' => 'Account answer.'],
-    ['id' => 'billing', 'title' => 'Billing', 'content' => 'Billing answer.'],
-];
-$openItems = ['account'];
-?>
+Use the canonical HTML for [accordion](../../contracts/accordion/contract.md) in Vanilla.
 
-<cm-accordion id="faq" :items="$items" :open-items="$openItems">
-    <razor-slot name="triggerAccount">Account <small>recommended</small></razor-slot>
-    <razor-slot name="panelAccount"><p>Manage your <a href="/account">account</a>.</p></razor-slot>
-</cm-accordion>
-```
-
-Razor slot output is trusted rendered markup. Keep request data in the escaped `title` and
-`content` item fields; never promote untrusted values with `RenderedHtml::fromTrustedString()`.
-
-Razor renders the complete current server state. Add the shared runtime to the frontend bundle to
+Escape dynamic text and attributes in the template. Start the shared runtime to
 progressively enhance that markup:
 
 ```ts
@@ -74,7 +58,7 @@ const runtime = new CmRuntime().register('accordion', createCmAccordionControlle
 runtime.start(document);
 ```
 
-Use `runtime.observe(container)` when an application inserts or removes Razor fragments after the
+Use `runtime.observe(container)` when an application inserts or removes HTML fragments after the
 initial render. Its returned disposer disconnects the observer and controllers. Prefer a container
 that excludes framework-owned subtrees.
 

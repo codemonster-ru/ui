@@ -4,10 +4,8 @@ Status: Active
 
 Component: `DatePicker`
 
-Razor tag: `cm-date-picker`
-
 DatePicker renders one native `<input type="date">`. `value`, `min`, and `max` are empty or valid
-`YYYY-MM-DD` calendar dates. Vue maps `value` to string `v-model`; Razor renders the server or
+`YYYY-MM-DD` calendar dates. Vue maps `value` to string `v-model`; Vanilla HTML renders the server or
 submitted value. `size` is `sm`, `md`, or `lg`; `invalid`, `disabled`, `readonly`, and `required`
 preserve native and ARIA state.
 
@@ -18,7 +16,7 @@ form submission remain authoritative. The serialized value is always ISO date sy
 `clearable` adds an editable-date action named by `clearLabel`, which defaults to `Clear date`.
 Enhanced markup uses a `cm-date-picker-wrap` presentation wrapper. Activating the action empties the
 native input, dispatches its ordinary bubbling input event, and restores focus. The action is hidden
-while empty and omitted for disabled or readonly controls. Vue owns this behavior directly; Razor
+while empty and omitted for disabled or readonly controls. Vue owns this behavior directly; Vanilla HTML
 uses the existing `input` progressive-enhancement controller.
 
 The legacy custom calendar, multiple/range selection, month/year and time modes, minute steps,

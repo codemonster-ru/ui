@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "name": "Accordion",
   "slug": "accordion",
-  "razorTag": "cm-accordion",
   "description": "A list of labelled disclosure regions with shared single or multiple expansion behavior.",
   "props": {
     "id": {

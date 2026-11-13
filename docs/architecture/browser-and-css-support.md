@@ -7,7 +7,7 @@ Roadmap item: `CMUI-012`
 ## Decision
 
 CodeMonster UI targets maintained evergreen browsers and ships standards-based CSS without a legacy
-browser build. CSS-only and Annabel Razor consumers receive the same browser support as framework
+browser build. CSS-only and Vanilla HTML consumers receive the same browser support as framework
 adapters.
 
 ## Browser policy
@@ -66,7 +66,7 @@ by the feature policy above.
 - Logical properties are preferred for bidirectional layout.
 - Vendor prefixes are generated only where the supported matrix requires them.
 - Public CSS does not depend on framework style-scoping attributes.
-- CSS entry points remain usable through a link element, direct import, or copied Composer asset.
+- CSS entry points remain usable through a link element, direct import, or copied static asset.
 
 Consumers may process distributed CSS further, but package correctness cannot depend on their build
 pipeline.
@@ -105,8 +105,8 @@ Tests include:
 - light, dark, forced-colors, and reduced-motion modes;
 - zoom, text spacing, and reflow;
 - CSS-only linked stylesheets;
-- Composer-published static assets;
-- no-JavaScript and progressively enhanced Razor pages.
+- directly served static assets;
+- no-JavaScript and progressively enhanced Vanilla pages.
 
 The exact automated browser versions are recorded in CI configuration when `CMUI-016` establishes
 workspace conventions.
@@ -120,6 +120,6 @@ appropriate semantic version decision.
 ## Consequences
 
 - Shared CSS can use modern layout, selectors, and color without carrying an IE compatibility layer.
-- Public Razor templates and SPA adapters receive the same visual capability and test matrix.
+- Public Vanilla templates and SPA adapters receive the same visual capability and test matrix.
 - Build-time CSS transformations are implementation details, not consumer prerequisites.
 - Browser support remains explicit and reviewable as the web platform advances.

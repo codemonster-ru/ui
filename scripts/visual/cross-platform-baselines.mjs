@@ -44,7 +44,7 @@ export function validateCrossPlatformBaselineManifest(manifest, componentCases) 
   if (Array.isArray(manifest.platforms) && manifest.platforms.length < 2) {
     errors.push('Cross-platform baseline manifest requires at least two platforms.');
   }
-  for (const platform of ['vue', 'razor']) {
+  for (const platform of ['vue', 'vanilla']) {
     if (Array.isArray(manifest.platforms) && !manifest.platforms.includes(platform)) {
       errors.push(`Cross-platform baseline manifest must include ${platform}.`);
     }

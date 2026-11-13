@@ -4,8 +4,6 @@ Status: Active
 
 Component: `Select`
 
-Razor tag: `cm-select`
-
 ## Purpose
 
 Select presents one value chosen from a fixed ordered collection. The control is component-owned:

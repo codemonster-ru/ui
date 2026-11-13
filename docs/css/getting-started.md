@@ -8,7 +8,7 @@ order: 1
 
 `@codemonster-ru/ui-css` provides framework-independent document foundations, accessibility
 preferences, and shared visual primitives. It contains no JavaScript runtime and no Vue, React, or
-Angular dependency. The same CSS can be used by Vue applications, server-rendered Annabel Razor,
+Angular dependency. The same CSS can be used by Vue applications, server-rendered Vanilla HTML,
 static HTML, and other platforms.
 
 ## Installation
@@ -108,14 +108,14 @@ copying `dist`, then load the public entries in order:
 ```
 
 `tokens.css` imports its sibling `breakpoints.css`; `styles.css` imports its sibling foundation and
-part files. Copying only the two top-level files breaks those relative imports. Composer asset
+part files. Copying only the two top-level files breaks those relative imports. Static asset
 publication must copy and integrity-check the complete package `dist` directories.
 
-## SSR and Razor
+## SSR and Vanilla
 
 CSS import order is identical for SPA, SSR, and no-JavaScript pages. Choose the initial
 `data-cm-theme` value before rendering to avoid a mode change after first paint. Static and native
-components need no client runtime; interactive Razor components add the optional CodeMonster UI DOM
+components need no client runtime; interactive Vanilla components add the optional CodeMonster UI DOM
 runtime only when their behavior contract requires it.
 
 ## Public entries

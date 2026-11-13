@@ -6,9 +6,8 @@ Roadmap item: `CMUI-011`
 
 ## Decision
 
-CodeMonster UI escapes ordinary values by default in every renderer. Already rendered component and
-slot markup crosses rendering boundaries only through a dedicated trusted-markup type. Plain strings
-are never treated as HTML based on their source, prop name, or caller.
+Vue escapes ordinary values by default. Vanilla templates must escape ordinary values for their
+output context. Only insert trusted or sanitized markup into composed regions.
 
 The design follows contextual output-encoding principles from the
 [OWASP Cross Site Scripting Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html).
@@ -29,24 +28,11 @@ Renderers distinguish these values:
 Escaping is contextual. An HTML-text encoder is not automatically safe for a URL, JavaScript,
 style, or arbitrary attribute-name context.
 
-## Annabel Razor boundary
+## Vanilla templates
 
-`{{ value }}` remains escaped output. The generic component model introduces a final trusted-markup
-value object for output produced by the Razor renderer and registered component renderers.
-
-- Default and named slots evaluate to trusted rendered markup, not plain strings.
-- Component templates can compose trusted slot output without escaping it a second time.
-- Text props remain plain values and are escaped when rendered.
-- Attribute bags contain validated names and context-escaped values.
-- Nested component results retain the trusted-markup type through composition.
-- String conversion does not grant a plain value trusted status.
-
-The trusted-markup type is a capability boundary, not a sanitizer. Wrapping untrusted HTML without
-sanitizing it first remains unsafe. Any explicit constructor for pre-rendered or sanitized markup
-must be narrowly named, auditable, and absent from ordinary component APIs.
-
-Annabel must not add an unrestricted raw interpolation syntax as the normal way to render slots or
-components.
+The application is responsible for contextual escaping and validation when rendering canonical HTML.
+Keep user text in escaped text and attribute values. Compose HTML regions from authored markup or
+content sanitized for the intended context.
 
 ## Framework adapters
 
@@ -70,7 +56,7 @@ Slots are renderer-owned content boundaries:
 - components cannot reinterpret slot output as a prop or attribute;
 - fallback content follows the same escaping rules;
 - slot-provided text is escaped by the originating renderer;
-- named slots cannot select arbitrary template files or PHP callables from untrusted input;
+- named slots cannot select arbitrary template files or callables from untrusted input;
 - scoped slot values are data and do not become trusted markup automatically.
 
 The contract defines where each slot appears, preventing adapters from placing trusted content in a
@@ -104,7 +90,6 @@ arbitrary tag names from untrusted data.
 
 The following may produce trusted markup after validation:
 
-- the Annabel Razor compiler and renderer;
 - registered CodeMonster UI component renderers;
 - the reviewed internal icon catalog;
 - an explicit application sanitizer integration for a rich-HTML boundary.
@@ -130,7 +115,6 @@ block adapter parity and release.
 
 ## Consequences
 
-- Razor components can compose rendered slots without weakening ordinary escaping.
 - Framework raw-HTML escape hatches remain exceptional and component-specific.
 - Cross-platform fixtures can include hostile values and expect equivalent safe DOM.
 - Trusted markup is explicit in types and review instead of inferred from strings.

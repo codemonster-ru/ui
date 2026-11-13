@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "name": "ColumnChooser",
   "slug": "column-chooser",
-  "razorTag": "cm-column-chooser",
   "description": "A popover of checkboxes that chooses which DataTable columns are shown. It renders the Popover structure and is driven by the Popover controller rather than a mechanism of its own.",
   "props": {
     "id": {

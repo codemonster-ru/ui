@@ -8,10 +8,10 @@ rather than `ui-vue`, because a layout is not a component and the two are worth 
 
 A layout's state is small — a sidebar is collapsed or not, a mobile drawer is open or not — but it
 has to cross a boundary that Vue slot scopes cannot. The VueForge layouts handed every slot a scope
-object holding the state plus five functions to change it; PHP has no equivalent, which is why those
+object holding the state plus five functions to change it; Vanilla templates have no Vue slot scope, which is why those
 layouts were never portable.
 
-So the state is written on the layout root as `data-cm-*` attributes. Both adapters render it, CSS
+So the state is written on the layout root as `data-cm-*` attributes. Vue and Vanilla markup expose it, CSS
 reads it, and a runtime controller flips it. Controls are marked rather than wired:
 `data-cm-mobile-sidebar-toggle` on the button, `data-cm-mobile-sidebar-close` on the backdrop. That
 is the same arrangement Tabs and Accordion already use.
@@ -47,13 +47,7 @@ const items = [{ value: 'dashboard', label: 'Dashboard', href: '/dashboard' }];
 </template>
 ```
 
-```php
-<cm-admin-layout id="workspace">
-  <template #brand>Acme</template>
-  <template #aside><cm-nav-menu :items="$navigation" /></template>
-  Dashboard content
-</cm-admin-layout>
-```
+Vanilla markup: [admin-layout HTML](../../contracts/admin-layout/cases/default.html).
 
 ## AdminShell
 
@@ -81,7 +75,7 @@ before any script runs. Declare `--cm-layout-header-height` for that case;
 `CmShellMetricsController` replaces it with the observed height once a browser is involved.
 
 The collapse control is marked, not supplied. Tag your own button with `data-cm-sidebar-toggle` and
-both adapters keep its `aria-expanded` in step with the root's `data-cm-sidebar-collapsed`.
+both implementations keep its `aria-expanded` in step with the root's `data-cm-sidebar-collapsed`.
 
 ```vue
 <script setup lang="ts">
@@ -102,15 +96,7 @@ const collapsed = ref(false);
 </template>
 ```
 
-```php
-<cm-app-shell layout="sidebar-content" sticky-header>
-    <x-slot name="header">Acme</x-slot>
-    <x-slot name="sidebar">
-        <button type="button" data-cm-sidebar-toggle aria-expanded="true">Collapse</button>
-    </x-slot>
-    Dashboard content
-</cm-app-shell>
-```
+Vanilla markup: [app-shell HTML](../../contracts/app-shell/cases/default.html).
 
 Register both controllers, since the root names both: `app-shell` collapses the sidebar and
 `shell-metrics` measures the sticky regions.
@@ -143,7 +129,7 @@ and actions. Enter advances and Escape goes back.
 The Enter rule is worth knowing, because a wizard that steals the key is worse than one that never
 offered the shortcut. Enter advances from a single-line text field or from ordinary content, and is
 left alone in a textarea, a select, a contenteditable region, and on a button or link that is
-already about to act on it. That rule lives in the shared core, so both adapters agree on where the
+already about to act on it. That rule lives in the shared core, so both implementations agree on where the
 shortcut applies.
 
 ```vue

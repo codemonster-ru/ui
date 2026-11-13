@@ -1,7 +1,7 @@
 # Button
 
 `Button` renders one immediate action as a native button or one explicit navigation action as an
-anchor. Vue and Annabel Razor adapters produce the same significant DOM and consume the shared
+anchor. Vue and Vanilla templates produce the same significant DOM and consume the shared
 `cm-button` CSS contract.
 
 ## CSS
@@ -13,7 +13,7 @@ import '@codemonster-ru/ui-tokens/tokens.css';
 import '@codemonster-ru/ui-css/styles.css';
 ```
 
-PHP-only applications publish the Composer assets, then serve both entry files in this order:
+Vanilla applications load the shared styles in this order:
 
 ```html
 <link rel="stylesheet" href="/vendor/codemonster-ui/css/tokens/tokens.css" />
@@ -69,29 +69,9 @@ Vue forwards native listeners to enabled roots. Disabled native buttons rely on 
 disabled links omit `href`, expose `role="link"` and `aria-disabled="true"`, and suppress the
 consumer click handler.
 
-## Annabel Razor
+## Vanilla HTML
 
-Register the provider once during bootstrap:
-
-```php
-$components = new ComponentRegistry();
-$components->register(new UiComponentProvider());
-```
-
-Use static, expression, and boolean props plus named slots:
-
-```razor
-<cm-button type="submit" variant="primary" :loading="$saving" data-testid="save">
-    <razor-slot name="leading"><span aria-hidden="true">↓</span></razor-slot>
-    Save
-</cm-button>
-
-<cm-button href="/docs" variant="ghost">Documentation</cm-button>
-```
-
-Razor expressions and ordinary slot interpolation remain escaped. Named slots are trusted rendered
-template output; do not convert untrusted props or strings to `RenderedHtml`. `href` is HTML-escaped,
-but applications remain responsible for deciding which URL schemes and destinations are allowed.
+Use the canonical HTML for [button](../../contracts/button/contract.md).
 
 ## Forms and accessibility
 

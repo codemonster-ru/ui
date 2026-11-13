@@ -4,8 +4,6 @@ Status: Active
 
 Component: `Radio`
 
-Razor tag: `cm-radio`
-
 ## Purpose and structure
 
 Radio presents one option in a native same-name radio group. The root is `label.cm-radio` with one
@@ -20,7 +18,7 @@ target the root. The default slot takes precedence over the escaped `label` prop
 
 The contract `checked` state describes whether this option is selected. Vue accepts `modelValue`
 plus this radio's string `value`, derives checked equality, and emits the option value after a native
-change. Annabel Razor receives the server-derived `checked` state. Radio-group exclusivity remains
+change. Vanilla HTML receives the server-derived `checked` state. Radio-group exclusivity remains
 native and depends on consumers assigning the same non-empty `name` to related options.
 
 ## Validation and submission

@@ -5,7 +5,7 @@
   "description": "Machine-readable public API for one CodeMonster UI component.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schemaVersion", "name", "slug", "razorTag", "props", "slots", "events", "states"],
+  "required": ["schemaVersion", "name", "slug", "props", "slots", "events", "states"],
   "properties": {
     "schemaVersion": {
       "const": 1
@@ -16,10 +16,6 @@
     },
     "slug": {
       "$ref": "#/$defs/kebabIdentifier"
-    },
-    "razorTag": {
-      "type": "string",
-      "pattern": "^cm-[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
     },
     "description": {
       "type": "string",

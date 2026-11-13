@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "name": "Textarea",
   "slug": "textarea",
-  "razorTag": "cm-textarea",
   "description": "A native multiline text control with shared sizing and validation presentation.",
   "props": {
     "value": { "type": "string", "required": false, "default": "" },

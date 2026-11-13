@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "name": "Table",
   "slug": "table",
-  "razorTag": "cm-table",
   "description": "A responsive semantic table frame for authored rows and columns.",
   "props": {
     "caption": { "type": "string", "required": false, "default": "" },

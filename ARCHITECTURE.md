@@ -7,8 +7,8 @@ documentation now live in [`codemonster-ru/vueforge`](https://github.com/codemon
 
 ## Repository layout
 
-- `packages/*` — publishable npm packages and the Annabel Razor adapter
-- `examples/*` — local runnable examples for Vue and Annabel Razor
+- `packages/*` — publishable npm packages
+- `examples/*` — local runnable examples for Vue and Vanilla HTML
 - `contracts/*` — component manifests, behavior contracts, schemas, and visual-fixture metadata
 - `docs/*` — product, package, architecture, and release documentation
 - `scripts/*` — build, CI, contract, release, and visual-validation tooling
@@ -32,8 +32,7 @@ Each publishable npm package should keep a consistent shape:
   - `src/**/__tests__/*`
   - `test/*`
 
-The `razor` package follows Composer conventions and keeps its PHP metadata and tests alongside
-the adapter source. Every publishable npm package uses the `ui-*` naming line.
+Every publishable npm package uses the `ui-*` naming line.
 
 ## Naming conventions
 
@@ -56,7 +55,7 @@ Each behavioral component is expected to split three ways:
 - `runtime/src/core/<component>.ts` — the rules: which item is active, where a key moves focus,
   what a set of props reduces to.
 - `runtime/src/<component>.ts` — a `CmController` that reads those rules off the rendered DOM and
-  writes the result back to it, for server-rendered and Annabel Razor pages.
+  writes the result back to it, for Vanilla HTML pages, including server-rendered markup.
 - `vue/src/components/<component>/` — a Vue component that feeds the same rules from its props and
   binds the result declaratively.
 

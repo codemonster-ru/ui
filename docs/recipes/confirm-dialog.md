@@ -77,45 +77,7 @@ Do not reproduce `closeOnConfirm`: awaiting the operation and assigning `open=fa
 makes the policy explicit. Teleport placement and backdrop dismissal are not part of the portable
 Dialog contract.
 
-## Annabel Razor
+## Vanilla HTML
 
-For a normal server submission, render the same policy from application state. The POST handler
-owns authorization, idempotency, the destructive operation, and redirect-or-error behavior:
-
-```razor
-<cm-button variant="danger" id="open-delete-project">Delete project</cm-button>
-
-<cm-dialog
-    id="delete-project"
-    title="Delete project?"
-    description="This action cannot be undone."
-    size="sm"
-    :open="$confirmOpen"
-    :dismissible="!$deleting"
-    :dividers="true"
->
-    @if ($deleteError)
-        <p role="alert">{{ $deleteError }}</p>
-    @endif
-
-    <razor-slot name="footer">
-        <cm-button
-            variant="secondary"
-            :disabled="$deleting"
-            autofocus
-            data-cm-dialog-close
-        >Cancel</cm-button>
-        <form method="post" action="/projects/{{ $project->id }}/delete">
-            <cm-button type="submit" variant="danger" :loading="$deleting">Delete</cm-button>
-        </form>
-    </razor-slot>
-</cm-dialog>
-```
-
-Register `createCmDialogController` as described in [Overlay components](../components/overlays.md).
-The application-owned trigger sends `cm:dialog-open-request`. The built-in
-`data-cm-dialog-close` hook provides Cancel and respects the same dismissal lock. If submission is
-upgraded to `fetch`, the application must set its busy state before the request, prevent duplicate
-submissions, keep `data-cm-dialog-dismissible` and action disabled states synchronized, and send
-`cm:dialog-close-request` only after success. Those workflow transitions deliberately do not live
-in the shared runtime.
+Compose the same layout using the canonical markup for [dialog](../../contracts/dialog/contract.md), [button](../../contracts/button/contract.md).
+Load styles and initialize interactive components as described in the [Vanilla guide](../vanilla.md).
