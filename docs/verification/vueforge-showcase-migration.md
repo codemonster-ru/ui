@@ -3,8 +3,10 @@
 Reference: `fd793696f50d3be0fcd3788f0f8f751c63869963`.
 
 Core, Colors, Layouts, and Icons have separate URLs in both showcases. The two
-implementations share the case inventory and property matrices. Vue mounts the
-current components. Vanilla renders canonical HTML and starts the browser runtime.
+implementations share the case inventory and property matrices. The open Core
+matrices render the same canonical HTML in both showcases. The optional
+**Contract examples** mount Vue components in the Vue showcase and use canonical
+HTML with the browser runtime in Vanilla.
 
 ## Historic features outside the current API
 
@@ -15,10 +17,13 @@ current components. Vanilla renders canonical HTML and starts the browser runtim
 | DatePicker time, multiple dates, ranges, and month or year selection                                   | The current picker accepts a single calendar date and supports limits, clearing, and native form submission.                              |
 | Floating Field labels and the in, on, and over variants                                                | The current Field contract exposes label, description, error, and control relationships.                                                  |
 | DataTable pinned columns, drag reordering, resizing, expandable detail rows, and custom cell renderers | The current examples cover sorting, pagination, selection, visible columns, density, stripes, dividers, and sticky headers.               |
-| Extra Button and IconButton color variants                                                             | The current controls have primary, secondary, danger, and ghost variants. Semantic status colors are demonstrated on feedback components. |
+| Success, info, warn, help, and contrast Button and IconButton variants                                 | The current controls have primary, secondary, danger, and ghost variants. Semantic status colors are demonstrated on feedback components. |
 | ProgressBar custom height and animated stripes                                                         | The current bar has determinate and indeterminate modes, tones, and optional numeric text.                                                |
 | Drawer top and bottom placement                                                                        | The current Drawer supports logical start and end, including full size.                                                                   |
 | VueForge icon registry and theme provider APIs                                                         | The current examples use shared icon geometry and the token theme contract.                                                               |
+
+The historical pills variant for Dropdown, NavMenu, and MenuBar
+has no matching variant in the current APIs.
 
 This inventory describes API differences. It does not certify that every
 historical composition or interaction with an equivalent API has been ported.
@@ -60,3 +65,11 @@ and VueForge logos are used in the layout previews. The region switches use
 showcase styles for options outside the current layout API. Shell previews follow the historical viewport cutoff. Setup retains a 320 px
 preview and shows step progress at narrow widths. AdminShell uses the expanded
 Commerce tree and numbered warehouse pagination.
+
+## Core page structure
+
+The two showcases share the section order and introductory examples. Surface
+recipes appear in Surface Components, loading recipes in Feedback, workspace
+settings in Forms, the team header in Navigation and Disclosure, and deletion
+confirmation in Modals and Commands. The full case inventory remains under
+**Contract examples**.

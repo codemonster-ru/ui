@@ -1,3 +1,4 @@
+import { coreComponentTitle, coreRecipesFor, renderCoreMatrix } from '../../examples/shared/showcase-core-matrix.mts';
 import { layoutSamples, renderLayoutRecipes } from '../../examples/shared/showcase-layout-samples.mts';
 import { renderLayoutPreview } from './render-showcase-layout.mjs';
 import { panels } from '../../examples/shared/showcase-layout-data.mts';
@@ -194,7 +195,7 @@ function renderMatrix(slug, groups, loadingMarkup, iconMarkup) {
           const underline =
             example.underline && example.underline !== 'none' ? ` cm-link--underline-${example.underline}` : '';
           const tone = example.tone === 'muted' ? ' cm-link--muted' : '';
-          return `<a class="cm-link${underline}${tone}" ${example.external ? 'href="https://example.com" target="_blank" rel="noopener noreferrer"' : 'href="./core/#component-link"'}>${text}</a>`;
+          return `<a class="cm-link${underline}${tone}" ${example.external ? 'href="https://example.com" target="_blank" rel="noopener noreferrer"' : 'href="./core/#demo-link"'}>${text}</a>`;
         }
         if (slug === 'icon-button') {
           return iconMarkup
@@ -220,6 +221,7 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
   const { cases, errors } = collectComponentCases(contractsDirectory);
   if (errors.length > 0) throw new Error(errors.join('\n'));
 
+  const caseMarkup = new Map(cases.map(({ id, canonicalHtml }) => [id, canonicalHtml]));
   const components = collectComponentManifests(contractsDirectory);
   const casesByComponent = Map.groupBy(cases, ({ componentSlug }) => componentSlug);
   const groups = JSON.parse(
@@ -249,8 +251,19 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
   )
     throw new Error('Showcase groups must cover every component once.');
 
+  const coreSamples = await readFile(
+    new URL('../../examples/shared/showcase-core-recipes.html', import.meta.url),
+    'utf8',
+  );
+  const themeSwitch = (
+    id,
+    controlled = false,
+  ) => `<fieldset class="cm-theme-switch" id="${id}"${controlled ? ' data-cm-controller="theme-switch"' : ''}><legend class="cm-theme-switch__legend">Theme</legend>
+    ${['light', 'system', 'dark'].map((mode) => `<label class="cm-theme-switch__option"><input class="cm-theme-switch__input" type="radio" name="${id}" value="${mode}"${mode === 'light' ? ' checked' : ''}><span class="cm-theme-switch__label">${mode.charAt(0).toUpperCase() + mode.slice(1)}</span></label>`).join('')}
+  </fieldset>`;
   const sections = new Map(
     groups.map(({ id, title, description, components: slugs }) => {
+      const isCore = id !== 'layouts' && id !== 'icons';
       const shellSlugs = panels.map(({ slug }) => slug);
       const ordered = id === 'layouts' ? [...Object.keys(layoutSamples), ...shellSlugs] : slugs;
       const cards = ordered.map((slug) => {
@@ -265,6 +278,7 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
             'app-shell',
             'document-layout',
             'setup-layout',
+            'button',
             'table',
             'data-table',
           ].includes(slug);
@@ -272,11 +286,14 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
         const composition = panel
           ? renderLayoutPreview(slug, variants.find(({ basename }) => basename === 'default')?.canonicalHtml)
           : '';
-        return `<section ${panel ? `id="demo-${slug}" data-layout-preview="${slug}"` : ''} class="showcase-card showcase-panel${wide ? ' showcase-panel--wide' : ''}" aria-labelledby="component-${slug}">
-        <h3 id="component-${slug}">${escapeHtml(panel?.title ?? manifest.name)}</h3>
+        const matrix = isCore ? renderCoreMatrix(slug, (caseId) => caseMarkup.get(caseId), './avatar.png') : '';
+        return `<section ${panel ? `id="demo-${slug}" data-layout-preview="${slug}"` : isCore ? `id="demo-${slug}"` : ''} class="${isCore ? 'core-component' : 'showcase-card'} showcase-panel${wide ? ' showcase-panel--wide' : ''}" aria-labelledby="component-${slug}">
+        <h3 id="component-${slug}">${escapeHtml(panel?.title ?? (isCore ? coreComponentTitle(slug) : manifest.name))}</h3>
         ${layoutSamples[slug] ?? composition}
-        ${renderMatrix(slug, actionMatrices[slug], loadingMarkup, iconMarkup)}
-        <details class="showcase-contracts"${id !== 'layouts' && id !== 'icons' ? ' open' : ''}><summary>Contract examples</summary><div class="showcase-variants">${expandedExamples(
+        ${slug === 'theme-switch' ? themeSwitch('showcase-theme-example', true) : ''}
+        ${slug === 'button' ? '<div class="core-button-matrix">' : ''}${renderMatrix(slug, actionMatrices[slug], loadingMarkup, iconMarkup)}${slug === 'button' ? '</div>' : ''}
+        ${matrix ? `<div data-core-matrix>${matrix}</div>` : ''}
+        <details class="showcase-contracts"><summary>Contract examples</summary><div class="showcase-variants">${expandedExamples(
           variants,
           icons,
         )
@@ -301,22 +318,17 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
         id,
         `${typeSamples}<section class="showcase-group" id="${id}">
       <header><h2>${escapeHtml(title)}</h2><p>${escapeHtml(description)}</p></header>
-      <div class="showcase-grid">${cards.join('\n')}${id === 'theme' ? themeSamples : ''}</div>
+      <div class="showcase-grid">${coreRecipesFor(coreSamples, id)}${cards.join('\n')}${id === 'theme' ? themeSamples : ''}</div>
     </section>`,
       ];
     }),
   );
 
-  const coreSamples = await readFile(
-    new URL('../../examples/shared/showcase-core-recipes.html', import.meta.url),
-    'utf8',
-  );
   const pages = {
-    core:
-      groups
-        .filter(({ id }) => id !== 'layouts' && id !== 'icons')
-        .map(({ id }) => sections.get(id))
-        .join('\n') + coreSamples,
+    core: groups
+      .filter(({ id }) => id !== 'layouts' && id !== 'icons')
+      .map(({ id }) => sections.get(id))
+      .join('\n'),
     colors: colors + renderColorScales(),
     layouts: sections.get('layouts'),
     icons: sections.get('icons') + renderIconCatalog() + renderOperations(),
@@ -334,13 +346,11 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
       `<header class="showcase-topbar">
     <span class="showcase-brand">CodeMonster UI · Vanilla</span>
     <nav class="showcase-navigation" aria-label="Showcase sections">${navigation}</nav>
-    <fieldset class="cm-theme-switch" id="showcase-theme"><legend class="cm-theme-switch__legend">Theme</legend>
-    ${['light', 'system', 'dark'].map((mode) => `<label class="cm-theme-switch__option"><input class="cm-theme-switch__input" type="radio" name="showcase-theme" value="${mode}"${mode === 'light' ? ' checked' : ''}><span class="cm-theme-switch__label">${mode.charAt(0).toUpperCase() + mode.slice(1)}</span></label>`).join('')}
-    </fieldset>
+    ${themeSwitch('showcase-theme')}
   </header>
   <main class="showcase-content">
     ${
-      current === 'core' || current === 'layouts'
+      current === 'layouts'
         ? `<div class="showcase-filter">
       <label for="showcase-search">Filter components</label>
       <input class="cm-input" type="search" id="showcase-search" />

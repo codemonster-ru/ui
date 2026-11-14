@@ -1,5 +1,5 @@
 import { followShowcaseTheme, saveShowcaseTheme } from './showcase-theme.js';
-import { mountCoreRecipes } from './showcase-core-recipes.js';
+import { mountCoreMatrices, mountCoreRecipes } from './showcase-core-recipes.js';
 import { mountLayoutRecipes } from './showcase-layout-recipes.js';
 import { mountLayoutPreviews } from './showcase-layouts.js';
 import { createRuntime } from './runtime.js';
@@ -12,7 +12,7 @@ mountOperations(catalog);
 mountLayoutPreviews(catalog);
 mountLayoutRecipes(catalog);
 mountCoreRecipes(catalog);
-createRuntime().start(catalog);
+mountCoreMatrices(catalog, createRuntime());
 
 const iconCatalog = document.querySelector('#icon-catalog');
 iconCatalog?.addEventListener('input', filterIcons);
@@ -20,12 +20,19 @@ iconCatalog?.addEventListener('click', copyIcon);
 
 const themeControls = document.querySelector('#showcase-theme');
 const syncThemeControls = (mode) => {
-  themeControls.querySelector(`[value="${mode}"]`).checked = true;
+  for (const input of document.querySelectorAll('#showcase-theme input, #showcase-theme-example input')) {
+    input.checked = input.value === mode;
+  }
 };
 followShowcaseTheme(syncThemeControls);
 themeControls.addEventListener('change', ({ target }) => {
   saveShowcaseTheme(target.value);
   syncThemeControls(target.value);
+});
+
+catalog.addEventListener('cm:theme-change', (event) => {
+  saveShowcaseTheme(event.detail.mode);
+  syncThemeControls(event.detail.mode);
 });
 
 const search = document.querySelector('#showcase-search');
