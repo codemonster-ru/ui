@@ -336,6 +336,7 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
         `${typeSamples}<section class="showcase-group" id="${id}">
       <header><h2>${escapeHtml(title)}</h2><p>${escapeHtml(description)}</p></header>
       <div class="showcase-grid">${coreRecipesFor(coreSamples, id)}${cards.join('\n')}${id === 'theme' ? themeSamples : ''}</div>
+      ${id === 'icons' ? renderIconCatalog() + renderOperations() : ''}
     </section>`,
       ];
     }),
@@ -348,7 +349,7 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
       .join('\n'),
     colors: colors + renderColorScales(),
     layouts: sections.get('layouts'),
-    icons: sections.get('icons') + renderIconCatalog() + renderOperations(),
+    icons: sections.get('icons'),
   };
   const titles = { core: 'Core', colors: 'Colors', layouts: 'Layouts', icons: 'Icons' };
   function renderPage(current, base) {

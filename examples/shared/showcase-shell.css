@@ -1111,6 +1111,10 @@ body {
     justify-self: start;
   }
 
+  .showcase-icon-name {
+    white-space: normal;
+  }
+
   .showcase-icon-table:not(.showcase-icon-table--brands) {
     --showcase-icon-name-width: 12.5rem;
 

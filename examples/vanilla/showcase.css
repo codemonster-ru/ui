@@ -10,7 +10,7 @@
   gap: 1rem;
 }
 
-.showcase-card h3 {
+.showcase-card h3:not(.showcase-icon-intro-heading) {
   margin: 0 0 0.75rem;
 }
 
