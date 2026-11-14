@@ -13,7 +13,7 @@ import {
   rows,
   steps,
   warehouseNavigation,
-  warehouseIcons,
+  layoutNavIcons,
   initialSetupStep,
   warehousePagination,
 } from '../../shared/showcase-layout-data.mts';
@@ -219,7 +219,7 @@ function setMode(kind: 'app' | 'document', value: string) {
               v-model:value="shellNav"
               :items="warehouseNavigation"
               aria-label="Admin shell navigation"
-              :style="warehouseIcons"
+              :style="layoutNavIcons"
           /></template>
           <CmStack>
             <h4>Warehouse availability</h4>
@@ -248,7 +248,7 @@ function setMode(kind: 'app' | 'document', value: string) {
             </div>
           </template>
           <template v-if="width(slug) >= 768" #aside
-            ><CmNavMenu v-model:value="step" :items="steps" aria-label="Installation steps"
+            ><CmNavMenu v-model:value="step" :items="steps" aria-label="Installation steps" :style="layoutNavIcons"
           /></template>
           <label v-if="step === 'license'"><input v-model="acceptedLicense" type="checkbox" /> Accept terms</label>
           <CmStack v-else-if="step === 'database'" class="setup-preview-fields">

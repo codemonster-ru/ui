@@ -1,3 +1,4 @@
+import iconOrder from './showcase-icon-order.json' with { type: 'json' };
 import keywords from './showcase-icon-keywords.json' with { type: 'json' };
 import * as icons from '@codemonster-ru/ui-icons';
 import {
@@ -17,9 +18,22 @@ function swatches(variables: readonly string[], semantic = false) {
 
 export function renderColorScales() {
   const primitives = Object.keys(serializeCmThemeTokensToCssVars(cmPrimitiveColorTokens));
+  const families = new Map<string, string[]>();
+  for (const variable of primitives) {
+    const family = variable.replace(/^--cm-palette-/, '').replace(/-\d+$/, '');
+    const values = families.get(family) ?? [];
+    values.push(variable);
+    families.set(family, values);
+  }
+  const palette = [...families]
+    .map(
+      ([family, values]) =>
+        `<article class="showcase-panel"><h3>${family}</h3><ul class="showcase-palette-scale">${values.map((variable) => `<li><span class="showcase-color-chip" style="background:var(${variable})"></span><span>${variable.split('-').at(-1)}</span></li>`).join('')}</ul></article>`,
+    )
+    .join('');
   const semantics = Object.keys(serializeCmThemeTokensToCssVars(cmSemanticLightColorTokens));
   return `<section class="showcase-group" id="primitive-scales">
-    <header><h2>Primitive scales</h2></header>${swatches(primitives)}
+    <header><h2>Primitive scales</h2></header><div class="showcase-palette-families">${palette}</div>
   </section>
   <section class="showcase-group" id="theme-pairings">
     <header><h2>Light and dark semantic pairings</h2></header>
@@ -113,8 +127,12 @@ function tabSet(id: string, label: string, items: readonly { title: string; pane
 }
 
 export function renderIconCatalog() {
-  const system = icons.cmIconNames.filter((name) => 'classic/regular' in icons[name]);
-  const brands = icons.cmIconNames.filter((name) => !system.includes(name));
+  const order = new Map(iconOrder.map((name, index) => [name, index]));
+  const orderedNames = [...icons.cmIconNames].sort(
+    (left, right) => (order.get(left) ?? iconOrder.length) - (order.get(right) ?? iconOrder.length),
+  );
+  const system = orderedNames.filter((name) => 'classic/regular' in icons[name]);
+  const brands = orderedNames.filter((name) => !system.includes(name));
   const aliases: Record<string, readonly string[]> = keywords;
   function entries(
     names: readonly (typeof icons.cmIconNames)[number][],
@@ -122,7 +140,7 @@ export function renderIconCatalog() {
     variants = icons.cmIconVariants,
   ) {
     return `<div class="showcase-icon-scroll" tabindex="0" aria-label="${family} icon table">
-      <table class="showcase-icon-table"><thead><tr><th scope="col">Icon</th>${variants.map((variant) => `<th scope="col">${variant}</th>`).join('')}</tr></thead><tbody>
+      <table class="showcase-icon-table${variants.length === 1 ? ' showcase-icon-table--brands' : ''}"><thead><tr><th scope="col">Icon</th>${variants.map((variant) => `<th scope="col">${variant}</th>`).join('')}</tr></thead><tbody>
       ${names
         .map((name) => {
           const geometry: icons.CmIconGeometry = icons[name];
@@ -144,9 +162,9 @@ export function renderIconCatalog() {
   }
   return `<section class="showcase-group" id="icon-catalog">
     <header><h2>System and brand icons</h2></header>
-    <label for="icon-catalog-search">Search by name or keyword</label>
-    <input class="cm-input" id="icon-catalog-search" type="search">
-    <p role="status" data-icon-count data-total="${icons.cmIconNames.length}">${icons.cmIconNames.length} of ${icons.cmIconNames.length} icons</p>
+    <div class="showcase-icon-toolbar"><label for="icon-catalog-search">Search by name or keyword</label>
+    <input class="cm-input" id="icon-catalog-search" type="search" placeholder="Search by name or keyword">
+    <p role="status" data-icon-count data-total="${icons.cmIconNames.length}">${icons.cmIconNames.length} of ${icons.cmIconNames.length} icons</p></div>
     <p data-icon-empty hidden>No matching icons.</p>
     <p role="status" data-icon-copy-status></p>
     ${tabSet(

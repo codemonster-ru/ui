@@ -7,7 +7,7 @@ import {
   rows,
   steps,
   warehouseNavigation,
-  warehouseIconStyle,
+  layoutNavIconStyle,
   initialSetupStep,
   warehousePagination,
 } from '../../examples/shared/showcase-layout-data.mts';
@@ -28,7 +28,7 @@ function navigation(items, active, label = 'Main navigation') {
       })
       .join('')}</ul>`;
   }
-  return `<nav class="cm-nav-menu cm-nav-menu--sidebar" aria-label="${label}"${items === warehouseNavigation ? ` style="${warehouseIconStyle}"` : ''} data-cm-controller="nav-menu">${list(items)}</nav>`;
+  return `<nav class="cm-nav-menu cm-nav-menu--sidebar" aria-label="${label}"${items === warehouseNavigation || items === steps ? ` style="${layoutNavIconStyle}"` : ''} data-cm-controller="nav-menu">${list(items)}</nav>`;
 }
 
 function shell(slug) {
