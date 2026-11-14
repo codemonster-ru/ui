@@ -36,7 +36,7 @@ export function renderColorScales() {
     <header><h2>Primitive scales</h2></header><div class="showcase-palette-families">${palette}</div>
   </section>
   <section class="showcase-group" id="theme-pairings">
-    <header><h2>Light and dark semantic pairings</h2></header>
+    <header><h2>Light and dark semantic pairings</h2><p>Both panels use the same roles, but each mode selects materials independently.</p></header>
     <div class="showcase-pairings">${['light', 'dark']
       .map(
         (mode) =>
@@ -73,6 +73,12 @@ function renderThemeControls() {
     ${button('Disabled', 'primary', ' disabled')}</div>
     ${tones.map((tone) => alert(tone, `${tone} status`, 'Separate background, border, and foreground roles.')).join('')}
     <div class="showcase-matrix-row">${tones.map((tone) => `<span class="cm-badge cm-badge--${tone}">${tone}</span> <span class="cm-tag cm-tag--${tone}">${tone}</span>`).join('')}</div>
+    <figure class="showcase-color-code">
+      <figcaption><strong>color-system.ts</strong> <span class="showcase-code-language">Language: ts</span></figcaption>
+      <pre tabindex="0" aria-label="TypeScript color system sample"><code><span class="showcase-code-keyword">type</span> <span class="showcase-code-type">Release</span> = { version: <span class="showcase-code-type">string</span>; stable: <span class="showcase-code-type">boolean</span> };
+<span class="showcase-code-keyword">const</span> release: <span class="showcase-code-type">Release</span> = { version: <span class="showcase-code-string">'2.0.0'</span>, stable: <span class="showcase-code-keyword">true</span> };
+<span class="showcase-code-comment">// Semantic colors stay readable in both themes.</span></code></pre>
+    </figure>
     <div class="showcase-elevation"><div class="showcase-panel"><strong>Elevated surface</strong><p>Backdrop, elevation, border, and text roles resolve inside the scoped theme.</p></div></div>
   </div>`;
 }
@@ -87,7 +93,7 @@ function renderContrastTable() {
     ['Selected strongest state', 'selected-foreground', 'background-surface-selected-active'],
   ];
   return `<section class="showcase-group" id="contrast-matrix">
-    <header><h2>Contrast matrix</h2><p>Ratios use the current theme tokens rendered in sRGB.</p></header>
+    <header><h2>Supported contrast matrix</h2><p>Ratios use the current theme tokens rendered in sRGB.</p></header>
     <div class="cm-table__scroll" tabindex="0" aria-label="Contrast ratios"><table class="cm-table"><thead class="cm-table__head"><tr><th scope="col">Pairing</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
     <tbody>${pairs
       .map(
@@ -112,6 +118,31 @@ function iconSvg(rendering: icons.CmIconRendering, family: string, variant: stri
     .replace(/url\(#([^)]+)\)/g, `url(#${id}-$1)`)
     .replace(/href="#([^"]+)"/g, `href="#${id}-$1"`);
   return `<svg class="cm-icon cm-icon--${family} cm-icon--${variant}" aria-hidden="true" viewBox="${rendering.viewBox}">${body}</svg>`;
+}
+
+export const iconIntro = {
+  description:
+    'Compare classic and duotone icons. Brand marks use their canonical form when a requested weight is unavailable.',
+  samples: [
+    { icon: icons.arrowLeft, label: 'Back', family: 'classic', variant: 'regular' },
+    { icon: icons.gear, label: 'Settings', family: 'classic', variant: 'solid' },
+    { icon: icons.gear, label: 'Settings, duotone', family: 'duotone', variant: 'regular' },
+    { icon: icons.github, label: 'GitHub', family: 'classic', variant: 'thin' },
+  ],
+} as const;
+
+export function renderIconIntro() {
+  return `<p class="showcase-icon-intro-note">${iconIntro.description}</p>
+    <div class="showcase-matrix-row">${iconIntro.samples
+      .map(({ icon, label, family, variant }, index) => {
+        const rendering = icons.resolveCmIcon(icon, family, variant);
+        if (!rendering) throw new Error(`Missing showcase icon: ${label}`);
+        return iconSvg(rendering, family, variant, `icon-intro-${index}`).replace(
+          'aria-hidden="true"',
+          `role="img" aria-label="${label}" focusable="false"`,
+        );
+      })
+      .join('')}</div>`;
 }
 
 function tabSet(id: string, label: string, items: readonly { title: string; panel: string }[]) {
@@ -150,7 +181,7 @@ export function renderIconCatalog() {
             .replaceAll('"', '&quot;')
             .replaceAll('<', '&lt;');
           return `<tr data-icon-name="${name}" data-icon-search="${search}">
-          <th scope="row">${name} ${button('Copy', 'secondary', ` data-copy-icon aria-label="Copy ${name} icon name"`, 'sm')}</th>
+          <th scope="row"><span class="showcase-icon-name">${name} ${button('Copy', 'secondary', ` data-copy-icon aria-label="Copy ${name} icon name"`, 'sm')}</span></th>
           ${variants
             .map((variant) => {
               const rendering = geometry[`${family}/${variant}`];
@@ -161,7 +192,7 @@ export function renderIconCatalog() {
         .join('')}</tbody></table></div>`;
   }
   return `<section class="showcase-group" id="icon-catalog">
-    <header><h2>System and brand icons</h2></header>
+    <header><h2>System and brand icons</h2><p>Find an icon, compare every system weight at 32 px, and copy its catalog name.</p></header>
     <div class="showcase-icon-toolbar"><label for="icon-catalog-search">Search by name or keyword</label>
     <input class="cm-input" id="icon-catalog-search" type="search" placeholder="Search by name or keyword">
     <p role="status" data-icon-count data-total="${icons.cmIconNames.length}">${icons.cmIconNames.length} of ${icons.cmIconNames.length} icons</p></div>
@@ -172,7 +203,7 @@ export function renderIconCatalog() {
       'Icon families',
       icons.cmIconFamilies.map((family) => ({
         title: family === 'classic' ? 'Classic' : 'Duotone',
-        panel: entries(system, family),
+        panel: `<h3>${family === 'classic' ? 'Classic' : 'Duotone'}</h3><p>${family === 'classic' ? 'Original single-color family.' : 'Two-tone icon family.'}</p>${entries(system, family)}`,
       })),
     )}
     <section><h3>Brands</h3>${entries(brands, 'classic', ['solid'])}</section>

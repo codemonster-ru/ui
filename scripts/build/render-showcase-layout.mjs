@@ -75,7 +75,14 @@ function warehouse() {
   </table></div></div>${warehousePagination()}`;
 }
 
-function setup() {
+function setup(enhancedInput) {
+  const reveal = enhancedInput?.match(/<button\b[^>]*\bdata-cm-input-password\b[^>]*>.*?<\/button>/s)?.[0];
+  if (!reveal) throw new Error('Missing password reveal action in enhanced Input case.');
+  const password = `<div class="setup-preview-field"><label for="setup-preview-password">Database password</label>
+    <div class="cm-input-wrap" data-cm-controller="input"><input class="cm-input cm-input--md" id="setup-preview-password"
+      data-preview-field="password" data-cm-input-control type="password" placeholder="Password">
+    ${reveal.replaceAll('Show secret', 'Show password').replaceAll('Hide secret', 'Hide password')}</div></div>`;
+
   const field = (label, key, value = '', type = 'text') =>
     `<label>${label}<input class="cm-input cm-input--md" data-preview-field="${key}" value="${value}" type="${type}"${key === 'host' ? ' aria-describedby="setup-host-help"><small id="setup-host-help">Hostname, socket, or private address.</small>' : '>'}</label>`;
   return `<main class="cm-setup-layout cm-setup-layout--aside-left" data-cm-controller="setup-layout">
@@ -84,14 +91,14 @@ function setup() {
     <header class="cm-setup-layout__header"><div class="cm-setup-layout__heading"><h1 class="cm-setup-layout__title">${steps[1].label}</h1>
     <p class="cm-setup-layout__description">Configure the CMS environment before the first administrator account is created.</p></div></header>
     <section class="cm-setup-layout__main"><div class="cm-setup-layout__body">
-    <label data-preview-step="license" hidden><input type="checkbox"> Accept terms</label><div class="cm-stack setup-preview-fields" data-preview-step="database">${field('Host', 'host', '127.0.0.1')}${field('Port', 'port', '3306')}${field('Database name', 'name', 'annabel')}${field('Database user', 'user', 'annabel_user')}${field('Database password', 'password', '', 'password')}</div>
+    <label data-preview-step="license" hidden><input type="checkbox"> Accept terms</label><div class="cm-stack setup-preview-fields" data-preview-step="database">${field('Host', 'host', '127.0.0.1')}${field('Port', 'port', '3306')}${field('Database name', 'name', 'annabel')}${field('Database user', 'user', 'annabel_user')}${password}</div>
     <div data-preview-step="admin" hidden>${field('Email', 'email', '', 'email')}</div><p data-preview-step="finish" hidden></p><p data-setup-complete role="status" hidden>Setup preview completed.</p></div>
     <div class="cm-setup-layout__actions"><button class="cm-button cm-button--secondary cm-button--md" type="button" data-preview-back>Back</button>
     <button class="cm-button cm-button--primary cm-button--md" type="button" data-preview-next><span class="cm-button__label">Continue</span></button></div>
     </section></div></main>`;
 }
 
-export function renderLayoutPreview(slug, markup) {
+export function renderLayoutPreview(slug, markup, enhancedInput) {
   const sizes = `<fieldset class="layout-preview__sizes"><legend>Preview width</legend>${previews
     .map(
       ({ value, width }) =>
@@ -100,7 +107,7 @@ export function renderLayoutPreview(slug, markup) {
     .join('')}</fieldset>`;
   let content;
   if (slug === 'app-shell' || slug === 'document-layout') content = shell(slug);
-  if (slug === 'setup-layout') content = `<div class="layout-preview__frame">${setup()}</div>`;
+  if (slug === 'setup-layout') content = `<div class="layout-preview__frame">${setup(enhancedInput)}</div>`;
   if (slug === 'admin-layout') {
     const dashboard = `<div class="cm-stack"><div class="layout-preview__toolbar"><strong>Dashboard</strong><button class="cm-button cm-button--primary cm-button--sm" type="button">Create post</button></div>
       <div class="cm-grid">${['Published: 24', 'Drafts: 8', 'Views: 12,480'].map((stat) => `<div class="cm-card"><div class="cm-card__body">${stat}</div></div>`).join('')}</div>

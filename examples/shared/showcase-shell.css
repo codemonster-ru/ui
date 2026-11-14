@@ -295,6 +295,8 @@ body {
 
 #contrast-matrix .cm-table__scroll {
   overflow-x: auto;
+  border: 1px solid var(--cm-color-border-default);
+  border-radius: var(--cm-radius-surface);
 }
 
 .layout-preview__sizes,
@@ -444,6 +446,39 @@ body {
     order: 3;
     flex-basis: 100%;
   }
+}
+
+.showcase-surface-matrix {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--cm-space-3);
+}
+
+@media (width < 768px) {
+  .showcase-surface-matrix {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.showcase-surface-matrix h4,
+.showcase-surface-matrix section p {
+  margin: 0;
+}
+
+.showcase-surface-matrix .cm-table {
+  min-inline-size: 0;
+}
+
+.showcase-panel--subtle {
+  background: var(--cm-color-background-surface-subtle);
+}
+
+.showcase-form-stack {
+  max-inline-size: 24rem;
+}
+
+.showcase-form-stack :is(input, select) {
+  inline-size: 100%;
 }
 
 .showcase-settings-fields {
@@ -690,8 +725,17 @@ body {
   gap: 1.275rem;
 }
 
-#demo-setup-layout .setup-preview-fields label {
+.setup-preview-field {
+  display: grid;
+}
+
+#demo-setup-layout .setup-preview-fields label,
+#demo-setup-layout .setup-preview-field {
   gap: 0.2rem;
+}
+
+.setup-preview-field .cm-input {
+  inline-size: 100%;
 }
 
 #demo-setup-layout .setup-preview-fields small {
@@ -720,19 +764,23 @@ body {
 
   #demo-setup-layout .cm-setup-layout__panel:has(.cm-setup-layout__aside:not([hidden])) .setup-preview-fields {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr) minmax(0, calc(50% - 8rem - 1.275rem)) minmax(6rem, 8rem);
   }
 
   #demo-setup-layout .setup-preview-fields > :first-child {
-    grid-column: span 3;
+    grid-column: span 2;
   }
 
   #demo-setup-layout .setup-preview-fields > :nth-child(3) {
     grid-column: 1 / -1;
   }
 
-  #demo-setup-layout .setup-preview-fields > :nth-child(n + 4) {
-    grid-column: span 2;
+  #demo-setup-layout .setup-preview-fields > :nth-child(4) {
+    grid-column: 1;
+  }
+
+  #demo-setup-layout .setup-preview-fields > :nth-child(5) {
+    grid-column: 2 / -1;
   }
 }
 
@@ -791,12 +839,71 @@ body {
   border-radius: var(--cm-radius-control);
 }
 
+.showcase-color-code {
+  min-inline-size: 0;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--cm-color-border-default);
+  border-radius: var(--cm-radius-surface);
+  background: var(--cm-color-background-surface-subtle);
+  font-family: monospace;
+}
+
+.showcase-color-code :is(figcaption, pre) {
+  padding: var(--cm-space-2) var(--cm-space-3);
+}
+
+.showcase-color-code figcaption {
+  border-block-end: 1px solid var(--cm-color-border-subtle);
+}
+
+.showcase-color-code pre {
+  margin: 0;
+  overflow-x: auto;
+}
+
+.showcase-code-language,
+.showcase-code-comment {
+  color: var(--cm-color-text-muted);
+}
+
+.showcase-code-keyword {
+  color: var(--cm-color-status-help-subtle-foreground);
+}
+
+.showcase-code-type {
+  color: var(--cm-color-status-info-subtle-foreground);
+}
+
+.showcase-code-string {
+  color: var(--cm-color-status-success-subtle-foreground);
+}
+
 #contrast-matrix .cm-table {
+  --contrast-divider: var(--cm-color-border-subtle);
+
   min-inline-size: 0;
 }
 
 #contrast-matrix .cm-table :is(th, td) {
-  padding: var(--cm-space-2);
+  padding: var(--cm-space-3) var(--cm-space-4);
+  text-align: start;
+  border-block-end: 1px solid var(--contrast-divider);
+}
+
+#contrast-matrix tbody tr:last-child > * {
+  border-block-end: 0;
+}
+
+.showcase-icon-intro-heading {
+  font-size: 1.125rem;
+  margin: 0 0 var(--cm-space-1);
+}
+
+.showcase-icon-intro-note {
+  margin-block: 0 var(--cm-space-2);
+  color: var(--cm-color-text-muted);
+  font-size: var(--cm-font-size-sm);
 }
 
 .showcase-icon-scroll {
@@ -840,6 +947,10 @@ body {
   inline-size: var(--showcase-icon-name-width, 35%);
   text-align: start;
   overflow-wrap: anywhere;
+}
+
+.showcase-icon-name {
+  white-space: nowrap;
 }
 
 .showcase-icon-table .cm-icon {
@@ -932,10 +1043,6 @@ body {
   border-radius: var(--cm-radius-control);
 }
 
-#contrast-matrix :is(th, td) {
-  border-block-end: 1px solid var(--cm-color-border-subtle);
-}
-
 #contrast-matrix .cm-table__head th {
   background: var(--cm-color-background-surface-subtle);
 }
@@ -1005,7 +1112,7 @@ body {
   }
 
   .showcase-icon-table:not(.showcase-icon-table--brands) {
-    --showcase-icon-name-width: 11.75rem;
+    --showcase-icon-name-width: 12.5rem;
 
     min-inline-size: 33.75rem;
   }

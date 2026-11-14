@@ -2,17 +2,19 @@ const sizes = ['sm', 'md', 'lg'];
 const variants = ['primary', 'secondary', 'danger', 'ghost'];
 const tones = ['neutral', 'primary', 'success', 'info', 'warning', 'help', 'danger', 'contrast'];
 
-export const actionMatrices = {
-  button: Object.fromEntries([
-    ...sizes.map((size) => [
-      `Variants · ${size}`,
+export const buttonMatrices = {
+  'Variants by size': Object.fromEntries(
+    sizes.map((size) => [
+      size,
       [...variants.map((variant) => ({ label: variant, variant, size })), { label: 'disabled', size, disabled: true }],
     ]),
-    ...sizes.map((size) => [
-      `Loading · ${size}`,
-      variants.map((variant) => ({ label: variant, variant, size, loading: true })),
-    ]),
-  ]),
+  ),
+  'Loading variants by size': Object.fromEntries(
+    sizes.map((size) => [size, variants.map((variant) => ({ label: variant, variant, size, loading: true }))]),
+  ),
+};
+
+export const actionMatrices = {
   'icon-button': Object.fromEntries(
     sizes.map((size) => [
       `Variants · ${size}`,

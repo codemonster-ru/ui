@@ -54,7 +54,14 @@ export function renderCoreMatrix(slug: string, read: (id: string) => string | un
       if (source === undefined) throw new Error(`Missing showcase matrix case: ${id}`);
       const ids = new Set([...source.matchAll(/\bid="([^"]+)"/gu)].map((match) => match[1]));
       const prefix = `matrix-${id}-`;
-      const html = source
+      const closedSource =
+        id === 'dropdown-composed'
+          ? source
+              .replace(' cm-dropdown--open', '')
+              .replace('aria-expanded="true"', 'aria-expanded="false"')
+              .replace('data-cm-controller="menu"', 'data-cm-controller="menu" hidden')
+          : source;
+      const html = closedSource
         .replaceAll('src="/avatar.png"', `src="${avatar}"`)
         .replace(
           /\b(id|name|for|form|list|aria-controls|aria-describedby|aria-labelledby|aria-activedescendant|aria-owns)="([^"]+)"/gu,

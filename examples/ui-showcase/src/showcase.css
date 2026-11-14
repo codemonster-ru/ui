@@ -2,15 +2,3 @@
   font-size: 1.125rem;
   margin: 0 0 0.25rem;
 }
-
-.ui-showcase__note {
-  color: var(--cm-color-text-muted, #666);
-  margin: 0 0 1rem;
-  font-size: 0.875rem;
-}
-
-.ui-showcase__inline {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
