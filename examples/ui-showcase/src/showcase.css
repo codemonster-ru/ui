@@ -1,32 +1,4 @@
-/* The showcase is a working page rather than a styled one: it borrows the design tokens and lets
-   each component supply its own appearance, so nothing here can disguise a component that looks
-   wrong on its own. `foundation.css` (imported in main.ts) already paints `body` from
-   `--cm-color-background-canvas`/`--cm-color-text-primary` and responds to `data-cm-theme`, and
-   `reset.css` already zeroes its margin -- restating any of that here previously used two token
-   names (`--cm-color-surface-default`, `--cm-color-text-default`) that don't exist in this design
-   system, so the fallback colors (#fff/#111) always won regardless of theme. */
-
-.ui-showcase {
-  /* Wide enough that the layout demos (CmAdminLayout, CmAppShell, ...) clear their own 64rem
-     container-query breakpoint and render their desktop form -- narrower than that and their
-     container queries correctly, not incidentally, switch them to the mobile drawer they'd also
-     show in a real narrow window. */
-  margin: 0 auto;
-  max-width: 76rem;
-  padding: 2rem 1.5rem 4rem;
-}
-
-.ui-showcase__intro {
-  margin-bottom: 2.5rem;
-}
-
-.ui-showcase__demo {
-  border-top: 1px solid var(--cm-color-border-subtle, #e5e5e5);
-  padding-top: 1.5rem;
-  margin-bottom: 2.5rem;
-}
-
-.ui-showcase__demo h2 {
+.ui-showcase__demo h3 {
   font-size: 1.125rem;
   margin: 0 0 0.25rem;
 }

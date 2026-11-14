@@ -3,11 +3,19 @@
 A live demonstration of every component in `@codemonster-ru/ui-vue` and every layout in
 `@codemonster-ru/ui-layouts`, rendered by the Vue adapter.
 
-```sh
-npm run dev -w @codemonster-ru/ui-showcase-example
-```
+From the repository root, run `npm ci` once, then use one of these commands:
 
-This showcase was originally created to demonstrate components with no VueForge ancestor, back
-when a separate frozen VueForge showcase (`examples/vue`) also existed in this repository and
-could not show them. VueForge is now sunset and that frozen showcase is gone; this one now covers
-the full component set, not just what VueForge's showcase was missing.
+- `npm run preview` builds the packages and Vue showcase, then opens it at
+  [127.0.0.1:4173](http://127.0.0.1:4173).
+- `npm run dev` starts the Vue showcase with hot reload at
+  [127.0.0.1:5177](http://127.0.0.1:5177).
+- `npm run preview:vanilla` opens the full Vanilla HTML showcase at
+  [127.0.0.1:4174](http://127.0.0.1:4174).
+
+In VS Code, the `preview` entry under `examples/ui-showcase/package.json` also builds and opens
+the full Vue showcase. From that directory, run `npm run preview` to do the same in a terminal.
+
+Both showcases have separate Core, Colors, Layouts, and Icons pages. The Core page includes
+the same Button, IconButton, and Link variant matrices in both integrations. Open **Contract
+examples** on a component card to compare the same cases and supported size, tone, and shape
+variants in Vue and Vanilla.

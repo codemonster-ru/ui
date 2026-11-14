@@ -11,6 +11,7 @@ import '@codemonster-ru/ui-css/fonts.css';
 import '@codemonster-ru/ui-css/styles.css';
 import '@codemonster-ru/ui-utilities/utilities.css';
 import App from './App.vue';
+import '../../shared/showcase-shell.css';
 import './showcase.css';
 
 createApp(App).mount('#app');

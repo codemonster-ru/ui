@@ -1,0 +1,73 @@
+[
+  {
+    "id": "theme",
+    "title": "Theme",
+    "description": "Check components in light, dark, and system themes.",
+    "components": ["theme-switch"]
+  },
+  {
+    "id": "actions",
+    "title": "Actions and Links",
+    "description": "Compare buttons, icon buttons, and links.",
+    "components": ["button", "icon-button", "link"]
+  },
+  {
+    "id": "overlay",
+    "title": "Overlay",
+    "description": "Open floating panels and check their placement and focus.",
+    "components": ["tooltip", "popover", "dropdown"]
+  },
+  {
+    "id": "surfaces",
+    "title": "Surface Components",
+    "description": "Explore content, grouping, and table surfaces.",
+    "components": ["card", "avatar", "badge", "tag", "divider", "fieldset", "table", "data-table", "column-chooser"]
+  },
+  {
+    "id": "feedback",
+    "title": "Feedback",
+    "description": "Compare status, progress, and loading states.",
+    "components": ["alert", "progress-bar", "progress-spinner", "skeleton"]
+  },
+  {
+    "id": "forms",
+    "title": "Forms",
+    "description": "Try input, selection, and validation states.",
+    "components": ["field", "input", "textarea", "select", "date-picker", "checkbox", "radio", "switch"]
+  },
+  {
+    "id": "navigation",
+    "title": "Navigation and Disclosure",
+    "description": "Explore navigation, disclosure, and keyboard interaction.",
+    "components": ["breadcrumbs", "menu", "menu-bar", "nav-menu", "table-of-contents", "stepper", "tabs", "accordion"]
+  },
+  {
+    "id": "modals",
+    "title": "Modals and Commands",
+    "description": "Open each overlay and check keyboard dismissal and focus.",
+    "components": ["dialog", "drawer", "command-palette"]
+  },
+  {
+    "id": "layouts",
+    "title": "Layouts",
+    "description": "Review layout primitives and full-page shells.",
+    "components": [
+      "container",
+      "grid",
+      "inline",
+      "section",
+      "stack",
+      "app-shell",
+      "document-layout",
+      "admin-layout",
+      "admin-shell",
+      "setup-layout"
+    ]
+  },
+  {
+    "id": "icons",
+    "title": "Icons",
+    "description": "Review icon geometry and accessible labels.",
+    "components": ["icon"]
+  }
+]

@@ -1,0 +1,44 @@
+.showcase-filter {
+  display: grid;
+  gap: 0.5rem;
+  max-inline-size: 26rem;
+}
+
+.showcase-catalog,
+.showcase-variants {
+  display: grid;
+  gap: 1rem;
+}
+
+.showcase-card h3 {
+  margin: 0 0 0.75rem;
+}
+
+.showcase-example {
+  scroll-margin-block-start: 1rem;
+}
+
+.showcase-example > h4 {
+  margin: 0;
+}
+
+.showcase-example > p {
+  margin-block: 0.25rem 0;
+  color: var(--cm-color-text-secondary);
+}
+
+.showcase-frame {
+  display: block;
+  inline-size: 100%;
+  block-size: 8rem;
+  min-block-size: 5rem;
+  border: 0;
+}
+
+.showcase-frame--floating {
+  min-block-size: 18rem;
+}
+
+.showcase-frame--tall {
+  block-size: 30rem;
+}
