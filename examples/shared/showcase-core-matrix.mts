@@ -1,3 +1,24 @@
+import { folder, house, resolveCmIcon } from '@codemonster-ru/ui-icons';
+import groups from './showcase-groups.json' with { type: 'json' };
+import { tones } from './showcase-matrices.mts';
+import { renderShowcaseTabs } from './showcase-tabs.mts';
+
+const groupedComponents = new Set(groups.filter(({ matrix }) => matrix).flatMap(({ components }) => components));
+
+const releaseTabs = [
+  'Overview',
+  'API',
+  'Status',
+  'Roadmap',
+  'Examples',
+  'Docs',
+  'Testing',
+  'Releases',
+  'Changelog',
+  'A11y',
+  'Community',
+].map((title) => ({ title, panel: title + ' content.' }));
+
 const examples: Record<string, readonly string[]> = {
   tooltip: ['top', 'bottom', 'start', 'end'],
   popover: ['default', 'composed'],
@@ -11,7 +32,7 @@ const examples: Record<string, readonly string[]> = {
   table: ['default', 'presentation'],
   'data-table': ['default', 'interactive', 'empty'],
   'column-chooser': ['default'],
-  alert: ['default', 'danger-icon'],
+  alert: [...tones, 'without-icon'],
   'progress-bar': ['determinate', 'indeterminate'],
   'progress-spinner': ['default', 'danger-lg'],
   skeleton: ['default', 'static-height'],
@@ -26,10 +47,10 @@ const examples: Record<string, readonly string[]> = {
   breadcrumbs: ['default'],
   menu: ['default'],
   'menu-bar': ['default'],
-  'nav-menu': ['default'],
+  'nav-menu': ['inline', 'sidebar', 'collapsed', 'wrapping-labels'],
   'table-of-contents': ['default', 'pills'],
-  stepper: ['default'],
-  tabs: ['default', 'disabled'],
+  stepper: ['horizontal', 'vertical'],
+  tabs: ['release', 'release-overflow', 'disabled'],
   accordion: ['one-open', 'multiple-open'],
   dialog: ['default'],
   drawer: ['default'],
@@ -39,18 +60,11 @@ const examples: Record<string, readonly string[]> = {
 export function renderCoreMatrix(slug: string, read: (id: string) => string | undefined, avatar: string) {
   const cases = examples[slug];
   if (!cases) return '';
+  const heading = groupedComponents.has(slug) ? 'h5' : 'h4';
   return `<div class="core-example-grid">${cases
     .map((name) => {
       const id = `${slug}-${name}`;
-      const source =
-        slug === 'tooltip'
-          ? read('tooltip-default')?.replace('cm-tooltip--top', `cm-tooltip--${name}`)
-          : slug === 'table-of-contents' && name === 'pills'
-            ? read('table-of-contents-default')?.replace(
-                'class="cm-table-of-contents"',
-                'class="cm-table-of-contents cm-table-of-contents--pills"',
-              )
-            : read(id);
+      const source = coreExampleSource(slug, name, read);
       if (source === undefined) throw new Error(`Missing showcase matrix case: ${id}`);
       const ids = new Set([...source.matchAll(/\bid="([^"]+)"/gu)].map((match) => match[1]));
       const prefix = `matrix-${id}-`;
@@ -75,11 +89,83 @@ export function renderCoreMatrix(slug: string, read: (id: string) => string | un
           ids.has(target) ? `href="#${prefix}${target}"` : match,
         );
       const modal = ['dialog', 'drawer', 'command-palette'].includes(slug);
-      return `<div class="core-example"><h4>${name.replaceAll('-', ' ')}</h4>
+      return `<div class="core-example"><${heading}>${name.replaceAll('-', ' ')}</${heading}>
       ${modal ? `<button type="button" class="cm-button cm-button--secondary cm-button--md" data-matrix-open>Open ${slug.replaceAll('-', ' ')}</button>` : ''}
       ${html}</div>`;
     })
     .join('')}</div>`;
+}
+
+function coreExampleSource(slug: string, name: string, read: (id: string) => string | undefined) {
+  switch (slug) {
+    case 'tooltip':
+      return read('tooltip-default')
+        ?.replace('cm-tooltip--top', `cm-tooltip--${name}`)
+        .replace('aria-label="Save" ', '')
+        .replace('>Save</button>', `>${name}</button>`)
+        .replace('>Save changes</span>', `>Tooltip placement: ${name}</span>`);
+    case 'alert':
+      if (name === 'without-icon') {
+        return read('alert-default')
+          ?.replace('Saved', 'Without icon')
+          .replace('Changes were saved.', 'Text-first alert content alignment.');
+      }
+      return read('alert-danger-icon')
+        ?.replace('cm-alert--danger', `cm-alert--${name}`)
+        .replace('role="alert"', name === 'danger' ? 'role="alert"' : 'role="status"')
+        .replace('Submission failed', `${name} alert`)
+        .replace('Review the failed fields.', 'Consistent icon, border, and content spacing.');
+    case 'tabs':
+      if (name === 'release') return renderShowcaseTabs('release', 'Release overview', releaseTabs.slice(0, 4));
+      if (name === 'release-overflow')
+        return renderShowcaseTabs('release-overflow', 'Release sections', releaseTabs, 2);
+      break;
+    case 'stepper':
+      if (name === 'horizontal') return read('stepper-default');
+      return read('stepper-default')?.replace(
+        'class="cm-stepper"',
+        'class="cm-stepper cm-stepper--vertical cm-stepper--content-inline"',
+      );
+    case 'nav-menu': {
+      const source = read('nav-menu-default');
+      if (name === 'inline') return source?.replace('cm-nav-menu--sidebar', 'cm-nav-menu--inline');
+      if (name === 'wrapping-labels') {
+        return source
+          ?.replace('>Dashboard<', '>Documentation and getting started<')
+          .replace('>Projects<', '>Examples and implementation guides<');
+      }
+      return source
+        ?.replace(
+          'class="cm-nav-menu cm-nav-menu--sidebar"',
+          name === 'collapsed'
+            ? 'class="cm-nav-menu cm-nav-menu--sidebar core-collapsed-nav"'
+            : 'class="cm-nav-menu cm-nav-menu--sidebar"',
+        )
+        .replace(
+          /<span class="cm-nav-menu__label">(Dashboard|Projects|Active|Archived|Docs)<\/span>/gu,
+          (labelMarkup, label: string) => {
+            const icon = resolveCmIcon(label === 'Dashboard' ? house : folder, 'classic', 'regular');
+            return icon
+              ? `<svg class="cm-icon" viewBox="${icon.viewBox}" aria-hidden="true">${icon.body}</svg>${labelMarkup}`
+              : labelMarkup;
+          },
+        )
+        .replace('href="/dashboard"', 'href="/dashboard" aria-label="Dashboard"')
+        .replace('data-cm-nav-menu-branch="projects"', 'data-cm-nav-menu-branch="projects" aria-label="Projects"')
+        .replace(
+          /data-cm-nav-menu-value="(active|archived|docs)"/gu,
+          (match, value: string) => `${match} aria-label="${value[0].toUpperCase() + value.slice(1)}"`,
+        );
+    }
+    case 'table-of-contents':
+      if (name === 'pills')
+        return read('table-of-contents-default')?.replace(
+          'class="cm-table-of-contents"',
+          'class="cm-table-of-contents cm-table-of-contents--pills"',
+        );
+      break;
+  }
+  return read(`${slug}-${name}`);
 }
 
 export function coreRecipesFor(source: string, group: string) {
