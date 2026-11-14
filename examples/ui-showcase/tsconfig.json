@@ -1,7 +1,9 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "types": ["vue"]
+    "allowImportingTsExtensions": true,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["vue", "vite/client"]
   },
   "include": ["src/**/*.ts", "src/**/*.vue", "vite.config.ts", "eslint.config.mjs"]
 }

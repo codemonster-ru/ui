@@ -15,9 +15,14 @@ See the [CodeMonster UI 1.1 release notes](./docs/codemonster-ui-1.1-release-not
 [component documentation](./docs/components/button.md), and
 [CSS-only guide](./docs/css/getting-started.md).
 
-Local runnable examples are available in [`examples/ui-showcase`](./examples/ui-showcase) for Vue
-and [`examples/vanilla`](./examples/vanilla/index.html) for plain HTML. Follow the
-[Vanilla guide](./docs/vanilla.md) to build and serve the browser assets without a consumer bundler.
+## Preview locally
+
+Run `npm ci` from the repository root once. Run `npm run preview` to build and open the Vue
+showcase, or `npm run preview:vanilla` to build and open the full Vanilla HTML showcase. Both
+commands are available under the root `package.json` in the VS Code NPM Scripts panel.
+
+Use `npm run dev` for the Vue showcase with hot reload. See the
+[Vanilla guide](./docs/vanilla.md) for the static assets and template integration.
 
 ## VueForge
 

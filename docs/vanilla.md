@@ -5,9 +5,12 @@ description: 'Serve CodeMonster UI assets directly from server templates'
 
 # Vanilla HTML and JavaScript
 
-Run `npm run build:vanilla` in the library checkout. Serve the contents of
+Run `npm run preview:vanilla` from the repository root to build and open the full Vanilla catalog. Browse Core, Colors, Layouts, and Icons on separate pages. Component variants are interactive within their section. The examples load as you scroll and share the theme selector.
+
+For assets to deploy, run `npm run build:vanilla` and serve the contents of
 `examples/vanilla/dist` over HTTP. Keep the `tokens` and `css` directories intact so
-their relative imports resolve. The included `index.html` demonstrates an interactive accordion.
+their relative imports resolve. Open `index.html` for the catalog or
+`accordion-example.html` for the minimal integration example.
 
 Render the [canonical component HTML](../contracts/README.md) in your templates with unique IDs
 and the initial state. Load the CSS entries and your own module:

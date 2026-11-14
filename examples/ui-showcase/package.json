@@ -6,15 +6,15 @@
   "scripts": {
     "dev": "vite --force",
     "build": "vite build",
-    "preview": "vite preview",
+    "preview": "npm --prefix ../.. run build && npm run build && vite preview --open",
     "lint": "eslint .",
-    "typecheck": "vue-tsc --noEmit",
-    "test": "vitest run --passWithNoTests"
+    "typecheck": "vue-tsc --noEmit"
   },
   "dependencies": {
     "@codemonster-ru/ui-css": "file:../../packages/css",
     "@codemonster-ru/ui-icons": "file:../../packages/icons",
     "@codemonster-ru/ui-layouts": "file:../../packages/layouts",
+    "@codemonster-ru/ui-runtime": "file:../../packages/runtime",
     "@codemonster-ru/ui-tokens": "file:../../packages/tokens",
     "@codemonster-ru/ui-utilities": "file:../../packages/utilities",
     "@codemonster-ru/ui-vue": "file:../../packages/vue",
@@ -25,7 +25,6 @@
     "eslint": "^10.8.0",
     "typescript": "^5.8.2",
     "vite": "^6.4.2",
-    "vitest": "^4.1.11",
     "vue-tsc": "^3.3.8"
   }
 }
