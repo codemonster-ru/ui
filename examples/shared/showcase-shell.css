@@ -610,6 +610,7 @@ body {
 }
 
 .setup-preview-progress progress {
+  appearance: none;
   inline-size: 100%;
   block-size: 0.25rem;
   accent-color: var(--cm-color-interactive-primary-background);
@@ -622,15 +623,15 @@ body {
 }
 
 .cm-admin-shell [data-cm-nav-menu-value='dashboard'] {
-  --warehouse-item-icon: var(--warehouse-icon-dashboard);
+  --warehouse-item-icon: var(--layout-nav-icon-dashboard);
 }
 
 .cm-admin-shell [data-cm-nav-menu-branch='commerce'] {
-  --warehouse-item-icon: var(--warehouse-icon-commerce);
+  --warehouse-item-icon: var(--layout-nav-icon-commerce);
 }
 
 .cm-admin-shell [data-cm-nav-menu-value='settings'] {
-  --warehouse-item-icon: var(--warehouse-icon-settings);
+  --warehouse-item-icon: var(--layout-nav-icon-settings);
 }
 
 .cm-admin-shell
@@ -719,14 +720,19 @@ body {
 
   #demo-setup-layout .cm-setup-layout__panel:has(.cm-setup-layout__aside:not([hidden])) .setup-preview-fields {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
-  #demo-setup-layout
-    .cm-setup-layout__panel:has(.cm-setup-layout__aside:not([hidden]))
-    .setup-preview-fields
-    > :nth-child(3) {
+  #demo-setup-layout .setup-preview-fields > :first-child {
+    grid-column: span 3;
+  }
+
+  #demo-setup-layout .setup-preview-fields > :nth-child(3) {
     grid-column: 1 / -1;
+  }
+
+  #demo-setup-layout .setup-preview-fields > :nth-child(n + 4) {
+    grid-column: span 2;
   }
 }
 
@@ -802,8 +808,15 @@ body {
 .showcase-icon-table {
   inline-size: 100%;
   min-inline-size: 34rem;
+  table-layout: fixed;
   border-collapse: collapse;
   background: var(--cm-color-background-surface);
+}
+
+.showcase-icon-table--brands {
+  --showcase-icon-name-width: 70%;
+
+  min-inline-size: 0;
 }
 
 .showcase-icon-table :is(th, td) {
@@ -812,9 +825,21 @@ body {
   text-align: center;
 }
 
+.showcase-icon-table thead {
+  color: var(--cm-color-text-muted);
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.showcase-icon-table tbody tr {
+  block-size: 4rem;
+}
+
 .showcase-icon-table th:first-child {
+  inline-size: var(--showcase-icon-name-width, 35%);
   text-align: start;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
 .showcase-icon-table .cm-icon {
@@ -882,6 +907,108 @@ body {
 .core-example .cm-menu,
 .core-example .cm-menu-bar {
   max-inline-size: 100%;
+}
+
+.showcase-palette-families {
+  display: grid;
+  gap: var(--cm-space-3);
+}
+
+.showcase-palette-families h3 {
+  text-transform: capitalize;
+}
+
+.showcase-palette-scale {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(3.25rem, 1fr));
+  gap: var(--cm-space-2);
+  padding: 0;
+  list-style: none;
+  font-size: var(--cm-font-size-sm);
+}
+
+.showcase-palette-scale .showcase-color-chip {
+  min-block-size: 3rem;
+  border-radius: var(--cm-radius-control);
+}
+
+#contrast-matrix :is(th, td) {
+  border-block-end: 1px solid var(--cm-color-border-subtle);
+}
+
+#contrast-matrix .cm-table__head th {
+  background: var(--cm-color-background-surface-subtle);
+}
+
+.showcase-icon-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 24rem) 1fr;
+  align-items: end;
+  gap: var(--cm-space-2);
+}
+
+#icon-catalog .showcase-icon-toolbar label {
+  grid-column: 1 / -1;
+}
+
+.showcase-icon-toolbar [data-icon-count] {
+  justify-self: end;
+  margin: 0;
+}
+
+#demo-setup-layout [data-cm-nav-menu-value='license'] {
+  --setup-step-icon: var(--layout-nav-icon-license);
+}
+
+#demo-setup-layout [data-cm-nav-menu-value='database'] {
+  --setup-step-icon: var(--layout-nav-icon-database);
+}
+
+#demo-setup-layout [data-cm-nav-menu-value='admin'] {
+  --setup-step-icon: var(--layout-nav-icon-admin);
+}
+
+#demo-setup-layout [data-cm-nav-menu-value='finish'] {
+  --setup-step-icon: var(--layout-nav-icon-finish);
+}
+
+#demo-setup-layout .cm-setup-layout__aside .cm-nav-menu__item-content::before {
+  flex: none;
+  inline-size: 1rem;
+  block-size: 1rem;
+  background: currentcolor;
+  mask: var(--setup-step-icon) center / contain no-repeat;
+  content: '';
+}
+
+#demo-setup-layout .cm-setup-layout__actions {
+  justify-content: space-between;
+}
+
+.setup-preview-progress progress::-webkit-progress-bar {
+  border-radius: var(--cm-radius-control);
+  background: var(--cm-color-background-surface-disabled);
+}
+
+.setup-preview-progress progress::-webkit-progress-value {
+  border-radius: var(--cm-radius-control);
+  background: var(--cm-color-interactive-primary-background);
+}
+
+@media (width < 480px) {
+  .showcase-icon-toolbar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .showcase-icon-toolbar [data-icon-count] {
+    justify-self: start;
+  }
+
+  .showcase-icon-table:not(.showcase-icon-table--brands) {
+    --showcase-icon-name-width: 11.75rem;
+
+    min-inline-size: 33.75rem;
+  }
 }
 
 .core-example input:not([type='checkbox'], [type='radio']) {

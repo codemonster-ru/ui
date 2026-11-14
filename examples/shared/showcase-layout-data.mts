@@ -1,4 +1,4 @@
-import { file, gear, grid } from '@codemonster-ru/ui-icons';
+import { checkCircle, database, file, fileText, gear, grid, user } from '@codemonster-ru/ui-icons';
 import { cmBreakpoints } from '@codemonster-ru/ui-tokens';
 
 export const previews = [['min', 320], ...Object.entries(cmBreakpoints)].map(([value, width]) => ({
@@ -62,14 +62,22 @@ export const steps = [
 ];
 export const initialSetupStep = 'database';
 
-export const warehouseIcons = Object.fromEntries(
-  Object.entries({ dashboard: grid, commerce: file, settings: gear }).map(([name, icon]) => {
+export const layoutNavIcons = Object.fromEntries(
+  Object.entries({
+    dashboard: grid,
+    commerce: file,
+    settings: gear,
+    license: fileText,
+    database,
+    admin: user,
+    finish: checkCircle,
+  }).map(([name, icon]) => {
     const { viewBox, body } = icon['classic/regular'];
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${body}</svg>`;
-    return [`--warehouse-icon-${name}`, `url('data:image/svg+xml,${encodeURIComponent(svg)}')`];
+    return [`--layout-nav-icon-${name}`, `url('data:image/svg+xml,${encodeURIComponent(svg)}')`];
   }),
 );
-export const warehouseIconStyle = Object.entries(warehouseIcons)
+export const layoutNavIconStyle = Object.entries(layoutNavIcons)
   .map(([key, value]) => `${key}:${value}`)
   .join(';');
 

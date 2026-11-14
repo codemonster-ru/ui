@@ -73,3 +73,10 @@ recipes appear in Surface Components, loading recipes in Feedback, workspace
 settings in Forms, the team header in Navigation and Disclosure, and deletion
 confirmation in Modals and Commands. The full case inventory remains under
 **Contract examples**.
+
+## Colors, Layouts, and Icons details
+
+Primitive colors are grouped by palette family. Setup uses the historical
+step icons, a narrower Port field on wide previews, and a compact progress
+bar on mobile. The icon tables follow the historical catalog order and
+scroll inside the page at narrow widths. Color ratios use current tokens.
