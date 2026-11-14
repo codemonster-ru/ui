@@ -34,6 +34,7 @@ await Promise.all([
   cp(resolve(source, 'showcase-layouts.js'), resolve(output, 'showcase-layouts.js')),
   cp(resolve(root, 'examples/shared/showcase-core-recipes.js'), resolve(output, 'showcase-core-recipes.js')),
   cp(resolve(source, 'showcase.js'), resolve(output, 'showcase.js')),
+  cp(resolve(root, 'examples/shared/showcase-theme.js'), resolve(output, 'showcase-theme.js')),
   cp(resolve(source, 'showcase-demo.js'), resolve(output, 'showcase-demo.js')),
   buildVanillaShowcase(resolve(root, 'contracts'), output),
 ]);

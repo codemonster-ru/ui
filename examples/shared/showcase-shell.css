@@ -289,11 +289,6 @@ body {
   overflow-x: auto;
 }
 
-#icon-catalog .showcase-matrix-row .cm-icon {
-  inline-size: 2rem;
-  block-size: 2rem;
-}
-
 #contrast-matrix {
   grid-template-columns: minmax(0, 1fr);
 }
@@ -770,4 +765,92 @@ body {
   #demo-setup-layout:dir(rtl):has(.layout-preview__sizes :is([value='xl'], [value='2xl']):checked) .layout-preview {
     translate: 50% 0;
   }
+}
+
+#demo-setup-layout .cm-setup-layout__aside .cm-nav-menu__label {
+  display: inline;
+}
+
+#demo-setup-layout .cm-setup-layout__aside .cm-nav-menu__item {
+  justify-content: flex-start;
+  min-block-size: 2rem;
+}
+
+.showcase-semantic-swatches {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  font-size: var(--cm-font-size-sm);
+}
+
+.showcase-semantic-swatches .showcase-color-chip {
+  border-radius: var(--cm-radius-control);
+}
+
+#contrast-matrix .cm-table {
+  min-inline-size: 0;
+}
+
+#contrast-matrix .cm-table :is(th, td) {
+  padding: var(--cm-space-2);
+}
+
+.showcase-icon-scroll {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  overflow-x: auto;
+}
+
+.showcase-icon-table {
+  inline-size: 100%;
+  min-inline-size: 34rem;
+  border-collapse: collapse;
+  background: var(--cm-color-background-surface);
+}
+
+.showcase-icon-table :is(th, td) {
+  padding: var(--cm-space-2) var(--cm-space-3);
+  border: 1px solid var(--cm-color-border-subtle);
+  text-align: center;
+}
+
+.showcase-icon-table th:first-child {
+  text-align: start;
+  white-space: nowrap;
+}
+
+.showcase-icon-table .cm-icon {
+  inline-size: 2rem;
+  block-size: 2rem;
+}
+
+@media (width < 480px) {
+  .showcase-semantic-swatches {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.showcase-content:has(#core-recipes) .showcase-contracts .showcase-variants {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: var(--cm-space-3);
+}
+
+#demo-admin-shell [data-cm-nav-menu-branch='commerce'][aria-expanded='true'] {
+  color: var(--cm-color-selected-foreground);
+  background: var(--cm-color-background-surface-selected);
+}
+
+#demo-admin-shell .cm-nav-menu__list--nested {
+  margin-inline-start: var(--cm-space-3);
+  border-inline-start: 1px solid var(--cm-color-border-interactive);
+}
+
+#demo-admin-shell .warehouse-pagination {
+  padding: var(--cm-space-1) var(--cm-space-2);
+  border: 1px solid var(--cm-color-border-subtle);
+  border-radius: var(--cm-radius-control);
+}
+
+#icons,
+#icon-catalog {
+  grid-template-columns: minmax(0, 1fr);
 }

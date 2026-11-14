@@ -6,11 +6,11 @@ import {
   serializeCmThemeTokensToCssVars,
 } from '@codemonster-ru/ui-tokens';
 
-function swatches(variables: readonly string[]) {
-  return `<ul class="showcase-samples">${variables
+function swatches(variables: readonly string[], semantic = false) {
+  return `<ul class="showcase-samples${semantic ? ' showcase-semantic-swatches' : ''}">${variables
     .map(
       (variable) =>
-        `<li><span class="showcase-color-chip" style="background:var(${variable})"></span><code>${variable}</code></li>`,
+        `<li><span class="showcase-color-chip" style="background:var(${variable})"></span>${semantic ? `<span>${variable.slice('--cm-color-'.length).replace(/(^|-)([a-z])/g, (_, separator: string, letter: string) => (separator ? ' ' : '') + letter.toUpperCase())}</span>` : `<code>${variable}</code>`}</li>`,
     )
     .join('')}</ul>`;
 }
@@ -26,7 +26,7 @@ export function renderColorScales() {
     <div class="showcase-pairings">${['light', 'dark']
       .map(
         (mode) =>
-          `<article class="showcase-panel" data-cm-theme="${mode}"><h3>${mode}</h3>${renderThemeControls()}${swatches(semantics)}</article>`,
+          `<article class="showcase-panel" data-cm-theme="${mode}"><h3>${mode === 'light' ? 'Light' : 'Dark'}</h3>${swatches(semantics, true)}${renderThemeControls()}</article>`,
       )
       .join('')}</div>
   </section>${renderContrastTable()}`;
@@ -116,33 +116,38 @@ export function renderIconCatalog() {
   const system = icons.cmIconNames.filter((name) => 'classic/regular' in icons[name]);
   const brands = icons.cmIconNames.filter((name) => !system.includes(name));
   const aliases: Record<string, readonly string[]> = keywords;
-  function entries(names: readonly (typeof icons.cmIconNames)[number][], family: icons.CmIconFamily) {
-    return `<div class="showcase-samples">${names
-      .map((name) => {
-        const geometry: icons.CmIconGeometry = icons[name];
-        const search = [name.replace(/([a-z])([A-Z])/g, '$1 $2'), ...(aliases[name] ?? [])]
-          .join(' ')
-          .replaceAll('&', '&amp;')
-          .replaceAll('"', '&quot;')
-          .replaceAll('<', '&lt;');
-        const samples = icons.cmIconVariants
-          .filter((variant) => geometry[`${family}/${variant}`])
-          .map(
-            (variant) =>
-              `<span title="${variant}">${iconSvg(geometry[`${family}/${variant}`], family, variant, `catalog-${name}-${family}-${variant}`)} <small>${variant}</small></span>`,
-          )
-          .join('');
-        return `<article class="showcase-panel showcase-icon-entry" data-icon-name="${name}" data-icon-search="${search}">
-        <h3>${name}</h3>${button('Copy', 'ghost', ` data-copy-icon aria-label="Copy ${name} icon name"`, 'sm')}
-        <div class="showcase-matrix-row">${samples}</div></article>`;
-      })
-      .join('')}</div>`;
+  function entries(
+    names: readonly (typeof icons.cmIconNames)[number][],
+    family: icons.CmIconFamily,
+    variants = icons.cmIconVariants,
+  ) {
+    return `<div class="showcase-icon-scroll" tabindex="0" aria-label="${family} icon table">
+      <table class="showcase-icon-table"><thead><tr><th scope="col">Icon</th>${variants.map((variant) => `<th scope="col">${variant}</th>`).join('')}</tr></thead><tbody>
+      ${names
+        .map((name) => {
+          const geometry: icons.CmIconGeometry = icons[name];
+          const search = [name.replace(/([a-z])([A-Z])/g, '$1 $2'), ...(aliases[name] ?? [])]
+            .join(' ')
+            .replaceAll('&', '&amp;')
+            .replaceAll('"', '&quot;')
+            .replaceAll('<', '&lt;');
+          return `<tr data-icon-name="${name}" data-icon-search="${search}">
+          <th scope="row">${name} ${button('Copy', 'secondary', ` data-copy-icon aria-label="Copy ${name} icon name"`, 'sm')}</th>
+          ${variants
+            .map((variant) => {
+              const rendering = geometry[`${family}/${variant}`];
+              return `<td>${rendering ? iconSvg(rendering, family, variant, `catalog-${name}-${family}-${variant}`) : '—'}</td>`;
+            })
+            .join('')}</tr>`;
+        })
+        .join('')}</tbody></table></div>`;
   }
   return `<section class="showcase-group" id="icon-catalog">
     <header><h2>System and brand icons</h2></header>
     <label for="icon-catalog-search">Search by name or keyword</label>
     <input class="cm-input" id="icon-catalog-search" type="search">
-    <p role="status" data-icon-empty hidden>No matching icons.</p>
+    <p role="status" data-icon-count data-total="${icons.cmIconNames.length}">${icons.cmIconNames.length} of ${icons.cmIconNames.length} icons</p>
+    <p data-icon-empty hidden>No matching icons.</p>
     <p role="status" data-icon-copy-status></p>
     ${tabSet(
       'catalog',
@@ -152,7 +157,7 @@ export function renderIconCatalog() {
         panel: entries(system, family),
       })),
     )}
-    <section><h3>Brands</h3>${entries(brands, 'classic')}</section>
+    <section><h3>Brands</h3>${entries(brands, 'classic', ['solid'])}</section>
   </section>`;
 }
 

@@ -276,7 +276,7 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
         <h3 id="component-${slug}">${escapeHtml(panel?.title ?? manifest.name)}</h3>
         ${layoutSamples[slug] ?? composition}
         ${renderMatrix(slug, actionMatrices[slug], loadingMarkup, iconMarkup)}
-        <details class="showcase-contracts"><summary>Contract examples</summary><div class="showcase-variants">${expandedExamples(
+        <details class="showcase-contracts"${id !== 'layouts' && id !== 'icons' ? ' open' : ''}><summary>Contract examples</summary><div class="showcase-variants">${expandedExamples(
           variants,
           icons,
         )

@@ -2,6 +2,7 @@
 import { showcaseCaseVariants } from '../../shared/showcase-matrices.mts';
 
 defineProps<{ slug: string }>();
+const openByDefault = /^\/(?:core\/?|$)/u.test(location.pathname);
 
 interface Example {
   id: string;
@@ -27,12 +28,14 @@ const cases = Object.entries(
 </script>
 
 <template>
-  <details class="showcase-contracts">
+  <details class="showcase-contracts" :open="openByDefault">
     <summary>Contract examples</summary>
-    <article v-for="example in cases.filter((example) => example.slug === slug)" :key="example.id">
-      <h4>{{ example.basename.replaceAll('-', ' ') }}</h4>
-      <p v-if="example.description">{{ example.description }}</p>
-      <iframe :title="example.id" loading="lazy" :src="`/case.html?${example.query}`" />
-    </article>
+    <div class="showcase-variants">
+      <article v-for="example in cases.filter((example) => example.slug === slug)" :key="example.id">
+        <h4>{{ example.basename.replaceAll('-', ' ') }}</h4>
+        <p v-if="example.description">{{ example.description }}</p>
+        <iframe :title="example.id" loading="lazy" :src="`/case.html?${example.query}`" />
+      </article>
+    </div>
   </details>
 </template>

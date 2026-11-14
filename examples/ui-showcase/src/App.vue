@@ -12,11 +12,11 @@ import { renderColorScales, renderIconCatalog, renderOperations } from '../../sh
 import { actionMatrices } from '../../shared/showcase-matrices.mts';
 import type { CmButtonProps, CmIconButtonProps, CmLinkProps } from '@codemonster-ru/ui-vue';
 import typography from '../../shared/showcase-typography.html?raw';
-import { onMounted, onUnmounted, ref, watchEffect } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { CmRuntime, createCmTabsController } from '@codemonster-ru/ui-runtime';
 import { fillContrastTable, mountOperations } from '../../shared/showcase-reference.js';
 import { alertCircle, arrowLeft, gear, github, infoCircle } from '@codemonster-ru/ui-icons';
-import type { CmThemeMode } from '@codemonster-ru/ui-runtime/core';
+import { followShowcaseTheme, saveShowcaseTheme, readShowcaseTheme } from '../../shared/showcase-theme.js';
 import LayoutShowcase from './LayoutShowcase.vue';
 import {
   CmAccordion,
@@ -103,12 +103,14 @@ const linkExamples = actionMatrices.link as Record<
 
 const iconButtonExamples = actionMatrices['icon-button'] as Record<string, CmIconButtonProps[]>;
 
-const storedTheme = localStorage.getItem('cm-showcase-theme');
-const themeMode = ref<CmThemeMode>(storedTheme === 'dark' || storedTheme === 'system' ? storedTheme : 'light');
-watchEffect(() => {
-  document.documentElement.dataset.cmTheme = themeMode.value;
-  localStorage.setItem('cm-showcase-theme', themeMode.value);
+const themeMode = ref(readShowcaseTheme());
+let stopTheme: (() => void) | undefined;
+onMounted(() => {
+  stopTheme = followShowcaseTheme((mode) => {
+    themeMode.value = mode;
+  });
 });
+onUnmounted(() => stopTheme?.());
 
 const accordionItems = [
   { id: 'overview', title: 'Overview', content: 'A short summary of the project.' },
@@ -222,7 +224,7 @@ const tableOfContentsItems = [
         >{{ page.label }}</a
       >
     </nav>
-    <CmThemeSwitch v-model="themeMode" name="showcase-theme" />
+    <CmThemeSwitch v-model="themeMode" @theme-change="saveShowcaseTheme" name="showcase-theme" />
   </header>
   <main class="showcase-content">
     <template v-if="currentPage === 'core'">
@@ -239,7 +241,7 @@ const tableOfContentsItems = [
               Native radios carry the semantics, so it works inside a form with no JavaScript. The choice is written to
               the document root and to a cookie the server reads, which is what lets the first paint already be right.
             </p>
-            <CmThemeSwitch v-model="themeMode" />
+            <CmThemeSwitch v-model="themeMode" @theme-change="saveShowcaseTheme" />
             <ContractExamples slug="theme-switch" />
           </section>
           <!-- eslint-disable-next-line vue/no-v-html -- Static showcase markup bundled from the repository. -->
@@ -511,8 +513,8 @@ const tableOfContentsItems = [
             <h3>Skeleton</h3>
             <p class="ui-showcase__note">A loading placeholder shaped like the content it stands in for.</p>
             <CmStack>
-              <CmSkeleton min-height="1rem" />
-              <CmSkeleton min-height="1rem" style="inline-size: 60%" />
+              <CmSkeleton style="block-size: 1rem" />
+              <CmSkeleton style="block-size: 1rem; inline-size: 60%" />
             </CmStack>
             <ContractExamples slug="skeleton" />
           </section>

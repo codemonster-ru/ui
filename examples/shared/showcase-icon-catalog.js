@@ -3,16 +3,18 @@ export function filterIcons({ target }) {
   if (!(target instanceof HTMLInputElement) || target.id !== 'icon-catalog-search') return;
   const catalog = target.closest('#icon-catalog');
   const query = target.value.trim().toLowerCase();
-  let matches = 0;
+  const matches = new Set();
 
   for (const entry of catalog.querySelectorAll('[data-icon-name]')) {
     entry.hidden = !query
       .split(/\s+/u)
       .every((term) => `${entry.dataset.iconName} ${entry.dataset.iconSearch}`.toLowerCase().includes(term));
-    if (!entry.hidden) matches += 1;
+    if (!entry.hidden) matches.add(entry.dataset.iconName);
   }
 
-  catalog.querySelector('[data-icon-empty]').hidden = matches > 0;
+  const count = catalog.querySelector('[data-icon-count]');
+  count.textContent = `${matches.size} of ${count.dataset.total} icons`;
+  catalog.querySelector('[data-icon-empty]').hidden = matches.size > 0;
 }
 
 /** @param {Event} event */
