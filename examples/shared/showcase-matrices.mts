@@ -1,6 +1,6 @@
 const sizes = ['sm', 'md', 'lg'];
 const variants = ['primary', 'secondary', 'danger', 'ghost'];
-const tones = ['neutral', 'primary', 'success', 'info', 'warning', 'help', 'danger', 'contrast'];
+export const tones = ['neutral', 'primary', 'success', 'info', 'warning', 'help', 'danger', 'contrast'];
 
 export const buttonMatrices = {
   'Variants by size': Object.fromEntries(

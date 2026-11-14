@@ -1,3 +1,4 @@
+import { renderShowcaseTabs } from './showcase-tabs.mts';
 import iconOrder from './showcase-icon-order.json' with { type: 'json' };
 import keywords from './showcase-icon-keywords.json' with { type: 'json' };
 import * as icons from '@codemonster-ru/ui-icons';
@@ -145,18 +146,6 @@ export function renderIconIntro() {
       .join('')}</div>`;
 }
 
-function tabSet(id: string, label: string, items: readonly { title: string; panel: string }[]) {
-  return `<div class="cm-tabs" data-cm-controller="tabs">
-    <div class="cm-tabs__list" role="tablist" aria-label="${label}">${items
-      .map(
-        ({ title }, index) =>
-          `<button class="cm-tabs__tab" id="${id}-tab-item-${index}" type="button" role="tab" aria-controls="${id}-panel-item-${index}" aria-selected="${index === 0}" tabindex="${index ? '-1' : '0'}">${title}</button>`,
-      )
-      .join('')}</div>
-    ${items.map(({ panel }, index) => `<div class="cm-tabs__panel" id="${id}-panel-item-${index}" role="tabpanel" aria-labelledby="${id}-tab-item-${index}" tabindex="0"${index ? ' hidden' : ''}>${panel}</div>`).join('')}
-  </div>`;
-}
-
 export function renderIconCatalog() {
   const order = new Map(iconOrder.map((name, index) => [name, index]));
   const orderedNames = [...icons.cmIconNames].sort(
@@ -198,7 +187,7 @@ export function renderIconCatalog() {
     <p role="status" data-icon-count data-total="${icons.cmIconNames.length}">${icons.cmIconNames.length} of ${icons.cmIconNames.length} icons</p></div>
     <p data-icon-empty hidden>No matching icons.</p>
     <p role="status" data-icon-copy-status></p>
-    ${tabSet(
+    ${renderShowcaseTabs(
       'catalog',
       'Icon families',
       icons.cmIconFamilies.map((family) => ({
@@ -264,7 +253,7 @@ export function renderOperations() {
             </nav><p>${symbol('user', 'user')} Ada Lovelace</p></aside>
             <div class="cm-app-shell__content showcase-reference-controls">
               <div class="showcase-matrix-row"><h4 data-operation-heading>Operations overview</h4>${command('Download report', 'download')}</div>
-              ${tabSet(id, 'Operations views', [
+              ${renderShowcaseTabs(id, 'Operations views', [
                 {
                   title: `${symbol('grid', 'tab-overview')} Overview`,
                   panel: `<div class="showcase-operation-metrics">
