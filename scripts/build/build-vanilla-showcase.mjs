@@ -1,3 +1,6 @@
+import { layoutSamples, renderLayoutRecipes } from '../../examples/shared/showcase-layout-samples.mts';
+import { renderLayoutPreview } from './render-showcase-layout.mjs';
+import { panels } from '../../examples/shared/showcase-layout-data.mts';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { renderColorScales, renderIconCatalog, renderOperations } from '../../examples/shared/showcase-reference.mts';
@@ -248,21 +251,30 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
 
   const sections = new Map(
     groups.map(({ id, title, description, components: slugs }) => {
-      const cards = slugs.map((slug) => {
+      const shellSlugs = panels.map(({ slug }) => slug);
+      const ordered = id === 'layouts' ? [...Object.keys(layoutSamples), ...shellSlugs] : slugs;
+      const cards = ordered.map((slug) => {
         const manifest = bySlug.get(slug);
         const variants = casesByComponent.get(slug);
         if (!variants?.length) throw new Error(`Missing Vanilla showcase cases for ${slug}.`);
-        const wide = [
-          'admin-layout',
-          'admin-shell',
-          'app-shell',
-          'document-layout',
-          'setup-layout',
-          'table',
-          'data-table',
-        ].includes(slug);
-        return `<section class="showcase-card showcase-panel${wide ? ' showcase-panel--wide' : ''}" aria-labelledby="component-${slug}">
-        <h3 id="component-${slug}">${escapeHtml(manifest.name)}</h3>
+        const wide =
+          slug in layoutSamples ||
+          [
+            'admin-layout',
+            'admin-shell',
+            'app-shell',
+            'document-layout',
+            'setup-layout',
+            'table',
+            'data-table',
+          ].includes(slug);
+        const panel = panels.find((panel) => panel.slug === slug);
+        const composition = panel
+          ? renderLayoutPreview(slug, variants.find(({ basename }) => basename === 'default')?.canonicalHtml)
+          : '';
+        return `<section ${panel ? `id="demo-${slug}" data-layout-preview="${slug}"` : ''} class="showcase-card showcase-panel${wide ? ' showcase-panel--wide' : ''}" aria-labelledby="component-${slug}">
+        <h3 id="component-${slug}">${escapeHtml(panel?.title ?? manifest.name)}</h3>
+        ${layoutSamples[slug] ?? composition}
         ${renderMatrix(slug, actionMatrices[slug], loadingMarkup, iconMarkup)}
         <details class="showcase-contracts"><summary>Contract examples</summary><div class="showcase-variants">${expandedExamples(
           variants,
@@ -272,6 +284,12 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
           .join('\n')}</div></details>
       </section>`;
       });
+      if (id === 'layouts')
+        cards.splice(
+          Object.keys(layoutSamples).length,
+          0,
+          renderLayoutRecipes().replace('/vueforge-logo-icon.svg', './vueforge-logo-icon.svg'),
+        );
       const typeSamples =
         id === 'actions'
           ? `<section id="typography" class="showcase-group">
@@ -289,11 +307,16 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
     }),
   );
 
+  const coreSamples = await readFile(
+    new URL('../../examples/shared/showcase-core-recipes.html', import.meta.url),
+    'utf8',
+  );
   const pages = {
-    core: groups
-      .filter(({ id }) => id !== 'layouts' && id !== 'icons')
-      .map(({ id }) => sections.get(id))
-      .join('\n'),
+    core:
+      groups
+        .filter(({ id }) => id !== 'layouts' && id !== 'icons')
+        .map(({ id }) => sections.get(id))
+        .join('\n') + coreSamples,
     colors: colors + renderColorScales(),
     layouts: sections.get('layouts'),
     icons: sections.get('icons') + renderIconCatalog() + renderOperations(),
@@ -311,7 +334,9 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
       `<header class="showcase-topbar">
     <span class="showcase-brand">CodeMonster UI · Vanilla</span>
     <nav class="showcase-navigation" aria-label="Showcase sections">${navigation}</nav>
-    <button class="cm-button cm-button--secondary cm-button--md" type="button" id="showcase-theme" aria-pressed="false">Dark theme</button>
+    <fieldset class="cm-theme-switch" id="showcase-theme"><legend class="cm-theme-switch__legend">Theme</legend>
+    ${['light', 'system', 'dark'].map((mode) => `<label class="cm-theme-switch__option"><input class="cm-theme-switch__input" type="radio" name="showcase-theme" value="${mode}"${mode === 'light' ? ' checked' : ''}><span class="cm-theme-switch__label">${mode.charAt(0).toUpperCase() + mode.slice(1)}</span></label>`).join('')}
+    </fieldset>
   </header>
   <main class="showcase-content">
     ${

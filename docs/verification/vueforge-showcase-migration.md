@@ -45,3 +45,18 @@ Search, status filtering and pagination work on the demo data. Commands such
 as download and delete report the selected action in the preview.
 The Colors comparison uses supported control variants and current token
 pairings. Its contrast ratios are rounded from browser-rendered sRGB colors.
+
+## Layout and composition previews
+
+Layouts shows the primitive samples, responsive token values, sign-in and error
+recipes, and five shell compositions in both adapters. The shell previews
+offer widths from 320 px through 1536 px. The warehouse shows seven rows with
+working pagination. The setup preview preserves entered values between steps.
+
+Core includes recipes for panels, collapsible invoice details, loading and
+ready states, responsive settings, a page header, and deletion confirmation.
+Sign-in and deletion operate on demonstration state. The historical Annabel
+and VueForge logos are used in the layout previews. The region switches use
+showcase styles for options outside the current layout API. Shell previews follow the historical viewport cutoff. Setup retains a 320 px
+preview and shows step progress at narrow widths. AdminShell uses the expanded
+Commerce tree and numbered warehouse pagination.

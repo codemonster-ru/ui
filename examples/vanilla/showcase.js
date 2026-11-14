@@ -1,3 +1,6 @@
+import { mountCoreRecipes } from './showcase-core-recipes.js';
+import { mountLayoutRecipes } from './showcase-layout-recipes.js';
+import { mountLayoutPreviews } from './showcase-layouts.js';
 import { createRuntime } from './runtime.js';
 import { fillContrastTable, mountOperations } from './showcase-reference.js';
 import { copyIcon, filterIcons } from './showcase-icon-catalog.js';
@@ -5,35 +8,31 @@ import { copyIcon, filterIcons } from './showcase-icon-catalog.js';
 const catalog = document.querySelector('.showcase-catalog');
 fillContrastTable(catalog);
 mountOperations(catalog);
+mountLayoutPreviews(catalog);
+mountLayoutRecipes(catalog);
+mountCoreRecipes(catalog);
 createRuntime().start(catalog);
 
 const iconCatalog = document.querySelector('#icon-catalog');
 iconCatalog?.addEventListener('input', filterIcons);
 iconCatalog?.addEventListener('click', copyIcon);
 
-const themeButton = document.querySelector('#showcase-theme');
-const root = document.documentElement;
+const themeControls = document.querySelector('#showcase-theme');
 const themeKey = 'cm-showcase-theme';
 
 function updateTheme() {
-  const theme = localStorage.getItem(themeKey);
-  root.dataset.cmTheme = ['light', 'dark', 'system'].includes(theme) ? theme : 'light';
-  themeButton.setAttribute(
-    'aria-pressed',
-    String(
-      root.dataset.cmTheme === 'dark' ||
-        (root.dataset.cmTheme === 'system' && matchMedia('(prefers-color-scheme: dark)').matches),
-    ),
-  );
+  const stored = localStorage.getItem(themeKey);
+  const theme = stored === 'dark' || stored === 'system' ? stored : 'light';
+  document.documentElement.dataset.cmTheme = theme;
+  themeControls.querySelector(`[value="${theme}"]`).checked = true;
 }
 
 updateTheme();
 window.addEventListener('storage', (event) => {
   if (event.key === themeKey) updateTheme();
 });
-themeButton.addEventListener('click', () => {
-  const theme = themeButton.getAttribute('aria-pressed') === 'true' ? 'light' : 'dark';
-  localStorage.setItem(themeKey, theme);
+themeControls.addEventListener('change', ({ target }) => {
+  localStorage.setItem(themeKey, target.value);
   updateTheme();
 });
 
