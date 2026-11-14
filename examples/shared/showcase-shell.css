@@ -828,7 +828,7 @@ body {
   }
 }
 
-.showcase-content:has(#core-recipes) .showcase-contracts .showcase-variants {
+.showcase-content:has(#actions) .showcase-contracts .showcase-variants {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
   gap: var(--cm-space-3);
@@ -853,4 +853,53 @@ body {
 #icons,
 #icon-catalog {
   grid-template-columns: minmax(0, 1fr);
+}
+
+.core-example-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  gap: var(--cm-space-3);
+  margin-block: var(--cm-space-3);
+}
+
+.core-example {
+  min-inline-size: 0;
+  padding: var(--cm-space-3);
+  border: 1px solid var(--cm-color-border-subtle);
+  border-radius: var(--cm-radius-control);
+}
+
+.core-example h4 {
+  margin-block: 0 var(--cm-space-2);
+  color: var(--cm-color-text-muted);
+  font-size: var(--cm-font-size-sm);
+}
+
+.core-example > .cm-skeleton {
+  block-size: auto;
+}
+
+.core-example .cm-menu,
+.core-example .cm-menu-bar {
+  max-inline-size: 100%;
+}
+
+.core-example input:not([type='checkbox'], [type='radio']) {
+  max-inline-size: 100%;
+}
+
+.core-example > .cm-skeleton:not([style]) {
+  block-size: 1rem;
+}
+
+@media (width >= 768px) {
+  .core-button-matrix {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--cm-space-3);
+  }
+}
+
+.core-component > h3 {
+  margin: 0 0 var(--cm-space-3);
 }

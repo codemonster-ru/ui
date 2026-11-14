@@ -3,18 +3,16 @@ const variants = ['primary', 'secondary', 'danger', 'ghost'];
 const tones = ['neutral', 'primary', 'success', 'info', 'warning', 'help', 'danger', 'contrast'];
 
 export const actionMatrices = {
-  button: Object.fromEntries(
-    sizes.flatMap((size) => [
-      [
-        `Variants · ${size}`,
-        [
-          ...variants.map((variant) => ({ label: variant, variant, size })),
-          { label: 'disabled', size, disabled: true },
-        ],
-      ],
-      [`Loading · ${size}`, variants.map((variant) => ({ label: variant, variant, size, loading: true }))],
+  button: Object.fromEntries([
+    ...sizes.map((size) => [
+      `Variants · ${size}`,
+      [...variants.map((variant) => ({ label: variant, variant, size })), { label: 'disabled', size, disabled: true }],
     ]),
-  ),
+    ...sizes.map((size) => [
+      `Loading · ${size}`,
+      variants.map((variant) => ({ label: variant, variant, size, loading: true })),
+    ]),
+  ]),
   'icon-button': Object.fromEntries(
     sizes.map((size) => [
       `Variants · ${size}`,

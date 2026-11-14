@@ -1,8 +1,24 @@
 <script setup lang="ts">
 import { showcaseCaseVariants } from '../../shared/showcase-matrices.mts';
 
-defineProps<{ slug: string }>();
-const openByDefault = /^\/(?:core\/?|$)/u.test(location.pathname);
+import { renderCoreMatrix } from '../../shared/showcase-core-matrix.mts';
+const props = defineProps<{ slug: string }>();
+const core = /^\/(?:core\/?|$)/u.test(location.pathname);
+const sources = import.meta.glob<string>('../../../contracts/*/cases/*.html', {
+  eager: true,
+  query: '?raw',
+  import: 'default',
+});
+const matrix = core
+  ? renderCoreMatrix(
+      props.slug,
+      (id) => {
+        const basename = id.slice(props.slug.length + 1);
+        return sources[`../../../contracts/${props.slug}/cases/${basename}.html`];
+      },
+      new URL('../../vanilla/avatar.png', import.meta.url).href,
+    )
+  : '';
 
 interface Example {
   id: string;
@@ -28,7 +44,9 @@ const cases = Object.entries(
 </script>
 
 <template>
-  <details class="showcase-contracts" :open="openByDefault">
+  <!-- eslint-disable-next-line vue/no-v-html -- Repository-owned component contracts. -->
+  <div v-if="matrix" data-core-matrix v-html="matrix" />
+  <details class="showcase-contracts">
     <summary>Contract examples</summary>
     <div class="showcase-variants">
       <article v-for="example in cases.filter((example) => example.slug === slug)" :key="example.id">
