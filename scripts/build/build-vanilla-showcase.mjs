@@ -296,8 +296,8 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
           slug === 'button'
             ? Object.entries(buttonMatrices)
                 .map(
-                  ([title, sizes]) => `<section>
-          <h4 class="showcase-label">${title}</h4>
+                  ([title, sizes]) => `<section class="core-button-section">
+          <h4>Button · ${title}</h4>
           <div class="core-button-matrix">${renderMatrix(slug, sizes, loadingMarkup, iconMarkup)}</div>
         </section>`,
                 )
@@ -376,7 +376,7 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
     <p id="showcase-empty" role="status" hidden>No matching components.</p>`
         : ''
     }
-    <div class="showcase-catalog">${pages[current]}</div>
+    <div class="showcase-catalog${current === 'core' ? ' showcase-core' : ''}">${pages[current]}</div>
   </main>`,
       'showcase.js',
       base,
