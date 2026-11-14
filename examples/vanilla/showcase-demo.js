@@ -1,18 +1,12 @@
+import { followShowcaseTheme, saveShowcaseTheme } from './showcase-theme.js';
 import { createRuntime } from './runtime.js';
 
-const themeKey = 'cm-showcase-theme';
-const root = document.documentElement;
-const applyTheme = () => {
-  const theme = localStorage.getItem(themeKey);
-  root.dataset.cmTheme = ['light', 'dark', 'system'].includes(theme) ? theme : 'light';
-};
-
-applyTheme();
-window.addEventListener('storage', (event) => {
-  if (event.key === themeKey) applyTheme();
-});
-
 const demo = document.querySelector('.showcase-demo');
+followShowcaseTheme((mode) => {
+  for (const input of demo.querySelectorAll('[data-cm-controller="theme-switch"] input[type="radio"]')) {
+    input.checked = input.value === mode;
+  }
+});
 // An initially open fixture must not steal focus from the surrounding catalog.
 createRuntime().start(demo);
 demo.inert = false;
@@ -21,7 +15,7 @@ demo.addEventListener('click', (event) => {
   const link = event.target.closest('a[href^="/"]');
   if (link && link.origin === window.parent.location.origin) event.preventDefault();
 });
-demo.addEventListener('cm:theme-change', () => localStorage.setItem(themeKey, root.dataset.cmTheme));
+demo.addEventListener('cm:theme-change', (event) => saveShowcaseTheme(event.detail.mode));
 
 const modal = demo.querySelector('dialog[data-cm-controller]');
 if (modal) {

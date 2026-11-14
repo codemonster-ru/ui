@@ -1,3 +1,4 @@
+import { followShowcaseTheme, saveShowcaseTheme } from '../../shared/showcase-theme.js';
 import { showcaseCaseVariants, showcaseVariantValue } from '../../shared/showcase-matrices.mts';
 import * as UiIcons from '@codemonster-ru/ui-icons';
 import * as UiLayouts from '@codemonster-ru/ui-layouts';
@@ -103,6 +104,10 @@ for (const key of [
     props[key] = value;
   };
 }
+followShowcaseTheme((mode) => {
+  if (componentSlug === 'theme-switch') props.modelValue = mode;
+});
+if (componentSlug === 'theme-switch') props.onThemeChange = saveShowcaseTheme;
 const modal = ['dialog', 'drawer', 'command-palette'].includes(componentSlug);
 createApp({
   render: () => [

@@ -1,3 +1,4 @@
+import { followShowcaseTheme, saveShowcaseTheme } from './showcase-theme.js';
 import { mountCoreRecipes } from './showcase-core-recipes.js';
 import { mountLayoutRecipes } from './showcase-layout-recipes.js';
 import { mountLayoutPreviews } from './showcase-layouts.js';
@@ -18,22 +19,13 @@ iconCatalog?.addEventListener('input', filterIcons);
 iconCatalog?.addEventListener('click', copyIcon);
 
 const themeControls = document.querySelector('#showcase-theme');
-const themeKey = 'cm-showcase-theme';
-
-function updateTheme() {
-  const stored = localStorage.getItem(themeKey);
-  const theme = stored === 'dark' || stored === 'system' ? stored : 'light';
-  document.documentElement.dataset.cmTheme = theme;
-  themeControls.querySelector(`[value="${theme}"]`).checked = true;
-}
-
-updateTheme();
-window.addEventListener('storage', (event) => {
-  if (event.key === themeKey) updateTheme();
-});
+const syncThemeControls = (mode) => {
+  themeControls.querySelector(`[value="${mode}"]`).checked = true;
+};
+followShowcaseTheme(syncThemeControls);
 themeControls.addEventListener('change', ({ target }) => {
-  localStorage.setItem(themeKey, target.value);
-  updateTheme();
+  saveShowcaseTheme(target.value);
+  syncThemeControls(target.value);
 });
 
 const search = document.querySelector('#showcase-search');
