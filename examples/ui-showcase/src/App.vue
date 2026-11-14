@@ -92,7 +92,7 @@ onUnmounted(() => stopTheme?.());
   </header>
   <main ref="coreContent" class="showcase-content" :class="{ 'showcase-core': currentPage === 'core' }">
     <template v-if="currentPage === 'core'">
-      <template v-for="{ id, title, description, components } in coreGroups" :key="id">
+      <template v-for="{ id, title, description, components, matrix, recipeAfter } in coreGroups" :key="id">
         <section v-if="id === 'actions'" id="typography" class="showcase-group">
           <header>
             <h2>Typography</h2>
@@ -106,64 +106,85 @@ onUnmounted(() => stopTheme?.());
             <h2>{{ title }}</h2>
             <p>{{ description }}</p>
           </header>
-          <div class="showcase-grid">
+          <component
+            :is="matrix ? 'section' : 'div'"
+            :class="matrix ? 'showcase-panel core-group-matrix' : 'showcase-grid'"
+            :aria-labelledby="matrix ? id + '-matrix-title' : undefined"
+          >
+            <h3 v-if="matrix" :id="id + '-matrix-title'">{{ matrix }}</h3>
             <!-- eslint-disable-next-line vue/no-v-html -- Repository-owned showcase markup. -->
-            <div class="showcase-grid-fragment" v-html="coreRecipesFor(coreSamples, id)" />
-            <section
-              v-for="slug in components"
-              :id="'demo-' + slug"
-              :key="slug"
-              class="core-component showcase-panel"
-              :class="{ 'showcase-panel--wide': ['button', 'table', 'data-table'].includes(slug) }"
-            >
-              <h3>{{ coreComponentTitle(slug) }}</h3>
-              <CmThemeSwitch v-if="slug === 'theme-switch'" v-model="themeMode" @theme-change="saveShowcaseTheme" />
-              <template v-else-if="slug === 'button'">
-                <section v-for="(sizes, matrixTitle) in buttonExamples" :key="matrixTitle" class="core-button-section">
-                  <h4>Button · {{ matrixTitle }}</h4>
-                  <div class="core-button-matrix">
-                    <div v-for="(examples, size) in sizes" :key="size" class="showcase-matrix">
-                      <p class="showcase-label">{{ size }}</p>
-                      <div class="showcase-matrix-row">
-                        <CmButton v-for="{ label: text, ...props } in examples" :key="text" v-bind="props">{{
-                          text
-                        }}</CmButton>
+            <div v-if="!recipeAfter" class="showcase-grid-fragment" v-html="coreRecipesFor(coreSamples, id)" />
+            <template v-for="slug in components" :key="slug">
+              <section
+                :id="'demo-' + slug"
+                class="core-component"
+                :class="
+                  matrix
+                    ? 'core-group-cell'
+                    : ['showcase-panel', { 'showcase-panel--wide': ['button', 'table', 'data-table'].includes(slug) }]
+                "
+              >
+                <component :is="matrix ? 'h4' : 'h3'" :class="{ 'showcase-label': matrix }">{{
+                  coreComponentTitle(slug)
+                }}</component>
+                <CmThemeSwitch v-if="slug === 'theme-switch'" v-model="themeMode" @theme-change="saveShowcaseTheme" />
+                <template v-else-if="slug === 'button'">
+                  <section
+                    v-for="(sizes, matrixTitle) in buttonExamples"
+                    :key="matrixTitle"
+                    class="core-button-section"
+                  >
+                    <h4>Button · {{ matrixTitle }}</h4>
+                    <div class="core-button-matrix">
+                      <div v-for="(examples, size) in sizes" :key="size" class="showcase-matrix">
+                        <p class="showcase-label">{{ size }}</p>
+                        <div class="showcase-matrix-row">
+                          <CmButton v-for="{ label: text, ...props } in examples" :key="text" v-bind="props">{{
+                            text
+                          }}</CmButton>
+                        </div>
                       </div>
                     </div>
+                  </section>
+                </template>
+                <template v-else-if="slug === 'icon-button'">
+                  <div v-for="(examples, label) in iconButtonExamples" :key="label" class="showcase-matrix">
+                    <p class="showcase-label">{{ label }}</p>
+                    <div class="showcase-matrix-row">
+                      <CmIconButton v-for="props in examples" :key="props.label" v-bind="props"
+                        ><CmIcon :icon="gear"
+                      /></CmIconButton>
+                    </div>
                   </div>
-                </section>
-              </template>
-              <template v-else-if="slug === 'icon-button'">
-                <div v-for="(examples, label) in iconButtonExamples" :key="label" class="showcase-matrix">
-                  <p class="showcase-label">{{ label }}</p>
-                  <div class="showcase-matrix-row">
-                    <CmIconButton v-for="props in examples" :key="props.label" v-bind="props"
-                      ><CmIcon :icon="gear"
-                    /></CmIconButton>
+                </template>
+                <template v-else-if="slug === 'link'">
+                  <div v-for="(examples, label) in linkExamples" :key="label" class="showcase-matrix">
+                    <p class="showcase-label">{{ label }}</p>
+                    <div class="showcase-matrix-row">
+                      <CmLink
+                        v-for="{ label: text, external, ...props } in examples"
+                        :key="text"
+                        :href="external ? 'https://example.com' : '#demo-link'"
+                        :target="external ? '_blank' : undefined"
+                        :rel="external ? 'noopener noreferrer' : undefined"
+                        v-bind="props"
+                        >{{ text }}</CmLink
+                      >
+                    </div>
                   </div>
-                </div>
-              </template>
-              <template v-else-if="slug === 'link'">
-                <div v-for="(examples, label) in linkExamples" :key="label" class="showcase-matrix">
-                  <p class="showcase-label">{{ label }}</p>
-                  <div class="showcase-matrix-row">
-                    <CmLink
-                      v-for="{ label: text, external, ...props } in examples"
-                      :key="text"
-                      :href="external ? 'https://example.com' : '#demo-link'"
-                      :target="external ? '_blank' : undefined"
-                      :rel="external ? 'noopener noreferrer' : undefined"
-                      v-bind="props"
-                      >{{ text }}</CmLink
-                    >
-                  </div>
-                </div>
-              </template>
-              <ContractExamples :slug="slug" />
-            </section>
+                </template>
+                <ContractExamples :slug="slug" />
+              </section>
+              <!-- eslint-disable-next-line vue/no-v-html -- Repository-owned showcase markup. -->
+              <div
+                v-if="slug === recipeAfter"
+                class="showcase-grid-fragment"
+                v-html="coreRecipesFor(coreSamples, id)"
+              />
+            </template>
             <!-- eslint-disable-next-line vue/no-v-html -- Repository-owned showcase markup. -->
             <div v-if="id === 'theme'" class="showcase-grid-fragment" v-html="themeSamples" />
-          </div>
+          </component>
         </section>
       </template>
     </template>

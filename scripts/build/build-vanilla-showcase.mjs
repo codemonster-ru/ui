@@ -267,7 +267,7 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
     ${['light', 'system', 'dark'].map((mode) => `<label class="cm-theme-switch__option"><input class="cm-theme-switch__input" type="radio" name="${id}" value="${mode}"${mode === 'light' ? ' checked' : ''}><span class="cm-theme-switch__label">${mode.charAt(0).toUpperCase() + mode.slice(1)}</span></label>`).join('')}
   </fieldset>`;
   const sections = new Map(
-    groups.map(({ id, title, description, components: slugs }) => {
+    groups.map(({ id, title, description, components: slugs, matrix: matrixTitle, recipeAfter }) => {
       const isCore = id !== 'layouts' && id !== 'icons';
       const shellSlugs = panels.map(({ slug }) => slug);
       const ordered = id === 'layouts' ? [...Object.keys(layoutSamples), ...shellSlugs] : slugs;
@@ -303,8 +303,12 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
                 )
                 .join('')
             : renderMatrix(slug, actionMatrices[slug], loadingMarkup, iconMarkup);
-        return `<section ${panel ? `id="demo-${slug}" data-layout-preview="${slug}"` : isCore || slug === 'icon' ? `id="demo-${slug}"` : ''} class="${isCore ? 'core-component' : 'showcase-card'} showcase-panel${wide ? ' showcase-panel--wide' : ''}" aria-labelledby="component-${slug}">
-        <h3 id="component-${slug}"${slug === 'icon' ? ' class="showcase-icon-intro-heading"' : ''}>${escapeHtml(panel?.title ?? (isCore ? coreComponentTitle(slug) : manifest.name))}</h3>
+        const cardClass = matrixTitle
+          ? 'core-component core-group-cell'
+          : `${isCore ? 'core-component' : 'showcase-card'} showcase-panel${wide ? ' showcase-panel--wide' : ''}`;
+        const heading = matrixTitle ? 'h4' : 'h3';
+        return `<section ${panel ? `id="demo-${slug}" data-layout-preview="${slug}"` : isCore || slug === 'icon' ? `id="demo-${slug}"` : ''} class="${cardClass}" aria-labelledby="component-${slug}">
+        <${heading} id="component-${slug}"${matrixTitle ? ' class="showcase-label"' : slug === 'icon' ? ' class="showcase-icon-intro-heading"' : ''}>${escapeHtml(panel?.title ?? (isCore ? coreComponentTitle(slug) : manifest.name))}</${heading}>
         ${layoutSamples[slug] ?? composition}
         ${slug === 'icon' ? renderIconIntro() : ''}
         ${slug === 'theme-switch' ? themeSwitch('showcase-theme-example', true) : ''}
@@ -324,6 +328,13 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
           0,
           renderLayoutRecipes().replace('/vueforge-logo-icon.svg', './vueforge-logo-icon.svg'),
         );
+      const recipes = coreRecipesFor(coreSamples, id);
+      if (recipeAfter) cards.splice(ordered.indexOf(recipeAfter) + 1, 0, recipes);
+      const grid = matrixTitle
+        ? `<section class="showcase-panel core-group-matrix" aria-labelledby="${id}-matrix-title">
+          <h3 id="${id}-matrix-title">${escapeHtml(matrixTitle)}</h3>${recipeAfter ? '' : recipes}${cards.join('\n')}
+        </section>`
+        : `<div class="showcase-grid">${recipes}${cards.join('\n')}${id === 'theme' ? themeSamples : ''}</div>`;
       const typeSamples =
         id === 'actions'
           ? `<section id="typography" class="showcase-group">
@@ -335,7 +346,7 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
         id,
         `${typeSamples}<section class="showcase-group" id="${id}">
       <header><h2>${escapeHtml(title)}</h2><p>${escapeHtml(description)}</p></header>
-      <div class="showcase-grid">${coreRecipesFor(coreSamples, id)}${cards.join('\n')}${id === 'theme' ? themeSamples : ''}</div>
+      ${grid}
       ${id === 'icons' ? renderIconCatalog() + renderOperations() : ''}
     </section>`,
       ];

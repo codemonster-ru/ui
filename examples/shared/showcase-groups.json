@@ -15,19 +15,22 @@
     "id": "overlay",
     "title": "Overlay",
     "description": "Open floating panels and check their placement and focus.",
-    "components": ["tooltip", "popover", "dropdown"]
+    "matrix": "Overlay visual QA matrix",
+    "components": ["tooltip", "dropdown", "popover"]
   },
   {
     "id": "surfaces",
     "title": "Surface Components",
     "description": "Explore content, grouping, and table surfaces.",
-    "components": ["card", "avatar", "badge", "tag", "divider", "fieldset", "table", "data-table", "column-chooser"]
+    "components": ["card", "divider", "fieldset", "table", "data-table", "column-chooser"]
   },
   {
     "id": "feedback",
     "title": "Feedback",
     "description": "Compare status, progress, and loading states.",
-    "components": ["alert", "progress-bar", "progress-spinner", "skeleton"]
+    "matrix": "Feedback visual QA matrix",
+    "recipeAfter": "skeleton",
+    "components": ["alert", "avatar", "badge", "tag", "progress-bar", "progress-spinner", "skeleton"]
   },
   {
     "id": "forms",
@@ -39,7 +42,9 @@
     "id": "navigation",
     "title": "Navigation and Disclosure",
     "description": "Explore navigation, disclosure, and keyboard interaction.",
-    "components": ["breadcrumbs", "menu", "menu-bar", "nav-menu", "table-of-contents", "stepper", "tabs", "accordion"]
+    "matrix": "Navigation visual QA matrix",
+    "recipeAfter": "breadcrumbs",
+    "components": ["breadcrumbs", "tabs", "stepper", "accordion", "nav-menu", "menu-bar", "menu", "table-of-contents"]
   },
   {
     "id": "modals",
