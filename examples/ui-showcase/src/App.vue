@@ -90,7 +90,7 @@ onUnmounted(() => stopTheme?.());
     </nav>
     <CmThemeSwitch v-model="themeMode" @theme-change="saveShowcaseTheme" name="showcase-theme" />
   </header>
-  <main ref="coreContent" class="showcase-content">
+  <main ref="coreContent" class="showcase-content" :class="{ 'showcase-core': currentPage === 'core' }">
     <template v-if="currentPage === 'core'">
       <template v-for="{ id, title, description, components } in coreGroups" :key="id">
         <section v-if="id === 'actions'" id="typography" class="showcase-group">
@@ -119,8 +119,8 @@ onUnmounted(() => stopTheme?.());
               <h3>{{ coreComponentTitle(slug) }}</h3>
               <CmThemeSwitch v-if="slug === 'theme-switch'" v-model="themeMode" @theme-change="saveShowcaseTheme" />
               <template v-else-if="slug === 'button'">
-                <section v-for="(sizes, matrixTitle) in buttonExamples" :key="matrixTitle">
-                  <h4 class="showcase-label">{{ matrixTitle }}</h4>
+                <section v-for="(sizes, matrixTitle) in buttonExamples" :key="matrixTitle" class="core-button-section">
+                  <h4>Button · {{ matrixTitle }}</h4>
                   <div class="core-button-matrix">
                     <div v-for="(examples, size) in sizes" :key="size" class="showcase-matrix">
                       <p class="showcase-label">{{ size }}</p>

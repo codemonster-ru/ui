@@ -91,6 +91,7 @@ export function coreRecipesFor(source: string, group: string) {
 }
 
 export function coreComponentTitle(slug: string) {
+  if (slug === 'button') return 'Actions visual QA matrix';
   return slug.replace(
     /(^|-)([a-z])/gu,
     (_, separator: string, letter: string) => (separator ? ' ' : '') + letter.toUpperCase(),
