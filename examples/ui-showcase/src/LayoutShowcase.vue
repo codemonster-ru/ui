@@ -260,7 +260,16 @@ function setMode(kind: 'app' | 'document', value: string) {
             <label>Port <CmInput v-model="database.port" /></label>
             <label>Database name <CmInput v-model="database.name" /></label>
             <label>Database user <CmInput v-model="database.user" /></label>
-            <label>Database password <CmInput v-model="database.password" type="password" /></label>
+            <div class="setup-preview-field">
+              <label for="setup-preview-password">Database password</label>
+              <CmInput
+                id="setup-preview-password"
+                v-model="database.password"
+                type="password"
+                placeholder="Password"
+                password-reveal
+              />
+            </div>
           </CmStack>
           <label v-else-if="step === 'admin'">Email <CmInput v-model="email" type="email" /></label>
           <p v-else>{{ database.name }} on {{ database.host }}:{{ database.port }}</p>

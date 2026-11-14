@@ -4,8 +4,13 @@ import { renderLayoutPreview } from './render-showcase-layout.mjs';
 import { panels } from '../../examples/shared/showcase-layout-data.mts';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { renderColorScales, renderIconCatalog, renderOperations } from '../../examples/shared/showcase-reference.mts';
-import { actionMatrices, showcaseCaseVariants } from '../../examples/shared/showcase-matrices.mts';
+import {
+  renderColorScales,
+  renderIconCatalog,
+  renderIconIntro,
+  renderOperations,
+} from '../../examples/shared/showcase-reference.mts';
+import { actionMatrices, buttonMatrices, showcaseCaseVariants } from '../../examples/shared/showcase-matrices.mts';
 import { collectComponentCases } from '../contracts/component-cases.mjs';
 import { collectComponentManifests } from '../contracts/component-manifests.mjs';
 
@@ -284,14 +289,26 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
           ].includes(slug);
         const panel = panels.find((panel) => panel.slug === slug);
         const composition = panel
-          ? renderLayoutPreview(slug, variants.find(({ basename }) => basename === 'default')?.canonicalHtml)
+          ? renderLayoutPreview(slug, caseMarkup.get(`${slug}-default`), caseMarkup.get('input-enhanced'))
           : '';
         const matrix = isCore ? renderCoreMatrix(slug, (caseId) => caseMarkup.get(caseId), './avatar.png') : '';
-        return `<section ${panel ? `id="demo-${slug}" data-layout-preview="${slug}"` : isCore ? `id="demo-${slug}"` : ''} class="${isCore ? 'core-component' : 'showcase-card'} showcase-panel${wide ? ' showcase-panel--wide' : ''}" aria-labelledby="component-${slug}">
-        <h3 id="component-${slug}">${escapeHtml(panel?.title ?? (isCore ? coreComponentTitle(slug) : manifest.name))}</h3>
+        const actions =
+          slug === 'button'
+            ? Object.entries(buttonMatrices)
+                .map(
+                  ([title, sizes]) => `<section>
+          <h4 class="showcase-label">${title}</h4>
+          <div class="core-button-matrix">${renderMatrix(slug, sizes, loadingMarkup, iconMarkup)}</div>
+        </section>`,
+                )
+                .join('')
+            : renderMatrix(slug, actionMatrices[slug], loadingMarkup, iconMarkup);
+        return `<section ${panel ? `id="demo-${slug}" data-layout-preview="${slug}"` : isCore || slug === 'icon' ? `id="demo-${slug}"` : ''} class="${isCore ? 'core-component' : 'showcase-card'} showcase-panel${wide ? ' showcase-panel--wide' : ''}" aria-labelledby="component-${slug}">
+        <h3 id="component-${slug}"${slug === 'icon' ? ' class="showcase-icon-intro-heading"' : ''}>${escapeHtml(panel?.title ?? (isCore ? coreComponentTitle(slug) : manifest.name))}</h3>
         ${layoutSamples[slug] ?? composition}
+        ${slug === 'icon' ? renderIconIntro() : ''}
         ${slug === 'theme-switch' ? themeSwitch('showcase-theme-example', true) : ''}
-        ${slug === 'button' ? '<div class="core-button-matrix">' : ''}${renderMatrix(slug, actionMatrices[slug], loadingMarkup, iconMarkup)}${slug === 'button' ? '</div>' : ''}
+        ${actions}
         ${matrix ? `<div data-core-matrix>${matrix}</div>` : ''}
         <details class="showcase-contracts"><summary>Contract examples</summary><div class="showcase-variants">${expandedExamples(
           variants,

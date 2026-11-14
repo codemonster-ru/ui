@@ -1,20 +1,133 @@
 <template data-core-group="surfaces">
-  <article class="showcase-panel">
-    <h3>Supporting Context</h3>
-    <p>Panel content with regular treatment.</p>
-    <section class="cm-section cm-section--surface">
-      <strong>Subtle Context</strong>
-      <p>Subtle panel treatment for quiet grouping.</p>
-    </section>
-  </article>
-
-  <article class="showcase-panel">
-    <h3>Shipping address</h3>
-    <p>1234 Elm Street, San Francisco, CA 94102</p>
-    <details>
-      <summary>Invoice details</summary>
-      <p>Invoice #1024 · Design service · $120.00</p>
-    </details>
+  <article class="showcase-panel showcase-panel--wide">
+    <h3>Surfaces visual QA matrix</h3>
+    <div class="showcase-surface-matrix">
+      <div>
+        <p class="showcase-label">Card · default</p>
+        <section class="cm-card">
+          <h4 class="cm-card__header">Release Summary</h4>
+          <div class="cm-card__body">Default card spacing with body and footer.</div>
+          <footer class="cm-card__footer">
+            <span class="cm-badge cm-badge--success">Stable</span>
+            <span class="cm-badge cm-badge--primary">Core</span>
+          </footer>
+        </section>
+      </div>
+      <div>
+        <p class="showcase-label">Card · compact</p>
+        <section class="cm-card cm-card--compact">
+          <h4 class="cm-card__header">Compact Release</h4>
+          <div class="cm-card__body">Compact card spacing for dense surfaces.</div>
+          <footer class="cm-card__footer"><span class="cm-tag cm-tag--info">Dense</span></footer>
+        </section>
+      </div>
+      <div>
+        <p class="showcase-label">Panel · default</p>
+        <section class="showcase-panel">
+          <h4>Supporting Context</h4>
+          <p>Panel content with regular treatment.</p>
+        </section>
+      </div>
+      <div>
+        <p class="showcase-label">Panel · subtle</p>
+        <section class="showcase-panel showcase-panel--subtle">
+          <h4>Subtle Context</h4>
+          <p>Subtle panel treatment for quiet grouping.</p>
+        </section>
+      </div>
+      <div>
+        <p class="showcase-label">Group · default</p>
+        <section class="showcase-panel">
+          <h4>Shipping address</h4>
+          <p>1234 Elm Street, San Francisco, CA 94102</p>
+        </section>
+      </div>
+      <div>
+        <p class="showcase-label">Group · collapsible</p>
+        <details class="showcase-panel">
+          <summary>Invoice details</summary>
+          <p>Invoice #1024 · Design service · $120.00</p>
+        </details>
+      </div>
+      <div>
+        <p class="showcase-label">Table · caption and footer</p>
+        <div class="cm-table__scroll">
+          <table class="cm-table">
+            <caption class="cm-table__caption">
+              Team availability
+            </caption>
+            <thead class="cm-table__head">
+              <tr>
+                <th scope="col">Member</th>
+                <th scope="col">Status</th>
+              </tr>
+            </thead>
+            <tbody class="cm-table__body">
+              <tr>
+                <td>Alice</td>
+                <td>Available</td>
+              </tr>
+              <tr>
+                <td>Bob</td>
+                <td>Busy</td>
+              </tr>
+              <tr>
+                <td>Carol</td>
+                <td>Available</td>
+              </tr>
+              <tr>
+                <td>Diego</td>
+                <td>Away</td>
+              </tr>
+              <tr>
+                <td>Eve</td>
+                <td>Offline</td>
+              </tr>
+            </tbody>
+            <tfoot class="cm-table__foot">
+              <tr>
+                <td colspan="2">Total: 5 members</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+      <div>
+        <p class="showcase-label">Table · striped</p>
+        <div class="cm-table__scroll">
+          <table class="cm-table cm-table--striped">
+            <thead class="cm-table__head">
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Status</th>
+              </tr>
+            </thead>
+            <tbody class="cm-table__body">
+              <tr>
+                <td>Navigation</td>
+                <td>Stable</td>
+              </tr>
+              <tr>
+                <td>Overlay</td>
+                <td>Review</td>
+              </tr>
+              <tr>
+                <td>Forms</td>
+                <td>Stable</td>
+              </tr>
+              <tr>
+                <td>Feedback</td>
+                <td>Testing</td>
+              </tr>
+              <tr>
+                <td>Surfaces</td>
+                <td>Planned</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </article>
 </template>
 <template data-core-group="feedback">
@@ -27,12 +140,44 @@
       </div>
       <div class="cm-card">
         <header class="cm-card__header">Ready panel</header>
-        <div class="cm-card__body">Loaded content.</div>
+        <div class="cm-card__body">Ready content replaces the skeleton.</div>
       </div>
     </div>
   </article>
 </template>
 <template data-core-group="forms">
+  <article class="showcase-panel showcase-panel--wide">
+    <h3>Stack + Field · recommended form stack</h3>
+    <div class="cm-stack showcase-form-stack">
+      <p>Use Stack for spacing between fields. Field groups the label, control, description, and error.</p>
+      <div class="cm-field">
+        <label class="cm-field__label" for="stack-workspace"
+          >Workspace name <span class="cm-field__required" aria-hidden="true">*</span></label
+        >
+        <div class="cm-field__control">
+          <input class="cm-input cm-input--md" id="stack-workspace" placeholder="Acme Cloud" required />
+        </div>
+      </div>
+      <div class="cm-field">
+        <label class="cm-field__label" for="stack-email"
+          >Billing email <span class="cm-field__required" aria-hidden="true">*</span></label
+        >
+        <div class="cm-field__control">
+          <input class="cm-input cm-input--md" id="stack-email" type="email" placeholder="team@acme.test" required />
+        </div>
+      </div>
+      <div class="cm-field">
+        <label class="cm-field__label" for="stack-plan">Plan</label>
+        <div class="cm-field__control">
+          <select class="cm-input cm-input--md" id="stack-plan">
+            <option value="">Choose a plan</option>
+            <option>Starter</option>
+            <option>Pro</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </article>
   <article class="showcase-panel showcase-panel--wide">
     <h3>Workspace settings</h3>
     <div class="showcase-settings-fields">

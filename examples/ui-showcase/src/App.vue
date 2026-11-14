@@ -11,14 +11,14 @@ import { createRuntime } from '../../vanilla/runtime.mjs';
 import ContractExamples from './ContractExamples.vue';
 import themeSamples from '../../shared/showcase-theme-samples.html?raw';
 import colors from '../../shared/showcase-colors.html?raw';
-import { renderColorScales, renderIconCatalog, renderOperations } from '../../shared/showcase-reference.mts';
-import { actionMatrices } from '../../shared/showcase-matrices.mts';
+import { iconIntro, renderColorScales, renderIconCatalog, renderOperations } from '../../shared/showcase-reference.mts';
+import { actionMatrices, buttonMatrices } from '../../shared/showcase-matrices.mts';
 import type { CmButtonProps, CmIconButtonProps, CmLinkProps } from '@codemonster-ru/ui-vue';
 import typography from '../../shared/showcase-typography.html?raw';
 import { onMounted, onUnmounted, ref } from 'vue';
 import { CmRuntime, createCmTabsController } from '@codemonster-ru/ui-runtime';
 import { fillContrastTable, mountOperations } from '../../shared/showcase-reference.js';
-import { arrowLeft, gear, github } from '@codemonster-ru/ui-icons';
+import { gear } from '@codemonster-ru/ui-icons';
 import { followShowcaseTheme, saveShowcaseTheme, readShowcaseTheme } from '../../shared/showcase-theme.js';
 import LayoutShowcase from './LayoutShowcase.vue';
 import { CmButton, CmIcon, CmIconButton, CmLink, CmThemeSwitch } from '@codemonster-ru/ui-vue';
@@ -54,9 +54,9 @@ onUnmounted(() => {
 });
 
 const currentPage = pages.find(({ id }) => location.pathname.split('/')[1] === id)?.id ?? 'core';
-const buttonExamples = actionMatrices.button as Record<
+const buttonExamples = buttonMatrices as Record<
   string,
-  (Pick<CmButtonProps, 'variant' | 'size' | 'disabled' | 'loading'> & { label: string })[]
+  Record<string, (Pick<CmButtonProps, 'variant' | 'size' | 'disabled' | 'loading'> & { label: string })[]>
 >;
 const linkExamples = actionMatrices.link as Record<
   string,
@@ -119,16 +119,19 @@ onUnmounted(() => stopTheme?.());
               <h3>{{ coreComponentTitle(slug) }}</h3>
               <CmThemeSwitch v-if="slug === 'theme-switch'" v-model="themeMode" @theme-change="saveShowcaseTheme" />
               <template v-else-if="slug === 'button'">
-                <div class="core-button-matrix">
-                  <div v-for="(examples, label) in buttonExamples" :key="label" class="showcase-matrix">
-                    <p class="showcase-label">{{ label }}</p>
-                    <div class="showcase-matrix-row">
-                      <CmButton v-for="{ label: text, ...props } in examples" :key="text" v-bind="props">{{
-                        text
-                      }}</CmButton>
+                <section v-for="(sizes, matrixTitle) in buttonExamples" :key="matrixTitle">
+                  <h4 class="showcase-label">{{ matrixTitle }}</h4>
+                  <div class="core-button-matrix">
+                    <div v-for="(examples, size) in sizes" :key="size" class="showcase-matrix">
+                      <p class="showcase-label">{{ size }}</p>
+                      <div class="showcase-matrix-row">
+                        <CmButton v-for="{ label: text, ...props } in examples" :key="text" v-bind="props">{{
+                          text
+                        }}</CmButton>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </section>
               </template>
               <template v-else-if="slug === 'icon-button'">
                 <div v-for="(examples, label) in iconButtonExamples" :key="label" class="showcase-matrix">
@@ -198,17 +201,11 @@ onUnmounted(() => stopTheme?.());
         <p>Review icon geometry and accessible labels.</p>
       </header>
       <div class="showcase-grid">
-        <section id="demo-icon" class="ui-showcase__demo showcase-panel">
-          <h3>Icon</h3>
-          <p class="ui-showcase__note">
-            Geometry is precomputed from one source and emitted by both adapters, so neither draws anything. A brand
-            mark has one canonical form, and asking for another falls back to the one that exists rather than failing.
-          </p>
-          <div class="ui-showcase__inline">
-            <CmIcon :icon="arrowLeft" label="Back" />
-            <CmIcon :icon="gear" variant="solid" label="Settings" />
-            <CmIcon :icon="gear" family="duotone" label="Settings, duotone" />
-            <CmIcon :icon="github" variant="thin" label="GitHub" />
+        <section id="demo-icon" class="showcase-panel">
+          <h3 class="showcase-icon-intro-heading">Icon</h3>
+          <p class="showcase-icon-intro-note">{{ iconIntro.description }}</p>
+          <div class="showcase-matrix-row">
+            <CmIcon v-for="sample in iconIntro.samples" :key="sample.label" v-bind="sample" />
           </div>
           <ContractExamples slug="icon" />
         </section>
