@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import coreSamples from '../../shared/showcase-core-recipes.html?raw';
+import { mountCoreRecipes } from '../../shared/showcase-core-recipes.js';
+import historicalLogo from '../../shared/vueforge-logo-icon.svg';
+import { layoutSamples, renderLayoutRecipes } from '../../shared/showcase-layout-samples.mts';
+import { mountLayoutRecipes } from '../../shared/showcase-layout-recipes.js';
 import { copyIcon, filterIcons } from '../../shared/showcase-icon-catalog.js';
 import ContractExamples from './ContractExamples.vue';
 import themeSamples from '../../shared/showcase-theme-samples.html?raw';
@@ -7,12 +12,12 @@ import { renderColorScales, renderIconCatalog, renderOperations } from '../../sh
 import { actionMatrices } from '../../shared/showcase-matrices.mts';
 import type { CmButtonProps, CmIconButtonProps, CmLinkProps } from '@codemonster-ru/ui-vue';
 import typography from '../../shared/showcase-typography.html?raw';
-import { onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref, watchEffect } from 'vue';
 import { CmRuntime, createCmTabsController } from '@codemonster-ru/ui-runtime';
 import { fillContrastTable, mountOperations } from '../../shared/showcase-reference.js';
 import { alertCircle, arrowLeft, gear, github, infoCircle } from '@codemonster-ru/ui-icons';
 import type { CmThemeMode } from '@codemonster-ru/ui-runtime/core';
-import { CmAdminLayout, CmAdminShell, CmAppShell, CmDocumentLayout, CmSetupLayout } from '@codemonster-ru/ui-layouts';
+import LayoutShowcase from './LayoutShowcase.vue';
 import {
   CmAccordion,
   CmAlert,
@@ -24,7 +29,6 @@ import {
   CmCheckbox,
   CmColumnChooser,
   CmCommandPalette,
-  CmContainer,
   CmDataTable,
   CmDatePicker,
   CmDialog,
@@ -33,10 +37,8 @@ import {
   CmDrawer,
   CmField,
   CmFieldset,
-  CmGrid,
   CmIcon,
   CmIconButton,
-  CmInline,
   CmInput,
   CmLink,
   CmMenu,
@@ -46,10 +48,8 @@ import {
   CmProgressBar,
   CmProgressSpinner,
   CmRadio,
-  CmSection,
   CmSelect,
   CmSkeleton,
-  CmStack,
   CmStepper,
   CmSwitch,
   CmTable,
@@ -73,15 +73,23 @@ const pages = [
   { id: 'layouts', label: 'Layouts' },
   { id: 'icons', label: 'Icons' },
 ];
+const coreRecipes = ref<HTMLElement | null>(null);
+const layoutRecipes = ref<HTMLElement | null>(null);
+let unmountRecipes: (() => void) | undefined;
 const referenceContent = ref<HTMLElement | null>(null);
 const referenceRuntime = new CmRuntime().register('tabs', createCmTabsController);
 onMounted(() => {
+  if (coreRecipes.value) mountCoreRecipes(coreRecipes.value);
+  if (layoutRecipes.value) unmountRecipes = mountLayoutRecipes(layoutRecipes.value);
   if (!referenceContent.value) return;
   fillContrastTable(referenceContent.value);
   mountOperations(referenceContent.value);
   referenceRuntime.start(referenceContent.value);
 });
-onUnmounted(() => referenceRuntime.stop());
+onUnmounted(() => {
+  unmountRecipes?.();
+  referenceRuntime.stop();
+});
 
 const currentPage = pages.find(({ id }) => location.pathname.split('/')[1] === id)?.id ?? 'core';
 const buttonExamples = actionMatrices.button as Record<
@@ -95,7 +103,12 @@ const linkExamples = actionMatrices.link as Record<
 
 const iconButtonExamples = actionMatrices['icon-button'] as Record<string, CmIconButtonProps[]>;
 
-const themeMode = ref<CmThemeMode>('system');
+const storedTheme = localStorage.getItem('cm-showcase-theme');
+const themeMode = ref<CmThemeMode>(storedTheme === 'dark' || storedTheme === 'system' ? storedTheme : 'light');
+watchEffect(() => {
+  document.documentElement.dataset.cmTheme = themeMode.value;
+  localStorage.setItem('cm-showcase-theme', themeMode.value);
+});
 
 const accordionItems = [
   { id: 'overview', title: 'Overview', content: 'A short summary of the project.' },
@@ -698,6 +711,8 @@ const tableOfContentsItems = [
           </section>
         </div>
       </section>
+      <!-- eslint-disable-next-line vue/no-v-html -- Static showcase markup bundled from the repository. -->
+      <div ref="coreRecipes" v-html="coreSamples" />
     </template>
     <!-- eslint-disable-next-line vue/no-v-html -- Static showcase markup bundled from the repository. -->
     <div v-else-if="currentPage === 'colors'" ref="referenceContent" v-html="colors + renderColorScales()" />
@@ -707,141 +722,24 @@ const tableOfContentsItems = [
         <p>Review layout primitives and full-page shells.</p>
       </header>
       <div class="showcase-grid">
-        <section id="demo-container" class="ui-showcase__demo showcase-panel">
-          <h3>Container</h3>
-          <p class="ui-showcase__note">Centers content and caps its width at one of a fixed set of sizes.</p>
-          <CmContainer size="md" class="cm-p-4 cm-bg-surface cm-border cm-border-subtle cm-rounded-surface">
-            This content is centered and width-capped.
-          </CmContainer>
-          <ContractExamples slug="container" />
+        <section
+          v-for="(sample, slug) in layoutSamples"
+          :id="'demo-' + slug"
+          :key="slug"
+          class="ui-showcase__demo showcase-panel showcase-panel--wide"
+        >
+          <h3>{{ slug.charAt(0).toUpperCase() + slug.slice(1) }}</h3>
+          <!-- eslint-disable-next-line vue/no-v-html -- Static showcase markup bundled from the repository. -->
+          <div v-html="sample" />
+          <ContractExamples :slug="slug" />
         </section>
-        <section id="demo-grid" class="ui-showcase__demo showcase-panel">
-          <h3>Grid</h3>
-          <p class="ui-showcase__note">
-            A CSS grid primitive that auto-fits columns by default; a <code>cm-grid-cols-*</code> utility fixes the
-            count.
-          </p>
-          <CmGrid class="cm-grid-cols-3">
-            <div class="cm-p-4 cm-bg-surface cm-border cm-border-subtle cm-rounded-surface">1</div>
-            <div class="cm-p-4 cm-bg-surface cm-border cm-border-subtle cm-rounded-surface">2</div>
-            <div class="cm-p-4 cm-bg-surface cm-border cm-border-subtle cm-rounded-surface">3</div>
-          </CmGrid>
-          <ContractExamples slug="grid" />
-        </section>
-        <section id="demo-inline" class="ui-showcase__demo showcase-panel">
-          <h3>Inline</h3>
-          <p class="ui-showcase__note">A flex row primitive for laying out a run of small elements.</p>
-          <CmInline>
-            <CmTag tone="primary">Platform</CmTag>
-            <CmTag tone="success">Stable</CmTag>
-            <CmTag>Internal</CmTag>
-          </CmInline>
-          <ContractExamples slug="inline" />
-        </section>
-        <section id="demo-section" class="ui-showcase__demo showcase-panel">
-          <h3>Section</h3>
-          <p class="ui-showcase__note">
-            A landmark and vertical-rhythm primitive; <code>surface</code> adds a background.
-          </p>
-          <CmSection surface>A section with the surface variant.</CmSection>
-          <ContractExamples slug="section" />
-        </section>
-        <section id="demo-stack" class="ui-showcase__demo showcase-panel">
-          <h3>Stack</h3>
-          <p class="ui-showcase__note">A flex column primitive, stretched and gapped by default.</p>
-          <CmStack>
-            <div class="cm-p-4 cm-bg-surface cm-border cm-border-subtle cm-rounded-surface">1</div>
-            <div class="cm-p-4 cm-bg-surface cm-border cm-border-subtle cm-rounded-surface">2</div>
-          </CmStack>
-          <ContractExamples slug="stack" />
-        </section>
-        <section id="demo-app-shell" class="ui-showcase__demo showcase-panel showcase-panel--wide">
-          <h3>App shell</h3>
-          <p class="ui-showcase__note">
-            An application frame. Sticky offsets are published as custom properties that read from declared heights, so
-            the frame is correct before any script runs; a controller narrows them to the observed heights afterwards.
-            The collapse control is marked, not rendered by the layout.
-          </p>
-          <div class="ui-showcase__frame">
-            <CmAppShell layout="sidebar-content" sticky-header>
-              <template #header>Product</template>
-              <template #sidebar>
-                <button
-                  type="button"
-                  class="cm-button cm-button--ghost cm-button--sm"
-                  data-cm-sidebar-toggle
-                  aria-expanded="true"
-                >
-                  Collapse
-                </button>
-              </template>
-              Content
-            </CmAppShell>
-          </div>
-          <ContractExamples slug="app-shell" />
-        </section>
-        <section id="demo-document-layout" class="ui-showcase__demo showcase-panel showcase-panel--wide">
-          <h3>Document layout</h3>
-          <p class="ui-showcase__note">A reading frame with chapter navigation and a contextual panel.</p>
-          <div class="ui-showcase__frame">
-            <CmDocumentLayout>
-              <template #header>Guide</template>
-              <template #sidebar>Chapters</template>
-              <template #aside>On this page</template>
-              Body
-            </CmDocumentLayout>
-          </div>
-          <ContractExamples slug="document-layout" />
-        </section>
-        <section id="demo-admin-layout" class="ui-showcase__demo showcase-panel showcase-panel--wide">
-          <h3>Admin layout</h3>
-          <p class="ui-showcase__note">
-            Regions plus a collapsible sidebar. State lives on the root as <code>data-cm-*</code>, so Vanilla HTML and
-            the runtime controller read the same thing Vue binds. A collapsed sidebar still opens on hover or keyboard
-            focus, without leaving the collapsed state.
-          </p>
-          <div class="ui-showcase__frame">
-            <CmAdminLayout id="showcase-admin-layout">
-              <template #brand>CodeMonster</template>
-              <template #aside>Navigation</template>
-              <template #header>
-                <button type="button" class="cm-button cm-button--ghost cm-button--sm" data-cm-sidebar-toggle>
-                  Collapse
-                </button>
-                Workspace
-              </template>
-              Layout content
-            </CmAdminLayout>
-          </div>
-          <ContractExamples slug="admin-layout" />
-        </section>
-        <section id="demo-admin-shell" class="ui-showcase__demo showcase-panel showcase-panel--wide">
-          <h3>Admin shell</h3>
-          <p class="ui-showcase__note">The same regions without the sidebar behaviour.</p>
-          <div class="ui-showcase__frame">
-            <CmAdminShell>
-              <template #brand>CodeMonster</template>
-              <template #sidebar>Navigation</template>
-              Workspace
-            </CmAdminShell>
-          </div>
-          <ContractExamples slug="admin-shell" />
-        </section>
-        <section id="demo-setup-layout" class="ui-showcase__demo showcase-panel showcase-panel--wide">
-          <h3>Setup layout</h3>
-          <p class="ui-showcase__note">
-            A single-task page for onboarding steps. Given an aside, it sits beside the form rather than above it once
-            there's room -- <code>aside-position</code> picks which side.
-          </p>
-          <div class="ui-showcase__frame">
-            <CmSetupLayout title="Create your workspace" description="This takes a minute.">
-              <template #aside>Invite your team once you're set up -- they'll see this workspace immediately.</template>
-              Workspace name
-              <template #actions>Continue</template>
-            </CmSetupLayout>
-          </div>
-          <ContractExamples slug="setup-layout" />
-        </section>
+        <!-- eslint-disable-next-line vue/no-v-html -- Static showcase markup bundled from the repository. -->
+        <div
+          ref="layoutRecipes"
+          class="layout-recipes"
+          v-html="renderLayoutRecipes().replace('/vueforge-logo-icon.svg', historicalLogo)"
+        />
+        <LayoutShowcase />
       </div>
     </section>
     <section v-else id="icons" class="showcase-group">

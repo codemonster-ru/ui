@@ -1,0 +1,99 @@
+<section id="core-recipes" class="showcase-group">
+  <header><h2>Component compositions</h2></header>
+  <div class="showcase-grid">
+    <article class="showcase-panel">
+      <h3>Supporting Context</h3>
+      <p>Panel content with regular treatment.</p>
+      <section class="cm-section cm-section--surface">
+        <strong>Subtle Context</strong>
+        <p>Subtle panel treatment for quiet grouping.</p>
+      </section>
+    </article>
+    <article class="showcase-panel">
+      <h3>Shipping address</h3>
+      <p>1234 Elm Street, San Francisco, CA 94102</p>
+      <details>
+        <summary>Invoice details</summary>
+        <p>Invoice #1024 · Design service · $120.00</p>
+      </details>
+    </article>
+    <article class="showcase-panel">
+      <h3>Loading and ready panels</h3>
+      <div class="layout-sample-pair">
+        <div class="cm-stack" role="status" aria-label="Loading panel">
+          <span class="cm-skeleton" style="width: 60%; height: 1rem"></span>
+          <span class="cm-skeleton" style="width: 100%; height: 2rem"></span>
+        </div>
+        <div class="cm-card">
+          <header class="cm-card__header">Ready panel</header>
+          <div class="cm-card__body">Loaded content.</div>
+        </div>
+      </div>
+    </article>
+    <article class="showcase-panel showcase-panel--wide">
+      <h3>Workspace settings</h3>
+      <div class="showcase-settings-fields">
+        <label for="recipe-workspace">Workspace name</label>
+        <div>
+          <input
+            id="recipe-workspace"
+            class="cm-input cm-input--md"
+            placeholder="Acme Cloud"
+            aria-describedby="recipe-workspace-description"
+            required
+          />
+          <p id="recipe-workspace-description">Shown to every workspace member.</p>
+        </div>
+        <label for="recipe-billing">Billing email</label>
+        <input id="recipe-billing" class="cm-input cm-input--md" type="email" placeholder="team@acme.test" required />
+        <label for="recipe-plan">Plan</label>
+        <select id="recipe-plan" class="cm-input cm-input--md">
+          <option value="">Choose a plan</option>
+          <option>Starter</option>
+          <option>Pro</option>
+        </select>
+      </div>
+    </article>
+    <article class="showcase-panel showcase-panel--wide">
+      <nav aria-label="Breadcrumb">
+        <a class="cm-link" href="#navigation">Administration</a> / <span aria-current="page">Users</span>
+      </nav>
+      <h3>Team members</h3>
+      <p>Manage workspace access, roles, and account status.</p>
+      <div class="showcase-matrix-row">
+        <button class="cm-button cm-button--secondary cm-button--md" type="button">
+          <span class="cm-button__label">Export</span>
+        </button>
+        <button class="cm-button cm-button--primary cm-button--md" type="button">
+          <span class="cm-button__label">New user</span>
+        </button>
+      </div>
+    </article>
+    <article class="showcase-panel">
+      <h3>Confirm deletion</h3>
+      <button
+        class="cm-button cm-button--danger cm-button--md"
+        type="button"
+        commandfor="recipe-confirm"
+        command="show-modal"
+      >
+        <span class="cm-button__label">Delete example user</span>
+      </button>
+      <dialog id="recipe-confirm" class="showcase-panel" aria-labelledby="recipe-confirm-title">
+        <form method="dialog">
+          <h4 id="recipe-confirm-title">Delete example user?</h4>
+          <p>This action cannot be undone.</p>
+          <div class="showcase-matrix-row">
+            <button class="cm-button cm-button--secondary cm-button--md" value="cancel" autofocus>
+              <span class="cm-button__label">Cancel</span>
+            </button>
+            <button class="cm-button cm-button--danger cm-button--md" value="delete">
+              <span class="cm-button__label">Delete user</span>
+            </button>
+          </div>
+        </form>
+      </dialog>
+      <output id="recipe-confirm-result" aria-live="polite"></output>
+    </article>
+  </div>
+</section>
