@@ -14,6 +14,7 @@ export type { ColumnChooserVisibleColumnsChangeDetail } from './column-chooser.j
 export { CmCommandPaletteController, createCmCommandPaletteController } from './command-palette.js';
 export type { CommandPaletteQueryChangeDetail, CommandPaletteSelectDetail } from './command-palette.js';
 export { CmDataTableController, createCmDataTableController } from './data-table.js';
+export { observeDataTablePins } from './data-table-pinning.js';
 export {
   measureDataTableColumnContent,
   measureDataTableResizeBoundary,

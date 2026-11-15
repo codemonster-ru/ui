@@ -46,6 +46,7 @@ export type {
   CmDataTableAlign,
   CmDataTableCellValue,
   CmDataTableColumn,
+  CmDataTableColumnPin,
   CmDataTableColumnWidths,
   CmDataTableDensity,
   CmDataTableProps,

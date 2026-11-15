@@ -12,6 +12,30 @@ const scenarioFiles = (await readdir(resolve(contractDirectory, 'behavior')))
   .filter((file) => file.endsWith('.scenario.json'))
   .sort();
 
+test('pinned cells track measured header widths and release the authored table on stop', async (t) => {
+  const html = await readFile(resolve(contractDirectory, 'cases/pinned.html'), 'utf8');
+  const { window } = new JSDOM(html);
+  const { document } = window;
+  const name = document.querySelector('th[data-cm-data-table-column="name"]');
+  const team = document.querySelector('td[data-cm-data-table-column="team"]');
+  const table = document.querySelector('table');
+  let width = 88;
+  name.getBoundingClientRect = () => ({ width });
+  const offset = () => team.style.getPropertyValue('--cm-data-table-pin-offset');
+  const runtime = new CmRuntime().register('data-table', createCmDataTableController);
+  runtime.start(document);
+  t.after(() => window.close());
+
+  assert.equal(offset(), '88px');
+  assert.equal(table.hasAttribute('data-cm-data-table-pins-ready'), true);
+  width = 96;
+  window.dispatchEvent(new window.Event('resize'));
+  assert.equal(offset(), '96px');
+  runtime.stop();
+  assert.equal(table.hasAttribute('data-cm-data-table-pins-ready'), false);
+  assert.equal(offset(), '');
+});
+
 test('Vanilla keyboard resize preserves the paired width and reports the completed action', async () => {
   const html = await readFile(resolve(contractDirectory, 'cases/resizable.html'), 'utf8');
   const { window } = new JSDOM(html);

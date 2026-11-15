@@ -13,6 +13,7 @@ import {
   type CmDataTableResizeBoundary,
 } from './data-table-resize.js';
 import { dispatchCmEvent } from './events.js';
+import { observeDataTablePins } from './data-table-pinning.js';
 import type { CmController, CmControllerFactory } from './runtime.js';
 
 export type DataTableSortDirection = 'ascending' | 'descending';
@@ -59,6 +60,7 @@ function nonNegativeInteger(value: string | null): number | null {
 export class CmDataTableController implements CmController {
   readonly #root: Element;
   readonly #table: HTMLTableElement;
+  #stopPinning: (() => void) | undefined;
   #drag:
     | {
         handle: HTMLElement;
@@ -82,6 +84,15 @@ export class CmDataTableController implements CmController {
     this.#synchronizeSort();
     this.#synchronizeSelection();
     this.#synchronizePage();
+    if (this.#table.tHead?.querySelector('[data-cm-data-table-pin]')) {
+      this.#stopPinning = observeDataTablePins(this.#table, (offsets) => {
+        for (const cell of this.#pinnedCells()) {
+          const offset = offsets[cell.dataset.cmDataTableColumn ?? ''];
+          if (typeof offset === 'number') cell.style.setProperty('--cm-data-table-pin-offset', `${offset}px`);
+        }
+        this.#table.setAttribute('data-cm-data-table-pins-ready', '');
+      });
+    }
     for (const handle of this.#table.querySelectorAll<HTMLElement>(resizeSelector)) {
       if (handle.closest('table') !== this.#table) continue;
       const boundary = measureDataTableResizeBoundary(handle);
@@ -111,6 +122,18 @@ export class CmDataTableController implements CmController {
       this.#root.removeEventListener(type, this.#finishResize);
     }
     this.#drag = undefined;
+    if (this.#stopPinning) {
+      this.#stopPinning();
+      this.#stopPinning = undefined;
+      this.#table.removeAttribute('data-cm-data-table-pins-ready');
+      for (const cell of this.#pinnedCells()) cell.style.removeProperty('--cm-data-table-pin-offset');
+    }
+  }
+
+  #pinnedCells(): HTMLElement[] {
+    return [...this.#table.querySelectorAll<HTMLElement>('[data-cm-data-table-pin]')].filter(
+      (cell) => cell.closest('table') === this.#table,
+    );
   }
 
   #resizeHandle(event: Event): HTMLElement | null {

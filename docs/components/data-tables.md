@@ -130,6 +130,18 @@ DataTable controller. It updates the header and body cell widths and dispatches
 `cm:data-table-column-widths-change` and `cm:data-table-column-resize-end`, each with
 `detail.columnWidths`.
 
+### Pinning columns
+
+Set a column's `pinned` value to `start` or `end` to keep it in view during horizontal scrolling.
+The table groups visible columns by pin side and preserves their order within each group. It
+uses the rendered header widths to keep adjacent pins aligned after a resize. The logical sides
+follow the text direction.
+
+For Vanilla HTML, [author the pinned header and body cells](../../contracts/data-table/cases/pinned.html)
+in their final order with matching `data-cm-data-table-column` keys and `data-cm-data-table-pin` sides.
+The DataTable controller applies the measured offsets. The authored table remains scrollable
+before enhancement.
+
 ## Vanilla HTML and progressive enhancement
 
 Vanilla HTML renders the current server-owned page and state:

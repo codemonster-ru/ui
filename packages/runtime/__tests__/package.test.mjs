@@ -61,6 +61,7 @@ test('publishes the framework-independent runtime entry', async () => {
     'dispatchCmEvent',
     'measureDataTableColumnContent',
     'measureDataTableResizeBoundary',
+    'observeDataTablePins',
     'resizedDataTableWidths',
   ]);
 });

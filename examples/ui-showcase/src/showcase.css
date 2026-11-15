@@ -369,26 +369,6 @@
   cursor: pointer;
 }
 
-.core-pinned-table .cm-table {
-  min-inline-size: 44rem;
-}
-
-.core-pinned-table tr > :is(:first-child, :last-child) {
-  position: sticky;
-  z-index: 1;
-  background: var(--cm-color-background-surface);
-}
-
-.core-pinned-table tr > :first-child {
-  inset-inline-start: 0;
-  box-shadow: 1px 0 var(--cm-color-border-default);
-}
-
-.core-pinned-table tr > :last-child {
-  inset-inline-end: 0;
-  box-shadow: -1px 0 var(--cm-color-border-default);
-}
-
 @media (width > 960px) {
   #navigation .core-compact-nav .cm-nav-menu__list {
     gap: var(--cm-space-1);
