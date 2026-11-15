@@ -6,12 +6,23 @@ import { fileURLToPath } from 'node:url';
 import { renderToString } from '@vue/server-renderer';
 import { createSSRApp, h } from 'vue';
 import { compareSignificantDom } from '../../../scripts/contracts/significant-dom.mjs';
-import { CmField, CmInput } from '../dist/index.js';
+import { CmDatePicker, CmField, CmInput } from '../dist/index.js';
 
 const packageDirectory = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const casesDirectory = resolve(packageDirectory, '../../contracts/field/cases');
 
-function controlFor(definition) {
+function controlFor(definition, { controlId, describedBy }) {
+  if (definition.id === 'field-floating-date-picker') {
+    return h(CmDatePicker, {
+      id: controlId,
+      'aria-describedby': describedBy,
+      name: 'release_date',
+      placeholder: 'Choose a date',
+      clearable: true,
+      clearLabel: 'Clear release date',
+      teleportTo: 'body',
+    });
+  }
   if (definition.props.labelPlacement === 'floating') return h(CmInput, { id: definition.props.controlId });
   if (definition.id === 'field-help-error') {
     return h('input', {
@@ -38,7 +49,7 @@ for (const caseFile of caseFiles) {
     const basename = caseFile.slice(0, -'.case.json'.length);
     const definition = JSON.parse(await readFile(resolve(casesDirectory, caseFile), 'utf8'));
     const expected = await readFile(resolve(casesDirectory, `${basename}.html`), 'utf8');
-    const actual = await renderField(definition.props, { default: () => controlFor(definition) });
+    const actual = await renderField(definition.props, { default: (scope) => controlFor(definition, scope) });
     const comparison = compareSignificantDom(expected, actual);
 
     assert.equal(comparison.equal, true, comparison.difference);

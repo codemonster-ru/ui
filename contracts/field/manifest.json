@@ -72,5 +72,5 @@
   },
   "events": {},
   "states": ["default", "required", "invalid", "floating"],
-  "relatedComponents": ["Input"]
+  "relatedComponents": ["DatePicker", "Input"]
 }

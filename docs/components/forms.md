@@ -28,10 +28,13 @@ in that order; the control references only the regions that are actually rendere
 
 `CmField` (also exported as `VfField`) generates an SSR-safe id when no `controlId` is passed.
 Bind the id provided by the default slot to the control. Floating labels support Input, Textarea,
-and Select. Other controls keep an ordinary top label. Vanilla uses the same CSS; supply a
+Select, and DatePicker. Other controls keep an ordinary top label. Vanilla uses the same CSS; supply a
 nonempty placeholder (a single space is sufficient) on native text inputs and textareas so CSS can
 tell whether the control has a value. See the [in](../../contracts/field/cases/floating-in.html),
 [on](../../contracts/field/cases/floating-on.html), and [over](../../contracts/field/cases/floating-over.html) examples.
+
+The DatePicker label raises on focus, while the calendar is open, and while a selection exists.
+Use the Field's `controlId` for the trigger. See the [floating DatePicker markup](../../contracts/field/cases/floating-date-picker.html).
 
 ## Fieldset API
 
