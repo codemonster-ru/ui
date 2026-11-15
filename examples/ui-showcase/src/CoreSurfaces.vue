@@ -12,7 +12,7 @@ import {
   CmTag,
   type CmDataTableProps,
 } from '@codemonster-ru/ui-vue';
-import { VfDataTableColumnChooser } from '@codemonster-ru/ui-vue/historical';
+import { VfDataTable, VfDataTableColumnChooser, type VfDataTableSort } from '@codemonster-ru/ui-vue/historical';
 import { computed, ref } from 'vue';
 import CoreMatrix from './CoreMatrix.vue';
 import CoreResizableTable from './CoreResizableTable.vue';
@@ -110,17 +110,7 @@ const dataExamples: { id: string; title: string; props?: Partial<CmDataTableProp
   { id: 'sticky', title: 'Sticky header', props: { stickyHeader: true } },
   { id: 'loading', title: 'Loading', props: { loading: true } },
   { id: 'error', title: 'Error', props: { errorText: 'Could not load team members.', rows: rosterRows.slice(0, 3) } },
-  {
-    id: 'sorting',
-    title: 'Sorting',
-    props: {
-      ...roster,
-      caption: 'Sortable team workload',
-      columns: sortableColumns,
-      totalRows: rows.length,
-      pageSizeOptions: [3, 5, 10],
-    },
-  },
+  { id: 'sorting', title: 'Sorting' },
   {
     id: 'pagination',
     title: 'Pagination',
@@ -138,21 +128,8 @@ function moveColumn(index: number, offset: number) {
 }
 const visible = ref<readonly string[]>(['member', 'status', 'tasks']);
 const selection = ref<readonly string[]>([]);
-const sort = ref<CmDataTableProps['sort']>(null);
-const sortPage = ref(1);
-const sortPageSize = ref(3);
-const sortedRows = computed(() => {
-  const order = sort.value;
-  const sample = rows.slice();
-  if (!order) return sample;
-  const key = columns.find((column) => column.key === order.key)?.key;
-  if (!key) return sample;
-  return sample.sort(
-    (left, right) =>
-      String(left.cells[key]).localeCompare(String(right.cells[key]), 'en', { numeric: true }) *
-      (order.direction === 'ascending' ? 1 : -1),
-  );
-});
+const sort = ref<VfDataTableSort[]>([]);
+const sortableRows = rows.map(({ id, cells }) => ({ id, ...cells }));
 const dataError = ref(true);
 const page = ref(7);
 const pageSize = ref(3);
@@ -341,45 +318,47 @@ const pageSize = ref(3);
           />
           <span>Member is always visible</span>
         </div>
-        <p v-if="id === 'sorting'">Select a column header to change the sort order.</p>
+        <template v-if="id === 'sorting'">
+          <p>Select headers to add sort columns in priority order. Sorting runs before pagination.</p>
+          <VfDataTable
+            id="core-data-sorting"
+            v-model:sort="sort"
+            caption="Sortable team workload"
+            :columns="sortableColumns"
+            :rows="sortableRows"
+            row-key="id"
+            multi-sort
+            pagination
+            :default-page-size="3"
+            :page-size-options="[3, 5, 10]"
+            striped
+            column-dividers
+          />
+          <p aria-live="polite">
+            Sort: <code>{{ sort.map(({ key, direction }) => `${key} ${direction}`).join(', ') || 'none' }}</code>
+          </p>
+        </template>
         <CmDataTable
+          v-else
           :id="'core-data-' + id"
           v-bind="{ columns: rosterColumns, ...props }"
           :rows="
             id === 'pagination'
               ? paginationRows.slice((page - 1) * pageSize, page * pageSize)
-              : id === 'sorting'
-                ? sortedRows.slice((sortPage - 1) * sortPageSize, sortPage * sortPageSize)
-                : (props?.rows ?? rosterRows)
+              : (props?.rows ?? rosterRows)
           "
-          :page="id === 'pagination' ? page : id === 'sorting' ? sortPage : undefined"
-          :page-size="id === 'pagination' ? pageSize : id === 'sorting' ? sortPageSize : undefined"
-          :page-count="
-            id === 'pagination'
-              ? Math.ceil(paginationRows.length / pageSize)
-              : id === 'sorting'
-                ? Math.ceil(rows.length / sortPageSize)
-                : undefined
-          "
+          :page="id === 'pagination' ? page : undefined"
+          :page-size="id === 'pagination' ? pageSize : undefined"
+          :page-count="id === 'pagination' ? Math.ceil(paginationRows.length / pageSize) : undefined"
           :visible-column-keys="id === 'columns' ? visible : undefined"
           :selected-row-ids="id === 'selection' ? selection : undefined"
-          :sort="id === 'sorting' ? sort : undefined"
           :error="id === 'error' && dataError"
           :class="{ 'core-scroll-table': props?.stickyHeader }"
           @update:selected-row-ids="selection = $event"
-          @update:sort="
-            sort = $event;
-            sortPage = 1;
-          "
-          @update:page="id === 'sorting' ? (sortPage = $event) : (page = $event)"
+          @update:page="page = $event"
           @update:page-size="
-            if (id === 'sorting') {
-              sortPageSize = $event;
-              sortPage = 1;
-            } else {
-              pageSize = $event;
-              page = 1;
-            }
+            pageSize = $event;
+            page = 1;
           "
         />
         <div v-if="id === 'selection'" class="core-theme-controls">
@@ -392,9 +371,6 @@ const pageSize = ref(3);
         <CmButton v-if="id === 'error'" size="sm" variant="secondary" @click="dataError = !dataError">
           {{ dataError ? 'Try again' : 'Show error state' }}
         </CmButton>
-        <p v-if="id === 'sorting'" aria-live="polite">
-          Sort: <code>{{ sort ? sort.key + ' ' + sort.direction : 'none' }}</code>
-        </p>
       </div>
     </template>
     <div class="core-matrix-cell">

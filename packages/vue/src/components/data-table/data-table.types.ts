@@ -54,11 +54,15 @@ export interface CmDataTableProps<Row extends object = CmDataTableRow> {
   selectable?: boolean;
   rowSelectable?: (row: Row, rowIndex: number) => boolean;
   selectedRowIds?: readonly string[];
+  controlledSelection?: boolean;
+  rowLabelResolver?: (rowIndex: number) => string;
   expandedRowKeys?: readonly string[] | null;
   defaultExpandedRowKeys?: readonly string[];
   expandRowLabelTemplate?: string;
   collapseRowLabelTemplate?: string;
   sort?: CmDataTableSort | null;
+  sortList?: readonly CmDataTableSort[];
+  multiSort?: boolean;
   sortingMode?: CmDataTableMode;
   pagination?: boolean;
   paginationMode?: CmDataTableMode;

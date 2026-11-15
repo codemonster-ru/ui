@@ -16,6 +16,25 @@ export { default as VfBreadcrumbs } from './components/breadcrumbs/VfBreadcrumbs
 export type { VfBreadcrumbItem, VfBreadcrumbsProps } from './components/breadcrumbs/breadcrumbs.types';
 export { default as VfCheckbox } from './components/checkbox/VfCheckbox.vue';
 export type { VfCheckboxProps } from './components/checkbox/checkbox.types';
+export { default as VfDataTable } from './components/data-table/VfDataTable.vue';
+export type {
+  VfDataTableCellAlign,
+  VfDataTableCellVerticalAlign,
+  VfDataTableColumn,
+  VfDataTableColumnOrder,
+  VfDataTableColumnPin,
+  VfDataTableColumnWidths,
+  VfDataTableDensity,
+  VfDataTableLabels,
+  VfDataTableLoadingVariant,
+  VfDataTablePaginationMode,
+  VfDataTableProps,
+  VfDataTableRow,
+  VfDataTableRowKey,
+  VfDataTableSort,
+  VfDataTableSortDirection,
+  VfDataTableSortingMode,
+} from './components/data-table/historical-data-table.types';
 export { default as VfDataTableColumnChooser } from './components/column-chooser/VfDataTableColumnChooser.vue';
 export type { VfDataTableColumnChooserProps } from './components/column-chooser/column-chooser.types';
 export { default as VfDatePicker } from './components/date-picker/VfDatePicker.vue';

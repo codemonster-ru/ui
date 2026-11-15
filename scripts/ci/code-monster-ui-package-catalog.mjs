@@ -51,7 +51,8 @@ export const codeMonsterUiPackageSizeBudgets = Object.freeze({
   // brought the distributed runtime to 60.35 KiB. Adding the shared calendar clock and expanded
   // navigation/placement brought it to 67.28 KiB. Anchored Popover and native DataTable column
   // resize brought it to 72.64 KiB. The bundled pure core still has its own 7 KiB limit.
-  '@codemonster-ru/ui-runtime': { cssGzip: 0, cssRaw: 0, jsGzip: 76 * 1024 },
+  // Native modal scroll and DataTable row expansion add to the standalone capsule (76.53 KiB measured).
+  '@codemonster-ru/ui-runtime': { cssGzip: 0, cssRaw: 0, jsGzip: 78 * 1024 },
   '@codemonster-ru/ui-css': { cssGzip: 48 * 1024, cssRaw: 320 * 1024, jsGzip: 8 * 1024 },
   '@codemonster-ru/ui-utilities': { cssGzip: 32 * 1024, cssRaw: 256 * 1024, jsGzip: 8 * 1024 },
   '@codemonster-ru/ui-vue': { cssGzip: 8 * 1024, cssRaw: 32 * 1024, jsGzip: 128 * 1024 },

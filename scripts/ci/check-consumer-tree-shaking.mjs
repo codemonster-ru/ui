@@ -54,6 +54,20 @@ const cases = [
     name: 'ui-vue CmMenuBar without the named icon catalogue',
   },
   {
+    entry: "export { CmDataTable } from '@codemonster-ru/ui-vue';\n",
+    fileName: 'ui-vue-data-table',
+    forbiddenMarkers: [...unrelatedRuntimeMarkers, unrelatedIcon, overlayTrigger],
+    maxGzipBytes: 12 * 1024,
+    name: 'ui-vue CmDataTable without DOM controllers',
+  },
+  {
+    entry: "export { VfDataTable } from '@codemonster-ru/ui-vue/historical';\n",
+    fileName: 'ui-vue-historical-data-table',
+    forbiddenMarkers: [...unrelatedRuntimeMarkers, unrelatedIcon, overlayTrigger],
+    maxGzipBytes: 14 * 1024,
+    name: 'ui-vue historical DataTable without DOM controllers',
+  },
+  {
     entry: "export { CmButton, CmDialog, CmTabs } from '@codemonster-ru/ui-vue';\n",
     fileName: 'ui-vue-multiple',
     forbiddenMarkers: [...unrelatedRuntimeMarkers, overlayTrigger],
@@ -79,9 +93,8 @@ const cases = [
     fileName: 'ui-vue-full',
     forbiddenMarkers: [...domRuntimeMarkers, themeRuntime, unrelatedIcon],
     includesPositioning: true,
-    // Includes the restored navigation, results, calendar and native overlays.
-    // Measured 55.57 KiB without the opt-in named icon catalogue or the Vanilla controllers.
-    maxGzipBytes: 58 * 1024,
+    // Includes the shared native modal and DataTable models. Measured 57.92 KiB without the icon catalogue.
+    maxGzipBytes: 60 * 1024,
     minGzipBytes: 15 * 1024,
     name: 'ui-vue full namespace',
   },
@@ -144,8 +157,8 @@ const cases = [
     fileName: 'ui-vue-historical',
     forbiddenMarkers: unrelatedRuntimeMarkers,
     includesPositioning: true,
-    // The grouped and routed MenuBar adds its native tree renderer and keyboard rules (64.48 KiB total).
-    maxGzipBytes: 67 * 1024,
+    // Including the native DataTable renderer and opt-in historical model adapters (76.05 KiB measured).
+    maxGzipBytes: 79 * 1024,
     name: 'ui-vue opt-in historical namespace',
   },
   {

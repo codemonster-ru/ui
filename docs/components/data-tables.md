@@ -85,6 +85,21 @@ Explicit manual paging (`pagination` with `paginationMode="manual"`) preserves t
 page's order and still reports sort requests. Set `:pagination="false"` to hide the pager
 and show all supplied rows.
 
+For ordered sorting in Vue, bind `v-model:sort-list` and set `multiSort`. Each item uses the
+current `ascending` or `descending` direction. The first column is primary; subsequent columns
+break ties. A header cycles through ascending, descending, and removal while leaving the other
+criteria in order. The table announces only the primary sort through `aria-sort` and shows
+the priority beside each sorted column.
+
+The historical `VfDataTable` entry from `@codemonster-ru/ui-vue/historical` combines the same
+renderer with the original `sort` array (`asc`/`desc`), `selectedRowKeys` and `expandedRowKeys`
+models. Use `rowKey` with a field path or resolver: numeric `42` and string `"42"` remain distinct.
+The default key is the original source index, so selection remains attached while client sorting
+reorders the view. Client sorting and, when enabled, client paging are the historical defaults.
+The adapter also restores caption and cell/expanded slots, optional column headers, and a
+generated table ID. Pointer column reordering and historical callback labels and page-number
+controls remain separate.
+
 Select-all affects only eligible rendered rows. Vue preserves selections outside the current page.
 A disabled row that is already selected remains selected until the application changes the
 selection.
