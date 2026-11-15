@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "drawer-physical-offset",
+  "description": "A left sheet with an offset, compact body padding and separate Escape and backdrop policies.",
+  "props": {
+    "id": "guide",
+    "ariaLabel": "Project guide",
+    "side": "left",
+    "size": "sm",
+    "defaultOpen": true,
+    "focusDrawer": true,
+    "closable": false,
+    "closeOnEscape": false,
+    "closeOnOverlayClick": true,
+    "offsetTop": 48,
+    "bodyPadding": "1.25rem"
+  },
+  "slots": { "default": "Guide controls" }
+}

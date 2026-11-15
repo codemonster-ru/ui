@@ -385,6 +385,8 @@ for (const [slug, approved] of [
       'cm-drawer',
       'cm-drawer--start',
       'cm-drawer--end',
+      'cm-drawer--left',
+      'cm-drawer--right',
       'cm-drawer--top',
       'cm-drawer--bottom',
       'cm-drawer--sm',

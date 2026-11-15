@@ -12,7 +12,7 @@ defineOptions({ inheritAttrs: false });
 const props = defineProps({
   id: { type: String, required: true },
   title: { type: String, default: undefined },
-  description: { type: String, default: null },
+  description: { type: String as PropType<string | null>, default: null },
   open: { type: Boolean, default: undefined },
   defaultOpen: Boolean,
   ariaLabel: { type: String, default: undefined },

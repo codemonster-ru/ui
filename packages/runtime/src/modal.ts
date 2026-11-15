@@ -12,6 +12,7 @@ export interface ModalControllerOptions {
   eventName: string;
   stateAttribute: string;
   allowEscape?: () => boolean;
+  allowNoCloseButton?: boolean;
 }
 
 export class CmModalController implements CmController {
@@ -25,7 +26,7 @@ export class CmModalController implements CmController {
     if (!DialogConstructor || !(root instanceof DialogConstructor)) {
       throw new TypeError('Modal controller requires a native dialog root.');
     }
-    if (!root.querySelector(options.closeSelector)) {
+    if (!options.allowNoCloseButton && !root.querySelector(options.closeSelector)) {
       throw new TypeError('Modal controller requires a close button.');
     }
     this.#dialog = root;

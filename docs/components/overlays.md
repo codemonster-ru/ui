@@ -10,15 +10,17 @@ Individual styles are also available from the `dialog.css`, `drawer.css`, `dropd
 
 ## APIs
 
-- `Dialog` requires a stable `id` and non-empty fallback `title`. It accepts `description`, `open`,
-  `closeLabel`, `size` (`sm`, `md`, or `lg`), and `dividers`; the default, `header`, `description`,
-  `actions`, and `footer` slots compose its trusted regions.
-- `Drawer` shares the Dialog composition API and adds logical `side` (`start` or `end`, default
-  `end`), `size` (`sm`, `md`, `lg`, or `full`), `rounded`, and `dividers`. It also supports
-  `dismissible=false` while application work must lock user dismissal.
+- `Dialog` requires a stable `id` and an accessible name through a title, header slot, or ARIA
+  label. Use `defaultOpen` for uncontrolled initial state. The default, `header`, `description`,
+  `actions`, and `footer` slots compose its trusted regions. `VfDialog` from the historical entry
+  supplies an ID, defaults to backdrop dismissal and focuses the native surface.
+- `Drawer` shares the Dialog composition API and adds logical or physical `side`,
+  `size` (`sm`, `md`, `lg`, or `full`), `rounded`, and `dividers`. Use `offsetTop` and
+  `bodyPadding` for shell spacing. `VfDrawer` from the historical entry uses physical
+  `placement` and defaults to the right edge.
 - `Popover` requires `id` and trigger `label`. It accepts `open`, `disabled`, and `placement`
-  (`top`, `bottom-start`, or `bottom-end`); the trusted `trigger` slot stays inside the
-  component-owned labelled button and the default slot is its non-modal panel.
+  (`top`, `bottom-start`, or `bottom-end`), an optional Vue portal, and independent Escape and
+  outside-click dismissal. The default slot receives `open` and `close()`.
 - `Dropdown` requires `id` and trigger `label`. Use `items` or the default slot with native menu
   actions. The default slot receives `{ open, close }`. The `trigger` slot receives
   `{ open, disabled, toggle }` and stays inside the labelled button. Use `variant="pills"`
@@ -110,20 +112,19 @@ it must survive navigation; runtime state is intentionally page-local.
 
 ## Accessibility and ownership
 
-- Dialog and Drawer use native `<dialog>`, move focus inside when opened, contain Tab focus, close
-  on Escape, and restore the invoking focus when known. Backdrop clicks never dismiss them; this
-  stable policy replaces VueForge's backdrop toggle. Drawer offsets and arbitrary body padding are
-  application styling concerns through the root class/style hooks rather than component props.
-- Drawer supports logical `start` and `end` edges and full-width `top` and `bottom` placements. Use
-  `side` in Vue and the corresponding `cm-drawer--top` or `cm-drawer--bottom` class in Vanilla.
-  Size controls the minimum height of a top or bottom drawer. The full size fills the viewport.
+- Dialog and Drawer use native `<dialog>`, move focus inside when opened, contain Tab focus,
+  and restore the invoking focus when known. Use `closeOnEscape` and `closeOnOverlayClick` for
+  separate dismissal policies. `dismissible=false` locks user dismissal.
+- Drawer supports logical `start` and `end`, physical `left` and `right`, and full-width `top`
+  and `bottom` placements. Use `side` in Vue and the corresponding `cm-drawer--*` class in Vanilla.
+  Size controls the minimum height of a top or bottom drawer within the available viewport.
 - Keep modal titles specific and visible. Use `description` for concise supporting text.
-- Popover is non-modal: it does not trap focus, teleport content, or calculate floating
-  coordinates. Escape and outside pointer activation dismiss it.
+- Popover is non-modal: it positions the panel relative to the trigger and allows focus to leave.
+  Escape and outside clicks dismiss it by default.
 - Rich Tooltip content must remain brief and cannot contain controls. Never place required
   instructions exclusively in a Tooltip.
-- Popover and Tooltip retain their native button roots even with a `trigger` slot. Do not place a
-  link, button, or other interactive root inside that slot; arbitrary `asChild` trigger ownership is
-  deliberately outside the portable contract.
+- Keep content inside a component-owned trigger button noninteractive. Use authored trigger
+  composition for existing buttons: Tooltip accepts one in its default slot, and Vue Popover
+  and Dropdown accept one with `triggerAsChild` or through their historical entries.
 - Closed server markup remains in the DOM with native `open` or `hidden` state, providing safe SSR
   before JavaScript enhancement.
