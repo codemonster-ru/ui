@@ -60,6 +60,8 @@ application's responsibility.
 
 Disabled Select values are omitted from form submissions. In server-rendered HTML, put
 `disabled` on both the trigger and the named hidden input.
+An uncanceled native form reset restores the submitted value and visible selection that were
+authored in the original server markup. Reset does not dispatch a selection change event.
 
 ## DatePicker
 
@@ -120,6 +122,11 @@ For form submission use `data-cm-date-picker-name` as the field name and include
 initial hidden input for each selected date. Use the `cm:date-picker-selection-change`
 event, whose detail contains `mode` and `values`. Single mode retains its scalar
 `cm:date-picker-value-change` event.
+
+An uncanceled reset of the associated form restores the initial selection. Vue requests
+the initial selection through its model event when the caller supplies another value.
+Vanilla restores the authored fields and updates the trigger text. Set `form` to associate
+a picker outside the form.
 
 ## CommandPalette
 

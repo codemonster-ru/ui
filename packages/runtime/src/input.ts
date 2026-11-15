@@ -1,4 +1,5 @@
 import { isInputClearVisible, resolveInputClearable, resolvePasswordReveal } from './core/input.js';
+import { observeFormReset } from './form-reset.js';
 import type { CmController, CmControllerFactory } from './runtime.js';
 
 const controlSelector = '[data-cm-input-control]';
@@ -10,7 +11,7 @@ export class CmInputController implements CmController {
   readonly #input: HTMLInputElement;
   readonly #clear: HTMLButtonElement | null;
   readonly #password: HTMLButtonElement | null;
-  #resetTimer: number | undefined;
+  #stopReset: (() => void) | undefined;
 
   constructor(root: Element) {
     const input = root.querySelector<HTMLInputElement>(controlSelector);
@@ -25,7 +26,7 @@ export class CmInputController implements CmController {
     this.#root.addEventListener('click', this.#handleClick);
     this.#root.addEventListener('mousedown', this.#handleMouseDown);
     this.#input.addEventListener('input', this.#synchronizeClear);
-    if (this.#clear) this.#root.ownerDocument.addEventListener('reset', this.#handleReset);
+    if (this.#clear) this.#stopReset ??= observeFormReset(this.#input, this.#synchronizeClear);
     this.#synchronizeClear();
   }
 
@@ -33,8 +34,8 @@ export class CmInputController implements CmController {
     this.#root.removeEventListener('click', this.#handleClick);
     this.#root.removeEventListener('mousedown', this.#handleMouseDown);
     this.#input.removeEventListener('input', this.#synchronizeClear);
-    this.#root.ownerDocument.removeEventListener('reset', this.#handleReset);
-    this.#cancelReset();
+    this.#stopReset?.();
+    this.#stopReset = undefined;
   }
 
   readonly #handleClick = (event: Event): void => {
@@ -72,22 +73,6 @@ export class CmInputController implements CmController {
   readonly #synchronizeClear = (): void => {
     if (this.#clear) this.#clear.hidden = !isInputClearVisible(true, this.#input.value);
   };
-
-  readonly #handleReset = (event: Event): void => {
-    if (event.target !== this.#input.form) return;
-    this.#cancelReset();
-    // The reset event is sent before the browser restores the default value.
-    this.#resetTimer = this.#root.ownerDocument.defaultView?.setTimeout(() => {
-      this.#resetTimer = undefined;
-      this.#synchronizeClear();
-    });
-  };
-
-  #cancelReset(): void {
-    if (this.#resetTimer === undefined) return;
-    this.#root.ownerDocument.defaultView?.clearTimeout(this.#resetTimer);
-    this.#resetTimer = undefined;
-  }
 
   #togglePassword(): void {
     if (!this.#password) return;

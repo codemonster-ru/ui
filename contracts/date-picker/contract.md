@@ -30,6 +30,10 @@ same name. An empty array submits no value. Vue opts in with `multiple` or `rang
 Vanilla opts in with `data-cm-date-picker-mode` and reports
 `cm:date-picker-selection-change` with `mode` and `values`.
 
+An uncanceled form reset restores the authored selection and closes the popup.
+For an externally controlled Vue model, the adapter requests the reset through
+`update:modelValue` and the caller supplies the authoritative selection.
+
 Locale and display formatting affect only presentation. Defaults are US English and a
 week starting on Sunday. Vue accepts `locale`, `displayFormat`, `firstDayOfWeek`, and
 `labels`. In Vanilla use the corresponding trigger `data-cm-*` attributes and author the

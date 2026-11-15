@@ -1,7 +1,13 @@
 import { mount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import CmDatePicker from './CmDatePicker.vue';
+
+async function finishFormReset(): Promise<void> {
+  await new Promise<void>((resolve) => window.setTimeout(resolve, 0));
+  await nextTick();
+}
 
 afterEach(() => {
   document.body.innerHTML = '';
@@ -187,6 +193,49 @@ describe('CmDatePicker', () => {
     await day('2026-08-20').trigger('click');
     expect(wrapper.emitted('update:modelValue')?.slice(-1)[0]).toEqual([['2026-08-20']]);
     expect(trigger.attributes('aria-expanded')).toBe('true');
+    wrapper.unmount();
+  });
+
+  it('restores the authored dates on an uncanceled reset of the associated form', async () => {
+    const form = document.createElement('form');
+    form.id = 'launch-form';
+    document.body.append(form);
+    const wrapper = mount(CmDatePicker, {
+      attachTo: document.body,
+      props: { id: 'launch-date', modelValue: '2026-08-13', clearable: true },
+      attrs: { name: 'launch_date', form: form.id },
+    });
+    await wrapper.get('[data-cm-date-picker-clear]').trigger('click');
+    expect(new FormData(form).get('launch_date')).toBe('');
+
+    form.addEventListener('reset', (event) => event.preventDefault(), { once: true });
+    form.reset();
+    await finishFormReset();
+    expect(new FormData(form).get('launch_date')).toBe('');
+    form.reset();
+    await finishFormReset();
+    expect(new FormData(form).get('launch_date')).toBe('2026-08-13');
+    expect(wrapper.get('button.cm-date-picker').text()).toBe('08/13/26');
+    wrapper.unmount();
+  });
+
+  it('requests a reset without replacing an authoritative model value', async () => {
+    const form = document.createElement('form');
+    document.body.append(form);
+    const wrapper = mount(CmDatePicker, {
+      attachTo: form,
+      props: { id: 'release-window', range: true, modelValue: ['2026-08-13', '2026-08-20'] },
+      attrs: { name: 'release_dates' },
+    });
+    await wrapper.setProps({ modelValue: ['2026-08-14', '2026-08-22'] });
+
+    form.reset();
+    await finishFormReset();
+    expect(wrapper.emitted('update:modelValue')).toEqual([[['2026-08-13', '2026-08-20']]]);
+    expect(new FormData(form).getAll('release_dates')).toEqual(['2026-08-14', '2026-08-22']);
+
+    await wrapper.setProps({ modelValue: ['2026-08-13', '2026-08-20'] });
+    expect(new FormData(form).getAll('release_dates')).toEqual(['2026-08-13', '2026-08-20']);
     wrapper.unmount();
   });
 });
