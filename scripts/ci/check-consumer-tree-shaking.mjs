@@ -47,6 +47,13 @@ const cases = [
     name: 'ui-vue CmTabs with its shared core',
   },
   {
+    entry: "export { CmMenuBar } from '@codemonster-ru/ui-vue';\n",
+    fileName: 'ui-vue-menu-bar',
+    forbiddenMarkers: [...unrelatedRuntimeMarkers, unrelatedIcon, overlayTrigger],
+    maxGzipBytes: 7 * 1024,
+    name: 'ui-vue CmMenuBar without the named icon catalogue',
+  },
+  {
     entry: "export { CmButton, CmDialog, CmTabs } from '@codemonster-ru/ui-vue';\n",
     fileName: 'ui-vue-multiple',
     forbiddenMarkers: [...unrelatedRuntimeMarkers, overlayTrigger],
@@ -137,8 +144,8 @@ const cases = [
     fileName: 'ui-vue-historical',
     forbiddenMarkers: unrelatedRuntimeMarkers,
     includesPositioning: true,
-    // Including the historical disclosure and native selection adapters, this measures 60.44 KiB.
-    maxGzipBytes: 63 * 1024,
+    // The grouped and routed MenuBar adds its native tree renderer and keyboard rules (64.48 KiB total).
+    maxGzipBytes: 67 * 1024,
     name: 'ui-vue opt-in historical namespace',
   },
   {

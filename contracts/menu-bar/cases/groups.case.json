@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "id": "menu-bar-groups",
+  "description": "Named groups at the top level and in a submenu share the keyboard route with their peers.",
+  "props": {
+    "items": [
+      {
+        "value": "workspace",
+        "label": "Workspace",
+        "kind": "group",
+        "children": [
+          {
+            "value": "file",
+            "label": "File",
+            "children": [
+              {
+                "value": "operations",
+                "label": "Operations",
+                "kind": "group",
+                "children": [
+                  { "value": "archived", "label": "Archived", "disabled": true },
+                  { "value": "new", "label": "New" }
+                ]
+              },
+              { "value": "report", "label": "Report" }
+            ]
+          }
+        ]
+      },
+      { "value": "help", "label": "Help", "href": "/help" }
+    ]
+  },
+  "slots": {}
+}

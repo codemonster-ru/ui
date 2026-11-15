@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, useAttrs, useTemplateRef, watch, type PropType } from 'vue';
+import { computed, ref, useAttrs, useTemplateRef, watch, watchEffect, type Component, type PropType } from 'vue';
 
 import { collectAncestorValues, menuBarKeyAction } from '@codemonster-ru/ui-runtime/core';
 import { useCmHydrated } from '../../internal/hydration';
@@ -19,6 +19,7 @@ const props = defineProps({
     validator: (value: string) => ['default', 'pills'].includes(value),
   },
   ariaLabel: { type: String, default: 'Main menu' },
+  linkComponent: { type: [String, Object, Function] as PropType<string | Component>, default: undefined },
 });
 const emit = defineEmits<{
   select: [value: string];
@@ -34,7 +35,15 @@ const topNodeSelector = '.cm-menu-bar__node--depth-0';
 const selected = ref(props.defaultValue);
 const activeValue = computed(() => (props.modelValue === undefined ? selected.value : props.modelValue));
 const focusedValue = ref<string | null>(null);
-const tabbableValue = computed(() => focusedValue.value ?? props.items.find((item) => !item.disabled)?.value ?? null);
+const topItems = computed(() => {
+  function entries(items: readonly CmMenuBarItem[]): CmMenuBarItem[] {
+    return items.flatMap((item) =>
+      item.kind === 'group' ? entries(item.children ?? []) : item.disabled ? [] : [item],
+    );
+  }
+  return entries(props.items);
+});
+const tabbableValue = computed(() => focusedValue.value ?? topItems.value[0]?.value ?? null);
 const pendingFocus = ref<{ branch: string; edge: 'first' | 'last' } | null>(null);
 
 const localPath = ref<string[]>(props.openPath === null ? [] : [...props.openPath]);
@@ -51,6 +60,22 @@ const classes = computed(() =>
 );
 const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['class', 'aria-label', 'data-cm-controller']));
 
+const groupValues = computed(() => {
+  const groups = new Set<string>();
+  function collect(items: readonly CmMenuBarItem[]): void {
+    for (const item of items) {
+      if (item.kind === 'group') groups.add(item.value);
+      if (item.children) collect(item.children);
+    }
+  }
+  collect(props.items);
+  return groups;
+});
+
+function ancestorsOf(value: string): string[] {
+  return collectAncestorValues(props.items, value).filter((ancestor) => !groupValues.value.has(ancestor));
+}
+
 // A menu bar shows one path at a time, so opening a branch replaces the path rather than adding to
 // it: the ancestors take it there, and the branch itself ends it.
 function setOpenPath(next: string[]): void {
@@ -59,9 +84,19 @@ function setOpenPath(next: string[]): void {
   emit('openPathChange', next);
 }
 
+watchEffect((onCleanup) => {
+  const root = menu.value;
+  if (!root || openPath.value.length === 0) return;
+  const disconnectOutside = (event: MouseEvent) => {
+    if (openPath.value.length && !event.composedPath().includes(root)) setOpenPath([]);
+  };
+  root.ownerDocument.addEventListener('click', disconnectOutside);
+  onCleanup(() => root.ownerDocument.removeEventListener('click', disconnectOutside));
+});
+
 function onToggle(value: string): void {
   pendingFocus.value = null;
-  const ancestors = collectAncestorValues(props.items, value);
+  const ancestors = ancestorsOf(value);
   setOpenPath(openPath.value.includes(value) ? ancestors : [...ancestors, value]);
 }
 
@@ -88,9 +123,18 @@ function itemValue(item: HTMLElement): string {
 
 function enabledItems(list: Element | null | undefined): HTMLElement[] {
   if (!list) return [];
-  return [...list.querySelectorAll<HTMLElement>(`:scope > li > :is(${itemSelector})`)].filter(
-    (item) => !item.matches(':disabled, [aria-disabled="true"]'),
+  return [...list.querySelectorAll<HTMLElement>(`:scope > li > :is(${itemSelector}, [role="group"])`)].flatMap(
+    (item) =>
+      item.matches('[role="group"]')
+        ? enabledItems(item)
+        : item.matches(':disabled, [aria-disabled="true"]')
+          ? []
+          : [item],
   );
+}
+
+function owningList(item: Element): Element | null {
+  return item.closest('[role="menubar"], [role="menu"]');
 }
 
 function eventItem(event: Event): HTMLElement | null {
@@ -135,21 +179,21 @@ function onFocusOut(event: FocusEvent): void {
 function onKeydown(event: KeyboardEvent): void {
   const item = eventItem(event);
   if (!item || event.defaultPrevented || (event.key === 'Escape' && openPath.value.length === 0)) return;
-  const parent = item.parentElement;
-  const siblings = enabledItems(parent?.parentElement);
+  const list = owningList(item);
+  const siblings = enabledItems(list);
   const direction = item.closest('[dir]')?.getAttribute('dir')?.toLowerCase() === 'rtl' ? 'rtl' : 'ltr';
   const action = menuBarKeyAction(event.key, {
     direction,
     isBranch: item.hasAttribute('data-cm-menu-bar-branch'),
     isOpen: item.getAttribute('aria-expanded') === 'true',
-    isTopLevel: parent?.matches(topNodeSelector) === true,
+    isTopLevel: list?.getAttribute('role') === 'menubar',
   });
   if (!action) return;
 
   event.preventDefault();
   pendingFocus.value = null;
   const value = itemValue(item);
-  const ancestors = collectAncestorValues(props.items, value);
+  const ancestors = ancestorsOf(value);
   switch (action.type) {
     case 'close-all':
       setOpenPath([]);
@@ -160,7 +204,7 @@ function onKeydown(event: KeyboardEvent): void {
       return;
     case 'close-to-parent':
       setOpenPath(ancestors.slice(0, -1));
-      (parent?.parentElement?.previousElementSibling as HTMLElement | null)?.focus();
+      (list?.previousElementSibling as HTMLElement | null)?.focus();
       return;
     case 'open':
       pendingFocus.value = { branch: value, edge: action.focus };
@@ -208,6 +252,7 @@ useCmHydrated();
         :open-path="openPath"
         :active-value="activeValue"
         :tabbable-value="tabbableValue"
+        :link-component="props.linkComponent"
         @toggle="onToggle"
         @select="onSelect"
       />

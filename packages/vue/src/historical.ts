@@ -29,6 +29,8 @@ export { default as VfIconButton } from './components/icon-button/VfIconButton.v
 export { default as VfInput } from './components/input/VfInput.vue';
 export type { VfInputProps } from './components/input/input.types';
 export { default as VfMenu } from './components/menu/VfMenu.vue';
+export { default as VfMenuBar } from './components/menu-bar/VfMenuBar.vue';
+export type { VfMenuBarProps } from './components/menu-bar/menu-bar.types';
 export { default as VfMenuItem } from './components/menu/VfMenuItem.vue';
 export { default as VfNavMenu } from './components/nav-menu/VfNavMenu.vue';
 export type { VfNavMenuItem, VfNavMenuProps } from './components/nav-menu/nav-menu.types';

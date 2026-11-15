@@ -8,9 +8,10 @@ import {
   CmStepper,
   CmTableOfContents,
   CmTabs,
+  type CmMenuBarItem,
 } from '@codemonster-ru/ui-vue';
 import { VfAccordion } from '@codemonster-ru/ui-vue/historical';
-import { folderOpen, grid, layers } from '@codemonster-ru/ui-icons';
+import { folderOpen, grid, house, layers } from '@codemonster-ru/ui-icons';
 import { defineComponent, h, ref, watchPostEffect, type PropType } from 'vue';
 import CoreMatrix from './CoreMatrix.vue';
 
@@ -39,6 +40,18 @@ const guideItems = [
     ],
   },
   { value: 'icons', label: 'Icons', href: '/icons/', target: '_blank' },
+];
+const guideMenuBar: CmMenuBarItem[] = [
+  {
+    value: 'guides-group',
+    label: 'Guides',
+    kind: 'group',
+    children: [
+      { ...guideItems[0], leadingIcon: house },
+      { ...guideItems[1], label: 'Browse' },
+    ],
+  },
+  guideItems[2],
 ];
 
 const links = [
@@ -437,6 +450,12 @@ const menuBarExamples = [
           :aria-label="example.label"
         />
       </div>
+      <CmMenuBar
+        id="core-routed-menu-bar"
+        aria-label="Routed guide menu"
+        :items="guideMenuBar"
+        :link-component="GuideLink"
+      />
     </div>
     <div class="core-matrix-cell">
       <h4>Table of contents</h4>

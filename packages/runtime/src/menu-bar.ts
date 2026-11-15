@@ -61,8 +61,14 @@ export class CmMenuBarController implements CmController {
   }
 
   #entriesIn(list: Element | null | undefined): HTMLElement[] {
-    return [...(list?.querySelectorAll<HTMLElement>(`:scope > li > ${itemSelector}`) ?? [])].filter(
-      (item) => !item.matches(':disabled, [aria-disabled="true"]'),
+    return [
+      ...(list?.querySelectorAll<HTMLElement>(`:scope > li > ${itemSelector}, :scope > li > [role="group"]`) ?? []),
+    ].flatMap((item) =>
+      item.matches('[role="group"]')
+        ? this.#entriesIn(item)
+        : item.matches(':disabled, [aria-disabled="true"]')
+          ? []
+          : [item],
     );
   }
 
@@ -188,7 +194,7 @@ export class CmMenuBarController implements CmController {
   }
 
   #siblingsOf(item: HTMLElement): HTMLElement[] {
-    return this.#entriesIn(item.closest('li')?.parentElement);
+    return this.#entriesIn(item.closest('[role="menubar"], [role="menu"]'));
   }
 
   #hasOpenPath(): boolean {
