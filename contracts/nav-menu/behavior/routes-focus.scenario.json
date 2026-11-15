@@ -8,9 +8,9 @@
     { "expect": "attribute", "target": "item-second", "name": "href", "value": "/layouts/#demo-grid" },
     { "expect": "attribute", "target": "item-third", "name": "aria-disabled", "value": "true" },
     { "action": "focus", "target": "branch-first" },
-    { "action": "press", "target": "branch-first", "key": "Tab" },
-    { "expect": "focus", "target": "item-second", "value": true },
-    { "action": "press", "target": "item-second", "key": "Tab" },
-    { "expect": "focus", "target": "item-last", "value": true }
+    { "action": "press", "target": "branch-first", "key": "Tab", "browserOnly": true },
+    { "expect": "focus", "target": "item-second", "value": true, "browserOnly": true },
+    { "action": "press", "target": "item-second", "key": "Tab", "browserOnly": true },
+    { "expect": "focus", "target": "item-last", "value": true, "browserOnly": true }
   ]
 }

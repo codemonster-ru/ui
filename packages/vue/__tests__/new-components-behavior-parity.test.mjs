@@ -117,7 +117,12 @@ const suites = {
     component: components.CmNavMenu,
     controller: ['nav-menu', runtime.createCmNavMenuController],
     root: '.cm-nav-menu',
-    targets: { 'branch-first': '[data-cm-nav-menu-branch]' },
+    targets: {
+      'branch-first': '[data-cm-nav-menu-branch]',
+      'item-second': '[data-cm-nav-menu-value="grid"]',
+      'item-third': '[data-cm-nav-menu-value="billing"]',
+      'item-last': '[data-cm-nav-menu-value="icons"]',
+    },
     snapshot: (root) => ({
       expanded: [...root.querySelectorAll('[data-cm-nav-menu-branch]')].map((b) => b.getAttribute('aria-expanded')),
     }),
@@ -255,6 +260,24 @@ for (const [slug, suite] of Object.entries(suites)) {
         attachTo: browser.window.document.body,
         props: definition.props,
         slots,
+        global:
+          definition.id === 'nav-menu-routes'
+            ? {
+                components: {
+                  RouterLink: {
+                    props: { to: { type: [String, Object], required: true } },
+                    setup(props, { slots }) {
+                      return () =>
+                        h(
+                          'a',
+                          { href: typeof props.to === 'string' ? props.to : props.to.path + (props.to.hash ?? '') },
+                          slots.default?.(),
+                        );
+                    },
+                  },
+                },
+              }
+            : undefined,
       });
 
       const razorCounts = new Map();
@@ -270,6 +293,7 @@ for (const [slug, suite] of Object.entries(suites)) {
 
       const consumed = new Map();
       for (const step of scenario.steps) {
+        if (step.browserOnly) continue;
         if (step.action) {
           activate(razorDom.window, resolveTarget(razorRoot, suite, step.target), step);
           activate(browser.window, resolveTarget(vue.element, suite, step.target), step);
