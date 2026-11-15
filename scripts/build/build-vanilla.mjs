@@ -40,18 +40,29 @@ await Promise.all([
   cp(resolve(source, 'avatar.png'), resolve(output, 'avatar.png')),
   cp(resolve(root, 'examples/shared/showcase-icon-catalog.js'), resolve(output, 'showcase-icon-catalog.js')),
   cp(resolve(root, 'examples/shared/showcase-reference.js'), resolve(output, 'showcase-reference.js')),
+  cp(
+    resolve(root, 'examples/shared/showcase-component-reference.js'),
+    resolve(output, 'showcase-component-reference.js'),
+  ),
   cp(resolve(root, 'examples/shared/showcase-layout-recipes.js'), resolve(output, 'showcase-layout-recipes.js')),
   cp(resolve(source, 'showcase-layouts.js'), resolve(output, 'showcase-layouts.js')),
   cp(resolve(root, 'examples/shared/showcase-core-recipes.js'), resolve(output, 'showcase-core-recipes.js')),
   cp(resolve(source, 'showcase.js'), resolve(output, 'showcase.js')),
   cp(resolve(root, 'examples/shared/showcase-theme.js'), resolve(output, 'showcase-theme.js')),
   cp(resolve(source, 'showcase-demo.js'), resolve(output, 'showcase-demo.js')),
+  cp(resolve(source, 'application-examples.js'), resolve(output, 'application-examples.js')),
+  build({
+    entryPoints: [resolve(root, 'examples/shared/application-example-data.mts')],
+    outfile: resolve(output, 'application-example-data.js'),
+    format: 'esm',
+    minify: true,
+  }),
   buildVanillaShowcase(resolve(root, 'contracts'), output),
 ]);
 await build({
   stdin: {
     contents:
-      "@import './packages/tokens/dist/tokens.css';\n@import './packages/css/dist/fonts.css';\n@import './packages/css/dist/styles.css';\n@import './examples/shared/showcase-shell.css';\n@import './examples/shared/showcase-typography.css';\n@import './examples/shared/showcase-colors.css';\n@import './examples/shared/showcase-icon-gallery.css';\n@import './examples/vanilla/showcase.css';",
+      "@import './packages/tokens/dist/tokens.css';\n@import './packages/css/dist/fonts.css';\n@import './packages/css/dist/styles.css';\n@import './examples/shared/showcase-shell.css';\n@import './examples/shared/showcase-typography.css';\n@import './examples/shared/showcase-colors.css';\n@import './examples/shared/showcase-icon-gallery.css';\n@import './examples/shared/showcase-component-reference.css';\n@import './examples/shared/application-examples.css';\n@import './examples/vanilla/showcase.css';",
     resolveDir: root,
     loader: 'css',
   },

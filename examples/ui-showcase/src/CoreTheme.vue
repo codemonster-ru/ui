@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CmThemeMode } from '@codemonster-ru/ui-runtime/core';
-import { CmButton, CmTag, VfThemeSwitch } from '@codemonster-ru/ui-vue';
+import { CmButton, CmLink, CmTag, VfThemeSwitch } from '@codemonster-ru/ui-vue';
 
 defineProps<{
   mode: CmThemeMode;
@@ -70,10 +70,9 @@ const buttonVariants = ['secondary', 'ghost', 'secondary'] as const;
         </p>
       </article>
       <article class="showcase-panel core-theme-card">
-        <h3>Theme utilities</h3>
-        <p class="showcase-muted">
-          Use the controls above to switch theme mode and verify component contrast in light, dark, and system states.
-        </p>
+        <h3>Color roles</h3>
+        <p class="showcase-muted">The same semantic roles map to different palettes in light and dark.</p>
+        <p class="showcase-muted"><CmLink href="/colors/">Explore color and contrast</CmLink></p>
       </article>
     </div>
   </section>

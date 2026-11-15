@@ -1,9 +1,6 @@
 import { folder, house, resolveCmIcon } from '@codemonster-ru/ui-icons';
-import groups from './showcase-groups.json' with { type: 'json' };
 import { tones } from './showcase-matrices.mts';
 import { renderShowcaseTabs } from './showcase-tabs.mts';
-
-const groupedComponents = new Set(groups.filter(({ matrix }) => matrix).flatMap(({ components }) => components));
 
 const releaseTabs = [
   'Overview',
@@ -60,7 +57,6 @@ const examples: Record<string, readonly string[]> = {
 export function renderCoreMatrix(slug: string, read: (id: string) => string | undefined, avatar: string) {
   const cases = examples[slug];
   if (!cases) return '';
-  const heading = groupedComponents.has(slug) ? 'h5' : 'h4';
   return `<div class="core-example-grid">${cases
     .map((name) => {
       const id = `${slug}-${name}`;
@@ -89,7 +85,7 @@ export function renderCoreMatrix(slug: string, read: (id: string) => string | un
           ids.has(target) ? `href="#${prefix}${target}"` : match,
         );
       const modal = ['dialog', 'drawer', 'command-palette'].includes(slug);
-      return `<div class="core-example"><${heading}>${name.replaceAll('-', ' ')}</${heading}>
+      return `<div class="core-example"><p class="core-example-label">${name.replaceAll('-', ' ')}</p>
       ${modal ? `<button type="button" class="cm-button cm-button--secondary cm-button--md" data-matrix-open>Open ${slug.replaceAll('-', ' ')}</button>` : ''}
       ${html}</div>`;
     })
@@ -104,6 +100,13 @@ function coreExampleSource(slug: string, name: string, read: (id: string) => str
         .replace('aria-label="Save" ', '')
         .replace('>Save</button>', `>${name}</button>`)
         .replace('>Save changes</span>', `>Tooltip placement: ${name}</span>`);
+    case 'card':
+      if (name === 'regions')
+        return read('card-regions')?.replace(
+          '<button type="button">Continue</button>',
+          '<button class="cm-button cm-button--secondary cm-button--md" type="button"><span class="cm-button__label">Continue</span></button>',
+        );
+      break;
     case 'alert':
       if (name === 'without-icon') {
         return read('alert-default')
@@ -184,7 +187,6 @@ export function coreRecipesFor(source: string, group: string) {
 }
 
 export function coreComponentTitle(slug: string) {
-  if (slug === 'button') return 'Actions visual QA matrix';
   return slug.replace(
     /(^|-)([a-z])/gu,
     (_, separator: string, letter: string) => (separator ? ' ' : '') + letter.toUpperCase(),

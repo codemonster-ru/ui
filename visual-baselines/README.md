@@ -2,19 +2,18 @@
 
 `vueforge-cross-platform` holds the approved rendering of each cross-platform contract case in
 `contracts/cross-platform-visual-baselines.json`, in light and dark themes at the mobile and
-desktop viewport sizes declared in `contracts/visual.config.json`. Both the Vue and the Annabel
-Razor adapter are compared against it, which is what proves the two platforms render the same
-component identically rather than merely producing the same DOM.
+desktop viewport sizes declared in `contracts/visual.config.json`. The Vue adapter and Vanilla HTML are both compared
+against it.
 
 The capture disables animation and transition rendering. Comparison allows at most four levels per
 color channel by default (`--threshold=4`) to absorb non-deterministic browser anti-aliasing. Any
-larger channel difference is a visual regression.
+larger channel difference fails the comparison. See the [renderer record](../docs/verification/stored-visual-renderer.md)
+for the known local text-rendering residual.
 
 Capture a running candidate and compare it with the baseline:
 
 ```sh
-npm run visual:cross-platform:razor-render -- --output=/tmp/codemonster-razor-fixtures.json
-npm run visual:cross-platform:serve -- --razor-fixtures=/tmp/codemonster-razor-fixtures.json --port=5176
+npm run visual:cross-platform:serve -- --port=5176
 
 npm run visual:cross-platform:capture -- \
   --origin=http://127.0.0.1:5176 \
@@ -24,7 +23,13 @@ npm run visual:cross-platform:capture -- \
 node scripts/visual/compare-showcase.mjs \
   --baseline=visual-baselines/vueforge-cross-platform \
   --current=/tmp/codemonster-cross-platform/vue \
-  --diff=/tmp/codemonster-cross-platform-diff \
+  --diff=/tmp/codemonster-cross-platform-diff-vue \
+  --threshold=4
+
+node scripts/visual/compare-showcase.mjs \
+  --baseline=visual-baselines/vueforge-cross-platform \
+  --current=/tmp/codemonster-cross-platform/vanilla \
+  --diff=/tmp/codemonster-cross-platform-diff-vanilla \
   --threshold=4
 ```
 
@@ -47,3 +52,8 @@ The baseline's `manifest.json` records `fd793696f50d3be0fcd3788f0f8f751c63869963
 pixels were originally captured from, back when this comparison proved the migration from VueForge
 reproduced it exactly. That provenance stays accurate and is kept for the record; the comparison
 itself no longer depends on that commit or on anything being checked out from it.
+
+## Current showcase baseline
+
+[Showcase excellence v1](showcase-excellence-v1/README.md) records the intentional showcase
+layout and composition changes. It is reviewed separately from the historical component baseline.

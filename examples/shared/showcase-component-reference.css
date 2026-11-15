@@ -1,0 +1,216 @@
+.component-reference {
+  display: grid;
+  min-inline-size: 0;
+  gap: var(--cm-space-5);
+}
+
+.reference-intro {
+  display: grid;
+  gap: var(--cm-space-3);
+}
+
+.reference-intro h1,
+.component-reference :is(h2, h3, p) {
+  margin: 0;
+}
+
+.reference-intro p,
+.reference-preview p,
+.reference-api p,
+.reference-usage p {
+  max-inline-size: 70ch;
+  color: var(--cm-color-text-secondary);
+}
+
+.reference-back {
+  justify-self: start;
+}
+
+.reference-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--cm-space-2) var(--cm-space-4);
+}
+
+.reference-links a,
+.reference-back {
+  display: inline-flex;
+  min-block-size: var(--cm-space-8);
+  align-items: center;
+}
+
+.reference-groups,
+.reference-snippets {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: var(--cm-space-4);
+}
+
+.reference-search {
+  display: grid;
+  max-inline-size: 30rem;
+  gap: var(--cm-space-2);
+}
+
+.reference-search[hidden],
+.reference-group[hidden],
+.reference-group li[hidden],
+.reference-source button[hidden] {
+  display: none;
+}
+
+.reference-search label {
+  color: var(--cm-color-text-primary);
+  font-weight: var(--cm-font-weight-semibold);
+}
+
+.reference-search input {
+  max-inline-size: 100%;
+}
+
+.reference-count {
+  color: var(--cm-color-text-secondary);
+  font-size: var(--cm-text-label-font-size);
+}
+
+.reference-group h2,
+.reference-preview h2,
+.reference-usage h2,
+.reference-api h2 {
+  font-size: var(--cm-font-size-3xl);
+}
+
+.reference-group ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr));
+  gap: var(--cm-space-1) var(--cm-space-3);
+  padding: 0;
+  margin: var(--cm-space-2) 0 0;
+  list-style: none;
+}
+
+.reference-group li a {
+  display: inline-flex;
+  min-block-size: var(--cm-space-8);
+  align-items: center;
+}
+
+.reference-preview,
+.reference-usage,
+.reference-api,
+.reference-example {
+  display: grid;
+  gap: var(--cm-space-3);
+}
+
+.reference-frame {
+  box-sizing: border-box;
+  inline-size: 100%;
+  min-block-size: 8rem;
+  border: 1px solid var(--cm-color-border-subtle);
+  border-radius: var(--cm-radius-control);
+  background: var(--cm-color-background-surface);
+}
+
+.reference-frame--floating {
+  block-size: 23rem;
+}
+
+.reference-frame--tall {
+  block-size: 25rem;
+}
+
+/* Leave room for six calendar rows and the optional time controls. */
+.reference-preview[data-reference-preview='date-picker'] iframe {
+  min-block-size: 28rem;
+}
+
+.reference-accessibility strong {
+  margin-inline-end: var(--cm-space-2);
+  color: var(--cm-color-text-primary);
+}
+
+.reference-source {
+  display: grid;
+  min-inline-size: 0;
+  grid-template-rows: max-content 1fr;
+  gap: var(--cm-space-2);
+}
+
+.reference-source-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--cm-space-2) var(--cm-space-3);
+}
+
+.reference-source-heading h3 {
+  margin-inline-end: auto;
+}
+
+.reference-copy-status {
+  color: var(--cm-color-text-secondary);
+  font-size: var(--cm-text-label-font-size);
+}
+
+.reference-source pre {
+  box-sizing: border-box;
+  max-inline-size: 100%;
+  max-block-size: 32rem;
+  align-self: stretch;
+  padding: var(--cm-space-3);
+  border: 1px solid var(--cm-color-border-subtle);
+  border-radius: var(--cm-radius-control);
+  margin: 0;
+  overflow: auto;
+  color: var(--cm-color-text-primary);
+  background: var(--cm-color-background-surface-subtle);
+  font-family: var(--cm-font-family-mono);
+  font-size: var(--cm-text-label-font-size);
+  line-height: 1.6;
+}
+
+.reference-api-list {
+  margin: var(--cm-space-2) 0 0;
+}
+
+.reference-api-list > div {
+  display: grid;
+  grid-template-columns: minmax(9rem, 1fr) minmax(0, 3fr);
+  gap: var(--cm-space-2);
+  padding-block: var(--cm-space-2);
+  border-block-start: 1px solid var(--cm-color-border-subtle);
+  overflow-wrap: anywhere;
+}
+
+.reference-api-list dd {
+  display: grid;
+  gap: var(--cm-space-1);
+  margin: 0;
+}
+
+.reference-api-meta {
+  color: var(--cm-color-text-secondary);
+  font-size: var(--cm-text-label-font-size);
+}
+
+.reference-states {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--cm-space-2);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.reference-states li {
+  padding: var(--cm-space-1) var(--cm-space-2);
+  border: 1px solid var(--cm-color-border-subtle);
+  border-radius: var(--cm-radius-control);
+}
+
+@media (width <= 35rem) {
+  .reference-api-list > div {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
