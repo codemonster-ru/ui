@@ -56,7 +56,8 @@
   },
   "dependencies": {
     "@codemonster-ru/floater.js": "^1.0.11",
-    "@codemonster-ru/ui-runtime": "^2.0.0-dev.0"
+    "@codemonster-ru/ui-runtime": "^2.0.0-dev.0",
+    "@codemonster-ru/ui-tokens": "^2.0.0-dev.0"
   },
   "devDependencies": {
     "@codemonster-ru/ui-icons": "file:../icons",
