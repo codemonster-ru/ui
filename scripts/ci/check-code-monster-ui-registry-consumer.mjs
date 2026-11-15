@@ -6,6 +6,7 @@ import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSyn
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { codeMonsterUiNodeEngine } from './code-monster-ui-package-catalog.mjs';
 import { discoverCodeMonsterUiWorkspaces } from './code-monster-ui-workspaces.mjs';
 
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
@@ -24,6 +25,7 @@ const expectedNames = [
   '@codemonster-ru/ui-css',
   '@codemonster-ru/ui-utilities',
   '@codemonster-ru/ui-vue',
+  '@codemonster-ru/ui-layouts',
 ];
 assert.deepEqual(
   workspaces.map(({ name }) => name),
@@ -75,7 +77,7 @@ function writeConsumer() {
         private: true,
         version: '0.0.0',
         type: 'module',
-        engines: { node: '^24.15.0 || >=26.0.0' },
+        engines: { node: codeMonsterUiNodeEngine },
         scripts: { build: 'vite build', ssr: 'node src/ssr.mjs', typecheck: 'tsc --noEmit' },
         dependencies: {
           ...dependencies,
@@ -120,6 +122,7 @@ function writeConsumer() {
     [
       "import { createApp, h } from 'vue';",
       "import { CmButton, CmIcon } from '@codemonster-ru/ui-vue';",
+      "import { CmAuthLayout } from '@codemonster-ru/ui-layouts';",
       "import { arrowLeft } from '@codemonster-ru/ui-icons';",
       "import { CmRuntime } from '@codemonster-ru/ui-runtime';",
       "import { cmLightThemePreset } from '@codemonster-ru/ui-tokens';",
@@ -133,7 +136,8 @@ function writeConsumer() {
       '',
       'document.documentElement.dataset.cmTheme = cmLightThemePreset.mode;',
       'new CmRuntime().start(document);',
-      "createApp({ render: () => h(CmButton, { variant: 'primary' }, () => 'Registry consumer') }).mount('#app');",
+      "createApp({ render: () => h(CmAuthLayout, { title: 'Registry consumer' }, () =>",
+      "  h(CmButton, { variant: 'primary' }, () => h(CmIcon, { icon: arrowLeft }))) }).mount('#app');",
       '',
     ].join('\n'),
   );
@@ -142,13 +146,14 @@ function writeConsumer() {
     [
       "import { renderToString } from '@vue/server-renderer';",
       "import { createSSRApp, h } from 'vue';",
-      "import { CmButton, CmIcon } from '@codemonster-ru/ui-vue';",
-      "import { arrowLeft } from '@codemonster-ru/ui-icons';",
+      "import { CmButton } from '@codemonster-ru/ui-vue';",
+      "import { CmAuthLayout } from '@codemonster-ru/ui-layouts';",
       "import { CmRuntime } from '@codemonster-ru/ui-runtime';",
       "import { cmLightThemePreset } from '@codemonster-ru/ui-tokens';",
       '',
-      "const html = await renderToString(createSSRApp({ render: () => h(CmButton, null, () => 'Registry SSR') }));",
-      "assert(html.includes('cm-button') && html.includes('Registry SSR'), 'Vue SSR output is incomplete.');",
+      'const html = await renderToString(createSSRApp({ render: () =>',
+      "  h(CmAuthLayout, { title: 'Registry SSR' }, () => h(CmButton, null, () => 'Continue')) }));",
+      "assert(html.includes('cm-auth-layout') && html.includes('cm-button') && html.includes('Registry SSR'), 'Vue SSR output is incomplete.');",
       "assert(typeof new CmRuntime().start === 'function', 'Runtime import is not side-effect free.');",
       "assert(cmLightThemePreset.mode === 'light', 'Token runtime export is invalid.');",
       "console.log('[ui-registry-consumer] Node SSR and runtime imports passed.');",
@@ -202,6 +207,7 @@ try {
   assert.equal(cssFiles.length, 1, 'Vite must emit one complete consumer stylesheet.');
   const css = readFileSync(join(consumerDirectory, 'dist/assets', cssFiles[0]), 'utf8');
   for (const selector of [
+    '.cm-auth-layout',
     '.cm-button',
     '.cm-fieldset',
     '.cm-icon-button',
