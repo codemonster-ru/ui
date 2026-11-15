@@ -137,6 +137,9 @@ if (platform === 'vue') {
       const listener = 'on' + name.replace(/(^|-)([a-z])/gu, (_, _separator, char: string) => char.toUpperCase());
       props[listener] = () => recordEvent((componentSlug === 'setup-layout' ? 'setup-layout-' : prefix) + name);
     }
+    if (componentSlug === 'data-table') {
+      props['onUpdate:expandedRowKeys'] = () => recordEvent('data-table-expansion-change');
+    }
     for (const key of [
       'modelValue',
       'open',
