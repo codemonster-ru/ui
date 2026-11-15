@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import * as geometry from '@codemonster-ru/ui-icons';
+import * as controls from '@codemonster-ru/ui-icons/controls';
 import {
   coreIconNames,
   iconCatalog,
@@ -34,4 +35,10 @@ test('keeps the complete historical catalogue ordered, unique and paired with ge
     }
   }
   assert.deepEqual(outlineIconVariants, ['regular', 'light', 'thin']);
+});
+
+test('control imports keep just the regular rendering from the complete geometry', () => {
+  for (const [name, icon] of Object.entries(controls)) {
+    assert.deepEqual(icon, { 'classic/regular': geometry[name]['classic/regular'] }, name);
+  }
 });

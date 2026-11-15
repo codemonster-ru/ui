@@ -1,12 +1,6 @@
 <script setup lang="ts">
 import { computed, mergeProps, useAttrs, useId, type PropType } from 'vue';
-import {
-  resolveCmIcon,
-  scopeCmIconIds,
-  type CmIconFamily,
-  type CmIconGeometry,
-  type CmIconVariant,
-} from '@codemonster-ru/ui-icons';
+import { scopeCmIconIds, type CmIconFamily, type CmIconGeometry, type CmIconVariant } from '@codemonster-ru/ui-icons';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 
@@ -28,15 +22,14 @@ const props = defineProps({
 
 const attrs = useAttrs();
 const id = `cm-icon-${useId()}`;
-const rendering = computed(() => resolveCmIcon(props.icon, props.family, props.variant));
+const requested = computed(() => props.icon[`${props.family}/${props.variant}`]);
+const rendering = computed(() => requested.value ?? props.icon['classic/solid']);
 const body = computed(() => (rendering.value ? scopeCmIconIds(rendering.value.body, id) : ''));
-const visibleVariant = computed(() => (props.icon[`${props.family}/${props.variant}`] ? props.variant : 'solid'));
-const visibleFamily = computed(() => (props.icon[`${props.family}/${props.variant}`] ? props.family : 'classic'));
 const classes = computed(() =>
   mergeCmClasses(
     'cm-icon',
-    `cm-icon--${visibleVariant.value}`,
-    `cm-icon--${visibleFamily.value}`,
+    `cm-icon--${requested.value ? props.variant : 'solid'}`,
+    `cm-icon--${requested.value ? props.family : 'classic'}`,
     props.spin && 'cm-icon--spin',
     attrs.class,
   ),
