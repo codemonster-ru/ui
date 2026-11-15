@@ -61,6 +61,13 @@ const cases = [
     name: 'ui-vue CmIcon with one static glyph',
   },
   {
+    entry: "import * as Catalog from '@codemonster-ru/ui-icons/catalog';\nconsole.log(Catalog);\n",
+    fileName: 'ui-icons-catalog',
+    forbiddenMarkers: [...unrelatedRuntimeMarkers, unrelatedIcon],
+    maxGzipBytes: 6 * 1024,
+    name: 'ui-icons catalogue metadata without geometry',
+  },
+  {
     entry: "import * as CodeMonsterUiVue from '@codemonster-ru/ui-vue';\nconsole.log(CodeMonsterUiVue);\n",
     fileName: 'ui-vue-full',
     forbiddenMarkers: [...domRuntimeMarkers, themeRuntime, unrelatedIcon],

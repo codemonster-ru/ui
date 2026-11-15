@@ -38,6 +38,18 @@ already names the action.
 
 Vanilla templates can use the [canonical SVG markup](../../contracts/icon/cases/default.html).
 
+## Catalogue metadata
+
+Use `@codemonster-ru/ui-icons/catalog` for the historical icon order, categories, titles,
+keywords, available weights, and brand attribution. It has no dependency on generated geometry.
+
+```ts
+import { iconCatalog, icons } from '@codemonster-ru/ui-icons/catalog';
+
+const backLabel = iconCatalog.arrowLeft.title;
+const backName = icons.arrowLeft;
+```
+
 ## Installation
 
 ```bash
