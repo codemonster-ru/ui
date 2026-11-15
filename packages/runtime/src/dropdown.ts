@@ -1,3 +1,4 @@
+import { attachCmAnchoredPosition } from './anchored-position.js';
 import { dropdownKeyAction, resolveDisclosureOpen } from './core/disclosure.js';
 import { dispatchCmEvent } from './events.js';
 import type { MenuSelectDetail } from './menu.js';
@@ -15,6 +16,7 @@ export class CmDropdownController implements CmController {
   readonly #menu: HTMLElement;
   readonly #root: Element;
   readonly #trigger: HTMLButtonElement;
+  #stopPlacement?: () => void;
 
   constructor(root: Element) {
     const trigger = root.querySelector<HTMLButtonElement>(triggerSelector);
@@ -40,6 +42,7 @@ export class CmDropdownController implements CmController {
     this.#root.removeEventListener('cm:menu-select', this.#handleSelect);
     this.#root.removeEventListener('cm:menu-close-request', this.#handleCloseRequest);
     this.#root.ownerDocument.removeEventListener('click', this.#handleDocumentClick);
+    this.#releasePlacement();
   }
 
   readonly #handleClick = (event: Event): void => {
@@ -62,6 +65,7 @@ export class CmDropdownController implements CmController {
 
     event.preventDefault();
     if (action.type === 'close') {
+      event.stopPropagation();
       this.#setOpen(false, action.restoreFocus);
       return;
     }
@@ -99,6 +103,20 @@ export class CmDropdownController implements CmController {
     this.#trigger.setAttribute('aria-expanded', String(open));
     this.#menu.hidden = !open;
     this.#root.classList.toggle('cm-dropdown--open', open);
+    if (open) this.#holdPlacement();
+    else this.#releasePlacement();
+  }
+
+  #holdPlacement(): void {
+    if (this.#stopPlacement) return;
+    const placement = this.#root.classList.contains('cm-dropdown--bottom-end') ? 'bottom-end' : 'bottom-start';
+    this.#stopPlacement = attachCmAnchoredPosition(this.#trigger, this.#menu, placement, 10, this.#menu.parentElement);
+  }
+
+  #releasePlacement(): void {
+    if (!this.#stopPlacement) return;
+    this.#stopPlacement();
+    this.#stopPlacement = undefined;
   }
 }
 

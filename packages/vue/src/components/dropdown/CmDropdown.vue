@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, useAttrs, watch, type PropType } from 'vue';
+import { computed, nextTick, ref, shallowRef, useAttrs, watch, type ComponentPublicInstance, type PropType } from 'vue';
 
+import { observeCmAnchoredPosition, type CmAnchoredStyle } from '../../internal/anchored-position';
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
 import { dropdownKeyAction, resolveDisclosureOpen } from '@codemonster-ru/ui-runtime/core';
@@ -34,6 +35,8 @@ const props = defineProps({
     default: 'bottom-start',
     validator: (value: string) => ['bottom-start', 'bottom-end'].includes(value),
   },
+  teleportTo: { type: [String, Object, Boolean] as PropType<string | HTMLElement | null | false>, default: null },
+  disableTeleport: Boolean,
 });
 const emit = defineEmits<{
   openChange: [open: boolean];
@@ -47,10 +50,45 @@ const slots = defineSlots<{
 }>();
 const root = ref<HTMLElement>();
 const trigger = ref<HTMLButtonElement>();
+const menu = shallowRef<ComponentPublicInstance>();
+const menuElement = computed(() => {
+  const element: unknown = menu.value?.$el;
+  return typeof HTMLElement !== 'undefined' && element instanceof HTMLElement ? element : undefined;
+});
+const coordinates = shallowRef<CmAnchoredStyle>();
+const portalWidth = ref(0);
 const localOpen = ref(resolveDisclosureOpen(props.open ?? props.defaultOpen, props.disabled));
 const placement = computed(() =>
   ['bottom-start', 'bottom-end'].includes(props.placement) ? props.placement : 'bottom-start',
 );
+const teleportTarget = computed(() => {
+  const anchor = trigger.value;
+  const requested = props.teleportTo;
+  if (!localOpen.value || props.disableTeleport || !requested || !anchor) return null;
+  try {
+    const target =
+      typeof requested === 'string'
+        ? ((requested === 'body' ? anchor.closest('dialog') : null) ?? anchor.ownerDocument.querySelector(requested))
+        : requested;
+    return target?.isConnected && !root.value?.contains(target) ? target : null;
+  } catch {
+    return null;
+  }
+});
+const menuAttrs = computed(() => ({
+  ...(teleportTarget.value && props.variant === 'pills' ? { 'data-cm-dropdown-menu-variant': 'pills' } : {}),
+  ...(teleportTarget.value
+    ? {
+        style: {
+          ...coordinates.value,
+          position: 'fixed',
+          minWidth: `max(${portalWidth.value}px, var(--cm-space-16) * 3)`,
+        },
+      }
+    : coordinates.value
+      ? { style: coordinates.value }
+      : {}),
+}));
 const classes = computed(() =>
   mergeCmClasses(
     'cm-dropdown',
@@ -88,16 +126,17 @@ async function onTriggerKeydown(event: KeyboardEvent): Promise<void> {
 
   event.preventDefault();
   if (action.type === 'close') {
+    event.stopPropagation();
     setOpen(false, action.restoreFocus);
     return;
   }
   setOpen(true);
   await nextTick();
-  const menu = root.value?.querySelector('.cm-dropdown__menu');
-  if (!menu) return;
+  const panel = menuElement.value;
+  if (!panel) return;
   const items = [
-    ...menu.querySelectorAll<HTMLElement>('[role="menuitem"]:not(:disabled, [aria-disabled="true"])'),
-  ].filter((item) => item.closest('[role="menu"]') === menu);
+    ...panel.querySelectorAll<HTMLElement>('[role="menuitem"]:not(:disabled, [aria-disabled="true"])'),
+  ].filter((item) => item.closest('[role="menu"]') === panel);
   const index = action.focus === 'last' ? items.length - 1 : 0;
   items[index]?.focus();
 }
@@ -132,11 +171,34 @@ function toggle(event?: MouseEvent): void {
 }
 
 function onDocumentClick(event: MouseEvent): void {
-  if (event.target instanceof Node && !root.value?.contains(event.target)) setOpen(false);
+  const view = trigger.value?.ownerDocument.defaultView;
+  if (
+    view &&
+    event.target instanceof view.Node &&
+    !root.value?.contains(event.target) &&
+    !menuElement.value?.contains(event.target)
+  )
+    setOpen(false);
 }
 
-onMounted(() => document.addEventListener('click', onDocumentClick));
-onBeforeUnmount(() => document.removeEventListener('click', onDocumentClick));
+watch(
+  [localOpen, teleportTarget, placement, trigger, menuElement],
+  ([open, target, placement, anchor, panel], _, onCleanup) => {
+    if (!open || !anchor || !panel) return;
+    const document = anchor.ownerDocument;
+    const stop = observeCmAnchoredPosition(anchor, panel, placement, 10, target ? null : root.value, (style) => {
+      if (target) portalWidth.value = anchor.offsetWidth;
+      coordinates.value = style;
+    });
+    document.addEventListener('click', onDocumentClick);
+    onCleanup(() => {
+      stop();
+      coordinates.value = undefined;
+      document.removeEventListener('click', onDocumentClick);
+    });
+  },
+  { flush: 'post' },
+);
 
 useCmHydrated();
 </script>
@@ -164,19 +226,23 @@ useCmHydrated();
     >
       <slot name="trigger" :open="localOpen" :disabled="props.disabled" :toggle="toggle">{{ props.label }}</slot>
     </button>
-    <CmMenu
-      :id="`${props.id}-menu`"
-      class="cm-dropdown__menu"
-      :items="props.items"
-      :aria-labelledby="`${props.id}-trigger`"
-      :hidden="!localOpen"
-      @select="onSelect"
-      @click="onContentClick"
-      @close-request="close"
-    >
-      <template v-if="slots.default" #default>
-        <slot :open="localOpen" :close="close" />
-      </template>
-    </CmMenu>
+    <Teleport :to="teleportTarget ?? 'body'" :disabled="!teleportTarget">
+      <CmMenu
+        :id="`${props.id}-menu`"
+        ref="menu"
+        v-bind="menuAttrs"
+        class="cm-dropdown__menu"
+        :items="props.items"
+        :aria-labelledby="`${props.id}-trigger`"
+        :hidden="!localOpen"
+        @select="onSelect"
+        @click="onContentClick"
+        @close-request="close"
+      >
+        <template v-if="slots.default" #default>
+          <slot :open="localOpen" :close="close" />
+        </template>
+      </CmMenu>
+    </Teleport>
   </div>
 </template>

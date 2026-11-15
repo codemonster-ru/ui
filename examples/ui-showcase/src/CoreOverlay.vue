@@ -48,11 +48,12 @@ const viewItems = [
       <CmDropdown v-bind="entry" :items="entry.placement === 'bottom-start' ? items : actionItems" />
     </div>
     <div class="core-matrix-cell">
-      <h4>Dropdown · pills</h4>
+      <h4>Dropdown · portaled pills menu</h4>
       <CmDropdown
         id="core-dropdown-pills"
         label="View options"
         variant="pills"
+        teleport-to="body"
         :items="viewItems"
         :close-on-select="false"
       >

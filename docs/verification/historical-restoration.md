@@ -24,15 +24,17 @@ migration, including behavioral or visual differences. Do not claim parity from 
 | IN PROGRESS | Vanilla table of contents (`7f5c3bbe`), GroupBox (`f6781197`), native Input clear/reset (`217155af`), and disabled selection form submission (`27ccb81b`) passed targeted interaction and form checks. Add remaining portable contracts. |
 | IN PROGRESS | Build the exact historical reference in isolation, compare both themes and viewports against the current showcases, and investigate visual differences. |
 | DONE | The shared showcase shell and native composition demos built and passed the Chrome interaction check. It exercised mobile navigation, keyboard theme toggling and persistence in both adapters, and Vue confirmation focus restoration, GroupBox and SkeletonGate. |
-| DONE | Restored DatePicker keyboard, locale, multiple/range selection, native reset, month/year precision, and timezone-free minute selection in both adapters (`5b3f5403`, `454f9d0b`, `b86bd276`, `9fa2361a`, `e53dc22f`). Chrome exercised selection, pagination, focus, clock bounds and value serialization. Portal and placement are in progress. |
+| DONE | Restored DatePicker keyboard, locale, multiple/range selection, native reset, month/year precision, and timezone-free minute selection in both adapters (`5b3f5403`, `454f9d0b`, `b86bd276`, `9fa2361a`, `e53dc22f`). Added calendar portals and placement (`6fd91b5f`). Chrome exercised selection, pagination, focus, clock bounds and value serialization. |
 | DONE | Restored top/bottom Drawer, native open/close synchronization, ProgressBar stripes and height, and Field floating labels (`f6bfddf7`, `55a5f7c2`, `0916b9cc`, `3c3057c9`). Chrome exercised both adapters, including backdrop modality, Escape, native dialog form close, reduced motion and label focus. |
 | DONE | Restored NavMenu and MenuBar pills plus MenuBar roving focus (`823edcaa`). Their paired light/dark browser fixture screenshots matched exactly; both adapters passed the expanded keyboard and selection scenarios. |
-| DONE | Restored Dropdown pills and scoped actions (`2a104970`), IconButton tones and name-based icons (`4d3850a1`), historical Input and Select (`79bd0800`, `4334b223`), and authored Tooltip triggers, delays and portals (`f26a5679`). Chrome checked canonical contracts, Select portal geometry, resize, and native dialog focus, and Tooltip focus and Escape in both adapters. Dropdown collision and portal behavior remain in progress. |
+| DONE | Restored Dropdown pills and scoped actions (`2a104970`), IconButton tones and name-based icons (`4d3850a1`), historical Input and Select (`79bd0800`, `4334b223`), and authored Tooltip triggers, delays and portals (`f26a5679`). Chrome checked canonical contracts, Select portal geometry, resize, and native dialog focus, and Tooltip focus and Escape in both adapters. |
+| DONE | Anchored Dropdown, Select and DatePicker to viewport collision bounds while preserving their inline markup. Vue Dropdown also supports a portal. Chrome verified matched popup bounds at the lower-right edge in both adapters, native modal Escape, and exact light/dark Dropdown fixtures. |
 | DONE | Restored CommandPalette host-ranked results, query submission, scoped content and historical result-object selection (`7cc28fec`). Pinned Chrome passed eight scenario runs across both adapters; a production mobile check exercised literal match highlighting, selecting a result with the keyboard, and restoring opener focus. Authored palette Teleport destination remains outside this implementation. |
 | DONE | The icons catalogue is a neutral metadata entry (`be8ee84f`) and both showcases use it (`c4928bb1`). A fresh Vue consumer and the gallery browser check verified its metadata, all 116 icons, keyword search and unique SVG definitions. Loading Core does not fetch the icon catalogue. |
 | DONE | Vanilla Layouts and both Icons galleries restored historical top-of-page geometry and order (`25825971`, `446f94f5`). See [layout and icon measurements](historical-vue-ecosystem.md) for viewport comparisons and browser interaction results. |
 | DONE | Restored Colors page rhythm in the shared guide. Production Chrome matched hero, text, first palette and swatch geometry to `d9879116`; both adapters passed contrast calculation and code copy. |
 | DONE | Restored historical named Alert and Avatar icons, default Alert tone and role, warning alias and icon visibility (`dde06d37`). The opt-in entry passed 11 pinned-browser assertions and the main consumer import guards. |
+| DONE | Restored the lead Core theme and typography examples (`fa166db5`). Chrome observed all nine variants, Space activation, accessible state and persistence, and matched section geometry at both widths. |
 | IN PROGRESS | Run package checks, lint, type checks, tests, browser behavior and accessibility checks, production builds, and fresh packed consumers. See the exact snapshots below. |
 | IN PROGRESS | The independent review verified dependency direction and reproduced native close and form reset integration defects. Those fixes were verified separately. Review the final committed candidate and reconcile remaining historical contract and visual gaps. |
 | TODO | Finish the acceptance report and verify that all assignment edits are committed and the tree is clean. |
@@ -88,6 +90,11 @@ The product name, mobile top bar and related copy remain visible differences. Se
   shaking, both production showcases, and packed npm, pnpm and Yarn consumers. The release
   audit returned zero production findings and 20 low/moderate development findings. This
   snapshot precedes the latest showcase and overlay slices.
+- `97ad5a07`, fresh copy at `/private/tmp/cmui-verify.qMbtuH`: all of the 18 offline checks
+  except the cold suite passed, including 162 axe fixture cases. Cold testing found the Tooltip
+  portal arrow's physical CSS rules and a test that sent a synthetic non-bubbling focus event.
+  Both were corrected in `e3029077`. The isolated rerun with those two changes passed 810 tests;
+  four pinned-browser LTR/RTL arrow captures matched exactly. Logs: `/private/tmp/cmui-tooltip-cold.rVDaue`.
 
 - `a9083071`, fresh copy at `/private/tmp/cmui-verify.Kvb8Dd`: installation, builds, typecheck,
   contracts, accessibility fixtures, package budgets and tree shaking passed. Cold workspace
@@ -108,8 +115,7 @@ Finish and verify each coherent slice before committing it; then select the next
 Record actual output and commands, including any check that cannot run, before advancing the
 corresponding status.
 
-Next actions: finish the Core lead sections, complete the
-DatePicker portal and Dropdown placement slices, and reconcile remaining public gaps from the
-Vue and Vanilla traces. Then run a fresh exact-candidate package and browser checkpoint before
-requesting independent acceptance. When interpreting pixels distinguish the full-page captures
-from the established 12-case fixture baseline.
+Next actions: finish the in-progress DataTable resize, NavMenu integration, and display variants,
+then reconcile the next public gaps starting with Popover and custom Dropdown triggers. Run a
+fresh exact-candidate package and browser checkpoint before final independent acceptance.
+Distinguish the showcase viewport captures from the established 12-case fixture baseline.

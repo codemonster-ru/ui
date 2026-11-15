@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { autoUpdate, computePosition, flip, offset, shift } from '@codemonster-ru/floater.js';
 import { computed, nextTick, onMounted, ref, shallowRef, useAttrs, watch, type PropType } from 'vue';
 
+import { observeCmAnchoredPosition, type CmAnchoredStyle } from '../../internal/anchored-position';
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
 import { selectClosedKeyAction, selectOpenKeyAction } from '@codemonster-ru/ui-runtime/core';
@@ -42,7 +42,7 @@ const currentValue = ref(props.modelValue);
 const isOpen = ref(false);
 const mounted = ref(false);
 const portalWidth = ref<number>();
-const positionStyle = shallowRef<{ inset: string; left: string; top: string }>();
+const positionStyle = shallowRef<CmAnchoredStyle>();
 
 watch(
   () => props.modelValue,
@@ -190,28 +190,19 @@ watch(
   ([open, target, placement, listbox, trigger], _, onCleanup) => {
     if (!open || !trigger || !listbox) return;
     const document = trigger.ownerDocument;
-    let active = true;
-    const place = (): void => {
-      if (target) portalWidth.value = trigger.offsetWidth;
-      void computePosition(trigger, listbox, {
-        placement,
-        strategy: target ? 'fixed' : 'absolute',
-        middleware: [
-          offset(2),
-          flip({ placements: [placement, placement === 'bottom-end' ? 'top-end' : 'top-start'] }),
-          shift(),
-        ],
-      }).then(({ x, y }) => {
-        if (active) {
-          positionStyle.value = { inset: 'auto', left: `${x}px`, top: `${y}px` };
-        }
-      });
-    };
     document.addEventListener('click', onDocumentClick);
-    const stop = autoUpdate(trigger, place, listbox);
-    place();
+    const stop = observeCmAnchoredPosition(
+      trigger,
+      listbox,
+      placement,
+      2,
+      target ? null : listbox.parentElement,
+      (style) => {
+        if (target) portalWidth.value = trigger.offsetWidth;
+        positionStyle.value = style;
+      },
+    );
     onCleanup(() => {
-      active = false;
       stop();
       positionStyle.value = undefined;
       document.removeEventListener('click', onDocumentClick);
