@@ -143,6 +143,19 @@ headings so the enhancement can move focus to the destination without introducin
 The enhancement respects reduced motion, applies the offset when the page opens with a matching
 fragment, and preserves ordinary browser behavior for modified clicks and missing headings.
 
+The historical `VfTableOfContents` name and `useTableOfContents()` are available from
+`@codemonster-ru/ui-vue/historical`. The component uses the same anchor, current-location and
+scrolling behavior. The composable accepts plain values, refs or getters for `items`, `offset` and
+`disabled`. Pass the returned `activeId` to the component when the current section should track
+scroll position. Use the same pixel value for `offset` and `scrollOffset` when a sticky header
+covers the top of the viewport.
+
+The scroll tracker reads heading positions by item `id`. An explicit `href` controls link
+navigation. Use headings in page order. Tracking starts after mount and waits briefly for a page
+whose headings render asynchronously. `updateActiveId()` also lets the host remeasure after a
+layout change. A disabled tracker clears the active ID. The server can supply a controlled
+`activeId` when it already knows the current section.
+
 ## Stepper
 
 `CmStepper` walks a person through a sequence. Each step reads as complete, current or upcoming

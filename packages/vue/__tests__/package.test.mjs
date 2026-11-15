@@ -120,8 +120,10 @@ test('publishes the opt-in historical icon and Vue components', async () => {
     'VfRadio',
     'VfSelect',
     'VfSwitch',
+    'VfTableOfContents',
     'VfTag',
     'VueIconify',
+    'useTableOfContents',
   ]);
   assert.match(await renderToString(h(entry.VfMenu, null, () => 'Actions')), /role="menu"[\s\S]*Actions/u);
   assert.match(await renderToString(h(entry.VueIconify)), /<svg[^>]+aria-hidden="true"/u);
@@ -153,6 +155,24 @@ test('publishes the opt-in historical icon and Vue components', async () => {
   assert.ok(select.includes(`id="${listboxId}"`));
   assert.match(select, /cm-select__icon--leading[\s\S]*<svg/u);
   assert.match(select, /data-cm-placement="bottom-end"/u);
+  assert.equal(typeof entry.useTableOfContents, 'function');
+  const contents = await renderToString(
+    h(entry.VfTableOfContents, {
+      ariaLabel: 'On this page',
+      activeId: 'intro',
+      scrollOffset: 64,
+      variant: 'pills',
+      items: [
+        { id: 'intro', label: 'Intro' },
+        { id: 'appendix', label: 'Appendix', href: '/appendix', level: 2 },
+      ],
+    }),
+  );
+  assert.match(contents, /cm-table-of-contents--pills/u);
+  assert.match(contents, /aria-label="On this page"/u);
+  assert.match(contents, /data-cm-toc-scroll-offset="64"/u);
+  assert.match(contents, /href="#intro" aria-current="location">Intro/u);
+  assert.match(contents, /href="\/appendix">Appendix/u);
 });
 
 test('server-renders historical overlays around a single authored trigger', async () => {
