@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, shallowRef, useAttrs, watch, type PropType } from 'vue';
 
-import { observeCmAnchoredPosition, type CmAnchoredStyle } from '@codemonster-ru/ui-runtime/anchored-position';
+import {
+  observeCmAnchoredPosition,
+  resolveCmAnchoredTarget,
+  type CmAnchoredStyle,
+} from '@codemonster-ru/ui-runtime/anchored-position';
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
 import { selectClosedKeyAction, selectOpenKeyAction } from '@codemonster-ru/ui-runtime/core';
@@ -74,16 +78,11 @@ const selectedOption = computed(() =>
 const displayLabel = computed(() => selectedOption.value?.label ?? props.placeholder ?? '');
 const hasClear = computed(() => props.clearable && !props.disabled);
 const name = computed(() => (typeof attrs.name === 'string' ? attrs.name : null));
-const teleportTarget = computed(() => {
-  if (!mounted.value || props.disableTeleport || !props.teleportTo) return null;
-  if (typeof props.teleportTo !== 'string') return props.teleportTo;
-  // A body portal escapes a native modal's inert background, so keep it inside the dialog.
-  return (
-    (props.teleportTo === 'body' ? triggerRef.value?.closest('dialog') : null) ??
-    triggerRef.value?.ownerDocument.querySelector(props.teleportTo) ??
-    null
-  );
-});
+const teleportTarget = computed(() =>
+  mounted.value && !props.disableTeleport
+    ? resolveCmAnchoredTarget(triggerRef.value?.parentElement, props.teleportTo)
+    : null,
+);
 const listboxStyle = computed(() =>
   teleportTarget.value
     ? { ...positionStyle.value, position: 'fixed' as const, minWidth: `${portalWidth.value ?? 0}px` }

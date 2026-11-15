@@ -1,7 +1,11 @@
 <script setup lang="ts" generic="Multiple extends boolean = false, Range extends boolean = false">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useAttrs, watch, type PropType } from 'vue';
 
-import { observeCmAnchoredPosition, type CmAnchoredStyle } from '@codemonster-ru/ui-runtime/anchored-position';
+import {
+  observeCmAnchoredPosition,
+  resolveCmAnchoredTarget,
+  type CmAnchoredStyle,
+} from '@codemonster-ru/ui-runtime/anchored-position';
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
 import { assertCm, warnCm } from '../../internal/warn';
@@ -117,21 +121,7 @@ const isOpen = ref(false);
 const calendarPosition = ref<CmAnchoredStyle>();
 const placement = computed(() => (props.placement === 'bottom-end' ? 'bottom-end' : 'bottom-start'));
 const portal = computed(() => (props.disableTeleport ? null : (props.teleportTo ?? null)));
-const teleportTarget = computed(() => {
-  const root = rootRef.value;
-  const destination = portal.value;
-  if (!isOpen.value || !root || !destination) return null;
-  try {
-    const target =
-      typeof destination === 'string'
-        ? ((destination === 'body' ? root.closest('dialog[open]') : null) ??
-          root.ownerDocument.querySelector(destination))
-        : destination;
-    return target?.isConnected && !root.contains(target) ? target : null;
-  } catch {
-    return null;
-  }
-});
+const teleportTarget = computed(() => (isOpen.value ? resolveCmAnchoredTarget(rootRef.value, portal.value) : null));
 const visibleMonth = ref(dayValue(firstDate.value) || formatCalendarValue(new Date(), precision.value));
 const focusedDate = ref(visibleMonth.value);
 const yearStart = ref(calendarYearRangeStart(visibleMonth.value));

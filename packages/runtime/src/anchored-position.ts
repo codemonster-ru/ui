@@ -14,6 +14,23 @@ export type CmAnchoredStyle = {
   [arrowAngle]?: '45deg' | '225deg';
 };
 
+export function resolveCmAnchoredTarget(
+  owner: Element | null | undefined,
+  destination: string | Element | false | null | undefined,
+): Element | null {
+  if (!owner || !destination) return null;
+  try {
+    // A body portal must remain inside its native dialog, including while the dialog is closed.
+    const target =
+      typeof destination === 'string'
+        ? ((destination === 'body' ? owner.closest('dialog') : null) ?? owner.ownerDocument.querySelector(destination))
+        : destination;
+    return target?.isConnected && !owner.contains(target) ? target : null;
+  } catch {
+    return null;
+  }
+}
+
 export function observeCmAnchoredPosition(
   anchor: HTMLElement,
   panel: HTMLElement,

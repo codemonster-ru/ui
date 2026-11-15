@@ -1,4 +1,5 @@
 import { autoUpdate, computePosition, flip, offset, shift } from '@codemonster-ru/floater.js';
+import { resolveCmAnchoredTarget } from './anchored-position.js';
 import { resolveTooltipDelay } from './core/disclosure.js';
 import type { CmController, CmControllerFactory } from './runtime.js';
 
@@ -116,18 +117,11 @@ export class CmTooltipController implements CmController {
   }
 
   #holdFloating(): void {
-    const selector = this.#root.getAttribute('data-cm-tooltip-teleport-to');
-    if (!selector || this.#stopFloating) return;
+    if (this.#stopFloating) return;
+    const target = resolveCmAnchoredTarget(this.#root, this.#root.getAttribute('data-cm-tooltip-teleport-to'));
+    if (!target) return;
 
     const document = this.#root.ownerDocument;
-    let target: Element | null;
-    try {
-      target = (selector === 'body' ? this.#root.closest('dialog[open]') : null) ?? document.querySelector(selector);
-    } catch {
-      return;
-    }
-    if (!target || this.#root.contains(target)) return;
-
     const trigger = this.#trigger;
     const content = this.#content;
     const side =
