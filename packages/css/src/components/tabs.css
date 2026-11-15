@@ -175,6 +175,29 @@
   background: var(--cm-color-selected-foreground);
 }
 
+.cm-tabs__list:has(> .cm-tabs__indicator:not([hidden])) .cm-tabs__tab::after {
+  background: transparent;
+}
+
+.cm-tabs__indicator {
+  position: absolute;
+  z-index: 2;
+  inset-block-end: 0;
+  left: 0;
+  block-size: 3px;
+  background: var(--cm-color-selected-foreground);
+  transition:
+    transform var(--cm-motion-duration-normal) var(--cm-motion-ease-standard),
+    width var(--cm-motion-duration-normal) var(--cm-motion-ease-standard);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cm-tabs__indicator {
+    transition: none;
+  }
+}
+
 .cm-tabs__panel {
   padding: var(--cm-space-3) 0 0;
   border: var(--cm-border-width) solid transparent;
@@ -201,6 +224,10 @@
   }
 
   .cm-tabs__tab[aria-selected='true']::after {
+    background: Highlight;
+  }
+
+  .cm-tabs__indicator {
     background: Highlight;
   }
 

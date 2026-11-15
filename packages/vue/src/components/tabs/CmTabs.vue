@@ -5,7 +5,12 @@ import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes
 import { useCmHydrated } from '../../internal/hydration';
 import { assertCm, warnCm } from '../../internal/warn';
 import { nextTabsValue, resolveTabsValue } from '@codemonster-ru/ui-runtime/core';
-import { observeTabScroll, scrollTabList, type CmTabScrollEdge } from '@codemonster-ru/ui-runtime/tabs-scroll';
+import {
+  observeTabScroll,
+  scrollTabList,
+  tabIndicatorGeometry,
+  type CmTabScrollEdge,
+} from '@codemonster-ru/ui-runtime/tabs-scroll';
 
 import type { CmTabItem } from './tabs.types';
 
@@ -32,6 +37,7 @@ const slots = defineSlots<{
   [name: `panel${string}`]: ((props: { item: CmTabItem; active: boolean; activeValue: string }) => unknown) | undefined;
 }>();
 const tablist = ref<HTMLElement | null>(null);
+const indicator = ref<ReturnType<typeof tabIndicatorGeometry>>(null);
 const scrollEdges = ref({ start: false, end: false });
 const renderScrollControls = computed(() => props.scrollControls ?? (scrollEdges.value.start || scrollEdges.value.end));
 const scrollButtons = [
@@ -91,14 +97,25 @@ const activeValue = computed(
 watch(
   [tablist, normalizedItems, () => props.scrollControls],
   ([list, , controls], _, onCleanup) => {
-    if (!list || controls === false) {
+    if (!list) {
       scrollEdges.value = { start: false, end: false };
+      indicator.value = null;
       return;
     }
-    onCleanup(observeTabScroll(list, (edges) => (scrollEdges.value = edges)));
+    if (controls === false) scrollEdges.value = { start: false, end: false };
+    onCleanup(
+      observeTabScroll(
+        list,
+        (edges) => {
+          if (controls !== false) scrollEdges.value = edges;
+        },
+        measureIndicator,
+      ),
+    );
   },
   { flush: 'post' },
 );
+watch(activeValue, measureIndicator, { flush: 'post' });
 const classes = computed(() => mergeCmClasses('cm-tabs', attrs.class));
 const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['data-cm-controller', 'data-cm-tabs-value', 'onKeydown']));
 
@@ -148,6 +165,10 @@ function scroll(edge: CmTabScrollEdge, event: MouseEvent): void {
   }
 }
 
+function measureIndicator(): void {
+  indicator.value = tablist.value ? tabIndicatorGeometry(tablist.value) : null;
+}
+
 useCmHydrated();
 </script>
 
@@ -195,6 +216,15 @@ useCmHydrated();
           </slot>
         </slot>
       </button>
+      <span
+        v-if="indicator || props.scrollControls === true"
+        class="cm-tabs__indicator"
+        aria-hidden="true"
+        :hidden="!indicator"
+        v-bind="
+          indicator ? { style: { width: `${indicator.width}px`, transform: `translateX(${indicator.left}px)` } } : {}
+        "
+      ></span>
     </div>
     <template v-if="renderScrollControls">
       <button

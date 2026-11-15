@@ -18,7 +18,11 @@ function scrollEdges(viewport: HTMLElement): CmTabScrollEdges {
   return { start: displacement > 1, end: maximum - displacement > 1 };
 }
 
-export function observeTabScroll(viewport: HTMLElement, onChange: (edges: CmTabScrollEdges) => void): () => void {
+export function observeTabScroll(
+  viewport: HTMLElement,
+  onChange: (edges: CmTabScrollEdges) => void,
+  onLayout?: () => void,
+): () => void {
   let previous: CmTabScrollEdges | undefined;
   function refresh(): void {
     const edges = scrollEdges(viewport);
@@ -27,18 +31,31 @@ export function observeTabScroll(viewport: HTMLElement, onChange: (edges: CmTabS
     onChange(edges);
   }
 
+  function layout(): void {
+    refresh();
+    onLayout?.();
+  }
+
   const view = viewport.ownerDocument.defaultView;
-  const resize = view?.ResizeObserver ? new view.ResizeObserver(refresh) : undefined;
+  const resize = view?.ResizeObserver ? new view.ResizeObserver(layout) : undefined;
   resize?.observe(viewport);
   for (const tab of viewport.querySelectorAll(tabSelector)) resize?.observe(tab);
-  view?.addEventListener('resize', refresh);
+  view?.addEventListener('resize', layout);
   viewport.addEventListener('scroll', refresh, { passive: true });
-  refresh();
+  layout();
   return () => {
     viewport.removeEventListener('scroll', refresh);
-    view?.removeEventListener('resize', refresh);
+    view?.removeEventListener('resize', layout);
     resize?.disconnect();
   };
+}
+
+export function tabIndicatorGeometry(viewport: HTMLElement): { left: number; width: number } | null {
+  const selected = viewport.querySelector(`${tabSelector}[aria-selected="true"]`);
+  if (!selected) return null;
+  const tab = selected.getBoundingClientRect();
+  const list = viewport.getBoundingClientRect();
+  return tab.width ? { left: tab.left - list.left + viewport.scrollLeft, width: tab.width } : null;
 }
 
 export function scrollTabList(viewport: HTMLElement, edge: CmTabScrollEdge, invoker: HTMLElement): void {
