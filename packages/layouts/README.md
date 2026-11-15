@@ -33,7 +33,19 @@ and component ref methods.
 ## Documentation
 
 See [layout line ownership](../../docs/architecture/layout-line-ownership.md) for what this package
-carries, what was dropped, and what remains deferred.
+carries and where the historical compatibility boundaries are.
+
+Projects using `app.use(VueForgeLayouts)`, the VueForge layout preset API, CommonJS, or the old
+component subpaths can keep those contracts by pinning the archived VueForge packages:
+
+```bash
+npm install --save-exact vue@3.5.45 @codemonster-ru/vueforge-core@2.4.0 @codemonster-ru/vueforge-layouts@2.1.2 @codemonster-ru/vueforge-icons@3.2.0 @codemonster-ru/vueforge-theme@2.0.1
+```
+
+Continue importing `@codemonster-ru/vueforge-core/styles.css` and
+`@codemonster-ru/vueforge-layouts/styles.css` in that application. The historical plugin and style
+imports use VueForge tokens. The CodeMonster component adapter uses `@codemonster-ru/ui-tokens`
+and `@codemonster-ru/ui-css`. See [compatibility verification](../../docs/verification/historical-vue-ecosystem.md).
 
 ## License
 
