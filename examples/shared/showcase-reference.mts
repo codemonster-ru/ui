@@ -181,7 +181,7 @@ export function renderIconCatalog() {
   }
   function familyPanel(family: icons.CmIconFamily, title: string, description: string) {
     return `<section data-icon-group>
-      <header class="family-heading"><h3>${title}</h3><p>${description}</p></header>
+      <header class="family-heading"><h2>${title}</h2><p>${description}</p></header>
       <div class="variant-table" role="table" tabindex="0" aria-label="${title} icon weights">
         <div class="variant-row variant-row--head" role="row">
           <strong role="columnheader">Icon</strong>
@@ -201,7 +201,7 @@ export function renderIconCatalog() {
   }
   return `<section class="icon-catalog" id="icon-catalog" aria-labelledby="icon-catalog-heading">
     <header class="page-heading">
-      <div><p class="eyebrow">Complete icon catalog</p><h2 id="icon-catalog-heading">System and brand icons</h2></div>
+      <div><p class="eyebrow">Complete icon catalog</p><h1 id="icon-catalog-heading">System and brand icons</h1></div>
       <p>Find an icon, compare every system weight at 32 px, and copy its typed catalog name.</p>
     </header>
     <div class="catalog-toolbar">
@@ -213,7 +213,7 @@ export function renderIconCatalog() {
       { title: 'Duotone', panel: familyPanel('duotone', 'Duotone', 'Two-color Solid; outline weights match Classic.') },
     ])}</div>
     <section class="brand-section" data-icon-group aria-labelledby="brand-icons-heading">
-      <header class="family-heading"><h3 id="brand-icons-heading">Brands</h3>
+      <header class="family-heading"><h2 id="brand-icons-heading">Brands</h2>
       <p>Trademark assets use their approved single-color shape and the solid variant.</p></header>
       <div class="brand-grid">${brands
         .map(
