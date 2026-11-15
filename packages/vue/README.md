@@ -54,14 +54,18 @@ authored overlay triggers, and the physical Drawer placement API:
 import { VfDrawer, VfPopover } from '@codemonster-ru/ui-vue/historical';
 ```
 
-Import the shared tokens and stylesheet before rendering either entry. The native Dialog and Drawer
+Import the shared tokens and stylesheet before rendering either aggregate entry. The native Dialog and Drawer
 use the browser's modal stack; custom legacy Teleport destinations and scroll-lock targets are
 separate migration concerns. The [historical Vue theme plugin](../../docs/recipes/vue-theme-plugin.md)
 sets app-level defaults for `VfThemeProvider`. Node `require()` supports both entries on the Node
-versions above and shares the ESM instances. The preset engine, automatic component CSS, and old
-component subpaths remain part of the archived VueForge packages. See the
+versions above and shares the ESM instances. The archived VueForge packages retain their preset
+engine. See the
 [historical contract trace](../../docs/verification/historical-vue-core.md) and
 [layout migration notes](../layouts/README.md) for exact supported behavior and remaining differences.
+
+Use component subpaths such as `@codemonster-ru/ui-vue/historical/button` for browser bundlers to
+automatically load the relevant shared CSS from the existing packages. Node loads the same
+component modules without CSS. See the [deep import migration guide](../../docs/migrate-from-vueforge.md#component-subpaths).
 
 ## Documentation
 

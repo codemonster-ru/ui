@@ -13,7 +13,8 @@ complete.
 
 CodeMonster UI retains its own package identities, selectors and custom properties. Its Vue
 adapter can expose a historical name when a native Vue implementation supports the corresponding
-public contract. Such exports do not change package entry points or introduce duplicate CSS.
+public contract. Opt-in historical subpaths re-export the same modules, with browser styles drawn
+from the published shared CSS and token entries.
 
 ## Why a new package line
 

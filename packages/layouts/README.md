@@ -19,6 +19,8 @@ npm install vue@^3.5.0 @codemonster-ru/ui-layouts@^2.0.0-dev.0 @codemonster-ru/u
 
 The package exports application shells, authentication and error pages, and semantic page regions.
 Node `require()` on the supported Node versions loads the same layout module as ESM imports.
+Deep imports such as `@codemonster-ru/ui-layouts/historical/container` offer default and named
+exports with automatic CSS in browser bundlers. Node uses CSS-free entries.
 See the [layout guide](../../docs/components/layouts.md) for Vue examples and canonical HTML.
 
 ## What belongs here
@@ -36,8 +38,8 @@ and component ref methods.
 See [layout line ownership](../../docs/architecture/layout-line-ownership.md) for what this package
 carries and where the historical compatibility boundaries are.
 
-Projects using `app.use(VueForgeLayouts)`, the VueForge layout preset API, or the old
-component subpaths can keep those contracts by pinning the archived VueForge packages:
+Projects using `app.use(VueForgeLayouts)` or the VueForge layout preset API can keep those
+contracts by pinning the archived VueForge packages:
 
 ```bash
 npm install --save-exact vue@3.5.45 @codemonster-ru/vueforge-core@2.4.0 @codemonster-ru/vueforge-layouts@2.1.2 @codemonster-ru/vueforge-icons@3.2.0 @codemonster-ru/vueforge-theme@2.0.1

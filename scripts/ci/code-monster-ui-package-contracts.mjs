@@ -1,6 +1,7 @@
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { extname, join, relative, resolve, sep } from 'node:path';
 import semver from 'semver';
+import { historicalComponentEntries, historicalComponentPattern } from '../build/historical-component-entries.mjs';
 import { codeMonsterUiNpmPackages } from './code-monster-ui-package-catalog.mjs';
 import { validateCodeMonsterUiNpmManifest } from './code-monster-ui-package-metadata.mjs';
 
@@ -67,7 +68,21 @@ function validateExportTargets(packageContract, packageDirectory, manifest, erro
       errors,
     );
 
-    for (const { conditions, location, target } of targets) {
+    const historicalSlugs =
+      exportKey === historicalComponentPattern
+        ? historicalComponentEntries(packageContract.name).map(({ slug }) => slug)
+        : [];
+    const mappedTargets = historicalSlugs.length
+      ? targets.flatMap((entry) =>
+          historicalSlugs.map((slug) => ({
+            ...entry,
+            location: `${entry.location} (${slug})`,
+            target: entry.target.replaceAll('*', slug),
+          })),
+        )
+      : targets;
+
+    for (const { conditions, location, target } of mappedTargets) {
       if (!target.startsWith('./dist/')) {
         errors.push(`${location} must point inside ./dist (received ${target}).`);
         continue;
