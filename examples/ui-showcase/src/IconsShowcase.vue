@@ -42,7 +42,7 @@ async function copyIconName(name: string) {
     <header class="page-heading">
       <div>
         <p class="eyebrow">Complete icon catalog</p>
-        <h2 id="icon-catalog-heading">System and brand icons</h2>
+        <h1 id="icon-catalog-heading">System and brand icons</h1>
       </div>
       <p>Find an icon, compare every system weight at 32 px, and copy its typed catalog name.</p>
     </header>
@@ -62,7 +62,7 @@ async function copyIconName(name: string) {
       <template v-for="iconFamily in showcaseFamilies" :key="iconFamily.id" #[iconFamily.panel]="{ active }">
         <section v-if="active" class="family-section">
           <header class="family-heading">
-            <h3>{{ iconFamily.title }}</h3>
+            <h2>{{ iconFamily.title }}</h2>
             <p>{{ iconFamily.description }}</p>
           </header>
 
@@ -90,7 +90,7 @@ async function copyIconName(name: string) {
 
     <section class="brand-section" aria-labelledby="brand-icons-heading">
       <header class="family-heading">
-        <h3 id="brand-icons-heading">Brands</h3>
+        <h2 id="brand-icons-heading">Brands</h2>
         <p>Trademark assets use their approved single-color shape and the solid variant.</p>
       </header>
       <div v-if="filteredBrandIconNames.length" class="brand-grid">

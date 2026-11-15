@@ -1,4 +1,4 @@
-import { followShowcaseTheme, saveShowcaseTheme } from '../../shared/showcase-theme.js';
+import { followShowcaseFrameTheme, saveShowcaseTheme } from '../../shared/showcase-theme.js';
 import { showcaseCaseVariants, showcaseVariantValue } from '../../shared/showcase-matrices.mts';
 import * as UiIcons from '@codemonster-ru/ui-icons';
 import * as UiLayouts from '@codemonster-ru/ui-layouts';
@@ -43,13 +43,6 @@ const componentName =
     .join('');
 const component = components[componentName];
 if (!component) throw new Error(`Missing showcase component ${componentName}.`);
-
-const parentRoot = window.parent.document.documentElement;
-const updateTheme = () => {
-  document.documentElement.dataset.cmTheme = parentRoot.dataset.cmTheme ?? 'system';
-};
-updateTheme();
-new MutationObserver(updateTheme).observe(parentRoot, { attributes: true, attributeFilter: ['data-cm-theme'] });
 
 function resolveVueProps(): Record<string, unknown> {
   const props = { ...componentCase.props };
@@ -104,7 +97,7 @@ for (const key of [
     props[key] = value;
   };
 }
-followShowcaseTheme((mode) => {
+followShowcaseFrameTheme((mode) => {
   if (componentSlug === 'theme-switch') props.modelValue = mode;
 });
 if (componentSlug === 'theme-switch') props.onThemeChange = saveShowcaseTheme;

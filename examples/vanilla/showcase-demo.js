@@ -1,8 +1,8 @@
-import { followShowcaseTheme, saveShowcaseTheme } from './showcase-theme.js';
+import { followShowcaseFrameTheme, saveShowcaseTheme } from './showcase-theme.js';
 import { createRuntime } from './runtime.js';
 
 const demo = document.querySelector('.showcase-demo');
-followShowcaseTheme((mode) => {
+followShowcaseFrameTheme((mode) => {
   for (const input of demo.querySelectorAll('[data-cm-controller="theme-switch"] input[type="radio"]')) {
     input.checked = input.value === mode;
   }

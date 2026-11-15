@@ -24,7 +24,7 @@ function escapeHtml(text) {
 
 function page(title, content, script, base = '') {
   return `<!doctype html>
-<html lang="en" data-cm-theme="light">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   ${base ? `<base href="${base}" />` : ''}
