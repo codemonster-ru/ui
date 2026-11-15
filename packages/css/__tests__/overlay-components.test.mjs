@@ -51,6 +51,7 @@ test('starts native modal reveal motion from each standalone stylesheet', async 
 test('makes reveal motion available in each standalone anchored overlay stylesheet', async () => {
   for (const [slug, part] of [
     ['dropdown', 'menu'],
+    ['menu-bar', 'submenu'],
     ['popover', 'panel'],
     ['tooltip', 'content'],
   ]) {

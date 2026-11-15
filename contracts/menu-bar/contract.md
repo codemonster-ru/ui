@@ -29,4 +29,6 @@ server-rendered pages with authored open branches. Wider viewports use the inlin
 the bar closes it after 120 ms, and moving back into the bar or a submenu cancels the timer.
 Above 640 px, top-level panels float in a layer inside the navigation landmark. Each opener
 references its panel by ID, and keyboard navigation follows the logical branch hierarchy.
-The historical horizontal scroll controls and submenu transition remain separate.
+In both adapters, submenus reveal over 320 ms from a slight downward shift and reduced scale
+when motion is enabled. Closing hides the submenu immediately. The historical horizontal scroll
+controls remain separate.
