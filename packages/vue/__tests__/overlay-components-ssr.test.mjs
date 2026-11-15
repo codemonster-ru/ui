@@ -19,6 +19,8 @@ function slotContent(content) {
     'Account <strong>settings</strong>': () => ['Account ', h('strong', 'settings')],
     'Changes apply to the <strong>workspace</strong>.': () => ['Changes apply to the ', h('strong', 'workspace'), '.'],
     '<button type="button">Reset</button>': () => h('button', { type: 'button' }, 'Reset'),
+    '<button type="button" data-autofocus>Apply preferences</button>': () =>
+      h('button', { type: 'button', 'data-autofocus': '' }, 'Apply preferences'),
     '<span aria-hidden="true">●</span><span>Profile</span>': () => [
       h('span', { 'aria-hidden': 'true' }, '●'),
       h('span', 'Profile'),

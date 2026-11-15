@@ -7,7 +7,11 @@
     "id": { "type": "string", "required": true },
     "label": { "type": "string", "required": true },
     "open": { "type": "boolean", "required": false, "default": false },
+    "defaultOpen": { "type": "boolean", "required": false, "default": false },
     "disabled": { "type": "boolean", "required": false, "default": false },
+    "closeOnOutsideClick": { "type": "boolean", "required": false, "default": true },
+    "closeOnEscape": { "type": "boolean", "required": false, "default": true },
+    "focusOnOpen": { "type": "boolean", "required": false, "default": false },
     "placement": {
       "type": "enum",
       "required": false,

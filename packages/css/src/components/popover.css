@@ -84,6 +84,12 @@
   display: none;
 }
 
+.cm-popover__panel[data-cm-popover-portaled] {
+  position: fixed;
+  z-index: calc(var(--cm-z-index-sticky, 10) + 5);
+  inset: 0 auto auto 0;
+}
+
 @media (forced-colors: active) {
   .cm-popover__trigger,
   .cm-popover__panel {

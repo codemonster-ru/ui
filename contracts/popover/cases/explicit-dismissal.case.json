@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "popover-explicit-dismissal",
+  "description": "Initially open Popover with independent outside and Escape dismissal disabled.",
+  "props": {
+    "id": "preferences",
+    "label": "Preferences",
+    "defaultOpen": true,
+    "focusOnOpen": true,
+    "closeOnEscape": false,
+    "closeOnOutsideClick": false
+  },
+  "slots": { "default": "<button type=\"button\" data-autofocus>Apply preferences</button>" }
+}

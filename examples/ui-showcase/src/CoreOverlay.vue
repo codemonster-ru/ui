@@ -61,12 +61,19 @@ const viewItems = [
       </CmDropdown>
     </div>
     <div class="core-matrix-cell">
-      <h4>Popover · content</h4>
-      <CmPopover id="core-popover" v-model:open="popoverOpen" label="Open popover">
-        <template #default>
+      <h4>Popover · portaled content</h4>
+      <CmPopover
+        id="core-popover"
+        v-model:open="popoverOpen"
+        label="Open popover"
+        placement="bottom-end"
+        teleport-to="body"
+        focus-on-open
+      >
+        <template #default="{ close }">
           <div class="core-matrix-cell">
             <p>Compact content block.</p>
-            <CmButton size="sm" @click="popoverOpen = false">Apply</CmButton>
+            <CmButton size="sm" data-autofocus @click="close">Apply</CmButton>
           </div>
         </template>
       </CmPopover>
