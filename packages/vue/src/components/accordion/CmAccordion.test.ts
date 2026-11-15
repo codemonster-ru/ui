@@ -1,4 +1,5 @@
 import { mount } from '@vue/test-utils';
+import { h } from 'vue';
 import { describe, expect, it } from 'vitest';
 
 import CmAccordion from './CmAccordion.vue';
@@ -75,6 +76,29 @@ describe('CmAccordion', () => {
     expect(wrapper.findAll('.cm-accordion__panel').every((panel) => panel.attributes('hidden') === undefined)).toBe(
       true,
     );
+  });
+
+  it('keeps keyboard focus within the originating accordion when nested item IDs overlap', async () => {
+    const wrapper = mount(CmAccordion, {
+      attachTo: document.body,
+      props: { id: 'outer', items, defaultOpenItems: ['account'] },
+      slots: {
+        panelAccount: () => h(CmAccordion, { id: 'inner', items }),
+      },
+    });
+    try {
+      const inner = wrapper.get<HTMLButtonElement>('#inner-account-trigger');
+      inner.element.focus();
+      await inner.trigger('keydown', { key: 'ArrowDown' });
+      expect(document.activeElement).toBe(wrapper.get('#inner-billing-trigger').element);
+
+      const outer = wrapper.get<HTMLButtonElement>('#outer-account-trigger');
+      outer.element.focus();
+      await outer.trigger('keydown', { key: 'ArrowDown' });
+      expect(document.activeElement).toBe(wrapper.get('#outer-billing-trigger').element);
+    } finally {
+      wrapper.unmount();
+    }
   });
 
   it('ignores disabled activation and skips disabled triggers during focus navigation', async () => {

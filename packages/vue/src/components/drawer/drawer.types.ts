@@ -1,7 +1,9 @@
 import type { VfModalPortalProps } from '../modal/modal-portal';
 
-export type CmDrawerSide = 'start' | 'end' | 'left' | 'right' | 'top' | 'bottom';
-export type CmDrawerSize = 'sm' | 'md' | 'lg' | 'full';
+export const cmDrawerSides = ['start', 'end', 'left', 'right', 'top', 'bottom'] as const;
+export const cmDrawerSizes = ['sm', 'md', 'lg', 'full'] as const;
+export type CmDrawerSide = (typeof cmDrawerSides)[number];
+export type CmDrawerSize = (typeof cmDrawerSizes)[number];
 
 export interface CmDrawerProps {
   id: string;

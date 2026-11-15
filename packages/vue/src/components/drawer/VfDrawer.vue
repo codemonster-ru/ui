@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, useId, watch } from 'vue';
 import { useScrollLock } from '../../composables/scroll-lock';
+import { omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useVfModalPortal } from '../modal/modal-portal';
 import CmDrawer from './CmDrawer.vue';
 import type { VfDrawerProps } from './drawer.types';
@@ -28,14 +29,11 @@ useScrollLock(() => Boolean(modal.value?.modalOpen && props.scrollLockTarget), {
 });
 const useDocumentScroll = computed(() => props.scrollLockTarget == null);
 watch(useDocumentScroll, () => modal.value?.restoreAfterMove()?.(), { flush: 'post' });
-const bindings = computed(() => {
-  const drawer: VfDrawerProps = { ...props };
-  delete drawer.placement;
-  delete drawer.teleportTo;
-  delete drawer.disableTeleport;
-  delete drawer.scrollLockTarget;
-  return { ...drawer, side: props.placement, id: props.id ?? fallbackId };
-});
+const bindings = computed(() => ({
+  ...omitCmOwnedAttrs(props, ['placement', 'teleportTo', 'disableTeleport', 'scrollLockTarget']),
+  side: props.placement,
+  id: props.id ?? fallbackId,
+}));
 </script>
 
 <template>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, useAttrs, useTemplateRef, watch, type PropType } from 'vue';
 
+import { useCmNativeFormReset } from '../../internal/form-reset';
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
 import type { CmCheckboxSize } from './checkbox.types';
@@ -28,6 +29,11 @@ const emit = defineEmits<{
 }>();
 const attrs = useAttrs();
 const input = useTemplateRef<HTMLInputElement>('input');
+useCmNativeFormReset(
+  input,
+  () => props.modelValue,
+  (value) => emit('update:modelValue', value),
+);
 const size = computed(() => (sizes.includes(props.size) ? props.size : 'md'));
 const classes = computed(() =>
   mergeCmClasses(

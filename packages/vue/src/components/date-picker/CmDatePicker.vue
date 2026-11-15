@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="Multiple extends boolean = false, Range extends boolean = false">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, useAttrs, watch, type PropType } from 'vue';
+import { computed, nextTick, ref, useAttrs, watch, type PropType } from 'vue';
 
 import {
   observeCmAnchoredPosition,
@@ -7,6 +7,7 @@ import {
   type CmAnchoredStyle,
 } from '@codemonster-ru/ui-runtime/anchored-position';
 import { useCmFloatingPaint } from '../../internal/floating-paint';
+import { useCmFormReset } from '../../internal/form-reset';
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
 import { assertCm, warnCm } from '../../internal/warn';
@@ -453,37 +454,16 @@ watch([() => props.disabled, () => props.readonly], ([disabled, readonly]) => {
   if (disabled || readonly) setOpen(false);
 });
 
-let stopFormReset: (() => void) | undefined;
-onMounted(() => {
-  const trigger = triggerRef.value;
-  const document = trigger?.ownerDocument;
-  const view = document?.defaultView;
-  if (!trigger || !document || !view) return;
-  const pending = new Set<number>();
-  const onReset = (event: Event) => {
-    const form = trigger.form;
-    if (form === null || event.target !== form) return;
-    const timer = view.setTimeout(() => {
-      pending.delete(timer);
-      if (event.defaultPrevented || !trigger.isConnected || trigger.form !== form) return;
-      setOpen(false);
-      const defaults = authoredDates.filter((date) =>
-        hasTime.value ? calendarTimeValue(date) !== null : parseCalendarValue(date, precision.value) !== null,
-      );
-      if (datesMatch(defaults, currentDates.value)) return;
-      // A caller supplying a different model value still owns that state.
-      if (datesMatch(defaults, normalizeValues(props.modelValue))) currentDates.value = defaults;
-      reportValue(defaults);
-    });
-    pending.add(timer);
-  };
-  document.addEventListener('reset', onReset, true);
-  stopFormReset = () => {
-    document.removeEventListener('reset', onReset, true);
-    for (const timer of pending) view.clearTimeout(timer);
-  };
+useCmFormReset(triggerRef, () => {
+  setOpen(false);
+  const defaults = authoredDates.filter((date) =>
+    hasTime.value ? calendarTimeValue(date) !== null : parseCalendarValue(date, precision.value) !== null,
+  );
+  if (datesMatch(defaults, currentDates.value)) return;
+  // A caller supplying a different model value still owns that state.
+  if (datesMatch(defaults, normalizeValues(props.modelValue))) currentDates.value = defaults;
+  reportValue(defaults);
 });
-onBeforeUnmount(() => stopFormReset?.());
 
 useCmHydrated();
 </script>

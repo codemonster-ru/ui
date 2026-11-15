@@ -1,8 +1,61 @@
 import { mount } from '@vue/test-utils';
-import { nextTick } from 'vue';
+import { h, nextTick, ref } from 'vue';
 import { expect, it } from 'vitest';
 
 import CmSelect from './CmSelect.vue';
+
+it('submits to the associated external form and resets only after an uncanceled reset', async () => {
+  const form = document.createElement('form');
+  form.id = 'frequency-form';
+  document.body.append(form);
+  const value = ref('daily');
+  const changed: string[] = [];
+  const wrapper = mount(
+    {
+      setup: () => () =>
+        h(CmSelect, {
+          id: 'frequency',
+          name: 'frequency',
+          form: form.id,
+          modelValue: value.value,
+          'onUpdate:modelValue': (next: string) => (value.value = next),
+          onValueChange: (next: string) => changed.push(next),
+          options: [
+            { value: 'daily', label: 'Daily' },
+            { value: 'weekly', label: 'Weekly' },
+          ],
+        }),
+    },
+    { attachTo: document.body },
+  );
+  try {
+    expect(new FormData(form).get('frequency')).toBe('daily');
+    const trigger = wrapper.get('#frequency');
+    await trigger.trigger('click');
+    await wrapper.get('[data-cm-select-value="weekly"]').trigger('click');
+    expect(new FormData(form).get('frequency')).toBe('weekly');
+
+    await trigger.trigger('keydown', { key: 'ArrowDown' });
+    expect(document.activeElement).toBe(wrapper.get('[data-cm-select-value="weekly"]').element);
+    form.addEventListener('reset', (event) => event.preventDefault(), { once: true });
+    form.reset();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(value.value).toBe('weekly');
+    expect(trigger.attributes('aria-expanded')).toBe('true');
+
+    form.reset();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(value.value).toBe('daily');
+    expect(trigger.text()).toBe('Daily');
+    expect(trigger.attributes('aria-expanded')).toBe('false');
+    expect(document.activeElement).toBe(trigger.element);
+    expect(new FormData(form).get('frequency')).toBe('daily');
+    expect(changed).toEqual(['weekly']);
+  } finally {
+    wrapper.unmount();
+    form.remove();
+  }
+});
 
 it('keeps the listbox inline when the portal destination is invalid or belongs to the select', async () => {
   const wrapper = mount(CmSelect, {

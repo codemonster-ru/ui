@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, useAttrs, type PropType } from 'vue';
+import { computed, useAttrs, useTemplateRef, type PropType } from 'vue';
 
+import { useCmNativeFormReset } from '../../internal/form-reset';
 import { useCmHydrated } from '../../internal/hydration';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
@@ -33,6 +34,12 @@ defineSlots<{
   thumb?(props: { checked: boolean }): unknown;
 }>();
 const attrs = useAttrs();
+const input = useTemplateRef<HTMLInputElement>('input');
+useCmNativeFormReset(
+  input,
+  () => props.modelValue,
+  (value) => emit('update:modelValue', value),
+);
 const size = computed(() => (sizes.includes(props.size) ? props.size : 'md'));
 const classes = computed(() =>
   mergeCmClasses(
@@ -69,6 +76,7 @@ useCmHydrated();
 <template>
   <label v-bind="rootAttrs" :class="classes" data-cm-controller="switch">
     <input
+      ref="input"
       v-bind="controlAttrs"
       class="cm-switch__input"
       type="checkbox"

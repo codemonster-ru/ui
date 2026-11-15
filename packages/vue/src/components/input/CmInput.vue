@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, inject, nextTick, ref, useAttrs, watch, type PropType } from 'vue';
 
+import { useCmNativeFormReset } from '../../internal/form-reset';
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
 import { resolveInputClearable, resolvePasswordReveal } from '@codemonster-ru/ui-runtime/core';
@@ -40,6 +41,14 @@ const attrs = useAttrs();
 const floatingLabel = inject(cmFloatingFieldKey, null);
 const inputRef = ref<HTMLInputElement | null>(null);
 const currentValue = ref(props.modelValue);
+useCmNativeFormReset(
+  inputRef,
+  () => currentValue.value,
+  (value) => {
+    currentValue.value = value;
+    emit('update:modelValue', value);
+  },
+);
 const passwordVisible = ref(false);
 watch(
   () => props.modelValue,
@@ -65,6 +74,13 @@ const classes = computed(() =>
 const rootAttrs = computed(() => ({
   ...omitCmOwnedAttrs(attrs, ['value', 'type', 'disabled', 'readonly', 'required', 'aria-invalid', 'onInput']),
   ...(floatingLabel?.value && !attrs.placeholder ? { placeholder: ' ' } : {}),
+  class: classes.value,
+  type: resolvedInputType.value,
+  value: currentValue.value,
+  disabled: props.disabled || undefined,
+  readonly: props.readonly || undefined,
+  required: props.required || undefined,
+  'aria-invalid': props.invalid ? ('true' as const) : undefined,
 }));
 
 function updateValue(event: Event): void {
@@ -106,19 +122,7 @@ useCmHydrated();
     :data-cm-controller="hasPasswordReveal || hasClear ? 'input' : undefined"
   >
     <span v-if="$slots.leading" class="cm-input__leading"><slot name="leading" /></span>
-    <input
-      ref="inputRef"
-      v-bind="rootAttrs"
-      :class="classes"
-      :type="resolvedInputType"
-      :value="currentValue"
-      :disabled="props.disabled || undefined"
-      :readonly="props.readonly || undefined"
-      :required="props.required || undefined"
-      :aria-invalid="props.invalid ? 'true' : undefined"
-      data-cm-input-control
-      @input="updateValue"
-    />
+    <input ref="inputRef" v-bind="rootAttrs" data-cm-input-control @input="updateValue" />
     <span v-if="$slots.trailing" class="cm-input__trailing"><slot name="trailing" /></span>
     <button
       v-if="hasPasswordReveal"
@@ -188,17 +192,5 @@ useCmHydrated();
       </span>
     </button>
   </div>
-  <input
-    v-else
-    ref="inputRef"
-    v-bind="rootAttrs"
-    :class="classes"
-    :type="inputType"
-    :value="currentValue"
-    :disabled="props.disabled || undefined"
-    :readonly="props.readonly || undefined"
-    :required="props.required || undefined"
-    :aria-invalid="props.invalid ? 'true' : undefined"
-    @input="updateValue"
-  />
+  <input v-else ref="inputRef" v-bind="rootAttrs" @input="updateValue" />
 </template>

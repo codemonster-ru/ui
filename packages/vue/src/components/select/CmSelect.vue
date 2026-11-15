@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, shallowRef, useAttrs, watch, type PropType } from 'vue';
+import { computed, nextTick, ref, shallowRef, useAttrs, watch, type PropType } from 'vue';
 
 import {
   observeCmAnchoredPosition,
@@ -7,6 +7,7 @@ import {
   type CmAnchoredStyle,
 } from '@codemonster-ru/ui-runtime/anchored-position';
 import { useCmFloatingPaint } from '../../internal/floating-paint';
+import { useCmFormReset } from '../../internal/form-reset';
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
 import { selectClosedKeyAction, selectOpenKeyAction } from '@codemonster-ru/ui-runtime/core';
@@ -44,9 +45,9 @@ assertCm(props.id.trim() !== '', 'Select id must be a non-empty string.');
 const triggerRef = ref<HTMLButtonElement | null>(null);
 const listboxRef = ref<HTMLElement | null>(null);
 const currentValue = ref(props.modelValue);
+const initialValue = props.modelValue;
 const isOpen = ref(false);
 const painted = useCmFloatingPaint(isOpen, listboxRef);
-const mounted = ref(false);
 const portalWidth = ref<number>();
 const positionStyle = shallowRef<CmAnchoredStyle>();
 
@@ -81,9 +82,7 @@ const displayLabel = computed(() => selectedOption.value?.label ?? props.placeho
 const hasClear = computed(() => props.clearable && !props.disabled);
 const name = computed(() => (typeof attrs.name === 'string' ? attrs.name : null));
 const teleportTarget = computed(() =>
-  mounted.value && !props.disableTeleport
-    ? resolveCmAnchoredTarget(triggerRef.value?.parentElement, props.teleportTo)
-    : null,
+  props.disableTeleport ? null : resolveCmAnchoredTarget(triggerRef.value?.parentElement, props.teleportTo),
 );
 const listboxStyle = computed(() =>
   teleportTarget.value
@@ -181,9 +180,8 @@ function onListboxKeydown(event: KeyboardEvent): void {
 
 function onDocumentClick(event: MouseEvent): void {
   const target = event.target;
-  if (!(target instanceof Node)) return;
-  if (triggerRef.value?.contains(target) || listboxRef.value?.contains(target)) return;
-  setOpen(false);
+  if (target instanceof Node && !triggerRef.value?.contains(target) && !listboxRef.value?.contains(target))
+    setOpen(false);
 }
 
 watch(
@@ -218,8 +216,13 @@ watch(
     if (disabled) setOpen(false);
   },
 );
-onMounted(() => {
-  mounted.value = true;
+useCmFormReset(triggerRef, () => {
+  const listbox = listboxRef.value;
+  setOpen(false, listbox?.contains(listbox.ownerDocument.activeElement));
+  if (currentValue.value !== initialValue) {
+    currentValue.value = initialValue;
+    emit('update:modelValue', initialValue);
+  }
 });
 
 useCmHydrated();
@@ -227,7 +230,14 @@ useCmHydrated();
 
 <template>
   <div class="cm-select-wrap" data-cm-controller="select">
-    <input v-if="name" type="hidden" :name="name" :value="currentValue" :disabled="props.disabled || undefined" />
+    <input
+      v-if="name"
+      type="hidden"
+      :name="name"
+      :form="typeof attrs.form === 'string' ? attrs.form : undefined"
+      :value="currentValue"
+      :disabled="props.disabled || undefined"
+    />
     <button
       :id="props.id"
       ref="triggerRef"

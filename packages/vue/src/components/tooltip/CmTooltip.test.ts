@@ -79,6 +79,38 @@ describe('Tooltip', () => {
     wrapper.unmount();
   });
 
+  it('keeps a portaled tooltip open when crossing to its content and dismisses it from outside focus', async () => {
+    const wrapper = mount(CmTooltip, {
+      attachTo: document.body,
+      props: { id: 'details', label: 'Info', content: 'Details', delay: 'none', teleportTo: 'body' },
+    });
+    const outside = document.createElement('button');
+    document.body.append(outside);
+
+    try {
+      outside.focus();
+      await wrapper.trigger('pointerenter');
+      const tooltip = document.getElementById('details-tooltip')!;
+      expect(tooltip.parentElement).toBe(document.body);
+
+      const root = wrapper.get<HTMLSpanElement>('.cm-tooltip').element;
+      root.dispatchEvent(new MouseEvent('pointerleave', { relatedTarget: tooltip }));
+      tooltip.dispatchEvent(new MouseEvent('pointerenter', { relatedTarget: root }));
+      await nextTick();
+      expect(tooltip.hidden).toBe(false);
+
+      const escape = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true });
+      outside.dispatchEvent(escape);
+      await nextTick();
+      expect(tooltip.hidden).toBe(true);
+      expect(escape.defaultPrevented).toBe(false);
+      expect(document.activeElement).toBe(outside);
+    } finally {
+      wrapper.unmount();
+      outside.remove();
+    }
+  });
+
   it('defaults the historical component to an 80 ms body portal and returns the panel on close', async () => {
     vi.useFakeTimers();
     const host = document.createElement('div');
