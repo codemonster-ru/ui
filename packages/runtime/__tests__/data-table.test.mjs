@@ -202,6 +202,7 @@ function executeStep({ events, root, step }) {
   }
   if (step.action === 'click') return target.click();
   if (step.expect === 'attribute') return assert.equal(target.getAttribute(step.name), step.value);
+  if (step.expect === 'visible') return assert.equal(target.closest('[hidden]') === null, step.value);
   if (step.expect === 'text') return assert.equal(target.textContent.trim(), step.value);
   if (step.expect === 'eventCount') return assert.equal(events.get(step.name) ?? 0, step.count);
   assert.fail(`Unsupported DataTable scenario step: ${JSON.stringify(step)}`);
