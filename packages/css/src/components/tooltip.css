@@ -78,25 +78,28 @@
 .cm-tooltip__content[data-cm-tooltip-floating='top']::after,
 .cm-tooltip__content[data-cm-tooltip-floating='bottom']::after {
   position: absolute;
-  left: 50%;
+  inset-inline: 0;
   inline-size: var(--cm-space-2);
   block-size: var(--cm-space-2);
+  margin-inline: auto;
   background: inherit;
   content: '';
+  /* Keep the rotated arrow's borders the same in either text direction. */
+  direction: ltr;
   pointer-events: none;
-  transform: translateX(-50%) rotate(45deg);
+  transform: rotate(45deg);
 }
 
 .cm-tooltip__content[data-cm-tooltip-floating='top']::after {
   bottom: calc(-1 * var(--cm-space-1));
-  border-right: inherit;
+  border-inline-end: inherit;
   border-bottom: inherit;
 }
 
 .cm-tooltip__content[data-cm-tooltip-floating='bottom']::after {
   top: calc(-1 * var(--cm-space-1));
   border-top: inherit;
-  border-left: inherit;
+  border-inline-start: inherit;
 }
 
 .cm-tooltip__content[hidden] {
