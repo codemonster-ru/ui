@@ -66,8 +66,11 @@
   pointer-events: none;
 }
 
-.cm-data-table__column-resizer:is(:hover, :focus-visible)::after {
-  border-color: var(--cm-color-focus-ring);
+.cm-data-table__column-resizer:is(:hover, :focus-visible, [data-cm-data-table-resizing])::after {
+  inset-block: 0 auto;
+  inset-inline-end: 0;
+  block-size: var(--cm-data-table-resize-guide-height, 100%);
+  border-inline-end: var(--cm-border-width) solid var(--cm-color-border-focus);
 }
 
 .cm-data-table__head th[data-cm-data-table-reorder-column][tabindex] {

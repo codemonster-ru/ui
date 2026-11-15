@@ -9,6 +9,7 @@ import {
 import {
   measureDataTableColumnContent,
   measureDataTableResizeBoundary,
+  observeDataTableResizeGuide,
   resizedDataTableWidths,
   type CmDataTableResizeBoundary,
 } from './data-table-resize.js';
@@ -68,6 +69,7 @@ export class CmDataTableController implements CmController {
   readonly #root: Element;
   readonly #table: HTMLTableElement;
   #stopPinning: (() => void) | undefined;
+  #stopResizeGuide?: () => void;
   #drag:
     | {
         handle: HTMLElement;
@@ -106,6 +108,7 @@ export class CmDataTableController implements CmController {
     }
     for (const handle of this.#table.querySelectorAll<HTMLElement>(resizeSelector)) {
       if (handle.closest('table') !== this.#table) continue;
+      this.#stopResizeGuide ??= observeDataTableResizeGuide(this.#table);
       const boundary = measureDataTableResizeBoundary(handle);
       if (boundary) this.#resizeAria(handle, boundary);
     }
@@ -132,7 +135,10 @@ export class CmDataTableController implements CmController {
     for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) {
       this.#root.removeEventListener(type, this.#finishResize);
     }
+    this.#drag?.handle.removeAttribute('data-cm-data-table-resizing');
     this.#drag = undefined;
+    this.#stopResizeGuide?.();
+    this.#stopResizeGuide = undefined;
     if (this.#stopPinning) {
       this.#stopPinning();
       this.#stopPinning = undefined;
@@ -212,6 +218,7 @@ export class CmDataTableController implements CmController {
     const boundary = handle && measureDataTableResizeBoundary(handle);
     if (!handle || !boundary) return;
     this.#drag = { handle, boundary, start: pointer.clientX, pointer: pointer.pointerId };
+    handle.setAttribute('data-cm-data-table-resizing', '');
     handle.setPointerCapture?.(pointer.pointerId);
   };
 
@@ -230,6 +237,7 @@ export class CmDataTableController implements CmController {
     const pointer = this.#pointerEvent(event);
     if (!pointer || !this.#drag || pointer.pointerId !== this.#drag.pointer) return;
     const columnWidths = this.#drag.widths;
+    this.#drag.handle.removeAttribute('data-cm-data-table-resizing');
     this.#drag = undefined;
     if (columnWidths) dispatchCmEvent(this.#root, 'data-table-column-resize-end', { columnWidths });
   };

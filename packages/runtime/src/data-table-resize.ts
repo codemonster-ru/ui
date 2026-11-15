@@ -20,6 +20,26 @@ export interface CmDataTableResizeBoundary {
 const columnSelector = '[data-cm-data-table-column]';
 const resizerSelector = '[data-cm-data-table-resize]';
 
+export function observeDataTableResizeGuide(table: HTMLTableElement): () => void {
+  const head = table.tHead;
+  if (!head) return () => {};
+  const property = '--cm-data-table-resize-guide-height';
+  const measure = () => {
+    const body = table.tBodies[table.tBodies.length - 1];
+    const height = (body ?? head).getBoundingClientRect().bottom - head.getBoundingClientRect().top;
+    table.style.setProperty(property, `${Math.max(0, height)}px`);
+  };
+  const Observer = table.ownerDocument.defaultView?.ResizeObserver;
+  const observer = Observer && new Observer(measure);
+  observer?.observe(table);
+  observer?.observe(head);
+  measure();
+  return () => {
+    observer?.disconnect();
+    table.style.removeProperty(property);
+  };
+}
+
 function pixelSize(value: string, tableWidth: number, fallback: number): number {
   if (value.endsWith('px')) return Number.parseFloat(value);
   if (value.endsWith('%')) return (Number.parseFloat(value) / 100) * tableWidth;
