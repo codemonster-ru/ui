@@ -31,13 +31,15 @@ export class CmModalController implements CmController {
   }
 
   connect(): void {
-    this.#synchronize(this.#dialog.open);
+    const open = this.#dialog.open;
+    if (open) this.#enterModal();
+    this.#synchronize(open);
     this.#dialog.addEventListener('click', this.#handleClick);
     this.#dialog.addEventListener('keydown', this.#handleKeydown);
     this.#dialog.addEventListener('cancel', this.#handleCancel);
     this.#dialog.addEventListener(`cm:${this.#options.eventName}-open-request`, this.#handleOpenRequest);
     this.#dialog.addEventListener(`cm:${this.#options.eventName}-close-request`, this.#handleCloseRequest);
-    if (this.#dialog.open) this.#focusInitial();
+    if (open) this.#focusInitial();
   }
 
   disconnect(): void {
@@ -55,8 +57,7 @@ export class CmModalController implements CmController {
     if (open) {
       const active = this.#dialog.ownerDocument.activeElement;
       this.#returnFocus = active instanceof this.#dialog.ownerDocument.defaultView!.HTMLElement ? active : null;
-      if (typeof this.#dialog.showModal === 'function' && !this.#dialog.open) this.#dialog.showModal();
-      else this.#dialog.open = true;
+      this.#enterModal();
       this.#synchronize(true);
       this.#focusInitial();
     } else {
@@ -111,6 +112,15 @@ export class CmModalController implements CmController {
 
   #isDismissible(): boolean {
     return this.#dialog.getAttribute(`data-cm-${this.#options.eventName}-dismissible`) !== 'false';
+  }
+
+  #enterModal(): void {
+    const dialog = this.#dialog;
+    if (!dialog.isConnected || typeof dialog.showModal !== 'function' || dialog.matches(':modal')) return;
+
+    // The server can render open markup, but only showModal enters the browser's modal stack.
+    if (dialog.open) dialog.removeAttribute('open');
+    dialog.showModal();
   }
 
   #focusInitial(): void {

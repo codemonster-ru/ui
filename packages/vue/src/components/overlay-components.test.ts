@@ -65,6 +65,16 @@ describe('Vue overlay components', () => {
     expect(wrapper.emitted('openChange')).toEqual([[false]]);
   });
 
+  it.each(['top', 'bottom'] as const)(
+    'renders the Drawer at the %s edge and dismisses it with Escape',
+    async (side) => {
+      const wrapper = mount(CmDrawer, { props: { id: 'filters', title: 'Filters', open: true, side } });
+      expect(wrapper.classes()).toContain(`cm-drawer--${side}`);
+      await wrapper.get('dialog').trigger('keydown', { key: 'Escape' });
+      expect(wrapper.emitted('update:open')).toEqual([[false]]);
+    },
+  );
+
   it('supports finite Drawer presentation and dismissal locking', async () => {
     let requestSlotClose: (() => void) | undefined;
     const wrapper = mount(CmDrawer, {

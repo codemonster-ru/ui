@@ -1,11 +1,13 @@
 .cm-drawer,
 .cm-drawer--md,
 .cm-drawer--open {
+  --cm-drawer-size: calc(var(--cm-space-16) * 6 + var(--cm-space-2) * 4);
+
   position: fixed;
   inset-block: 0;
   max-block-size: none;
   block-size: 100%;
-  inline-size: min(100dvw, calc(var(--cm-space-16) * 6 + var(--cm-space-2) * 4));
+  inline-size: min(100dvw, var(--cm-drawer-size));
   padding: 0;
   border: var(--cm-border-width) solid var(--cm-color-border-strong);
   background: var(--cm-color-background-surface-elevated);
@@ -25,6 +27,27 @@
   margin-inline: 0;
   border-block: 0;
   border-inline-end: 0;
+}
+
+.cm-drawer:is(.cm-drawer--top, .cm-drawer--bottom) {
+  inset-inline: 0;
+  inline-size: 100dvw;
+  max-inline-size: none;
+  block-size: auto;
+  min-block-size: min(100dvh, var(--cm-drawer-size));
+  max-block-size: 100dvh;
+  margin: 0;
+  border-inline: 0;
+}
+
+.cm-drawer--top {
+  inset-block: 0 auto;
+  border-block-start: 0;
+}
+
+.cm-drawer--bottom {
+  inset-block: auto 0;
+  border-block-end: 0;
 }
 
 .cm-drawer::backdrop {
@@ -132,17 +155,21 @@
 }
 
 .cm-drawer--sm {
-  inline-size: min(100dvw, calc(var(--cm-space-16) * 5));
+  --cm-drawer-size: calc(var(--cm-space-16) * 5);
 }
 
 .cm-drawer--lg {
-  inline-size: min(100dvw, calc(var(--cm-space-16) * 8));
+  --cm-drawer-size: calc(var(--cm-space-16) * 8);
 }
 
 .cm-drawer--full {
   inline-size: 100dvw;
   border: 0;
   border-radius: 0;
+}
+
+.cm-drawer--full:is(.cm-drawer--top, .cm-drawer--bottom) {
+  min-block-size: 100dvh;
 }
 
 .cm-drawer--rounded.cm-drawer--start {
@@ -153,6 +180,20 @@
 .cm-drawer--rounded.cm-drawer--end {
   border-start-start-radius: var(--cm-radius-overlay);
   border-end-start-radius: var(--cm-radius-overlay);
+}
+
+.cm-drawer--rounded.cm-drawer--top {
+  border-end-start-radius: var(--cm-radius-overlay);
+  border-end-end-radius: var(--cm-radius-overlay);
+}
+
+.cm-drawer--rounded.cm-drawer--bottom {
+  border-start-start-radius: var(--cm-radius-overlay);
+  border-start-end-radius: var(--cm-radius-overlay);
+}
+
+.cm-drawer--full.cm-drawer--rounded {
+  border-radius: 0;
 }
 
 @media (forced-colors: active) {

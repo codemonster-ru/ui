@@ -108,6 +108,9 @@ it must survive navigation; runtime state is intentionally page-local.
   on Escape, and restore the invoking focus when known. Backdrop clicks never dismiss them; this
   stable policy replaces VueForge's backdrop toggle. Drawer offsets and arbitrary body padding are
   application styling concerns through the root class/style hooks rather than component props.
+- Drawer supports logical `start` and `end` edges and full-width `top` and `bottom` placements. Use
+  `side` in Vue and the corresponding `cm-drawer--top` or `cm-drawer--bottom` class in Vanilla.
+  Size controls the minimum height of a top or bottom drawer. The full size fills the viewport.
 - Keep modal titles specific and visible. Use `description` for concise supporting text.
 - Popover is non-modal: it does not trap focus, teleport content, or calculate floating
   coordinates. Escape and outside pointer activation dismiss it.

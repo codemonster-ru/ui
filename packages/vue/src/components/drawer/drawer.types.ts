@@ -1,4 +1,4 @@
-export type CmDrawerSide = 'start' | 'end';
+export type CmDrawerSide = 'start' | 'end' | 'top' | 'bottom';
 export type CmDrawerSize = 'sm' | 'md' | 'lg' | 'full';
 
 export interface CmDrawerProps {
