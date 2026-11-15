@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { VfCodeBlock } from '@codemonster-ru/vueforge-codeblock/view';
-import { CmButton, CmSkeleton } from '@codemonster-ru/ui-vue';
+import { CmButton, CmSkeletonGate } from '@codemonster-ru/ui-vue';
 import { onMounted, onUnmounted, ref } from 'vue';
 
 defineProps<{ theme: 'light' | 'dark' }>();
@@ -201,18 +201,27 @@ onUnmounted(() => clearTimeout(timer));
 <template>
   <section class="showcase-group" aria-labelledby="codeblock-heading">
     <header>
-      <h1 id="codeblock-heading">VfCodeBlock</h1>
+      <h2 id="codeblock-heading">VfCodeBlock</h2>
       <p>
         Render syntax-highlighted, themed source code with filenames, line numbers, copy controls, and constrained
         long-file scrolling.
       </p>
-      <CmButton type="button" variant="secondary" @click="replay">Replay skeleton</CmButton>
+      <CmButton class="codeblock-replay" type="button" variant="secondary" size="sm" @click="replay">
+        Replay skeleton
+      </CmButton>
     </header>
 
     <div class="showcase-panel codeblock-grid" :aria-busy="!ready" :data-vf-theme="theme">
-      <template v-for="block in blocks" :key="block.filename">
+      <CmSkeletonGate
+        v-for="block in blocks"
+        :key="block.filename"
+        :ready="ready"
+        :min-height="block.skeletonMinHeight"
+        preserve-last-height
+        normalize-content-spacing
+        radius="var(--cm-radius-surface)"
+      >
         <VfCodeBlock
-          v-if="ready"
           :language="block.language"
           :filename="block.filename"
           :code="block.code"
@@ -221,18 +230,22 @@ onUnmounted(() => clearTimeout(timer));
           :container-min-height="`${block.skeletonMinHeight}px`"
           show-line-numbers
         />
-        <CmSkeleton v-else :min-height="block.skeletonMinHeight" />
-      </template>
+      </CmSkeletonGate>
     </div>
   </section>
 </template>
 
 <style scoped>
+.codeblock-replay {
+  justify-self: start;
+}
+
 .codeblock-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 520px), 1fr));
   align-items: start;
   gap: var(--cm-space-4);
+  border-color: var(--cm-color-border-default);
 }
 
 .codeblock-grid :deep(.vf-codeblock) {
