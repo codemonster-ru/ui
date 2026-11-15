@@ -20,7 +20,7 @@ const props = defineProps({
   variant: {
     type: String as PropType<CmNavMenuVariant>,
     default: 'sidebar',
-    validator: (value: string) => ['sidebar', 'inline'].includes(value),
+    validator: (value: string) => ['sidebar', 'inline', 'pills'].includes(value),
   },
   ariaLabel: { type: String, default: 'Main navigation' },
 });
@@ -33,7 +33,7 @@ const emit = defineEmits<{
 const attrs = useAttrs();
 
 const expandMode = computed(() => (props.expandMode === 'single' ? 'single' : 'multiple'));
-const variant = computed(() => (props.variant === 'inline' ? 'inline' : 'sidebar'));
+const variant = computed(() => (props.variant === 'inline' || props.variant === 'pills' ? props.variant : 'sidebar'));
 
 // Uncontrolled menus open the path to the active item themselves, because an active item nobody
 // can see is the failure that matters here.

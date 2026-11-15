@@ -78,7 +78,7 @@ const branchClasses = computed(() => [
       :aria-disabled="props.item.href && props.item.disabled ? 'true' : undefined"
       :tabindex="props.item.href && props.item.disabled ? -1 : undefined"
       :disabled="!props.item.href && props.item.disabled ? true : undefined"
-      @click="$emit('select', props.item.value)"
+      @click="props.item.disabled ? $event.preventDefault() : $emit('select', props.item.value)"
     >
       <span class="cm-nav-menu__item-content"
         ><slot :name="`item${props.item.value}`" :item="props.item"

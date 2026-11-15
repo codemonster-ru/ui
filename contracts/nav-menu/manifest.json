@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "name": "NavMenu",
   "slug": "nav-menu",
-  "description": "A nested navigation menu. Branches expand in place, the path to the active item is opened for it, and a collapsed branch stays in the markup so a page without JavaScript still shows the whole tree.",
+  "description": "A nested navigation menu. Branches expand in place, the path to the active item is opened for it, and collapsed sublists stay in the markup until reopened.",
   "props": {
     "items": {
       "type": "collection",
@@ -31,7 +31,7 @@
       "type": "enum",
       "required": false,
       "default": "sidebar",
-      "values": ["sidebar", "inline"]
+      "values": ["sidebar", "inline", "pills"]
     },
     "ariaLabel": {
       "type": "string",
@@ -55,5 +55,5 @@
       "payloadContract": "string-list"
     }
   },
-  "states": ["default", "expanded", "active", "disabled"]
+  "states": ["default", "expanded", "active", "disabled", "pills"]
 }

@@ -264,19 +264,9 @@ function scrollTabs(direction: -1 | 1) {
 }
 
 const menuBarExamples = [
-  { label: 'Menu bar', className: '', selected: ref('pricing') },
-  { label: 'Pill menu bar', className: 'core-nav-pills', selected: ref('about') },
-];
-
-function markMenuBarSelection(host: HTMLElement | null, selected: string) {
-  for (const item of host?.querySelectorAll('[data-cm-menu-bar-value]') ?? []) {
-    if (item.getAttribute('data-cm-menu-bar-value') === selected) {
-      item.setAttribute('aria-current', 'true');
-    } else {
-      item.removeAttribute('aria-current');
-    }
-  }
-}
+  { label: 'Menu bar', variant: 'default', selected: ref('pricing') },
+  { label: 'Pill menu bar', variant: 'pills', selected: ref('about') },
+] as const;
 </script>
 
 <template>
@@ -368,13 +358,7 @@ function markMenuBarSelection(host: HTMLElement | null, selected: string) {
     <div class="core-matrix-cell">
       <h4>Navigation menu and menu bar</h4>
       <CmNavMenu v-model:value="selectedMenu" variant="inline" :items="menu" class="core-nav-plain" />
-      <CmNavMenu
-        v-model:value="pillMenu"
-        variant="inline"
-        :items="menu"
-        class="core-nav-pills"
-        aria-label="Pill navigation"
-      />
+      <CmNavMenu v-model:value="pillMenu" variant="pills" :items="menu" aria-label="Pill navigation" />
       <div class="core-matrix-grid core-nav-variants">
         <div class="core-matrix-cell">
           <h5>Sidebar with icons</h5>
@@ -409,16 +393,12 @@ function markMenuBarSelection(host: HTMLElement | null, selected: string) {
           />
         </div>
       </div>
-      <div
-        v-for="example in menuBarExamples"
-        :key="example.label"
-        :ref="(host) => markMenuBarSelection(host as HTMLElement | null, example.selected.value)"
-      >
+      <div v-for="example in menuBarExamples" :key="example.label">
         <CmMenuBar
+          v-model="example.selected.value"
           :items="menuBar"
-          :class="example.className"
+          :variant="example.variant"
           :aria-label="example.label"
-          @select="example.selected.value = $event"
         />
       </div>
     </div>

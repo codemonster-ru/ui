@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "id": "nav-menu-pills",
+  "description": "A pills navigation tree with an active child, a disabled page, and permanent group links.",
+  "props": {
+    "items": [
+      {
+        "value": "dashboard",
+        "label": "Dashboard",
+        "href": "/dashboard"
+      },
+      {
+        "value": "projects",
+        "label": "Projects",
+        "children": [
+          {
+            "value": "active",
+            "label": "Active",
+            "href": "/projects/active"
+          },
+          {
+            "value": "archived",
+            "label": "Archived",
+            "href": "/projects/archived",
+            "disabled": true
+          }
+        ]
+      },
+      {
+        "value": "support",
+        "label": "Support",
+        "kind": "group",
+        "children": [
+          {
+            "value": "docs",
+            "label": "Docs",
+            "href": "/docs"
+          }
+        ]
+      }
+    ],
+    "value": "active",
+    "variant": "pills"
+  },
+  "slots": {}
+}

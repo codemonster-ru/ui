@@ -46,8 +46,8 @@ const examples: Record<string, readonly string[]> = {
   switch: ['default', 'checked', 'disabled'],
   breadcrumbs: ['default'],
   menu: ['default'],
-  'menu-bar': ['default'],
-  'nav-menu': ['inline', 'sidebar', 'collapsed', 'wrapping-labels'],
+  'menu-bar': ['default', 'pills'],
+  'nav-menu': ['inline', 'pills', 'sidebar', 'collapsed', 'wrapping-labels'],
   'table-of-contents': ['default', 'pills'],
   stepper: ['horizontal', 'vertical'],
   tabs: ['release', 'release-overflow', 'disabled'],
@@ -127,6 +127,7 @@ function coreExampleSource(slug: string, name: string, read: (id: string) => str
         'class="cm-stepper cm-stepper--vertical cm-stepper--content-inline"',
       );
     case 'nav-menu': {
+      if (name === 'pills') return read('nav-menu-pills');
       const source = read('nav-menu-default');
       if (name === 'inline') return source?.replace('cm-nav-menu--sidebar', 'cm-nav-menu--inline');
       if (name === 'wrapping-labels') {

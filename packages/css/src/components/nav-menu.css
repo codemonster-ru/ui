@@ -1,7 +1,6 @@
 /*
- * A collapsed branch stays in the markup and CSS closes it, which is what lets a page without
- * JavaScript still show the whole tree and a search find text inside a closed branch. The animation
- * is grid-template-rows going 0fr to 1fr — no measured heights, so both adapters behave the same.
+ * A collapsed branch stays in the markup. CSS collapses its grid track and removes its entries from
+ * keyboard navigation, with no measured heights. Both adapters read the same expanded classes.
  *
  * The sidebar variant narrows itself with a container query rather than a resize observer. The
  * VueForge component measured its own width in JavaScript; the container query says the same thing
@@ -95,6 +94,7 @@
 .cm-nav-menu__collapse {
   display: grid;
   grid-template-rows: 0fr;
+  visibility: hidden;
   transition: grid-template-rows var(--cm-motion-duration-fast) var(--cm-motion-ease-standard);
 }
 
@@ -102,9 +102,43 @@
   overflow: hidden;
 }
 
+.cm-nav-menu--pills .cm-nav-menu__list {
+  gap: var(--cm-space-1);
+}
+
+.cm-nav-menu--pills .cm-nav-menu__item {
+  min-block-size: var(--cm-control-height-md);
+  padding: var(--cm-field-padding-md);
+  padding-inline-start: calc(var(--cm-field-padding-inline-md) + var(--cm-nav-menu-level, 0) * var(--cm-space-3));
+  border-radius: var(--cm-radius-control);
+}
+
+.cm-nav-menu--pills .cm-nav-menu__item:hover:not(:disabled, [aria-disabled='true']) {
+  background: var(--cm-color-background-surface-hover);
+}
+
+.cm-nav-menu--pills .cm-nav-menu__node:has(.cm-nav-menu__item--active) > .cm-nav-menu__item--branch:not(:disabled),
+.cm-nav-menu--pills .cm-nav-menu__item--active:not(:disabled, [aria-disabled='true']) {
+  color: var(--cm-color-selected-foreground);
+  font-weight: var(--cm-text-label-font-weight);
+}
+
+.cm-nav-menu--pills .cm-nav-menu__item--active:not(:disabled, [aria-disabled='true']) {
+  background: var(--cm-color-background-surface-selected);
+}
+
+.cm-nav-menu--pills .cm-nav-menu__item--active:hover:not(:disabled, [aria-disabled='true']) {
+  background: var(--cm-color-background-surface-selected-hover);
+}
+
+.cm-nav-menu--pills .cm-nav-menu__item--active:active:not(:disabled, [aria-disabled='true']) {
+  background: var(--cm-color-background-surface-selected-active);
+}
+
 .cm-nav-menu__node--expanded > .cm-nav-menu__collapse,
 .cm-nav-menu__node:not(:has(> .cm-nav-menu__item--branch)) > .cm-nav-menu__collapse {
   grid-template-rows: 1fr;
+  visibility: visible;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,4 +1,4 @@
-export type CmNavMenuVariant = 'sidebar' | 'inline';
+export type CmNavMenuVariant = 'sidebar' | 'inline' | 'pills';
 export type CmNavMenuExpandMode = 'multiple' | 'single';
 
 export interface CmNavMenuItem {

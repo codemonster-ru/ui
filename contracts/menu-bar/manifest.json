@@ -11,6 +11,14 @@
       "default": null,
       "description": "The branch values from the bar down to the open submenu."
     },
+    "modelValue": { "type": "nullable-string", "required": false, "description": "The controlled selected leaf." },
+    "defaultValue": {
+      "type": "nullable-string",
+      "required": false,
+      "default": null,
+      "description": "The initial selected leaf."
+    },
+    "variant": { "type": "enum", "required": false, "default": "default", "values": ["default", "pills"] },
     "ariaLabel": { "type": "string", "required": false, "default": "Main menu" }
   },
   "slots": {
@@ -18,7 +26,8 @@
   },
   "events": {
     "select": { "description": "Reports the activated leaf value.", "payloadContract": "string" },
+    "change": { "description": "Reports the selected leaf value.", "payloadContract": "string" },
     "openPathChange": { "description": "Reports the open branch path.", "payloadContract": "string-list" }
   },
-  "states": ["default", "open", "active", "disabled"]
+  "states": ["default", "open", "active", "disabled", "pills"]
 }

@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "menu-bar-pills",
+  "description": "Pills with an active page, a disabled command and a nested submenu.",
+  "props": {
+    "variant": "pills",
+    "defaultValue": "help",
+    "items": [
+      {
+        "value": "file",
+        "label": "File",
+        "children": [
+          { "value": "new", "label": "New" },
+          { "value": "unavailable", "label": "Unavailable", "disabled": true },
+          { "value": "recent", "label": "Recent", "children": [{ "value": "report", "label": "Report" }] }
+        ]
+      },
+      { "value": "account", "label": "Account", "disabled": true },
+      { "value": "help", "label": "Help", "href": "/help" }
+    ]
+  },
+  "slots": {}
+}
