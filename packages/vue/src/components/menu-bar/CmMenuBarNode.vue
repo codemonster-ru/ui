@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { externalLink } from '@codemonster-ru/ui-icons';
-import { computed, resolveComponent, type Component, type PropType } from 'vue';
+import { externalLink } from '@codemonster-ru/ui-icons/controls';
+import { computed, resolveComponent, useId, type Component, type PropType } from 'vue';
 
 import CmIcon from '../icon/CmIcon.vue';
 import type { CmMenuBarItem } from './menu-bar.types';
@@ -14,8 +14,10 @@ const props = defineProps({
   activeValue: { type: String as PropType<string | null>, default: null },
   tabbableValue: { type: String as PropType<string | null>, default: null },
   linkComponent: { type: [String, Object, Function] as PropType<string | Component>, default: undefined },
+  submenuTarget: { type: Object as PropType<HTMLElement>, default: undefined },
 });
 const emit = defineEmits<{ toggle: [value: string]; select: [value: string] }>();
+const panelId = useId();
 
 const isGroup = computed(() => props.item.kind === 'group');
 const hasChildren = computed(() => !isGroup.value && (props.item.children?.length ?? 0) > 0);
@@ -81,6 +83,7 @@ function select(event: MouseEvent): void {
           :active-value="activeValue"
           :tabbable-value="tabbableValue"
           :link-component="props.linkComponent"
+          :submenu-target="props.submenuTarget"
           @toggle="$emit('toggle', $event)"
           @select="$emit('select', $event)"
         />
@@ -94,6 +97,7 @@ function select(event: MouseEvent): void {
       :style="depthStyle"
       :data-cm-menu-bar-branch="props.item.value"
       aria-haspopup="menu"
+      :aria-controls="props.submenuTarget ? panelId : undefined"
       :aria-expanded="isOpen"
       :tabindex="tabindex"
       :disabled="props.item.disabled || undefined"
@@ -124,19 +128,27 @@ function select(event: MouseEvent): void {
       >
       <CmIcon v-if="isLink && props.item.target === '_blank'" :icon="externalLink" size="var(--cm-icon-size-sm)" />
     </component>
-    <ul v-if="hasChildren" class="cm-menu-bar__submenu" role="menu" :aria-label="props.item.label" :hidden="!isOpen">
-      <CmMenuBarNode
-        v-for="child in props.item.children"
-        :key="child.value"
-        :item="child"
-        :depth="props.depth + 1"
-        :open-path="props.openPath"
-        :active-value="activeValue"
-        :tabbable-value="tabbableValue"
-        :link-component="props.linkComponent"
-        @toggle="$emit('toggle', $event)"
-        @select="$emit('select', $event)"
-      />
-    </ul>
+    <Teleport v-if="hasChildren" :to="props.submenuTarget ?? 'body'" :disabled="!props.submenuTarget">
+      <ul
+        :id="props.submenuTarget ? panelId : undefined"
+        class="cm-menu-bar__submenu"
+        role="menu"
+        :aria-label="props.item.label"
+        :hidden="!isOpen"
+      >
+        <CmMenuBarNode
+          v-for="child in props.item.children"
+          :key="child.value"
+          :item="child"
+          :depth="props.depth + 1"
+          :open-path="props.openPath"
+          :active-value="activeValue"
+          :tabbable-value="tabbableValue"
+          :link-component="props.linkComponent"
+          @toggle="$emit('toggle', $event)"
+          @select="$emit('select', $event)"
+        />
+      </ul>
+    </Teleport>
   </li>
 </template>

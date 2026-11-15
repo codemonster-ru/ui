@@ -24,5 +24,9 @@ icons, and `select` with the original item object after the model/change events.
 `CmMenuBar` and Vanilla event continue to report the selected value. Top-level items wrap.
 At viewport widths up to 640 px, expanded submenus stack in their own rows, including on
 server-rendered pages with authored open branches. Wider viewports use the inline cascade.
-The historical hover-close timer, floating submenu portal and horizontal scroll controls
-remain separate from this entry.
+
+`VfMenuBar` switches enabled branches on mouse hover after the first branch opens. Leaving
+the bar closes it after 120 ms, and moving back into the bar or a submenu cancels the timer.
+Above 640 px, top-level panels float in a layer inside the navigation landmark. Each opener
+references its panel by ID, and keyboard navigation follows the logical branch hierarchy.
+The historical horizontal scroll controls and submenu transition remain separate.

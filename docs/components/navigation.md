@@ -276,6 +276,11 @@ and restores focus to its top-level trigger. Use `variant="pills"` for the histo
 geometry and selected surfaces. Set `defaultValue` for an initial selection or bind `v-model`.
 The selected leaf has `aria-current="page"` and a corresponding class in both adapters.
 
+The [historical Vue entry](../migrate-from-vueforge.md) provides `VfMenuBar`. An open bar switches
+branches on mouse hover and closes 120 ms after the pointer leaves. Pointer reentry cancels
+the timer. Above 640 px, top-level panels float inside the navigation landmark and adjust to
+available viewport space. Narrow branches stay in flow alongside the bar.
+
 ```vue
 <script setup lang="ts">
 import { CmMenuBar } from '@codemonster-ru/ui-vue';
