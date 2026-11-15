@@ -6,6 +6,7 @@ import {
   CmDialog,
   CmDrawer,
   CmInput,
+  VfCommandPalette,
   type CmDialogSize,
 } from '@codemonster-ru/ui-vue';
 import { onMounted, onUnmounted, ref } from 'vue';
@@ -30,12 +31,24 @@ const drawer = ref(false);
 const drawerOptions = ref<(typeof drawers)[number]>(drawers[1]);
 const palette = ref(false);
 const query = ref('');
+const docSearch = ref(false);
+const docQuery = ref('theme');
+const docResult = ref('No documentation result selected.');
+const docs = [
+  { title: 'Theme provider', section: 'Foundations', snippet: 'Switch themes and follow the system preference.' },
+  { title: 'Token catalog', section: 'Design system', snippet: 'Look up colors, motion, and sizing.' },
+];
 const confirm = ref(false);
 const result = ref('No action confirmed yet.');
 
 function openPalette(initialQuery = '') {
   query.value = initialQuery;
   palette.value = true;
+}
+
+function selectDoc(item: unknown) {
+  const entry = docs.find(({ title }) => item && typeof item === 'object' && 'title' in item && item.title === title);
+  if (entry) docResult.value = `Selected: ${entry.title}`;
 }
 
 function onShortcut(event: KeyboardEvent) {
@@ -85,7 +98,9 @@ onUnmounted(() => window.removeEventListener('keydown', onShortcut));
       <div class="core-theme-controls">
         <CmButton variant="secondary" @click="openPalette()">empty query</CmButton>
         <CmButton variant="secondary" @click="openPalette('theme')">matched query</CmButton>
+        <CmButton variant="secondary" @click="docSearch = true">documentation search</CmButton>
       </div>
+      <p aria-live="polite">{{ docResult }}</p>
     </div>
     <div class="core-matrix-cell">
       <h4>Confirmation dialog</h4>
@@ -123,6 +138,14 @@ onUnmounted(() => window.removeEventListener('keydown', onShortcut));
     title="Search Documentation"
     placeholder="Search components, guides, and API..."
     :commands="commands"
+  />
+  <VfCommandPalette
+    id="core-doc-search"
+    v-model:open="docSearch"
+    v-model="docQuery"
+    title="Search documentation"
+    :items="docs"
+    @select="selectDoc"
   />
   <CmConfirmDialog
     v-model:open="confirm"

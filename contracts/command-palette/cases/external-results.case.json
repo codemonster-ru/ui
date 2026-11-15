@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "command-palette-external-results",
+  "description": "Host-owned results stay visible under a different query and selection keeps the palette open.",
+  "props": {
+    "id": "external-results",
+    "title": "Search",
+    "defaultOpen": true,
+    "defaultQuery": "server ranked",
+    "commands": [{ "id": "archive", "label": "Archive" }],
+    "filter": false,
+    "autoActivate": false,
+    "closeOnSelect": false,
+    "closeOnEscape": false,
+    "dividers": false,
+    "maxHeight": 360
+  },
+  "slots": {}
+}

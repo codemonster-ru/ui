@@ -11,6 +11,7 @@ export interface ModalControllerOptions {
   closeSelector: string;
   eventName: string;
   stateAttribute: string;
+  allowEscape?: () => boolean;
 }
 
 export class CmModalController implements CmController {
@@ -84,7 +85,7 @@ export class CmModalController implements CmController {
     if (!KeyboardEventConstructor || !(event instanceof KeyboardEventConstructor)) return;
     if (event.key === 'Escape') {
       event.preventDefault();
-      if (this.#isDismissible()) this.setOpen(false);
+      if (this.#isDismissible() && this.#options.allowEscape?.() !== false) this.setOpen(false);
       return;
     }
     if (event.key !== 'Tab' || !this.#dialog.open) return;
@@ -107,7 +108,7 @@ export class CmModalController implements CmController {
 
   readonly #handleCancel = (event: Event): void => {
     event.preventDefault();
-    if (this.#isDismissible()) this.setOpen(false);
+    if (this.#isDismissible() && this.#options.allowEscape?.() !== false) this.setOpen(false);
   };
 
   readonly #handleClose = (): void => {

@@ -60,6 +60,7 @@ test('publishes the Vue component adapter entries', async () => {
     'CmThemeSwitch',
     'CmTooltip',
     'VfButton',
+    'VfCommandPalette',
     'VfConfirmDialog',
     'VfField',
     'VfFormLayout',

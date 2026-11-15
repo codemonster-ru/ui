@@ -27,7 +27,12 @@ export type { CmCheckboxProps, CmCheckboxSize } from './components/checkbox/chec
 export { default as CmColumnChooser } from './components/column-chooser/CmColumnChooser.vue';
 export type { CmColumnChooserColumn, CmColumnChooserProps } from './components/column-chooser/column-chooser.types';
 export { default as CmCommandPalette } from './components/command-palette/CmCommandPalette.vue';
-export type { CmCommandPaletteItem, CmCommandPaletteProps } from './components/command-palette/command-palette.types';
+export { default as VfCommandPalette } from './components/command-palette/VfCommandPalette.vue';
+export type {
+  CmCommandPaletteItem,
+  CmCommandPaletteProps,
+  VfCommandPaletteProps,
+} from './components/command-palette/command-palette.types';
 export { default as CmConfirmDialog } from './components/confirm-dialog/CmConfirmDialog.vue';
 export { default as VfConfirmDialog } from './components/confirm-dialog/CmConfirmDialog.vue';
 export type {
