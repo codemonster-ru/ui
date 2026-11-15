@@ -38,6 +38,10 @@ for workspace_dir in "$root_dir"/packages/* "$root_dir"/examples/*; do
 done
 
 cd "$root_dir" || exit 1
+
+# A workspace may test a sibling package's built public entry. Rebuild from empty dist directories
+# in release order before npm runs the workspace tests in its own order.
+npm run build:ui || exit $?
 npm run test --workspaces --if-present || rc=$?
 
 exit "$rc"

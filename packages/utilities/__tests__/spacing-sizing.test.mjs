@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { URL } from 'node:url';
 
-import { cmSizingTokenNames, cmSpacingTokenNames } from '@codemonster-ru/ui-tokens';
+import { cmSpacingTokenNames } from '@codemonster-ru/ui-tokens';
 import { sizingUtilities, spacingUtilities } from '../src/contract.mjs';
 
 const css = await readFile(new URL('../dist/utilities.css', import.meta.url), 'utf8');
@@ -16,7 +16,18 @@ test('generates logical spacing families for every spacing token', () => {
 });
 
 test('generates static and token-backed sizing families', () => {
-  assert.equal(Object.keys(sizingUtilities).length, cmSizingTokenNames.length + 3);
+  assert.deepEqual(Object.keys(sizingUtilities).sort(), [
+    'h-control-lg',
+    'h-control-md',
+    'h-control-sm',
+    'h-full',
+    'min-w-0',
+    'size-icon-lg',
+    'size-icon-md',
+    'size-icon-sm',
+    'size-icon-xl',
+    'w-full',
+  ]);
   assert.deepEqual(sizingUtilities['h-control-lg'], { 'block-size': 'var(--cm-control-height-lg)' });
   assert.deepEqual(sizingUtilities['size-icon-xl'], {
     'block-size': 'var(--cm-icon-size-xl)',

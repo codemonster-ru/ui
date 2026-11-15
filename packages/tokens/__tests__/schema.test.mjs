@@ -23,7 +23,7 @@ test('defines the complete immutable token schema', () => {
       primitiveColor: 66,
       semanticColor: 85,
       spacing: 11,
-    sizing: 9,
+      sizing: 9,
       control: 21,
       typography: 26,
       border: 2,
