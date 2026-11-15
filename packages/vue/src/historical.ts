@@ -2,6 +2,8 @@ export { useDisclosure } from './composables/disclosure';
 export type { UseDisclosureOptions } from './composables/disclosure';
 export { useId } from './composables/id';
 export type { UseIdOptions } from './composables/id';
+export { useScrollLock } from './composables/scroll-lock';
+export type { UseScrollLockOptions } from './composables/scroll-lock';
 export { default as VfAccordion } from './components/accordion/VfAccordion.vue';
 export type { VfAccordionProps } from './components/accordion/accordion.types';
 export { default as VfAlert } from './components/alert/VfAlert.vue';

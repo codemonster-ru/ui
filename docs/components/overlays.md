@@ -70,6 +70,13 @@ Dialog `dismissible` to `false` while an asynchronous action must lock user-init
 Popover emits the same events after trigger, Escape, or outside-pointer changes. Keep the Vue model
 as application state and do not initialize the shared runtime over these components.
 
+For application-owned scroll regions, import `useScrollLock` from
+`@codemonster-ru/ui-vue/historical`. Call `useScrollLock(enabled, { target })` in a Vue scope,
+passing values, refs, or getters. The target defaults to `document.body` when omitted or null.
+The hook hides overflow while enabled, preserves body scrollbar space, and restores inline
+styles when the last lock on that target releases. Call the returned `unlock()` to release
+your lock early. Changing the enabled state or target lets the hook acquire again.
+
 ## Vanilla HTML and runtime
 
 Use the canonical HTML for [dialog](../../contracts/dialog/contract.md), [drawer](../../contracts/drawer/contract.md), [dropdown](../../contracts/dropdown/contract.md), [popover](../../contracts/popover/contract.md), [tooltip](../../contracts/tooltip/contract.md) in Vanilla.
