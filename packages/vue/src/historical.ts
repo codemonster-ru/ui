@@ -15,6 +15,8 @@ export { default as VfInput } from './components/input/VfInput.vue';
 export type { VfInputProps } from './components/input/input.types';
 export { default as VfMenu } from './components/menu/VfMenu.vue';
 export { default as VfMenuItem } from './components/menu/VfMenuItem.vue';
+export { default as VfNavMenu } from './components/nav-menu/VfNavMenu.vue';
+export type { VfNavMenuItem, VfNavMenuProps } from './components/nav-menu/nav-menu.types';
 export { default as VfProgressSpinner } from './components/progress-spinner/VfProgressSpinner.vue';
 export type { VfProgressSpinnerProps } from './components/progress-spinner/progress-spinner.types';
 export { default as VfSelect } from './components/select/VfSelect.vue';

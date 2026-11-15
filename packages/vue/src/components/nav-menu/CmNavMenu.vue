@@ -25,6 +25,7 @@ const props = defineProps({
     default: 'sidebar',
     validator: (value: string) => ['sidebar', 'inline', 'pills'].includes(value),
   },
+  compact: { type: Boolean, default: undefined },
   ariaLabel: { type: String, default: 'Main navigation' },
 });
 const emit = defineEmits<{
@@ -60,7 +61,16 @@ watch(activeValue, (value) => {
 });
 
 const expanded = computed(() => (props.expandedValues === null ? localExpanded.value : [...props.expandedValues]));
-const classes = computed(() => mergeCmClasses('cm-nav-menu', `cm-nav-menu--${variant.value}`, attrs.class));
+const classes = computed(() =>
+  mergeCmClasses(
+    'cm-nav-menu',
+    `cm-nav-menu--${variant.value}`,
+    variant.value === 'sidebar' && props.compact !== undefined
+      ? `cm-nav-menu--sidebar-${props.compact ? 'compact' : 'expanded'}`
+      : undefined,
+    attrs.class,
+  ),
+);
 const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['class', 'aria-label', 'data-cm-controller']));
 
 function onToggle(value: string): void {

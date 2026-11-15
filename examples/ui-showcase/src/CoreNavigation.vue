@@ -38,7 +38,7 @@ const guideItems = [
       { value: 'billing', label: 'Billing', to: '/billing/', disabled: true },
     ],
   },
-  { value: 'icons', label: 'Icons', href: '/icons/' },
+  { value: 'icons', label: 'Icons', href: '/icons/', target: '_blank' },
 ];
 
 const links = [
@@ -167,14 +167,12 @@ const wrappingMenu = [
   },
 ];
 
-const sidebarIcons = { 'getting-started': folderOpen, components: grid, foundation: layers };
-const sidebarIconStyles = Object.fromEntries(
-  Object.entries(sidebarIcons).map(([name, icon]) => {
-    const { viewBox, body } = icon['classic/regular'];
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" fill="none" stroke="black" stroke-width="2">${body}</svg>`;
-    return ['--core-nav-icon-' + name, `url("data:image/svg+xml,${encodeURIComponent(svg)}")`];
-  }),
-);
+const sidebarIcons = new Map([
+  ['getting-started', folderOpen],
+  ['components', grid],
+  ['foundation', layers],
+]);
+const sidebarMenu = menu.map((item) => ({ ...item, leadingIcon: sidebarIcons.get(item.value) }));
 const sidebarExpanded = ref<readonly string[]>(['getting-started']);
 const sidebarSelected = ref('quick-start');
 const pillMenu = ref('quick-start');
@@ -400,9 +398,10 @@ const menuBarExamples = [
             v-model:value="sidebarSelected"
             v-model:expanded-values="sidebarExpanded"
             variant="sidebar"
-            :items="menu"
+            :items="sidebarMenu"
+            :compact="false"
             class="core-nav-with-icons"
-            :style="sidebarIconStyles"
+            aria-label="Sidebar navigation"
           />
         </div>
         <div class="core-matrix-cell">
@@ -411,9 +410,9 @@ const menuBarExamples = [
             v-model:value="sidebarSelected"
             v-model:expanded-values="sidebarExpanded"
             variant="sidebar"
-            :items="menu"
+            :items="sidebarMenu"
+            compact
             class="core-nav-with-icons core-compact-nav"
-            :style="sidebarIconStyles"
             aria-label="Collapsed sidebar navigation"
           />
         </div>
@@ -423,6 +422,7 @@ const menuBarExamples = [
             v-model:value="wrappingSelected"
             variant="sidebar"
             :items="wrappingMenu"
+            :compact="false"
             class="core-nav-wrapping"
           />
         </div>

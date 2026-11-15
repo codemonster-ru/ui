@@ -206,6 +206,12 @@ Existing `v-model:value` bindings take precedence when supplied. `select` return
 item. `change` and `valueChange` return its value. The sidebar variant narrows with a CSS container
 query that applies to server-rendered pages.
 
+To set the sidebar presentation explicitly, use `compact` for icon-only top-level actions
+that have icons or `:compact="false"` to keep full labels. Set a `CmNavMenu` item's `leadingIcon`
+to geometry imported from `@codemonster-ru/ui-icons`. The opt-in `VfNavMenu` from
+`@codemonster-ru/ui-vue/historical` accepts catalog names in the same field. Enabled links with
+`target="_blank"` include a decorative external-link icon.
+
 ```vue
 <script setup lang="ts">
 import { CmNavMenu } from '@codemonster-ru/ui-vue';
@@ -228,8 +234,9 @@ const items = [
 ```
 
 Vanilla markup is available for [sidebar](../../contracts/nav-menu/cases/default.html),
-[pills](../../contracts/nav-menu/cases/pills.html), and
-[resolved routes](../../contracts/nav-menu/cases/routes.html).
+[pills](../../contracts/nav-menu/cases/pills.html),
+[resolved routes](../../contracts/nav-menu/cases/routes.html), and
+[compact sidebar](../../contracts/nav-menu/cases/compact.html).
 
 ## Menu bar
 
