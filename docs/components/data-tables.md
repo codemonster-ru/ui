@@ -113,6 +113,19 @@ Localize selection and sorting accessible names with `selectAllLabel`, `selectRo
 template must contain `{row}`; each sort template must contain `{column}`. Vanilla HTML uses the equivalent
 kebab-case props and the shared runtime preserves those labels as sorting cycles.
 
+### Using host records
+
+Pass `rowKey` to render existing records without copying each one into an `{ id, cells }` object.
+A string reads an own property path, such as `account.id`. A function receives the original row
+and its zero-based source index before client sorting and pagination. Column keys can read nested
+properties in the same way. Cell and expanded-row slots, plus the `rowSelectable` callback, receive
+the original row object.
+
+Selection and expansion keep their string IDs. Finite numeric keys convert to strings, so the
+number `7` and string `"7"` refer to the same ID. A missing path uses its source index. Duplicate
+IDs and malformed keys are omitted with a development diagnostic. Cell fallbacks render strings,
+finite numbers, and empty values. A scoped cell can render other fields directly from the row.
+
 ### Resizing columns
 
 Set `resizable-columns` to expose a focusable separator between two resizable columns. Drag it,

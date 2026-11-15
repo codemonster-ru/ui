@@ -7,6 +7,11 @@
     "id": { "type": "string", "required": true },
     "columns": { "type": "collection", "required": true, "valueContract": "data-table-column" },
     "rows": { "type": "collection", "required": false, "default": [], "valueContract": "data-table-row" },
+    "rowKey": {
+      "type": "string",
+      "required": false,
+      "description": "A path into host records. Vue also accepts a resolver function."
+    },
     "caption": { "type": "string", "required": false, "default": "" },
     "density": { "type": "enum", "required": false, "default": "default", "values": ["default", "compact"] },
     "striped": { "type": "boolean", "required": false, "default": false },

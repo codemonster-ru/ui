@@ -80,3 +80,10 @@ The Vue adapter groups the visible columns by pin side and retains each group's 
 HTML authors the same final order. The measured header widths determine cumulative offsets for
 adjacent pins and are updated after a resize. Native selection, sorting, and resizing controls
 keep their own behavior in pinned cells.
+
+Vue accepts host records when `rowKey` is set. String keys and column keys read own properties
+through dot paths. A row key function receives the original row and its source index before client
+sorting or paging. A missing path uses the source index, and finite numbers convert to strings.
+Duplicate or malformed keys are dropped. Cell and expanded-row slots and the selection predicate
+receive the original record. Vanilla templates render the resulting stable string row IDs and
+cell values directly.

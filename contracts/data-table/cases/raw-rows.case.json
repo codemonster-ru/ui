@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "id": "data-table-raw-rows",
+  "description": "Host records with nested data and stable IDs read from a path.",
+  "props": {
+    "id": "raw-projects",
+    "caption": "Raw projects",
+    "columns": [
+      {
+        "key": "profile.name",
+        "header": "Name",
+        "sortable": true
+      },
+      {
+        "key": "status",
+        "header": "Status"
+      }
+    ],
+    "rows": [
+      {
+        "external": {
+          "id": 501
+        },
+        "profile": {
+          "name": "Zephyr"
+        },
+        "status": "Paused"
+      },
+      {
+        "external": {
+          "id": 502
+        },
+        "profile": {
+          "name": "Apollo"
+        },
+        "status": "Active"
+      }
+    ],
+    "rowKey": "external.id",
+    "selectable": true,
+    "sortingMode": "client"
+  },
+  "slots": {}
+}
