@@ -7,6 +7,7 @@ import type { CmSectionElement } from './section.types';
 defineOptions({ inheritAttrs: false });
 const elements: readonly CmSectionElement[] = ['section', 'div', 'article', 'aside'];
 const props = defineProps({
+  as: String,
   element: {
     type: String as PropType<CmSectionElement>,
     default: 'section',
@@ -15,7 +16,7 @@ const props = defineProps({
   surface: Boolean,
 });
 const attrs = useAttrs();
-const rootElement = computed(() => (elements.includes(props.element) ? props.element : 'section'));
+const rootElement = computed(() => props.as ?? (elements.includes(props.element) ? props.element : 'section'));
 const classes = computed(() =>
   mergeCmClasses('cm-section', props.surface ? 'cm-section--surface' : undefined, attrs.class),
 );

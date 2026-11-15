@@ -141,13 +141,21 @@ by archive compression.
 | ---------------- | ------- | -------- | --------------- |
 | `ui-tokens`      | 64 KiB  | 12 KiB   | 24 KiB          |
 | `ui-icons`       | 0       | 0        | 256 KiB         |
-| `ui-runtime`     | 0       | 0        | 32 KiB          |
+| `ui-runtime`     | 0       | 0        | 64 KiB          |
 | `ui-css`         | 320 KiB | 48 KiB   | 8 KiB           |
 | `ui-utilities`   | 256 KiB | 32 KiB   | 8 KiB           |
+| `ui-layouts`     | 32 KiB  | 8 KiB    | 64 KiB          |
 | Platform adapter | 32 KiB  | 8 KiB    | 128 KiB         |
 
 Budgets are ceilings, not targets. Raising one requires a reviewed architecture or product reason;
 normal feature work must stay within the existing limit.
+
+After restoration the distributed `ui-runtime` measured 60.35 KiB gzip with the new controllers
+and shared calendar behavior. The bundled `ui-runtime/core` measured 4.52 KiB and keeps its 5 KiB
+ceiling. The complete Vue namespace measured 35.45 KiB gzip with the theme provider, data table
+composition, and localized calendar. It has a 38 KiB ceiling. The name-based icon and slot-menu
+entry is available separately through `@codemonster-ru/ui-vue/historical`. A single static icon
+with `CmIcon` measured 1.89 KiB gzip and carried only its selected geometry.
 
 After publication, the same representative consumers install registry artifacts before dependants
 or documentation are released.

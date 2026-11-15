@@ -49,8 +49,10 @@ Use the canonical HTML for [container](../../contracts/container/contract.md), [
 - Section defaults to a native `section` and can render `div`, `article`, or `aside`. `surface` adds
   the shared border, background, radius, and shadow treatment.
 - Grid creates an auto-fitting responsive grid. It can render `div`, `section`, `ul`, or `ol`.
-- Consumer attributes and classes are forwarded to the root. Element choices are finite so neither
-  adapter can interpolate an arbitrary tag name.
+- Consumer attributes and classes are forwarded to the root. Vue also accepts the historical `as`
+  prop for a semantic HTML tag. When both props are supplied, `as` takes precedence over `element`.
+  The historical `VfContainer`, `VfGrid`, `VfInline`, `VfSection`, and `VfStack` names are also
+  available from `@codemonster-ru/ui-layouts`.
 
 Layout primitives do not add accessible names or repair document hierarchy. Give `nav` landmarks
 an accessible name when more than one is present, keep heading levels meaningful, and use list

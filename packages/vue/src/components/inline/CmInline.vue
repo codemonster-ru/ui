@@ -7,6 +7,7 @@ import type { CmInlineElement } from './inline.types';
 defineOptions({ inheritAttrs: false });
 const elements: readonly CmInlineElement[] = ['div', 'nav', 'ul'];
 const props = defineProps({
+  as: String,
   element: {
     type: String as PropType<CmInlineElement>,
     default: 'div',
@@ -15,7 +16,7 @@ const props = defineProps({
   wrap: { type: Boolean, default: true },
 });
 const attrs = useAttrs();
-const rootElement = computed(() => (elements.includes(props.element) ? props.element : 'div'));
+const rootElement = computed(() => props.as ?? (elements.includes(props.element) ? props.element : 'div'));
 const classes = computed(() => mergeCmClasses('cm-inline', props.wrap ? undefined : 'cm-inline--nowrap', attrs.class));
 const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, []));
 </script>

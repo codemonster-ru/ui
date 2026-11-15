@@ -46,3 +46,23 @@ export { default as CmSidebarArea, default as VfSidebarArea } from './areas/CmSi
 export { default as CmContentArea, default as VfContentArea } from './areas/CmContentArea.vue';
 export { default as CmAsideArea, default as VfAsideArea } from './areas/CmAsideArea.vue';
 export { default as CmFooterArea, default as VfFooterArea } from './areas/CmFooterArea.vue';
+
+export {
+  CmContainer as VfContainer,
+  CmGrid as VfGrid,
+  CmInline as VfInline,
+  CmSection as VfSection,
+  CmStack as VfStack,
+} from '@codemonster-ru/ui-vue';
+
+export {
+  cmBreakpoints,
+  vfBreakpoints,
+  toMaxWidthQuery,
+  toMinWidthQuery,
+  useBreakpoint,
+  useBreakpoints,
+  useBreakpointValue,
+  useCssVarBreakpoints,
+} from './breakpoints';
+export type { UseBreakpointOptions, VfBreakpointName, VfBreakpointValue, VfBreakpointValues } from './breakpoints';

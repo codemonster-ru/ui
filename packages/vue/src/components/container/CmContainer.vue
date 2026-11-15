@@ -7,6 +7,7 @@ import type { CmContainerElement, CmContainerSize } from './container.types';
 defineOptions({ inheritAttrs: false });
 const elements: readonly CmContainerElement[] = ['div', 'main', 'section'];
 const props = defineProps({
+  as: String,
   element: {
     type: String as PropType<CmContainerElement>,
     default: 'div',
@@ -20,7 +21,7 @@ const props = defineProps({
   fluid: Boolean,
 });
 const attrs = useAttrs();
-const rootElement = computed(() => (elements.includes(props.element) ? props.element : 'div'));
+const rootElement = computed(() => props.as ?? (elements.includes(props.element) ? props.element : 'div'));
 const classes = computed(() =>
   mergeCmClasses(
     'cm-container',

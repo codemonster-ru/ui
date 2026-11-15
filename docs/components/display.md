@@ -14,7 +14,8 @@ already names the control. Use `label` for a meaningful standalone image. Both `
 ```vue
 <script setup lang="ts">
 import { arrowLeft } from '@codemonster-ru/ui-icons';
-import { CmIcon, VueIconify } from '@codemonster-ru/ui-vue';
+import { CmIcon } from '@codemonster-ru/ui-vue';
+import { VueIconify } from '@codemonster-ru/ui-vue/historical';
 </script>
 
 <template>

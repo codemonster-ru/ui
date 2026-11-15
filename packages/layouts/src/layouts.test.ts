@@ -3,8 +3,13 @@ import { mount } from '@vue/test-utils';
 import { h, nextTick } from 'vue';
 import { describe, expect, it, vi } from 'vitest';
 
-import { CmAdminLayout, CmAdminShell, CmAppShell, CmDocumentLayout, CmSetupLayout } from './index';
-import type { CmAdminLayoutMobileSidebarScope, CmAdminLayoutScope, CmAppShellExposed, CmAppShellScope } from './index';
+import CmAdminLayout from './admin-layout/CmAdminLayout.vue';
+import type { CmAdminLayoutMobileSidebarScope, CmAdminLayoutScope } from './admin-layout/admin-layout.types';
+import CmAdminShell from './admin-shell/CmAdminShell.vue';
+import CmAppShell from './app-shell/CmAppShell.vue';
+import type { CmAppShellExposed, CmAppShellScope } from './app-shell/app-shell.types';
+import CmDocumentLayout from './document-layout/CmDocumentLayout.vue';
+import CmSetupLayout from './setup-layout/CmSetupLayout.vue';
 
 describe('Vue layouts', () => {
   it('lets scoped AppShell slots and exposed controls share uncontrolled sidebar state', async () => {
