@@ -84,6 +84,7 @@
   margin-inline: auto;
   background: inherit;
   content: '';
+
   /* Keep the rotated arrow's borders the same in either text direction. */
   direction: ltr;
   pointer-events: none;
