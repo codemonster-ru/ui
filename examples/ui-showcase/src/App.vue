@@ -15,12 +15,14 @@ import { iconIntro, renderOperations } from '../../shared/showcase-reference.mts
 import { actionMatrices, buttonMatrices } from '../../shared/showcase-matrices.mts';
 import type { CmButtonProps, CmIconButtonProps, CmLinkProps } from '@codemonster-ru/ui-vue';
 import typography from '../../shared/showcase-typography.html?raw';
-import { defineAsyncComponent, nextTick, onUnmounted, ref, type Component } from 'vue';
+import { defineAsyncComponent, nextTick, onMounted, onUnmounted, ref, type Component } from 'vue';
 import { CmRuntime, createCmTabsController } from '@codemonster-ru/ui-runtime';
 import { mountOperations } from '../../shared/showcase-reference.js';
 import { gear, moon, sun } from '@codemonster-ru/ui-icons';
 import LayoutShowcase from './LayoutShowcase.vue';
 import { CmButton, CmIcon, CmIconButton, CmLink, useCmTheme } from '@codemonster-ru/ui-vue';
+import { renderShowcaseNavigation, showcaseActions } from '../../shared/showcase-navigation.mts';
+import { mountShowcaseNavigation } from '../../shared/showcase-navigation.js';
 
 const IconsShowcase = defineAsyncComponent(async () => (await import('./IconsShowcase.vue')) as { default: Component });
 const CodeBlockShowcase = defineAsyncComponent(
@@ -35,10 +37,19 @@ const ComponentReference = defineAsyncComponent(
 const ApplicationExamples = defineAsyncComponent(
   async () => (await import('./ApplicationExamples.vue')) as { default: Component },
 );
+const DocumentationShowcase = defineAsyncComponent(
+  async () => (await import('./DocumentationShowcase.vue')) as { default: Component },
+);
 
 const page = showcasePages.find(({ id }) => location.pathname.split('/')[1] === id) ?? showcasePages[0];
 const currentPage = page.id;
 document.title = `${page.label} · CodeMonster UI Vue`;
+const header = ref<HTMLElement>();
+const navigation = renderShowcaseNavigation(currentPage, location.pathname, '', true);
+let unmountNavigation: (() => void) | undefined;
+onMounted(() => {
+  if (header.value) unmountNavigation = mountShowcaseNavigation(header.value, '/');
+});
 
 const coreSections = {
   overlay: CoreOverlay as Component,
@@ -64,6 +75,7 @@ async function openIconExamples(event: Event) {
 }
 onUnmounted(() => {
   referenceRuntime.stop();
+  unmountNavigation?.();
 });
 
 const buttonExamples = buttonMatrices as Record<
@@ -82,18 +94,13 @@ const { theme: themeMode, resolvedTheme, setTheme: selectTheme, toggleTheme } = 
 
 <template>
   <a class="showcase-skip" href="#showcase-main">Skip to content</a>
-  <header class="showcase-topbar">
+  <header ref="header" class="showcase-topbar">
     <div class="showcase-header">
       <a class="showcase-brand" href="/core/">CodeMonster UI <span>Vue</span></a>
-      <nav class="showcase-navigation" aria-label="Showcase sections">
-        <ul>
-          <li v-for="item in showcasePages" :key="item.id">
-            <a :href="`/${item.id}/`" :aria-current="currentPage === item.id ? 'page' : undefined">
-              {{ item.label }}
-            </a>
-          </li>
-        </ul>
-      </nav>
+      <!-- eslint-disable-next-line vue/no-v-html -- Shared navigation uses repository-owned route metadata. -->
+      <div class="showcase-menu" v-html="navigation" />
+      <!-- eslint-disable-next-line vue/no-v-html -- Shared navigation controls are static markup. -->
+      <div class="showcase-header__actions" v-html="showcaseActions" />
       <CmIconButton
         class="showcase-theme"
         :label="resolvedTheme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'"
@@ -115,8 +122,8 @@ const { theme: themeMode, resolvedTheme, setTheme: selectTheme, toggleTheme } = 
       <h1>{{ page.title }}</h1>
       <p>{{ page.description }}</p>
       <div v-if="currentPage === 'core'" class="showcase-intro__actions">
-        <a class="showcase-intro__primary" href="/components/">Browse components</a>
-        <CmLink href="/examples/">Try examples</CmLink>
+        <a class="showcase-intro__primary" href="/docs/getting-started/">Get started</a>
+        <CmLink href="/components/">Browse components</CmLink>
       </div>
     </header>
     <template v-if="currentPage === 'core'">
@@ -201,6 +208,7 @@ const { theme: themeMode, resolvedTheme, setTheme: selectTheme, toggleTheme } = 
       </template>
     </template>
     <ComponentReference v-else-if="currentPage === 'components'" />
+    <DocumentationShowcase v-else-if="currentPage === 'docs'" />
     <ApplicationExamples v-else-if="currentPage === 'examples'" />
     <ColorsShowcase v-else-if="currentPage === 'colors'" />
     <div v-else-if="currentPage === 'layouts'" class="layout-guide">

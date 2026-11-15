@@ -51,8 +51,8 @@ function switchControl(name, label, checked = false) {
   </label>`;
 }
 
-function card(id, title, body, heading = 'h3') {
-  return `<section class="cm-card release-workspace__section" aria-labelledby="${id}">
+function card(id, title, body, { heading = 'h3', layout } = {}) {
+  return `<section class="cm-card release-workspace__section${layout ? ` release-workspace__${layout}` : ''}" aria-labelledby="${id}">
     <header class="cm-card__header"><${heading} class="cm-card__title" id="${id}">${title}</${heading}></header>
     <div class="cm-card__body">${body}</div>
   </section>`;
@@ -65,20 +65,23 @@ function panel(id, body) {
 function overview() {
   return `<div class="release-workspace__view">
     <div class="release-workspace__toolbar">
-      <div><h3>Overview</h3><p>Track deployments across environments.</p></div>
+      <h3>Overview</h3>
       ${button('New release', { attrs: 'data-release-open="new-release"' })}
     </div>
-    <div class="release-workspace__metrics">
-      ${summarizeReleases(initialReleases)
-        .map(
-          ({ state, label, count, hint }) => `<div class="cm-card cm-card--compact"><div class="cm-card__body">
-        <p class="release-workspace__metric-label">${label}</p>
-        <p class="release-workspace__metric-value" data-release-count="${state}">${count}</p>
-        <p class="release-workspace__metric-note">${hint}</p>
-      </div></div>`,
-        )
-        .join('')}
-    </div>
+    ${card(
+      'release-summary-title',
+      'Deployment status',
+      `<dl class="release-workspace__metrics">
+        ${summarizeReleases(initialReleases)
+          .map(
+            ({ state, label, count }) => `<div data-release-state="${state}">
+            <dt>${label}</dt><dd data-release-count="${state}">${count}</dd>
+          </div>`,
+          )
+          .join('')}
+      </dl>`,
+      { heading: 'h4', layout: 'summary' },
+    )}
     ${card(
       'release-deployments-title',
       'Deployments',
@@ -111,7 +114,7 @@ function overview() {
         ${button('Clear filters', { variant: 'secondary', attrs: 'id="release-clear-filters"' })}
       </div>
     `,
-      'h4',
+      { heading: 'h4' },
     )}
   </div>`;
 }
@@ -144,6 +147,7 @@ function newRelease() {
       </div>
       <p class="release-workspace__message" role="status"></p>
     </form>`,
+    { layout: 'editor' },
   );
 }
 
@@ -163,6 +167,7 @@ function settings() {
       <div class="release-workspace__actions">${button('Save settings', { type: 'submit' })}</div>
       <p class="release-workspace__message" role="status"></p>
     </form>`,
+    { layout: 'editor' },
   );
 }
 
@@ -181,6 +186,7 @@ function signIn() {
       <div class="release-workspace__actions">${button('Sign in', { type: 'submit' })}</div>
       <p class="release-workspace__message" role="status"></p>
     </form>`,
+    { layout: 'editor' },
   );
 }
 

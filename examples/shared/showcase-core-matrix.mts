@@ -97,6 +97,7 @@ function coreExampleSource(slug: string, name: string, read: (id: string) => str
     case 'tooltip':
       return read('tooltip-default')
         ?.replace('cm-tooltip--top', `cm-tooltip--${name}`)
+        .replace('data-cm-controller="tooltip"', 'data-cm-controller="tooltip" data-cm-tooltip-teleport-to="body"')
         .replace('aria-label="Save" ', '')
         .replace('>Save</button>', `>${name}</button>`)
         .replace('>Save changes</span>', `>Tooltip placement: ${name}</span>`);

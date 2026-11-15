@@ -3,7 +3,7 @@ body {
 }
 
 /* VueForge used the system fallback when Inter was not installed. */
-:is(.showcase-topbar, .showcase-content) {
+:is(.showcase-topbar, .showcase-content, .showcase-search) {
   --cm-font-family-base: ui-sans-serif, system-ui, sans-serif;
   --cm-font-family-heading: var(--cm-font-family-base);
 
@@ -31,12 +31,13 @@ body {
 }
 
 .showcase-header {
-  display: flex;
+  display: grid;
   box-sizing: border-box;
   min-block-size: calc(var(--cm-space-16) - var(--cm-border-width));
   max-inline-size: 80rem;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
   align-items: center;
-  gap: var(--cm-space-4);
+  gap: var(--cm-space-2);
   margin-inline: auto;
   padding-inline: var(--cm-space-4);
 }
@@ -44,7 +45,6 @@ body {
 .showcase-brand {
   display: inline-flex;
   min-block-size: var(--cm-control-height-md);
-  flex: none;
   align-items: center;
   gap: var(--cm-space-2);
   color: var(--cm-color-text-primary);
@@ -64,10 +64,10 @@ body {
 
 .showcase-navigation {
   min-inline-size: 0;
-  margin-inline-start: var(--cm-space-4);
+  margin-inline-start: var(--cm-space-5);
 }
 
-.showcase-navigation ul,
+.showcase-navigation__primary,
 .showcase-jump ul {
   display: flex;
   flex-wrap: wrap;
@@ -77,12 +77,12 @@ body {
   list-style: none;
 }
 
-.showcase-navigation a,
+.showcase-navigation :is(a, summary),
 .showcase-jump a {
   display: inline-flex;
   min-block-size: var(--cm-control-height-md);
   align-items: center;
-  padding-inline: var(--cm-space-2);
+  padding-inline: var(--cm-space-3);
   color: var(--cm-color-text-secondary);
   border-radius: var(--cm-radius-control);
   font-size: var(--cm-text-label-font-size);
@@ -90,20 +90,87 @@ body {
   text-decoration: none;
 }
 
-.showcase-navigation a[aria-current='page'] {
+.showcase-navigation :is([aria-current], [data-current]) {
   color: var(--cm-color-selected-foreground);
   background: var(--cm-color-background-surface-selected);
 }
 
-.showcase-navigation a:where(:hover:not([aria-current='page'])),
+.showcase-navigation :is(a, summary):where(:hover:not([aria-current], [data-current])),
 .showcase-jump a:where(:hover) {
   color: var(--cm-color-text-primary);
   background: var(--cm-color-background-surface-hover);
 }
 
-.showcase-theme {
+.showcase-resources {
+  position: relative;
+}
+
+.showcase-resources summary {
+  gap: var(--cm-space-1);
+  cursor: pointer;
+  list-style: none;
+}
+
+.showcase-resources summary::-webkit-details-marker {
+  display: none;
+}
+
+.showcase-resources :where(summary) svg {
+  inline-size: 1rem;
+  block-size: 1rem;
+}
+
+.showcase-resources ul {
+  min-inline-size: 10rem;
+  padding: var(--cm-space-1);
+  margin: 0;
+  list-style: none;
+}
+
+.showcase-resources a {
+  display: flex;
+}
+
+.showcase-header__actions {
+  display: flex;
+  gap: var(--cm-space-2);
+}
+
+.showcase-header-button {
+  display: inline-flex;
+  box-sizing: border-box;
+  min-block-size: 2.75rem;
+  min-inline-size: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  gap: var(--cm-space-2);
+  padding: var(--cm-space-1) var(--cm-space-2);
+  border: var(--cm-border-width) solid var(--cm-color-border-default);
+  border-radius: var(--cm-radius-control);
+  color: var(--cm-color-text-primary);
+  background: var(--cm-color-background-surface);
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--cm-text-label-font-size);
+}
+
+.showcase-header-button:hover {
+  background: var(--cm-color-background-surface-hover);
+}
+
+.showcase-header-button svg {
+  inline-size: 1.125rem;
+  block-size: 1.125rem;
   flex: none;
-  margin-inline-start: auto;
+}
+
+.showcase-menu-toggle {
+  display: none;
+}
+
+.showcase-topbar .showcase-theme {
+  min-block-size: 2.75rem;
+  min-inline-size: 2.75rem;
 }
 
 .showcase-theme[hidden] {
@@ -120,20 +187,147 @@ body {
   html:has(.showcase-topbar) {
     scroll-padding-block-start: var(--cm-space-16);
   }
+
+  .showcase-resources ul {
+    position: absolute;
+    z-index: 1;
+    inset-block-start: calc(100% + var(--cm-space-2));
+    inset-inline-start: 0;
+    padding: var(--cm-space-2);
+    border: var(--cm-border-width) solid var(--cm-color-border-default);
+    border-radius: var(--cm-radius-control);
+    background: var(--cm-color-background-surface);
+    box-shadow: var(--cm-shadow-overlay);
+  }
 }
 
 @media (width < 56rem) {
   .showcase-header {
-    flex-wrap: wrap;
-    gap: var(--cm-space-1) var(--cm-space-4);
+    grid-template-columns: minmax(0, 1fr) auto auto;
     padding-block: var(--cm-space-2);
   }
 
+  .showcase-brand {
+    min-inline-size: 0;
+    flex-wrap: wrap;
+    gap: var(--cm-space-1);
+  }
+
+  .showcase-menu-toggle {
+    display: inline-flex;
+  }
+
+  [data-showcase-search-open] span,
+  :where(.showcase-topbar:not([data-menu-open])) .showcase-menu {
+    display: none;
+  }
+
+  .showcase-menu {
+    grid-row: 2;
+    grid-column: 1 / -1;
+    padding-block-start: var(--cm-space-2);
+    border-block-start: var(--cm-border-width) solid var(--cm-color-border-subtle);
+  }
+
   .showcase-navigation {
-    order: 1;
-    flex-basis: 100%;
     margin-inline-start: 0;
   }
+
+  .showcase-navigation__primary {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .showcase-navigation :is(a, summary) {
+    display: flex;
+    min-block-size: 2.75rem;
+  }
+
+  .showcase-resources ul {
+    margin-inline-start: var(--cm-space-3);
+  }
+}
+
+.showcase-search {
+  box-sizing: border-box;
+  inline-size: min(38rem, calc(100% - var(--cm-space-6)));
+  max-block-size: min(42rem, calc(100% - var(--cm-space-6)));
+  padding: clamp(var(--cm-space-3), 4vw, var(--cm-space-6));
+  border: var(--cm-border-width) solid var(--cm-color-border-default);
+  border-radius: var(--cm-radius-surface);
+  color: var(--cm-color-text-primary);
+  background: var(--cm-color-background-surface);
+}
+
+.showcase-search::backdrop {
+  background: rgb(0 0 0 / 55%);
+}
+
+.showcase-search__header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: var(--cm-space-2);
+}
+
+.showcase-search__header h2 {
+  margin: 0;
+  font-size: var(--cm-text-heading-3-font-size, 1.25rem);
+  overflow-wrap: anywhere;
+}
+
+.showcase-search label {
+  display: block;
+  margin-block: var(--cm-space-3) var(--cm-space-1);
+  font-weight: var(--cm-font-weight-medium);
+}
+
+.showcase-search input {
+  box-sizing: border-box;
+  inline-size: 100%;
+  min-block-size: 2.75rem;
+}
+
+.showcase-search__status {
+  margin-block: var(--cm-space-3) 0;
+  color: var(--cm-color-text-secondary);
+}
+
+.showcase-search__results {
+  display: grid;
+  gap: var(--cm-space-1);
+  padding: 0;
+  margin-block: var(--cm-space-2) 0;
+  list-style: none;
+}
+
+.showcase-search__results a {
+  display: grid;
+  gap: var(--cm-space-1);
+  padding: var(--cm-space-2);
+  border: var(--cm-border-width) solid var(--cm-color-border-subtle);
+  border-radius: var(--cm-radius-control);
+  color: var(--cm-color-text-primary);
+  overflow-wrap: anywhere;
+  text-decoration: none;
+}
+
+.showcase-search__results a:where(:hover) {
+  background: var(--cm-color-background-surface-hover);
+}
+
+.showcase-search__results span {
+  color: var(--cm-color-text-secondary);
+  font-size: var(--cm-text-label-font-size);
+}
+
+.showcase-search__results .showcase-search__label {
+  font-size: var(--cm-text-caption-font-size);
+}
+
+:is(.showcase-topbar, .showcase-search) :is(a, button, summary):focus-visible {
+  outline: 2px solid var(--cm-color-focus-ring);
+  outline-offset: 2px;
 }
 
 .showcase-content {
@@ -207,6 +401,17 @@ body {
 .showcase-intro__primary:hover {
   color: var(--cm-color-interactive-primary-foreground);
   background: var(--cm-color-interactive-primary-hover-background);
+}
+
+@media (width < 36rem) {
+  .showcase-content {
+    padding-block-start: var(--cm-space-5);
+  }
+
+  .showcase-jump li a {
+    min-block-size: 2.75rem;
+    padding-inline: var(--cm-space-2);
+  }
 }
 
 .showcase-jump {
@@ -366,6 +571,11 @@ body {
   display: flow-root;
   margin: 0;
   padding: 0.75rem;
+}
+
+/* Let compact reference examples show all columns at their natural width. */
+.showcase-reference-demo .cm-data-table__table {
+  min-inline-size: 0;
 }
 
 .showcase-prose {
@@ -1324,4 +1534,53 @@ body {
   font-size: var(--cm-text-label-font-size);
   font-weight: var(--cm-text-label-font-weight);
   line-height: normal;
+}
+
+#forms .core-example {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* Inline calendars paint above clear buttons in the neighboring samples. */
+#forms .cm-date-picker__calendar:not([data-cm-date-picker-portaled]) {
+  z-index: 2;
+}
+
+#forms .core-example .cm-field__control > input:not([type='checkbox'], [type='radio']) {
+  box-sizing: border-box;
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+:is(.core-tooltip-sample, #demo-tooltip) .cm-tooltip__trigger:not([data-cm-tooltip-custom-trigger]) {
+  min-block-size: var(--cm-control-height-md);
+  align-items: center;
+  padding-inline: var(--cm-space-3);
+  border: var(--cm-border-width) solid var(--cm-color-border-interactive);
+  border-radius: var(--cm-radius-control);
+  background: var(--cm-color-background-surface);
+}
+
+/* Keep Core examples within their cards when narrow screens use larger text. */
+@media (width <= 40rem) {
+  .showcase-core :is(.core-matrix, .core-matrix-cell, .core-example) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .showcase-core :is(.cm-button, .cm-button__label, .cm-switch) {
+    max-inline-size: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .showcase-core :is(.cm-field, .cm-select-wrap) {
+    min-inline-size: 0;
+  }
+
+  .showcase-core .core-avatar-panel-header {
+    flex-wrap: wrap;
+  }
+
+  .showcase-core #demo-menu .cm-menu {
+    min-inline-size: min(100%, 12rem);
+  }
 }

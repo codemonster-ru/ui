@@ -33,6 +33,17 @@ includes the foundation.
 The optional `fonts.css` entry supplies Inter. Omit it when the application already
 provides Inter or uses the system fallback.
 
+## Typography
+
+The foundation uses `--cm-font-family-base` and `--cm-line-height-normal` at the document root.
+Use `--cm-font-family-heading` for headings and `--cm-font-family-mono` where fixed character widths
+help, such as source code. Use semantic heading levels for the page outline and choose their
+visual scale separately.
+
+The `--cm-text-body-*`, `--cm-text-label-*`, and `--cm-text-caption-*` token groups provide
+font size, line height, and weight for common roles. Override the font families after the token
+stylesheet to adapt the type system to an application. [Token overrides](../tokens/getting-started.md#override-tokens)
+
 ## Foundation-only stylesheet
 
 Use the narrower entry when the application needs the reset, document defaults, focus rings, and

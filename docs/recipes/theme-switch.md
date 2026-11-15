@@ -1,6 +1,6 @@
 # Theme switch recipe
 
-The shared CSS recognizes three document preferences: `light`, `dark`, and `system`.
+Theming uses three document preferences: `light`, `dark`, and `system`.
 `system` uses `prefers-color-scheme` even with JavaScript disabled. For a preview inside
 a page, put an explicit `data-cm-theme="light"` or `data-cm-theme="dark"` on the preview
 container. Import the [tokens and shared CSS](../css/getting-started.md) once.

@@ -132,19 +132,20 @@ function previewSignIn() {
       <template #panelOverview>
         <div class="release-workspace__view">
           <div class="release-workspace__toolbar">
-            <div>
-              <h3>Overview</h3>
-              <p>Track deployments across environments.</p>
-            </div>
+            <h3>Overview</h3>
             <CmButton @click="openView('new-release')">New release</CmButton>
           </div>
-          <div class="release-workspace__metrics">
-            <CmCard v-for="{ state, label, hint, count } in summary" :key="state" element="div" compact>
-              <p class="release-workspace__metric-label">{{ label }}</p>
-              <p class="release-workspace__metric-value">{{ count }}</p>
-              <p class="release-workspace__metric-note">{{ hint }}</p>
-            </CmCard>
-          </div>
+          <CmCard class="release-workspace__section release-workspace__summary" aria-labelledby="release-summary-title">
+            <template #header>
+              <h4 id="release-summary-title" class="cm-card__title">Deployment status</h4>
+            </template>
+            <dl class="release-workspace__metrics">
+              <div v-for="{ state, label, count } in summary" :key="state" :data-release-state="state">
+                <dt>{{ label }}</dt>
+                <dd>{{ count }}</dd>
+              </div>
+            </dl>
+          </CmCard>
           <CmCard class="release-workspace__section" aria-labelledby="release-deployments-title">
             <template #header>
               <h4 id="release-deployments-title" class="cm-card__title">Deployments</h4>
@@ -191,7 +192,11 @@ function previewSignIn() {
       </template>
 
       <template #panelNewRelease>
-        <CmCard class="release-workspace__section" title="New release" aria-label="New release">
+        <CmCard
+          class="release-workspace__section release-workspace__editor"
+          title="New release"
+          aria-label="New release"
+        >
           <p>Choose an environment and decide whether the deployment needs approval.</p>
           <form class="release-workspace__form" @submit.prevent="createRelease">
             <CmFormLayout>
@@ -238,7 +243,11 @@ function previewSignIn() {
       </template>
 
       <template #panelSettings>
-        <CmCard class="release-workspace__section" title="Workspace settings" aria-label="Workspace settings">
+        <CmCard
+          class="release-workspace__section release-workspace__editor"
+          title="Workspace settings"
+          aria-label="Workspace settings"
+        >
           <p>Set the workspace name and choose which email updates to receive in this preview.</p>
           <form class="release-workspace__form" @submit.prevent="saveSettings">
             <CmField v-slot="{ controlId }" control-id="release-workspace-name" label="Workspace name" required>
@@ -256,7 +265,7 @@ function previewSignIn() {
       </template>
 
       <template #panelSignIn>
-        <CmCard class="release-workspace__section" title="Sign in" aria-label="Sign in">
+        <CmCard class="release-workspace__section release-workspace__editor" title="Sign in" aria-label="Sign in">
           <CmAlert>
             Use <code>{{ sampleSignIn.email }}</code> and password <code>{{ sampleSignIn.password }}</code
             >. Sign-in runs in this preview.

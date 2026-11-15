@@ -96,15 +96,6 @@
   overflow-x: auto;
 }
 
-.core-tooltip-sample .cm-tooltip__trigger {
-  min-block-size: var(--cm-control-height-md);
-  align-items: center;
-  padding-inline: var(--cm-space-3);
-  border: var(--cm-border-width) solid var(--cm-color-border-interactive);
-  border-radius: var(--cm-radius-control);
-  background: var(--cm-color-background-surface);
-}
-
 .core-avatar-panel-header {
   display: flex;
   justify-content: space-between;

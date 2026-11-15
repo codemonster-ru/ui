@@ -1,6 +1,8 @@
 import showcasePages from '../../examples/shared/showcase-pages.json' with { type: 'json' };
+import { renderShowcaseNavigation, showcaseActions } from '../../examples/shared/showcase-navigation.mts';
 import { renderApplicationExamples } from '../../examples/vanilla/application-examples.mjs';
 import { renderComponentReference } from './render-showcase-component-reference.mjs';
+import { referenceFrameClass } from '../../examples/shared/showcase-component-reference.mts';
 import { coreComponentTitle, coreRecipesFor, renderCoreMatrix } from '../../examples/shared/showcase-core-matrix.mts';
 import {
   renderLayoutGuideEntry,
@@ -20,6 +22,8 @@ import {
 import { actionMatrices, buttonMatrices, showcaseCaseVariants } from '../../examples/shared/showcase-matrices.mts';
 import { collectComponentCases } from '../contracts/component-cases.mjs';
 import { collectComponentManifests } from '../contracts/component-manifests.mjs';
+import { buildDocumentation } from './showcase-documentation.mjs';
+import { buildShowcaseSearchIndex } from './showcase-search-index.mjs';
 
 function escapeHtml(text) {
   return text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
@@ -55,10 +59,17 @@ function renderExample(
     componentSlug,
   );
   const floating = ['date-picker', 'dropdown', 'menu-bar', 'popover', 'select', 'tooltip'].includes(componentSlug);
-  const frameSize = modal || layout ? ' showcase-frame--tall' : floating ? ' showcase-frame--floating' : '';
+  const frameSize =
+    heading === 'h3'
+      ? referenceFrameClass(componentSlug)
+      : modal || layout
+        ? ' showcase-frame--tall'
+        : floating
+          ? ' showcase-frame--floating'
+          : '';
   const demo = page(
     `${name} · ${title}`,
-    `<main class="showcase-demo" inert>
+    `<main class="showcase-demo${heading === 'h3' ? ' showcase-reference-demo' : ''}" inert>
       ${modal ? `<button class="cm-button cm-button--primary cm-button--md" type="button" id="showcase-open">Open ${escapeHtml(name)}</button>` : ''}
       ${canonicalHtml.replaceAll('src="/avatar.png"', 'src="./avatar.png"')}
     </main>`,
@@ -450,11 +461,9 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
   const coreJump = (path) => `<nav class="showcase-jump" aria-label="On this page">
     <p>On this page</p><ul>${coreLinks.map(({ id, title }) => `<li><a href="${path}#${id}">${escapeHtml(title)}</a></li>`).join('')}</ul>
   </nav>`;
-  function renderPage(current, base, path, content = pages[current]) {
+  function renderPage(current, base, path, content = pages[current], pageTitle) {
     const { label, title, description } = navigationPages.find(({ id }) => id === current);
-    const navigation = navigationPages
-      .map(({ id, label }) => `<li><a href="./${id}/"${id === current ? ' aria-current="page"' : ''}>${label}</a></li>`)
-      .join('\n');
+    const navigation = renderShowcaseNavigation(current, path.slice(1), '.', false);
     const intro = title
       ? `<header class="showcase-intro${current === 'core' ? ' showcase-intro--core' : ''}">
     <p class="showcase-intro__eyebrow">${escapeHtml(label)}</p>
@@ -462,20 +471,21 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
     ${
       current === 'core'
         ? `<div class="showcase-intro__actions">
-      <a class="showcase-intro__primary" href="./components/">Browse components</a>
-      <a class="cm-link" href="./examples/">Try examples</a>
+      <a class="showcase-intro__primary" href="./docs/getting-started/">Get started</a>
+      <a class="cm-link" href="./components/">Browse components</a>
     </div>`
         : ''
     }
   </header>`
       : '';
     return page(
-      `${label} · CodeMonster UI Vanilla`,
+      `${pageTitle ?? label} · CodeMonster UI Vanilla`,
       `<a class="showcase-skip" href="${path}#showcase-main">Skip to content</a>
   <header class="showcase-topbar">
     <div class="showcase-header">
       <a class="showcase-brand" href="./core/">CodeMonster UI <span>Vanilla</span></a>
-      <nav class="showcase-navigation" aria-label="Showcase sections"><ul>${navigation}</ul></nav>
+      <div class="showcase-menu">${navigation}</div>
+      <div class="showcase-header__actions">${showcaseActions}</div>
       <button class="cm-icon-button cm-icon-button--secondary cm-icon-button--md showcase-theme" id="showcase-theme" type="button" aria-label="Switch to dark theme" hidden><span class="cm-icon-button__icon">${themeIcons}</span></button>
     </div>
   </header>
@@ -489,6 +499,7 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
     );
   }
 
+  const documentation = await buildDocumentation({ relativeLinks: true });
   await Promise.all([
     writeFile(join(output, 'index.html'), renderPage('core', './', './')),
     ...Object.keys(pages).map(async (id) => {
@@ -504,6 +515,20 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
         renderPage('components', '../../', `./components/${slug}/`, content),
       );
     }),
+    ...[...documentation.pages].map(async ([path, { title, html }]) => {
+      const directory = join(output, path);
+      const base = '../'.repeat(path.split('/').length - 2);
+      await mkdir(directory, { recursive: true });
+      await writeFile(join(directory, 'index.html'), renderPage('docs', base, `.${path}`, html, title));
+    }),
+    (async () => {
+      const directory = join(output, 'docs-content');
+      await mkdir(directory, { recursive: true });
+      await writeFile(
+        join(directory, 'search.json'),
+        JSON.stringify(buildShowcaseSearchIndex(documentation.index, 'vanilla')),
+      );
+    })(),
   ]);
   console.log(
     `Vanilla showcase: ${components.length} components, ${expandedExamples(cases, icons).length} contract examples and variants.`,

@@ -49,6 +49,8 @@ await Promise.all([
   cp(resolve(root, 'examples/shared/showcase-core-recipes.js'), resolve(output, 'showcase-core-recipes.js')),
   cp(resolve(source, 'showcase.js'), resolve(output, 'showcase.js')),
   cp(resolve(root, 'examples/shared/showcase-theme.js'), resolve(output, 'showcase-theme.js')),
+  cp(resolve(root, 'examples/shared/showcase-guide-copy.js'), resolve(output, 'showcase-guide-copy.js')),
+  cp(resolve(root, 'examples/shared/showcase-navigation.js'), resolve(output, 'showcase-navigation.js')),
   cp(resolve(source, 'showcase-demo.js'), resolve(output, 'showcase-demo.js')),
   cp(resolve(source, 'application-examples.js'), resolve(output, 'application-examples.js')),
   build({
@@ -62,7 +64,7 @@ await Promise.all([
 await build({
   stdin: {
     contents:
-      "@import './packages/tokens/dist/tokens.css';\n@import './packages/css/dist/fonts.css';\n@import './packages/css/dist/styles.css';\n@import './examples/shared/showcase-shell.css';\n@import './examples/shared/showcase-typography.css';\n@import './examples/shared/showcase-colors.css';\n@import './examples/shared/showcase-icon-gallery.css';\n@import './examples/shared/showcase-component-reference.css';\n@import './examples/shared/application-examples.css';\n@import './examples/vanilla/showcase.css';",
+      "@import './packages/tokens/dist/tokens.css';\n@import './packages/css/dist/fonts.css';\n@import './packages/css/dist/styles.css';\n@import './examples/shared/showcase-shell.css';\n@import './examples/shared/showcase-typography.css';\n@import './examples/shared/showcase-colors.css';\n@import './examples/shared/showcase-icon-gallery.css';\n@import './examples/shared/showcase-component-reference.css';\n@import './examples/shared/showcase-guides.css';\n@import './examples/shared/application-examples.css';\n@import './examples/vanilla/showcase.css';",
     resolveDir: root,
     loader: 'css',
   },

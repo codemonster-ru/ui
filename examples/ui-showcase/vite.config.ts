@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import { resolve } from 'node:path';
 import { vueforgePlaygroundVirtualPlugin } from '@codemonster-ru/vueforge-playground-vite-plugin';
+import { guidesPlugin } from './guides-plugin.mjs';
 
 export default defineConfig({
   server: {
@@ -31,6 +32,7 @@ export default defineConfig({
   },
   plugins: [
     vue(),
+    guidesPlugin(),
     vueforgePlaygroundVirtualPlugin({
       entries: {
         'vue-runtime-smoke': resolve(import.meta.dirname, 'src/playground/vue-runtime-smoke.ts'),

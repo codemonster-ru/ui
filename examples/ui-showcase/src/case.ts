@@ -78,6 +78,7 @@ const slots = Object.fromEntries(
 );
 const props = reactive(resolveVueProps());
 const parameters = new URLSearchParams(location.search);
+if (parameters.get('view') === 'reference') root.classList.add('showcase-reference-demo');
 const basename = componentCase.id.slice(componentSlug.length + 1);
 for (const { prop, value } of showcaseCaseVariants(componentSlug, basename)) {
   if (parameters.get(prop) === value) props[prop] = showcaseVariantValue(value);
