@@ -133,6 +133,7 @@ test('publishes the opt-in historical icon and Vue components', async () => {
     'useClickOutside',
     'useDisclosure',
     'useEscapeKey',
+    'useFloating',
     'useId',
     'useScrollLock',
     'useTableOfContents',
