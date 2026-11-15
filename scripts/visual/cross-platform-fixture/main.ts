@@ -86,7 +86,7 @@ function staticSlot(contents: string): () => VNodeChild {
 document.documentElement.dataset.cmTheme = theme ?? 'light';
 root.dataset.visualCase = caseId;
 const behavior = parameters.get('behavior') === 'true';
-if (behavior) initializeBehavior(root);
+if (behavior) initializeBehavior(root, componentSlug);
 
 if (platform === 'vue') {
   const slots = Object.fromEntries(

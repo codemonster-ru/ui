@@ -129,6 +129,16 @@ const items = [
 
 Vanilla markup: [table-of-contents HTML](../../contracts/table-of-contents/cases/default.html).
 
+For optional scrolling, put `data-cm-controller="table-of-contents"` on the nav and use
+`data-cm-toc-smooth` or `data-cm-toc-scroll-offset="64"`. See the
+[enhanced markup](../../contracts/table-of-contents/cases/offset.html). Register
+`createCmTableOfContentsController` as `table-of-contents` with `CmRuntime`.
+
+Keep each fragment link's `href` and heading `id` in the HTML. Add `tabindex="-1"` to
+headings so the enhancement can move focus to the destination without introducing a tab stop.
+The enhancement respects reduced motion, applies the offset when the page opens with a matching
+fragment, and preserves ordinary browser behavior for modified clicks and missing headings.
+
 ## Stepper
 
 `CmStepper` walks a person through a sequence. Each step reads as complete, current or upcoming
