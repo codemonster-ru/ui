@@ -1,22 +1,21 @@
 <script setup lang="ts">
-import { computed, inject, nextTick, ref, useAttrs, useSlots, watch, type PropType } from 'vue';
+import { computed, inject, nextTick, ref, useAttrs, watch, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
 import { resolveInputClearable, resolvePasswordReveal } from '@codemonster-ru/ui-runtime/core';
 import { cmFloatingFieldKey } from '../field/floating-field';
-import type { CmInputSize, CmInputType } from './input.types';
+import { cmInputTypes, type CmInputSize, type CmInputType } from './input.types';
 
 defineOptions({ inheritAttrs: false });
 
-const types: readonly CmInputType[] = ['text', 'email', 'password', 'search', 'tel', 'url'];
 const sizes: readonly CmInputSize[] = ['sm', 'md', 'lg'];
 const props = defineProps({
   modelValue: { type: String, default: '' },
   type: {
     type: String as PropType<CmInputType>,
     default: 'text',
-    validator: (value: string) => ['text', 'email', 'password', 'search', 'tel', 'url'].includes(value),
+    validator: (value: CmInputType) => cmInputTypes.includes(value),
   },
   size: {
     type: String as PropType<CmInputSize>,
@@ -39,7 +38,6 @@ const emit = defineEmits<{
 }>();
 const attrs = useAttrs();
 const floatingLabel = inject(cmFloatingFieldKey, null);
-const slots = useSlots();
 const inputRef = ref<HTMLInputElement | null>(null);
 const currentValue = ref(props.modelValue);
 const passwordVisible = ref(false);
@@ -49,13 +47,11 @@ watch(
     currentValue.value = value;
   },
 );
-const inputType = computed(() => (types.includes(props.type) ? props.type : 'text'));
+const inputType = computed(() => (cmInputTypes.includes(props.type) ? props.type : 'text'));
 const resolvedInputType = computed(() =>
   props.passwordReveal && inputType.value === 'password' ? passwordReveal.value.type : inputType.value,
 );
 const size = computed(() => (sizes.includes(props.size) ? props.size : 'md'));
-const hasLeading = computed(() => Boolean(slots.leading));
-const hasTrailing = computed(() => Boolean(slots.trailing));
 const hasPasswordReveal = computed(() => props.passwordReveal && inputType.value === 'password');
 const hasClear = computed(() =>
   resolveInputClearable({ clearable: props.clearable, disabled: props.disabled, readonly: props.readonly }),
@@ -63,7 +59,6 @@ const hasClear = computed(() =>
 const passwordReveal = computed(() =>
   resolvePasswordReveal(passwordVisible.value, { hide: props.hidePasswordLabel, show: props.showPasswordLabel }),
 );
-const hasWrapper = computed(() => hasLeading.value || hasTrailing.value || hasPasswordReveal.value || hasClear.value);
 const classes = computed(() =>
   mergeCmClasses('cm-input', `cm-input--${size.value}`, props.invalid ? 'cm-input--invalid' : undefined, attrs.class),
 );
@@ -88,11 +83,17 @@ function clearValue(): void {
 
 async function togglePassword(): Promise<void> {
   const input = inputRef.value;
-  const selection = input?.selectionStart === null ? null : [input?.selectionStart ?? 0, input?.selectionEnd ?? 0];
+  const selection =
+    input && input.selectionStart !== null && input.selectionEnd !== null
+      ? { start: input.selectionStart, end: input.selectionEnd, direction: input.selectionDirection ?? undefined }
+      : null;
   passwordVisible.value = !passwordVisible.value;
   await nextTick();
-  inputRef.value?.focus();
-  if (selection) inputRef.value?.setSelectionRange(selection[0], selection[1]);
+  const currentInput = inputRef.value;
+  currentInput?.focus();
+  if (selection && currentInput && currentInput.selectionStart !== null) {
+    currentInput.setSelectionRange(selection.start, selection.end, selection.direction);
+  }
 }
 
 useCmHydrated();
@@ -100,11 +101,11 @@ useCmHydrated();
 
 <template>
   <div
-    v-if="hasWrapper"
+    v-if="$slots.leading || $slots.trailing || hasPasswordReveal || hasClear"
     class="cm-input-wrap"
     :data-cm-controller="hasPasswordReveal || hasClear ? 'input' : undefined"
   >
-    <span v-if="hasLeading" class="cm-input__leading"><slot name="leading" /></span>
+    <span v-if="$slots.leading" class="cm-input__leading"><slot name="leading" /></span>
     <input
       ref="inputRef"
       v-bind="rootAttrs"
@@ -118,7 +119,7 @@ useCmHydrated();
       data-cm-input-control
       @input="updateValue"
     />
-    <span v-if="hasTrailing" class="cm-input__trailing"><slot name="trailing" /></span>
+    <span v-if="$slots.trailing" class="cm-input__trailing"><slot name="trailing" /></span>
     <button
       v-if="hasPasswordReveal"
       class="cm-input__action"

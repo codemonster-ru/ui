@@ -38,6 +38,27 @@ describe('CmInput', () => {
     expect(onUpdate).toHaveBeenCalledWith('after');
   });
 
+  it('keeps native number constraints and submits string values', async () => {
+    const form = document.createElement('form');
+    const wrapper = mount(CmInput, {
+      attachTo: form,
+      attrs: { name: 'quantity', min: '1', max: '4', step: '0.5' },
+      props: { modelValue: '2.5', type: 'number' },
+    });
+
+    try {
+      const input = wrapper.get('input');
+      expect(input.element.type).toBe('number');
+      expect(input.element.checkValidity()).toBe(true);
+      expect(new FormData(form).get('quantity')).toBe('2.5');
+      await input.setValue('2.7');
+      expect(wrapper.emitted('update:modelValue')).toEqual([['2.7']]);
+      expect(input.element.validity.stepMismatch).toBe(true);
+    } finally {
+      wrapper.unmount();
+    }
+  });
+
   it('owns native and aria state attributes', () => {
     const wrapper = mount(CmInput, {
       attrs: { disabled: false, readonly: false, required: false, 'aria-invalid': 'false' },
@@ -82,13 +103,14 @@ describe('CmInput', () => {
       },
     });
     const input = wrapper.get('input').element;
-    input.setSelectionRange(1, 4);
+    input.setSelectionRange(1, 4, 'backward');
 
     await wrapper.get('[data-cm-input-password]').trigger('click');
 
     expect(input.type).toBe('text');
     expect(input.value).toBe('secret');
     expect([input.selectionStart, input.selectionEnd]).toEqual([1, 4]);
+    expect(input.selectionDirection).toBe('backward');
     expect(wrapper.get('[data-cm-input-password]').attributes()).toMatchObject({
       'aria-label': 'Hide secret',
       'aria-pressed': 'true',

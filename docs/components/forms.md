@@ -35,29 +35,30 @@ tell whether the control has a value. See the [in](../../contracts/field/cases/f
 
 ## Input API
 
-| Prop                | Values                                              | Default         | Behavior                                     |
-| ------------------- | --------------------------------------------------- | --------------- | -------------------------------------------- |
-| `value`             | string                                              | `''`            | Current value; Vue maps to `v-model`.        |
-| `type`              | `text`, `email`, `password`, `search`, `tel`, `url` | `text`          | Approved native single-line type.            |
-| `size`              | `sm`, `md`, `lg`                                    | `md`            | Shared control size.                         |
-| `invalid`           | boolean                                             | `false`         | Adds `aria-invalid` and invalid style.       |
-| `disabled`          | boolean                                             | `false`         | Native disabled state.                       |
-| `readonly`          | boolean                                             | `false`         | Native readonly state.                       |
-| `required`          | boolean                                             | `false`         | Native required constraint.                  |
-| `clearable`         | boolean                                             | `false`         | Clears an editable value and restores focus. |
-| `passwordReveal`    | boolean                                             | `false`         | Toggles visibility for password inputs.      |
-| `clearLabel`        | string                                              | `Clear input`   | Accessible clear-action label.               |
-| `showPasswordLabel` | string                                              | `Show password` | Accessible reveal-action label.              |
-| `hidePasswordLabel` | string                                              | `Hide password` | Accessible conceal-action label.             |
+| Prop                | Values                                                        | Default         | Behavior                                     |
+| ------------------- | ------------------------------------------------------------- | --------------- | -------------------------------------------- |
+| `value`             | string                                                        | `''`            | Current value; Vue maps to `v-model`.        |
+| `type`              | `text`, `email`, `number`, `password`, `search`, `tel`, `url` | `text`          | Native single-line type.                     |
+| `size`              | `sm`, `md`, `lg`                                              | `md`            | Shared control size.                         |
+| `invalid`           | boolean                                                       | `false`         | Adds `aria-invalid` and invalid style.       |
+| `disabled`          | boolean                                                       | `false`         | Native disabled state.                       |
+| `readonly`          | boolean                                                       | `false`         | Native readonly state.                       |
+| `required`          | boolean                                                       | `false`         | Native required constraint.                  |
+| `clearable`         | boolean                                                       | `false`         | Clears an editable value and restores focus. |
+| `passwordReveal`    | boolean                                                       | `false`         | Toggles visibility for password inputs.      |
+| `clearLabel`        | string                                                        | `Clear input`   | Accessible clear-action label.               |
+| `showPasswordLabel` | string                                                        | `Show password` | Accessible reveal-action label.              |
+| `hidePasswordLabel` | string                                                        | `Hide password` | Accessible conceal-action label.             |
 
 Safe native attributes such as `id`, `name`, `autocomplete`, `placeholder`, `pattern`, and
-`inputmode` reach the input. Component-owned value, type, boolean state, and `aria-invalid` cannot
-be overridden through forwarded attributes.
+`inputmode` reach the input. Number inputs submit and emit native string values and accept `min`,
+`max`, and `step` for validation. Component-owned value, type, boolean state, and `aria-invalid`
+cannot be overridden through forwarded attributes.
 
 The `leading` and `trailing` slots accept framework-native trusted content, including icons. Hide
-decorative content from assistive technology; slots do not replace the input's label. The shared
-API intentionally accepts content instead of VueForge icon registry names so Vue and Vanilla HTML use the
-same contract without coupling to one renderer.
+decorative content from assistive technology and provide a label for the input. `VfInput` from
+`@codemonster-ru/ui-vue/historical` also accepts `leadingIcon` and `trailingIcon` as named icons.
+An explicit slot takes precedence over the corresponding icon prop.
 
 ## Textarea and choice APIs
 

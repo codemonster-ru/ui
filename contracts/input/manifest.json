@@ -14,7 +14,7 @@
       "type": "enum",
       "required": false,
       "default": "text",
-      "values": ["text", "email", "password", "search", "tel", "url"],
+      "values": ["text", "email", "number", "password", "search", "tel", "url"],
       "description": "Approved native single-line input type."
     },
     "size": {
