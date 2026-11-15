@@ -21,6 +21,8 @@ focus or appear in the open path, and arrows cross group boundaries at the same 
 In Vue, `to` uses the provided `linkComponent` or the registered `RouterLink`. An `href` remains a
 native anchor. The opt-in historical `VfMenuBar` restores the `Menu bar` name, named leading
 icons, and `select` with the original item object after the model/change events. The current
-`CmMenuBar` and Vanilla event continue to report the selected value. Menus use inline CSS
-positioning; the historical hover-close timer, floating submenu portal and horizontal scroll
-controls are separate from this entry.
+`CmMenuBar` and Vanilla event continue to report the selected value. Top-level items wrap.
+At viewport widths up to 640 px, expanded submenus stack in their own rows, including on
+server-rendered pages with authored open branches. Wider viewports use the inline cascade.
+The historical hover-close timer, floating submenu portal and horizontal scroll controls
+remain separate from this entry.

@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "menu-bar-compact-edge",
+  "description": "Long top-level actions with an expanded two-level branch at the end of the bar.",
+  "props": {
+    "items": [
+      { "value": "workspace", "label": "Workspace settings" },
+      { "value": "team", "label": "Team permissions" },
+      { "value": "notifications", "label": "Notification preferences" },
+      { "value": "releases", "label": "Release management" },
+      { "value": "billing", "label": "Billing and invoices" },
+      {
+        "value": "reports",
+        "label": "Available reports",
+        "children": [
+          { "value": "new", "label": "Activity summary" },
+          {
+            "value": "recent",
+            "label": "Security audit reports",
+            "children": [{ "value": "report", "label": "Download the audit activity report", "href": "#audit-report" }]
+          }
+        ]
+      }
+    ],
+    "openPath": ["reports", "recent"],
+    "variant": "pills"
+  },
+  "slots": {}
+}

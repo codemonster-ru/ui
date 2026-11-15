@@ -1,7 +1,6 @@
 /*
- * A submenu is positioned by CSS rather than measured and placed by JavaScript: it drops below its
- * trigger on the bar and flows sideways from there. That keeps the whole menu in the markup, hidden
- * rather than absent, so a page without JavaScript still exposes it to assistive technology.
+ * Wide menus cascade sideways. On narrow screens, opening a submenu expands its row so the
+ * authored links stay within the bar without an overflow clip or a script-managed popup.
  */
 .cm-menu-bar__list,
 .cm-menu-bar__submenu,
@@ -13,16 +12,20 @@
 
 .cm-menu-bar__list {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--cm-space-0);
 }
 
 .cm-menu-bar__node {
   position: relative;
+  min-inline-size: 0;
+  max-inline-size: 100%;
 }
 
 .cm-menu-bar__node--depth-0 > .cm-menu-bar__group-list {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--cm-space-1);
 }
@@ -47,7 +50,7 @@
   font: inherit;
   text-align: start;
   text-decoration: none;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
   cursor: pointer;
 }
 
@@ -144,4 +147,27 @@
 .cm-menu-bar__node:not(.cm-menu-bar__node--depth-0) > .cm-menu-bar__item .cm-menu-bar__icon {
   margin-inline-start: auto;
   rotate: -45deg;
+}
+
+@media (width <= 640px) {
+  .cm-menu-bar__node--depth-0:has(
+    > .cm-menu-bar__submenu:not([hidden]),
+    > .cm-menu-bar__group-list .cm-menu-bar__node--open
+  ) {
+    flex-basis: 100%;
+  }
+
+  .cm-menu-bar__submenu {
+    position: static;
+    min-inline-size: 0;
+    margin-block-start: var(--cm-space-1);
+  }
+
+  .cm-menu-bar__node:not(.cm-menu-bar__node--depth-0) > .cm-menu-bar__submenu {
+    margin-inline-start: var(--cm-space-2);
+  }
+
+  .cm-menu-bar__node:not(.cm-menu-bar__node--depth-0) > .cm-menu-bar__item .cm-menu-bar__icon {
+    rotate: 45deg;
+  }
 }

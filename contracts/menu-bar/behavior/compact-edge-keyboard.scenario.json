@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "menu-bar-compact-edge-keyboard",
+  "case": "menu-bar-compact-edge",
+  "steps": [
+    { "expect": "visible", "target": "nested-command", "value": true },
+    { "action": "focus", "target": "branch-first" },
+    { "action": "press", "target": "branch-first", "key": "ArrowDown" },
+    { "expect": "focus", "target": "first-command", "value": true },
+    { "action": "press", "target": "first-command", "key": "ArrowDown" },
+    { "expect": "focus", "target": "nested-branch", "value": true },
+    { "action": "press", "target": "nested-branch", "key": "ArrowRight" },
+    { "expect": "focus", "target": "nested-command", "value": true },
+    { "action": "press", "target": "nested-command", "key": "Escape" },
+    { "expect": "focus", "target": "branch-first", "value": true },
+    { "expect": "visible", "target": "submenu-first", "value": false }
+  ]
+}
