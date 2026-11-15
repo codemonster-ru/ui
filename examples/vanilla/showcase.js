@@ -18,21 +18,46 @@ const iconCatalog = document.querySelector('#icon-catalog');
 iconCatalog?.addEventListener('input', filterIcons);
 iconCatalog?.addEventListener('click', copyIcon);
 
-const themeControls = document.querySelector('#showcase-theme');
+const themeButton = document.querySelector('#showcase-theme');
+const themeModeLabel = document.querySelector('[data-showcase-theme-mode]');
+const themeResolvedLabel = document.querySelector('[data-showcase-theme-resolved]');
+const themeButtons = document.querySelectorAll('[data-showcase-set-theme]');
+const systemTheme = window.matchMedia('(prefers-color-scheme: dark)');
+const themeDefault = 'system';
+let themeMode = themeDefault;
+const isDark = (mode) => mode === 'dark' || (mode === 'system' && systemTheme.matches);
 const syncThemeControls = (mode) => {
-  for (const input of document.querySelectorAll('#showcase-theme input, #showcase-theme-example input')) {
+  themeMode = mode;
+  for (const input of document.querySelectorAll('#showcase-theme-example input')) {
     input.checked = input.value === mode;
   }
+  for (const icon of themeButton.querySelectorAll('[data-showcase-theme-icon]')) {
+    icon.hidden = icon.dataset.showcaseThemeIcon !== (isDark(mode) ? 'moon' : 'sun');
+  }
+  themeButton.hidden = false;
+  if (themeModeLabel) themeModeLabel.textContent = `mode: ${mode}`;
+  if (themeResolvedLabel) themeResolvedLabel.textContent = `resolved: ${isDark(mode) ? 'dark' : 'light'}`;
+  for (const button of themeButtons) {
+    if (button.dataset.showcaseSetTheme !== 'toggle') {
+      button.setAttribute('aria-pressed', String(button.dataset.showcaseSetTheme === mode));
+    }
+    button.disabled = false;
+  }
 };
-followShowcaseTheme(syncThemeControls);
-themeControls.addEventListener('change', ({ target }) => {
-  saveShowcaseTheme(target.value);
-  syncThemeControls(target.value);
-});
+followShowcaseTheme(syncThemeControls, themeDefault);
+systemTheme.addEventListener('change', () => syncThemeControls(themeMode));
+function selectTheme(mode) {
+  const next = mode === 'toggle' ? (isDark(themeMode) ? 'light' : 'dark') : mode;
+  saveShowcaseTheme(next);
+  syncThemeControls(next);
+}
+themeButton.addEventListener('click', () => selectTheme('toggle'));
+for (const button of themeButtons) {
+  button.addEventListener('click', () => selectTheme(button.dataset.showcaseSetTheme));
+}
 
 catalog.addEventListener('cm:theme-change', (event) => {
-  saveShowcaseTheme(event.detail.mode);
-  syncThemeControls(event.detail.mode);
+  selectTheme(event.detail.mode);
 });
 
 const search = document.querySelector('#showcase-search');

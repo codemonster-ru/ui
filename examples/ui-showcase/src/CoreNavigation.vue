@@ -5,6 +5,7 @@ import {
   CmButton,
   CmMenuBar,
   CmNavMenu,
+  CmPageHeader,
   CmStepper,
   CmTableOfContents,
   CmTabs,
@@ -297,24 +298,20 @@ function markMenuBarSelection(host: HTMLElement | null, selected: string) {
     </div>
     <div class="core-matrix-cell core-matrix-wide">
       <h4>Page header</h4>
-      <header class="core-page-header">
-        <div class="core-matrix-cell">
-          <CmBreadcrumbs
-            :items="[
-              { label: 'Administration', href: '#navigation' },
-              { label: 'Users', current: true },
-            ]"
-          >
-            <template #separator>›</template>
-          </CmBreadcrumbs>
-          <strong class="core-page-header-title">Team members</strong>
-          <p>Manage workspace access, roles, and account status.</p>
-        </div>
-        <div class="core-theme-controls">
+      <CmPageHeader
+        title="Team members"
+        description="Manage workspace access, roles, and account status."
+        :heading-level="5"
+        :breadcrumbs="[
+          { label: 'Administration', href: '#navigation' },
+          { label: 'Users', current: true },
+        ]"
+      >
+        <template #actions>
           <CmButton variant="secondary" href="#surfaces">Export</CmButton>
           <CmButton href="#forms">New user</CmButton>
-        </div>
-      </header>
+        </template>
+      </CmPageHeader>
     </div>
     <div class="core-matrix-cell">
       <h4>Tabs</h4>

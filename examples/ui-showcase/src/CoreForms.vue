@@ -5,6 +5,7 @@ import {
   CmDatePicker,
   CmField,
   CmFieldset,
+  CmFormLayout,
   CmInput,
   CmIcon,
   CmRadio,
@@ -101,7 +102,7 @@ const states = [
   </CoreMatrix>
   <CoreMatrix title="Form layout · responsive">
     <CmCard title="Workspace settings" class="core-matrix-wide">
-      <div class="core-responsive-form">
+      <CmFormLayout mode="responsive">
         <CmField
           v-slot="{ controlId, describedBy }"
           control-id="core-workspace"
@@ -123,7 +124,7 @@ const states = [
         <CmField v-slot="{ controlId }" control-id="core-role" label="Plan">
           <CmSelect :id="controlId" v-model="workspacePlan" :options="plans" placeholder="Choose a plan" />
         </CmField>
-      </div>
+      </CmFormLayout>
     </CmCard>
   </CoreMatrix>
   <CoreMatrix title="Date picker">

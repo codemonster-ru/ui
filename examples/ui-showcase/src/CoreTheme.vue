@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { moon, sun } from '@codemonster-ru/ui-icons';
 import type { CmThemeMode } from '@codemonster-ru/ui-runtime/core';
-import { CmButton, CmIcon, CmIconButton, CmSwitch, CmTag } from '@codemonster-ru/ui-vue';
+import { CmButton, CmTag, VfThemeSwitch } from '@codemonster-ru/ui-vue';
 
 defineProps<{
   mode: CmThemeMode;
@@ -45,36 +44,24 @@ const buttonVariants = ['secondary', 'ghost', 'secondary'] as const;
       <article class="showcase-panel core-theme-card">
         <h3>Theme switch</h3>
         <div class="core-theme-controls">
-          <CmSwitch
-            v-for="(label, index) in ['Toggle dark theme', 'Theme switch preview', 'Inverse theme switch preview']"
-            :key="label"
-            :aria-label="label"
-            :model-value="resolved === 'dark'"
-            :disabled="index > 0"
-            :class="{ 'core-theme-switch--inverse': index === 2 }"
-            @update:model-value="emit('toggle')"
-          >
-            <template #thumb><CmIcon :icon="resolved === 'dark' ? moon : sun" /></template>
-          </CmSwitch>
-          <CmIconButton
+          <VfThemeSwitch />
+          <VfThemeSwitch static />
+          <VfThemeSwitch static thumb-contrast="inverse" />
+          <VfThemeSwitch
             v-for="(variant, index) in buttonVariants"
             :key="index"
-            label="Toggle color theme"
             :size="index === 2 ? 'sm' : 'md'"
-            :variant="variant"
-            @click="emit('toggle')"
-            ><CmIcon :icon="resolved === 'dark' ? moon : sun"
-          /></CmIconButton>
-          <CmButton
+            variant="button"
+            :button-variant="variant"
+          />
+          <VfThemeSwitch
             v-for="(variant, index) in buttonVariants"
             :key="'labeled-' + index"
             :size="index === 2 ? 'lg' : 'md'"
-            :variant="variant"
-            @click="emit('toggle')"
-          >
-            <template #leading><CmIcon :icon="resolved === 'dark' ? moon : sun" /></template>
-            {{ resolved === 'dark' ? 'Dark' : 'Light' }}
-          </CmButton>
+            variant="button"
+            :button-variant="variant"
+            :label="resolved === 'dark' ? 'Dark' : 'Light'"
+          />
         </div>
         <p class="showcase-muted">
           The switch reflects the resolved theme and turns system mode into an explicit light or dark choice after

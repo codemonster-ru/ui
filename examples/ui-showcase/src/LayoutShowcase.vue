@@ -189,18 +189,25 @@ function setMode(kind: 'app' | 'document', value: string) {
                 class="layout-preview__frame layout-shell-frame"
                 :class="
                   Object.keys(flags[slug])
-                    .filter((key) => flags[slug][key])
+                    .filter((key) => key === 'plain' && slug === 'document-layout' && flags[slug][key])
                     .map((key) => 'layout-region--' + key)
                 "
               >
                 <component
                   :is="slug === 'app-shell' ? CmAppShell : CmDocumentLayout"
-                  :key="String(flags[slug].subheader)"
                   :layout="modes[slug === 'app-shell' ? 'app' : 'document']"
-                  v-bind="slug === 'app-shell' ? { stickyHeader: flags[slug].header } : {}"
+                  :show-subheader="flags[slug].subheader"
+                  :show-content-subheader="flags[slug]['content-subheader']"
+                  :sticky-header="flags[slug].header"
+                  :sticky-sidebar="flags[slug].sidebar"
+                  :sticky-aside="flags[slug].aside"
+                  v-bind="slug === 'app-shell'
+                    ? { contentAppearance: flags[slug].plain ? 'plain' : 'default' }
+                    : { edgeNotches: flags[slug].notches }"
                 >
                   <template #header><strong>Header</strong></template>
-                  <template v-if="flags[slug].subheader" #subheader><strong>Subheader</strong></template>
+                  <template #subheader><strong>Subheader</strong></template>
+                  <template #content-subheader><strong>Content subheader</strong></template>
                   <template #sidebar>
                     <CmStack
                       ><strong>Sidebar</strong>
@@ -211,9 +218,6 @@ function setMode(kind: 'app' | 'document', value: string) {
                     >
                   </template>
                   <CmStack>
-                    <strong v-if="flags[slug]['content-subheader']" class="layout-content-subheader"
-                      >Content subheader</strong
-                    >
                     <strong>Content</strong>
                     <p v-for="n in 26" :key="n">
                       Content paragraph {{ n }}. This is intentionally verbose demo text for stress-testing long scroll

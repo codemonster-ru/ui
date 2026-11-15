@@ -15,13 +15,12 @@ import { iconIntro, renderOperations } from '../../shared/showcase-reference.mts
 import { actionMatrices, buttonMatrices } from '../../shared/showcase-matrices.mts';
 import type { CmButtonProps, CmIconButtonProps, CmLinkProps } from '@codemonster-ru/ui-vue';
 import typography from './core-typography.html?raw';
-import { computed, defineAsyncComponent, nextTick, onMounted, onUnmounted, ref, type Component } from 'vue';
+import { defineAsyncComponent, nextTick, onUnmounted, ref, type Component } from 'vue';
 import { CmRuntime, createCmTabsController } from '@codemonster-ru/ui-runtime';
 import { mountOperations } from '../../shared/showcase-reference.js';
 import { gear, moon, sun } from '@codemonster-ru/ui-icons';
-import { followShowcaseTheme, saveShowcaseTheme, readShowcaseTheme } from '../../shared/showcase-theme.js';
 import LayoutShowcase from './LayoutShowcase.vue';
-import { CmButton, CmIcon, CmIconButton, CmLink } from '@codemonster-ru/ui-vue';
+import { CmButton, CmIcon, CmIconButton, CmLink, useCmTheme } from '@codemonster-ru/ui-vue';
 
 const CodeBlockShowcase = defineAsyncComponent(
   async () => (await import('./CodeBlockShowcase.vue')) as { default: Component },
@@ -83,41 +82,14 @@ const linkExamples = actionMatrices.link as Record<
 
 const iconButtonExamples = actionMatrices['icon-button'] as Record<string, CmIconButtonProps[]>;
 
-const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
-const prefersDark = ref(systemDark.matches);
-const defaultTheme = 'system';
-const themeMode = ref(readShowcaseTheme(defaultTheme));
-const resolvedTheme = computed(() =>
-  themeMode.value === 'system' ? (prefersDark.value ? 'dark' : 'light') : themeMode.value,
-);
-function syncSystemTheme(event: MediaQueryListEvent) {
-  prefersDark.value = event.matches;
-}
-function selectTheme(mode: typeof themeMode.value) {
-  themeMode.value = mode;
-  saveShowcaseTheme(mode);
-}
-function toggleTheme() {
-  selectTheme(resolvedTheme.value === 'dark' ? 'light' : 'dark');
-}
-let stopTheme: (() => void) | undefined;
-onMounted(() => {
-  systemDark.addEventListener('change', syncSystemTheme);
-  stopTheme = followShowcaseTheme((mode) => {
-    themeMode.value = mode;
-  }, defaultTheme);
-});
-onUnmounted(() => {
-  systemDark.removeEventListener('change', syncSystemTheme);
-  stopTheme?.();
-});
+const { theme: themeMode, resolvedTheme, setTheme: selectTheme, toggleTheme } = useCmTheme();
 </script>
 
 <template>
-  <header class="showcase-topbar vue-showcase-topbar">
-    <div class="vue-showcase-header">
-      <a class="vue-showcase-brand" href="/core/">CodeMonster UI · Vue</a>
-      <nav class="vue-showcase-navigation" aria-label="Showcase sections">
+  <header class="showcase-topbar">
+    <div class="showcase-header">
+      <a class="showcase-brand" href="/core/">CodeMonster UI · Vue</a>
+      <nav class="showcase-navigation" aria-label="Showcase sections">
         <ul>
           <li v-for="page in pages" :key="page.id">
             <a :href="`/${page.id}/`" :aria-current="currentPage === page.id ? 'page' : undefined">
@@ -126,7 +98,7 @@ onUnmounted(() => {
           </li>
         </ul>
       </nav>
-      <CmIconButton class="vue-showcase-theme" label="Toggle color theme" variant="secondary" @click="toggleTheme">
+      <CmIconButton class="showcase-theme" label="Toggle color theme" variant="secondary" @click="toggleTheme">
         <CmIcon :icon="resolvedTheme === 'dark' ? moon : sun" />
       </CmIconButton>
     </div>

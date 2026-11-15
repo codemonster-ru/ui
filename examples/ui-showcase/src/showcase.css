@@ -3,96 +3,13 @@
   margin: 0 0 0.25rem;
 }
 
-/* VueForge's showcase used the system fallback when Inter was not installed. */
-:is(.vue-showcase-topbar, .showcase-core) {
-  --cm-font-family-base: ui-sans-serif, system-ui, sans-serif;
-  --cm-font-family-heading: var(--cm-font-family-base);
-
-  font-family: var(--cm-font-family-base);
-}
-
-.vue-showcase-topbar {
-  display: block;
-  padding: 0;
-  border-color: var(--cm-color-border-default);
-}
-
-.vue-showcase-header {
-  display: flex;
-  box-sizing: border-box;
-  min-block-size: calc(var(--cm-space-16) - var(--cm-border-width));
-  max-inline-size: var(--cm-breakpoint-2xl);
-  align-items: center;
-  gap: var(--cm-space-4);
-  margin-inline: auto;
-  padding-inline: var(--cm-space-4);
-}
-
-.vue-showcase-brand {
-  flex: none;
-  color: var(--cm-color-text-primary);
-  font-size: var(--cm-text-label-font-size);
-  font-weight: var(--cm-font-weight-semibold);
-  line-height: 1.45;
-  text-decoration: none;
-}
-
-.vue-showcase-navigation {
-  flex: 1 1 auto;
-  min-inline-size: 0;
-  margin-inline-start: var(--cm-space-4);
-  overflow-x: auto;
-  scrollbar-width: thin;
-}
-
-.vue-showcase-navigation ul {
-  display: flex;
-  inline-size: max-content;
-  gap: var(--cm-space-1);
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
-
-.vue-showcase-navigation a {
-  display: block;
-  padding: var(--cm-space-2) var(--cm-space-2);
-  border-radius: var(--cm-radius-control);
-  color: var(--cm-color-text-secondary);
-  font-weight: var(--cm-font-weight-medium);
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-.vue-showcase-navigation a[aria-current='page'] {
-  color: var(--cm-color-interactive-primary-subtle-foreground);
-}
-
-.vue-showcase-navigation a:hover {
-  background: var(--cm-color-background-surface-hover);
-}
-
-.vue-showcase-navigation a:focus-visible {
-  outline-offset: calc(-1 * var(--cm-focus-ring-width));
-}
-
-.vue-showcase-theme {
-  flex: none;
-  margin-inline-start: auto;
-}
-
-.showcase-content.showcase-core {
-  padding-block-start: var(--cm-space-8);
-}
-
 .showcase-core .showcase-group {
   margin-block-end: var(--cm-space-4);
 }
 
 .core-matrix-cell > p,
 .core-form-stack > p,
-.core-avatar-person p,
-.core-page-header p {
+.core-avatar-person p {
   margin: 0;
   color: var(--cm-color-text-muted);
 }
@@ -101,13 +18,12 @@
   color: var(--cm-color-text-muted);
 }
 
-.showcase-core :is(.core-theme-card, .core-typography-card) {
+.showcase-core .core-typography-card {
   display: grid;
   align-content: start;
   gap: var(--cm-space-4);
 }
 
-.showcase-core .core-theme-card h3,
 .core-card-label {
   margin: 0;
   color: var(--cm-color-text-muted);
@@ -115,40 +31,6 @@
   font-weight: var(--cm-text-label-font-weight);
 }
 
-.core-theme-controls {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--cm-space-4);
-}
-
-.core-theme-controls .cm-switch:has(.cm-switch__input:disabled) {
-  opacity: 1;
-}
-
-.core-theme-controls .cm-switch__input:disabled + .cm-switch__control {
-  border-color: var(--cm-color-border-interactive);
-  background: var(--cm-color-background-surface);
-}
-
-.core-theme-switch--inverse .cm-switch__input:disabled + .cm-switch__control .cm-switch__thumb {
-  background: var(--cm-color-text-primary);
-  color: var(--cm-color-background-surface);
-}
-
-.core-theme-controls + .core-theme-controls {
-  margin-block-start: var(--cm-space-2);
-}
-
-.core-theme-controls + .showcase-muted {
-  margin-block-start: var(--cm-space-3);
-}
-
-.core-theme-controls .cm-tag {
-  background: var(--cm-color-background-surface-subtle);
-}
-
-.core-theme-card .showcase-muted,
 .core-typography-stack > * {
   margin: 0;
 }
@@ -312,23 +194,6 @@
   grid-column: 1 / -1;
 }
 
-@media (width <= 640px) {
-  .vue-showcase-header {
-    flex-wrap: wrap;
-    gap: var(--cm-space-1) var(--cm-space-4);
-  }
-
-  .vue-showcase-navigation a {
-    padding-block: var(--cm-space-1);
-  }
-
-  .vue-showcase-navigation {
-    order: 1;
-    flex-basis: 100%;
-    margin-inline-start: 0;
-  }
-}
-
 .showcase-core .core-matrix {
   display: grid;
   gap: var(--cm-space-4);
@@ -387,19 +252,8 @@
   gap: var(--cm-space-3);
 }
 
-.core-page-header {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: var(--cm-space-3);
-}
-
 .core-scroll-table :is(.cm-table__scroll, .cm-data-table__scroll) {
   max-block-size: 13rem;
-}
-
-.core-subtle-card {
-  background: var(--cm-color-background-surface-subtle);
 }
 
 .core-contracts {
@@ -425,24 +279,6 @@
   border: var(--cm-border-width) solid var(--cm-color-border-interactive);
   border-radius: var(--cm-radius-control);
   background: var(--cm-color-background-surface);
-}
-
-.core-responsive-form {
-  display: grid;
-  gap: var(--cm-space-4);
-}
-
-@media (width > 960px) {
-  .core-responsive-form .cm-field {
-    display: grid;
-    grid-template-columns: minmax(0, 12rem) minmax(0, 1fr);
-    align-items: baseline;
-    column-gap: var(--cm-space-4);
-  }
-
-  .core-responsive-form .cm-field > :not(.cm-field__label) {
-    grid-column: 2;
-  }
 }
 
 .core-avatar-panel-header {
@@ -800,17 +636,6 @@
   background: transparent;
 }
 
-.layout-shell-frame.layout-region--notches .cm-document-layout__main {
-  background:
-    radial-gradient(circle at left top, var(--cm-color-background-canvas) 0.45rem, transparent 0.5rem),
-    radial-gradient(circle at right top, var(--cm-color-background-canvas) 0.45rem, transparent 0.5rem),
-    var(--cm-color-background-surface);
-}
-
-.layout-shell-frame:not(.layout-region--header) :is(.cm-app-shell__subheader, .cm-document-layout__subheader) {
-  position: static;
-}
-
 /* Keep the preview aligned with the historical bar when the switches wrap. */
 @media (width <= 640px) {
   .showcase-layouts .layout-region-toolbar {
@@ -832,19 +657,6 @@
 .icon-showcase-extras > summary {
   color: var(--cm-color-text-muted);
   cursor: pointer;
-}
-
-.core-page-header-title {
-  font-size: 1.5625rem;
-  line-height: 1.3;
-}
-
-.core-page-header > .core-matrix-cell {
-  row-gap: var(--cm-space-2);
-}
-
-.core-page-header > .core-matrix-cell > .cm-breadcrumbs {
-  margin-block-end: var(--cm-space-1);
 }
 
 .showcase-core .core-progress-roomy {
@@ -928,12 +740,6 @@
 @media (width <= 960px) {
   #navigation .core-nav-variants {
     gap: var(--cm-space-4);
-  }
-
-  #navigation .core-page-header {
-    align-items: start;
-    flex-direction: column;
-    row-gap: var(--cm-space-2);
   }
 }
 

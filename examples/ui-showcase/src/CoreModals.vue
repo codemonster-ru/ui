@@ -1,5 +1,13 @@
 <script setup lang="ts">
-import { CmButton, CmCommandPalette, CmDialog, CmDrawer, CmInput, type CmDialogSize } from '@codemonster-ru/ui-vue';
+import {
+  CmButton,
+  CmCommandPalette,
+  CmConfirmDialog,
+  CmDialog,
+  CmDrawer,
+  CmInput,
+  type CmDialogSize,
+} from '@codemonster-ru/ui-vue';
 import { onMounted, onUnmounted, ref } from 'vue';
 import CoreMatrix from './CoreMatrix.vue';
 
@@ -114,25 +122,11 @@ onUnmounted(() => window.removeEventListener('keydown', onShortcut));
     placeholder="Search components, guides, and API..."
     :commands="commands"
   />
-  <CmDialog
-    id="core-confirm"
+  <CmConfirmDialog
     v-model:open="confirm"
     title="Delete example user?"
     description="This action cannot be undone."
-    size="sm"
-  >
-    <template #footer>
-      <div class="core-theme-controls">
-        <CmButton variant="secondary" @click="confirm = false">Cancel</CmButton>
-        <CmButton
-          variant="danger"
-          @click="
-            result = 'Example user deleted.';
-            confirm = false;
-          "
-          >Delete</CmButton
-        >
-      </div>
-    </template>
-  </CmDialog>
+    confirm-label="Delete"
+    @confirm="result = 'Example user deleted.'"
+  />
 </template>

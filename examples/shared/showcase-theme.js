@@ -1,8 +1,12 @@
-const themeKey = 'cm-showcase-theme';
+export const showcaseThemeStorageKey = 'cm-showcase-theme';
 
 export function readShowcaseTheme(fallback = 'light') {
-  const mode = localStorage.getItem(themeKey);
-  return mode === 'light' || mode === 'dark' || mode === 'system' ? mode : fallback;
+  try {
+    const mode = localStorage.getItem(showcaseThemeStorageKey);
+    return mode === 'light' || mode === 'dark' || mode === 'system' ? mode : fallback;
+  } catch {
+    return fallback;
+  }
 }
 
 /** @param {'light' | 'dark' | 'system'} mode */
@@ -13,7 +17,11 @@ export function applyShowcaseTheme(mode) {
 /** @param {'light' | 'dark' | 'system'} mode */
 export function saveShowcaseTheme(mode) {
   applyShowcaseTheme(mode);
-  if (localStorage.getItem(themeKey) !== mode) localStorage.setItem(themeKey, mode);
+  try {
+    if (localStorage.getItem(showcaseThemeStorageKey) !== mode) localStorage.setItem(showcaseThemeStorageKey, mode);
+  } catch {
+    // Theme controls still work for the current page without storage access.
+  }
 }
 
 /** @param {(mode: 'light' | 'dark' | 'system') => void} sync */
@@ -24,7 +32,7 @@ export function followShowcaseTheme(sync, fallback) {
     sync(mode);
   };
   const onStorage = (event) => {
-    if (event.key === themeKey || event.key === null) update();
+    if (event.key === showcaseThemeStorageKey || event.key === null) update();
   };
   update();
   window.addEventListener('storage', onStorage);

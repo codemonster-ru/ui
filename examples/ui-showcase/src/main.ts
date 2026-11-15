@@ -1,4 +1,6 @@
-import { createApp } from 'vue';
+import { createApp, h, type Component } from 'vue';
+import { CmThemeProvider } from '@codemonster-ru/ui-vue';
+import { showcaseThemeStorageKey } from '../../shared/showcase-theme.js';
 import '@codemonster-ru/ui-tokens/tokens.css';
 import '@codemonster-ru/ui-tokens/breakpoints.css';
 import '@codemonster-ru/ui-css/fonts.css';
@@ -14,4 +16,6 @@ import App from './App.vue';
 import '../../shared/showcase-shell.css';
 import './showcase.css';
 
-createApp(App).mount('#app');
+createApp({
+  render: () => h(CmThemeProvider, { storageKey: showcaseThemeStorageKey }, { default: () => h(App as Component) }),
+}).mount('#app');

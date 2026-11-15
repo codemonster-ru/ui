@@ -2,38 +2,132 @@ body {
   margin: 0;
 }
 
+/* VueForge used the system fallback when Inter was not installed. */
+:is(.showcase-topbar, .showcase-content) {
+  --cm-font-family-base: ui-sans-serif, system-ui, sans-serif;
+  --cm-font-family-heading: var(--cm-font-family-base);
+
+  font-family: var(--cm-font-family-base);
+}
+
 .showcase-topbar {
   position: sticky;
   z-index: var(--cm-z-index-sticky, 10);
   inset-block-start: 0;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 2rem;
-  justify-content: flex-start;
-  padding: var(--cm-space-3) max(1rem, (100% - 78rem) / 2);
-  border-block-end: 1px solid var(--cm-color-border-subtle);
+  border-block-end: 1px solid var(--cm-color-border-default);
   background: var(--cm-color-background-surface);
 }
 
-.showcase-topbar > :last-child {
-  margin-inline-start: auto;
+.showcase-header {
+  display: flex;
+  box-sizing: border-box;
+  min-block-size: calc(var(--cm-space-16) - var(--cm-border-width));
+  max-inline-size: var(--cm-breakpoint-2xl);
+  align-items: center;
+  gap: var(--cm-space-4);
+  margin-inline: auto;
+  padding-inline: var(--cm-space-4);
 }
 
 .showcase-brand {
-  font-weight: 700;
+  flex: none;
+  color: var(--cm-color-text-primary);
+  font-size: var(--cm-text-label-font-size);
+  font-weight: var(--cm-font-weight-semibold);
+  line-height: 1.45;
+  text-decoration: none;
 }
 
 .showcase-navigation {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  margin-inline-start: var(--cm-space-4);
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.showcase-navigation ul {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--cm-space-3);
+  inline-size: max-content;
+  gap: var(--cm-space-1);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.showcase-navigation a {
+  display: block;
+  padding: var(--cm-space-2) var(--cm-space-2);
+  border-radius: var(--cm-radius-control);
+  color: var(--cm-color-text-secondary);
+  font-weight: var(--cm-font-weight-medium);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.showcase-navigation a[aria-current='page'] {
+  color: var(--cm-color-interactive-primary-subtle-foreground);
+}
+
+.showcase-navigation a:hover {
+  background: var(--cm-color-background-surface-hover);
+}
+
+.showcase-navigation a:focus-visible {
+  outline-offset: calc(-1 * var(--cm-focus-ring-width));
+}
+
+.showcase-theme {
+  flex: none;
+  margin-inline-start: auto;
+}
+
+.showcase-theme[hidden] {
+  display: none;
+}
+
+@media (width <= 640px) {
+  .showcase-header {
+    flex-wrap: wrap;
+    gap: 0 var(--cm-space-4);
+  }
+
+  .showcase-navigation {
+    order: 1;
+    flex-basis: 100%;
+    margin-inline-start: 0;
+  }
+
+  .showcase-navigation a {
+    padding-block: var(--cm-space-1);
+  }
 }
 
 .showcase-content {
   max-inline-size: 80rem;
   margin-inline: auto;
-  padding: var(--cm-space-5) 1rem;
+  padding: var(--cm-space-8) var(--cm-space-4) var(--cm-space-5);
+}
+
+.core-theme-card {
+  display: grid;
+  align-content: start;
+  gap: var(--cm-space-4);
+}
+
+.core-theme-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--cm-space-4);
+}
+
+.core-theme-controls + .core-theme-controls {
+  margin-block-start: var(--cm-space-2);
+}
+
+.core-theme-controls .cm-tag {
+  background: var(--cm-color-background-surface-subtle);
 }
 
 .showcase-group {
@@ -80,6 +174,10 @@ body {
   color: var(--cm-color-text-muted);
 }
 
+.core-theme-card .showcase-muted {
+  margin: 0;
+}
+
 .showcase-heading-xl,
 .showcase-heading-lg,
 .showcase-heading-md,
@@ -115,10 +213,6 @@ body {
 }
 
 @media (width <= 960px) {
-  .showcase-topbar {
-    gap: var(--cm-space-3);
-  }
-
   .showcase-grid {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -145,10 +239,6 @@ body {
 
 .showcase-swatch--subtle {
   background: var(--cm-color-background-surface-subtle);
-}
-
-.showcase-navigation a[aria-current='page'] {
-  font-weight: 700;
 }
 
 .showcase-matrix {
@@ -439,13 +529,6 @@ body {
 .layout-recipe label:has(.cm-input) {
   display: grid;
   gap: var(--cm-space-2);
-}
-
-@media (width <= 640px) {
-  .showcase-navigation {
-    order: 3;
-    flex-basis: 100%;
-  }
 }
 
 .showcase-surface-matrix {
@@ -1292,4 +1375,12 @@ body {
   #demo-nav-menu .core-example-grid {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+
+#theme .core-theme-card > h3 {
+  margin: 0;
+  color: var(--cm-color-text-muted);
+  font-size: var(--cm-text-label-font-size);
+  font-weight: var(--cm-text-label-font-weight);
+  line-height: normal;
 }
