@@ -1,7 +1,9 @@
 import { mount } from '@vue/test-utils';
+import { h } from 'vue';
 import { describe, expect, it } from 'vitest';
 
 import CmDataTable from './data-table/CmDataTable.vue';
+import type { CmDataTableCellValue, CmDataTableColumn, CmDataTableRow } from './data-table/data-table.types';
 import CmTable from './table/CmTable.vue';
 import { expectCmWarning } from '../internal/expect-warning';
 
@@ -36,12 +38,138 @@ describe('Vue data table components', () => {
     ]);
   });
 
+  it('sorts a complete client-side data set before paging and keeps empty values last', async () => {
+    const items = [
+      { id: 'empty', cells: { name: null } },
+      { id: 'tenth', cells: { name: 'Project 10' } },
+      { id: 'second', cells: { name: 'Project 2' } },
+      { id: 'first', cells: { name: 'Project 1' } },
+    ];
+    const wrapper = mount(CmDataTable, {
+      props: {
+        id: 'projects',
+        columns,
+        rows: items,
+        sortingMode: 'client',
+        paginationMode: 'client',
+        pageSize: 2,
+      },
+    });
+    const ids = () =>
+      wrapper.findAll('[data-cm-data-table-row]').map((row) => row.attributes('data-cm-data-table-row'));
+    expect(ids()).toEqual(['empty', 'tenth']);
+    await wrapper.get('[data-cm-data-table-sort]').trigger('click');
+    expect(ids()).toEqual(['first', 'second']);
+    await wrapper.get('[data-cm-data-table-sort]').trigger('click');
+    expect(ids()).toEqual(['tenth', 'second']);
+    await wrapper.get('[data-cm-data-table-page-action="next"]').trigger('click');
+    expect(ids()).toEqual(['first', 'empty']);
+    expect(wrapper.get('.cm-data-table__pagination-summary').text()).toBe('3-4 of 4');
+
+    await wrapper.setProps({ rows: items.slice(0, 2) });
+    expect(ids()).toEqual(['tenth', 'empty']);
+    expect(wrapper.get('[data-cm-data-table-page-action="previous"]').attributes('disabled')).toBeDefined();
+  });
+
+  it('preserves selection across pages and applies the row predicate to visible rows', async () => {
+    const wrapper = mount(CmDataTable, {
+      props: {
+        id: 'projects',
+        columns,
+        rows,
+        paginationMode: 'client',
+        pageSize: 1,
+        selectable: true,
+        selectedRowIds: ['zephyr'],
+        rowSelectable: (row) => row.id !== 'zephyr',
+      },
+    });
+    const selectAll = wrapper.get<HTMLInputElement>('[data-cm-data-table-select-all]');
+    await selectAll.setValue(true);
+    expect(wrapper.emitted('update:selectedRowIds')).toEqual([[['apollo', 'zephyr']]]);
+    await selectAll.setValue(false);
+    expect(wrapper.emitted('update:selectedRowIds')).toEqual([[['apollo', 'zephyr']], [['zephyr']]]);
+    await wrapper.get('[data-cm-data-table-page-action="next"]').trigger('click');
+    const selection = wrapper.get<HTMLInputElement>('[data-cm-data-table-select-row]').element;
+    expect(selection.checked).toBe(true);
+    expect(selection.disabled).toBe(true);
+  });
+
+  it('keeps manual pages in the order delivered by the application', async () => {
+    const wrapper = mount(CmDataTable, {
+      props: {
+        id: 'projects',
+        columns,
+        rows: [...rows].reverse(),
+        sortingMode: 'client',
+        pagination: true,
+        paginationMode: 'manual',
+        page: 2,
+        totalRows: 18,
+      },
+    });
+    await wrapper.get('[data-cm-data-table-sort]').trigger('click');
+    expect(wrapper.findAll('[data-cm-data-table-row]').map((row) => row.attributes('data-cm-data-table-row'))).toEqual([
+      'zephyr',
+      'apollo',
+    ]);
+    expect(wrapper.emitted('sortChange')).toEqual([[{ key: 'name', direction: 'ascending' }]]);
+    await wrapper.setProps({ pagination: false });
+    expect(wrapper.find('.cm-data-table__pagination').exists()).toBe(false);
+  });
+
   it('renders the requested visible column order', () => {
     const wrapper = mount(CmDataTable, {
       props: { id: 'projects', columns, rows, visibleColumnKeys: ['status'] },
     });
     expect(wrapper.findAll('thead th').map((header) => header.text())).toEqual(['Status']);
     expect(wrapper.findAll('tbody td').map((cell) => cell.text())).toEqual(['Active', 'Paused']);
+  });
+
+  it('composes scoped cell and heading slots inside a native table', async () => {
+    const wrapper = mount(CmDataTable, {
+      props: { id: 'projects', columns, rows },
+      slots: {
+        caption: 'Project catalogue',
+        'header-name': ({ column }: { column: CmDataTableColumn }) => h('strong', column.header),
+        'cell-name': ({
+          row,
+          value,
+          rowIndex,
+        }: {
+          row: CmDataTableRow;
+          value: CmDataTableCellValue;
+          rowIndex: number;
+        }) => h('a', { href: `/projects/${row.id}` }, `${rowIndex + 1}. ${String(value)}`),
+        footer: '<tr><td colspan="2">End of results</td></tr>',
+      },
+    });
+    expect(wrapper.get('table > caption').text()).toBe('Project catalogue');
+    expect(wrapper.get('th button strong').text()).toBe('Name');
+    expect(wrapper.get('th button').attributes('aria-label')).toBe('Sort Name ascending');
+    expect(wrapper.get('tbody td a').attributes('href')).toBe('/projects/apollo');
+    expect(wrapper.get('tbody td a').text()).toBe('1. Apollo');
+    expect(wrapper.get('tfoot > tr > td').text()).toBe('End of results');
+    await wrapper.get('th button').trigger('click');
+    expect(wrapper.emitted('update:sort')).toEqual([[{ key: 'name', direction: 'ascending' }]]);
+  });
+
+  it('honors the loading, error and empty slot precedence even with blank fallback text', async () => {
+    const wrapper = mount(CmDataTable, {
+      props: { id: 'projects', columns, loading: true, error: true, loadingText: '' },
+      slots: {
+        loading: '<span>Waiting for projects</span>',
+        error: '<span>Projects unavailable</span>',
+        empty: '<span>Nothing found</span>',
+      },
+    });
+    expect(wrapper.get('td[role="status"]').text()).toBe('Waiting for projects');
+    await wrapper.setProps({ loading: false });
+    expect(wrapper.get('td[role="status"]').text()).toBe('Projects unavailable');
+    await wrapper.setProps({ error: false });
+    expect(wrapper.get('td[role="status"]').text()).toBe('Nothing found');
+    await wrapper.setProps({ rows });
+    expect(wrapper.find('td[role="status"]').exists()).toBe(false);
   });
 
   it('reports selection in rendered order and page requests', async () => {

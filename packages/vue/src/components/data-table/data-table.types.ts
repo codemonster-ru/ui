@@ -1,6 +1,7 @@
 export type CmDataTableAlign = 'start' | 'center' | 'end';
 export type CmDataTableDensity = 'default' | 'compact';
 export type CmDataTableSortDirection = 'ascending' | 'descending';
+export type CmDataTableMode = 'client' | 'manual';
 export type CmDataTableCellValue = string | number | null;
 
 export interface CmDataTableColumn {
@@ -32,8 +33,12 @@ export interface CmDataTableProps {
   stickyHeader?: boolean;
   visibleColumnKeys?: readonly string[] | null;
   selectable?: boolean;
+  rowSelectable?: (row: CmDataTableRow, rowIndex: number) => boolean;
   selectedRowIds?: readonly string[];
   sort?: CmDataTableSort | null;
+  sortingMode?: CmDataTableMode;
+  pagination?: boolean;
+  paginationMode?: CmDataTableMode;
   page?: number;
   pageCount?: number;
   pageSize?: number;

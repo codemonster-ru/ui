@@ -14,8 +14,10 @@ import {
 } from '@codemonster-ru/ui-runtime/core';
 import { assertCm, warnCm } from '../../internal/warn';
 import type {
+  CmDataTableCellValue,
   CmDataTableColumn,
   CmDataTableDensity,
+  CmDataTableMode,
   CmDataTableRow,
   CmDataTableSort,
   CmDataTableSortDirection,
@@ -24,6 +26,7 @@ import type {
 defineOptions({ inheritAttrs: false });
 const idPattern = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/u;
 const directions: readonly CmDataTableSortDirection[] = ['ascending', 'descending'];
+const collator = new Intl.Collator('en', { numeric: true, sensitivity: 'base' });
 const props = defineProps({
   id: { type: String, required: true },
   columns: { type: Array as PropType<readonly CmDataTableColumn[]>, required: true },
@@ -39,8 +42,23 @@ const props = defineProps({
   stickyHeader: Boolean,
   visibleColumnKeys: { type: Array as PropType<readonly string[] | null>, default: null },
   selectable: Boolean,
+  rowSelectable: {
+    type: Function as PropType<(row: CmDataTableRow, rowIndex: number) => boolean>,
+    default: undefined,
+  },
   selectedRowIds: { type: Array as PropType<readonly string[]>, default: () => [] },
   sort: { type: Object as PropType<CmDataTableSort | null>, default: null },
+  sortingMode: {
+    type: String as PropType<CmDataTableMode>,
+    default: 'manual',
+    validator: (value: string) => ['manual', 'client'].includes(value),
+  },
+  pagination: { type: Boolean, default: undefined },
+  paginationMode: {
+    type: String as PropType<CmDataTableMode>,
+    default: 'manual',
+    validator: (value: string) => ['manual', 'client'].includes(value),
+  },
   page: { type: Number, default: 1 },
   pageCount: { type: Number, default: 1 },
   pageSize: { type: Number, default: 10 },
@@ -75,6 +93,22 @@ const emit = defineEmits<{
   'update:pageSize': [pageSize: number];
   'update:selectedRowIds': [selectedRowIds: string[]];
   'update:sort': [sort: CmDataTableSort | null];
+}>();
+defineSlots<{
+  caption?: () => unknown;
+  empty?: () => unknown;
+  error?: () => unknown;
+  loading?: () => unknown;
+  footer?: () => unknown;
+  [slot: `header-${string}`]: ((props: { column: CmDataTableColumn }) => unknown) | undefined;
+  [slot: `cell-${string}`]:
+    | ((props: {
+        row: CmDataTableRow;
+        column: CmDataTableColumn;
+        value: CmDataTableCellValue;
+        rowIndex: number;
+      }) => unknown)
+    | undefined;
 }>();
 const attrs = useAttrs();
 
@@ -176,7 +210,9 @@ function safeCount(value: number): number {
 const safePage = computed(() => safeCount(props.page));
 const safePageCount = computed(() => safeCount(props.pageCount));
 const safePageSize = computed(() => safeCount(props.pageSize));
+const clientPagination = computed(() => props.pagination !== false && props.paginationMode === 'client');
 const safeTotalRows = computed(() => {
+  if (clientPagination.value) return normalizedRows.value.length;
   if (props.totalRows === null) return null;
   const usable = assertCm(
     Number.isInteger(props.totalRows) && props.totalRows >= 0,
@@ -263,11 +299,42 @@ watch(
   () => safePageSize.value,
   (pageSize) => (localPageSize.value = pageSize),
 );
+watch(resolvedPageCount, (count) => {
+  localPage.value = Math.min(localPage.value, count);
+});
+
+function compareCells(left: CmDataTableCellValue | undefined, right: CmDataTableCellValue | undefined): number {
+  if (left == null || right == null) return Number(left == null) - Number(right == null);
+  return typeof left === 'number' && typeof right === 'number'
+    ? left - right
+    : collator.compare(String(left), String(right));
+}
+
+const renderedRows = computed(() => {
+  let rows = normalizedRows.value;
+  const sort = localSort.value;
+  // Manual paging supplies one ordered slice from the application.
+  if (sort && props.sortingMode === 'client' && !(props.pagination && props.paginationMode === 'manual')) {
+    rows = [...rows].sort((left, right) => {
+      const leftValue = left.cells[sort.key];
+      const rightValue = right.cells[sort.key];
+      const comparison = compareCells(leftValue, rightValue);
+      return sort.direction === 'descending' && leftValue != null && rightValue != null ? -comparison : comparison;
+    });
+  }
+  if (!clientPagination.value) return rows;
+  const start = (Math.min(localPage.value, resolvedPageCount.value) - 1) * localPageSize.value;
+  return rows.slice(start, start + localPageSize.value);
+});
+const renderedRowIds = computed(() => renderedRows.value.map(({ id }) => id));
 
 const selectedIds = computed(() => new Set(localSelectedRowIds.value));
 const enabledRowIds = computed(() =>
-  normalizedRows.value.filter(({ selectable }) => selectable !== false).map(({ id }) => id),
+  renderedRows.value.flatMap((row, index) =>
+    row.selectable !== false && (props.rowSelectable?.(row, index) ?? true) ? [row.id] : [],
+  ),
 );
+const enabledIds = computed(() => new Set(enabledRowIds.value));
 const selectionState = computed(() => resolveSelectionState(enabledRowIds.value, localSelectedRowIds.value));
 const allSelected = computed(() => selectionState.value.all);
 const partiallySelected = computed(() => selectionState.value.partial);
@@ -299,14 +366,13 @@ const rootAttrs = computed(() =>
     'data-cm-data-table-selected-count',
   ]),
 );
-const stateText = computed(() =>
-  props.loading
-    ? props.loadingText
-    : props.error
-      ? props.errorText
-      : normalizedRows.value.length === 0
-        ? props.emptyText
-        : '',
+const state = computed(() =>
+  props.loading ? 'loading' : props.error ? 'error' : renderedRows.value.length === 0 ? 'empty' : undefined,
+);
+const showPagination = computed(
+  () =>
+    props.pagination ??
+    (resolvedPageCount.value > 1 || normalizedPageSizeOptions.value.length > 0 || safeTotalRows.value !== null),
 );
 const pageSummary = computed(() =>
   formatTemplate(props.pageSummaryTemplate, { page: localPage.value, pageCount: resolvedPageCount.value }),
@@ -353,28 +419,23 @@ function changeSort(column: CmDataTableColumn): void {
 }
 
 function reportSelection(ids: string[]): void {
-  localSelectedRowIds.value = ids;
-  emit('update:selectedRowIds', ids);
-  emit('selectionChange', ids);
+  const visible = new Set(renderedRowIds.value);
+  const next = [...new Set([...ids, ...localSelectedRowIds.value.filter((id) => !visible.has(id))])];
+  localSelectedRowIds.value = next;
+  emit('update:selectedRowIds', next);
+  emit('selectionChange', next);
 }
 
 function changeRowSelection(rowId: string, checked: boolean): void {
-  if (!enabledRowIds.value.includes(rowId)) return;
+  if (!enabledIds.value.has(rowId)) return;
   const next = new Set(localSelectedRowIds.value);
   if (checked) next.add(rowId);
   else next.delete(rowId);
-  reportSelection(normalizedRows.value.map(({ id }) => id).filter((id) => next.has(id)));
+  reportSelection(renderedRowIds.value.filter((id) => next.has(id)));
 }
 
 function changeAllSelection(checked: boolean): void {
-  reportSelection(
-    toggleAllSelection(
-      normalizedRows.value.map(({ id }) => id),
-      enabledRowIds.value,
-      localSelectedRowIds.value,
-      checked,
-    ),
-  );
+  reportSelection(toggleAllSelection(renderedRowIds.value, enabledRowIds.value, localSelectedRowIds.value, checked));
 }
 
 function changePage(page: number): void {
@@ -412,10 +473,8 @@ useCmHydrated();
   >
     <div class="cm-data-table__scroll">
       <table class="cm-data-table__table">
-        <caption v-if="props.caption" class="cm-data-table__caption">
-          {{
-            props.caption
-          }}
+        <caption v-if="props.caption || $slots.caption" class="cm-data-table__caption">
+          <slot name="caption">{{ props.caption }}</slot>
         </caption>
         <thead class="cm-data-table__head">
           <tr>
@@ -448,18 +507,23 @@ useCmHydrated();
                 :data-cm-data-table-clear-sort-label-template="props.clearSortLabelTemplate"
                 @click="changeSort(column)"
               >
-                {{ column.header }}<span class="cm-data-table__sort-indicator" aria-hidden="true"></span>
+                <slot :name="`header-${column.key}`" :column="column">{{ column.header }}</slot>
+                <span class="cm-data-table__sort-indicator" aria-hidden="true"></span>
               </button>
-              <template v-else>{{ column.header }}</template>
+              <template v-else>
+                <slot :name="`header-${column.key}`" :column="column">{{ column.header }}</slot>
+              </template>
             </th>
           </tr>
         </thead>
         <tbody class="cm-data-table__body">
-          <tr v-if="stateText">
-            <td class="cm-data-table__state" :colspan="columnCount" role="status">{{ stateText }}</td>
+          <tr v-if="state">
+            <td class="cm-data-table__state" :colspan="columnCount" role="status">
+              <slot :name="state">{{ props[`${state}Text`] }}</slot>
+            </td>
           </tr>
           <tr
-            v-for="row in stateText ? [] : normalizedRows"
+            v-for="(row, rowIndex) in state ? [] : renderedRows"
             v-else
             :key="row.id"
             v-bind="selectedIds.has(row.id) ? { class: 'cm-data-table__row--selected' } : {}"
@@ -471,23 +535,30 @@ useCmHydrated();
                 :aria-label="formatTemplate(props.selectRowLabelTemplate, { row: rowLabel(row.id) })"
                 :value="row.id"
                 :checked="selectedIds.has(row.id)"
-                :disabled="row.selectable === false"
+                :disabled="!enabledIds.has(row.id)"
                 data-cm-data-table-select-row
                 @change="changeRowSelection(row.id, ($event.target as HTMLInputElement).checked)"
               />
             </td>
             <td v-for="column in visibleColumns" :key="column.key" v-bind="cellAttrs(column)">
-              {{ row.cells[column.key] ?? '' }}
+              <slot
+                :name="`cell-${column.key}`"
+                :row="row"
+                :column="column"
+                :value="row.cells[column.key] ?? null"
+                :row-index="rowIndex"
+              >
+                {{ row.cells[column.key] ?? '' }}
+              </slot>
             </td>
           </tr>
         </tbody>
+        <tfoot v-if="$slots.footer">
+          <slot name="footer" />
+        </tfoot>
       </table>
     </div>
-    <nav
-      v-if="resolvedPageCount > 1 || normalizedPageSizeOptions.length > 0 || safeTotalRows !== null"
-      class="cm-data-table__pagination"
-      :aria-label="props.paginationLabel"
-    >
+    <nav v-if="showPagination" class="cm-data-table__pagination" :aria-label="props.paginationLabel">
       <label v-if="normalizedPageSizeOptions.length > 0" class="cm-data-table__page-size">
         <span>{{ props.rowsPerPageLabel }}</span>
         <select
