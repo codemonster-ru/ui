@@ -38,9 +38,13 @@ original text-mask evidence is in `/private/tmp/cmui-original-pinned.L9JYfo`.
 
 The same stored PNGs passed both 48-frame comparisons at upstream `f51882ea` on November 14, 2026. That hosted job used `macos-26-arm64` image `20261102.0473.1`, macOS 26.7.2 (`25G332`),
 and the same Chrome version. GitHub listed no run for the reviewed local `8cae4010` revision.
-The restored candidate's hosted result is **UNVERIFIED**. [Passing upstream visual job](https://github.com/codemonster-ru/ui/actions/runs/43601426317/job/132466793156)
+[Passing upstream visual job](https://github.com/codemonster-ru/ui/actions/runs/43601426317/job/132466793156)
 
-To verify the exact candidate, publish an authorized verification ref at its SHA and dispatch
+The restored product revision `084d19ea0244e86813875fc4a744f9878e8d285b` passed on the same image
+and pinned Chrome. Both 48-image stored comparisons reported zero changed, missing or unexpected
+images. The paired visual and behavior checks also passed. [Hosted verification](https://github.com/codemonster-ru/ui/actions/runs/43716556197/job/132819264193)
+
+To verify a later candidate, publish an authorized verification ref at its SHA and dispatch
 `ci.yml` on that ref. The `visual` job should report that SHA, the runner image, the Chrome version,
 and both strict comparisons against the existing stored PNGs. Repository write access is required
 to dispatch the workflow. [Manual workflow dispatch](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/manually-run-a-workflow)
