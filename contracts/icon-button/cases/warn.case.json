@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "icon-button-warn",
+  "description": "Warning-toned icon action with the default medium size.",
+  "props": { "label": "Flag item for review", "variant": "warn" },
+  "slots": { "default": "<svg></svg>" }
+}

@@ -91,10 +91,15 @@ test('publishes the Vue component adapter entries', async () => {
   assert.equal(entry.CmSkeleton.__name, 'CmSkeleton');
 });
 
-test('publishes the opt-in historical icon and slot menu entry', async () => {
+test('publishes the opt-in historical icon, button, and slot menu entry', async () => {
   const entry = await import('@codemonster-ru/ui-vue/historical');
 
-  assert.deepEqual(Object.keys(entry), ['VfMenu', 'VfMenuItem', 'VueIconify']);
+  assert.deepEqual(Object.keys(entry), ['VfIconButton', 'VfMenu', 'VfMenuItem', 'VueIconify']);
   assert.match(await renderToString(h(entry.VfMenu, null, () => 'Actions')), /role="menu"[\s\S]*Actions/u);
   assert.match(await renderToString(h(entry.VueIconify)), /<svg[^>]+aria-hidden="true"/u);
+  const button = await renderToString(
+    h(entry.VfIconButton, { icon: 'gear', variant: 'warn', 'aria-label': 'Settings' }),
+  );
+  assert.match(button, /<button[^>]*class="[^"]*cm-icon-button--warn/u);
+  assert.match(button, /aria-label="Settings"[\s\S]*<svg/u);
 });
