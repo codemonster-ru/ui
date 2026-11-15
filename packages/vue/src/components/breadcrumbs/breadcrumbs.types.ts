@@ -15,3 +15,6 @@ export interface CmBreadcrumbsProps {
   ariaLabel?: string;
   component?: string | Component;
 }
+
+export type VfBreadcrumbItem = CmBreadcrumbItem;
+export type VfBreadcrumbsProps = CmBreadcrumbsProps;

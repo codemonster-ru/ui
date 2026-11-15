@@ -18,6 +18,10 @@ link semantics.
 
 ## Content and routing
 
-Labels are ordinary escaped strings. The optional separator slot replaces the visual `/` separator
-for all positions and is a trusted composition boundary. Breadcrumbs consumes native href strings
-and does not resolve router objects. Safe attributes target the nav root.
+Labels are ordinary escaped strings. The optional `separator` slot receives `{ item, index }` for
+each item before the last. It replaces the visual separator. `CmBreadcrumbs` uses `/` by default.
+`VfBreadcrumbs` from `@codemonster-ru/ui-vue/historical` uses a decorative right chevron.
+
+Vanilla HTML uses native anchors for navigable items. Vue also accepts `to` and resolves it
+through the registered `RouterLink` or the supplied `component`. Safe attributes target the nav
+root.
