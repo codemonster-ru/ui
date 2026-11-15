@@ -25,6 +25,7 @@ Individual styles are also available from the `dialog.css`, `drawer.css`, `dropd
   actions. The default slot receives `{ open, close }`. The `trigger` slot receives
   `{ open, disabled, toggle }` and stays inside the labelled button. Use `variant="pills"`
   for highlighted active items and `closeOnSelect=false` to keep the menu open after selection.
+  Both Popover and Dropdown accept `showArrow`. `VfPopover` and `VfDropdown` enable it by default.
 - `Tooltip` accepts an authored focusable trigger in its default slot or renders a button with
   `label` and optional `trigger` slot content. Use `content`, `text`, or the `content` slot for its
   non-interactive help. Choose `top`, `bottom`, `start`, or `end` and a named `delay` or an
@@ -116,6 +117,10 @@ dialog?.addEventListener('cm:dialog-open-change', (event) => {
 Drawer supports the matching `cm:drawer-open-request`; both modal controllers also accept their
 `*-close-request`. Popover owns its trigger. Persist meaningful open state in application data when
 it must survive navigation; runtime state is intentionally page-local.
+
+Add `data-cm-floating-arrow` to an authored `.cm-popover__panel` or `.cm-dropdown__menu` to
+show a decorative arrow. The installed controller keeps the arrow on the trigger's side
+when the surface flips or shifts to fit the viewport.
 
 ## Accessibility and ownership
 

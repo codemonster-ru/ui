@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, shallowRef, useAttrs, watch, type PropType } from 'vue';
 
-import { observeCmAnchoredPosition, type CmAnchoredStyle } from '../../internal/anchored-position';
+import { observeCmAnchoredPosition, type CmAnchoredStyle } from '@codemonster-ru/ui-runtime/anchored-position';
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
 import { selectClosedKeyAction, selectOpenKeyAction } from '@codemonster-ru/ui-runtime/core';

@@ -32,6 +32,10 @@
       "types": "./dist/core/index.d.ts",
       "import": "./dist/core/index.js"
     },
+    "./anchored-position": {
+      "types": "./dist/anchored-position.d.ts",
+      "import": "./dist/anchored-position.js"
+    },
     "./data-table-dom": {
       "types": "./dist/data-table-dom.d.ts",
       "import": "./dist/data-table-dom.js"

@@ -1,3 +1,5 @@
+@import '../primitives/floating-arrow.css';
+
 .cm-popover,
 .cm-popover--open {
   position: relative;

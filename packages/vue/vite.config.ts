@@ -26,6 +26,7 @@ export default defineConfig({
       // Keep shared logic external so a consumer using both adapters can bundle it once.
       external: [
         'vue',
+        '@codemonster-ru/ui-runtime/anchored-position',
         '@codemonster-ru/ui-runtime/core',
         '@codemonster-ru/ui-runtime/data-table-dom',
         '@codemonster-ru/ui-runtime/native-modal',

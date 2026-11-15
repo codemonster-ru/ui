@@ -11,6 +11,7 @@ const props = withDefaults(defineProps<VfPopoverProps>(), {
   focusOnOpen: true,
   closeOnEscape: true,
   closeOnOutsideClick: true,
+  showArrow: true,
 });
 const emit = defineEmits<{ 'update:open': [open: boolean]; openChange: [open: boolean] }>();
 const slots = defineSlots<{

@@ -22,7 +22,7 @@ import {
   toggleColumnVisibility,
 } from '@codemonster-ru/ui-runtime/core';
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
-import { observeCmAnchoredPosition, type CmAnchoredStyle } from '../../internal/anchored-position';
+import { observeCmAnchoredPosition, type CmAnchoredStyle } from '@codemonster-ru/ui-runtime/anchored-position';
 import { authoredTriggerElement, CmAuthoredTrigger } from '../../internal/disclosure-trigger';
 import { assertCm } from '../../internal/warn';
 import type { CmColumnChooserColumn, CmColumnChooserTriggerScope } from './column-chooser.types';

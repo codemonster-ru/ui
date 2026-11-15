@@ -24,6 +24,7 @@ it('preserves the authored button and does not toggle twice when its click calls
     await nextTick();
     const menu = document.getElementById(panelId!);
     expect(menu?.parentElement).toBe(document.body);
+    expect(menu?.hasAttribute('data-cm-floating-arrow')).toBe(true);
     expect(menu?.hidden).toBe(false);
     expect(wrapper.emitted('openChange')).toEqual([[true]]);
     await trigger.trigger('keydown', { key: 'ArrowDown' });

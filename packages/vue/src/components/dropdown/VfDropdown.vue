@@ -9,6 +9,7 @@ const props = withDefaults(defineProps<VfDropdownProps>(), {
   label: 'Actions',
   teleportTo: 'body',
   closeOnSelect: true,
+  showArrow: true,
 });
 const emit = defineEmits<{ 'update:open': [open: boolean]; openChange: [open: boolean] }>();
 const slots = defineSlots<{

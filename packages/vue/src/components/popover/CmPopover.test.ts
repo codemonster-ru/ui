@@ -30,6 +30,7 @@ it('focuses the authored target in a portal and exposes a scoped close action', 
     await nextTick();
     const panel = host.querySelector<HTMLElement>('#help-panel');
     expect(panel?.parentElement).toBe(host);
+    expect(panel?.hasAttribute('data-cm-floating-arrow')).toBe(false);
     expect(document.activeElement?.textContent).toBe('Apply');
     document.activeElement?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
     expect(panel?.hidden).toBe(false);
@@ -58,6 +59,7 @@ it('preserves the historical wrapper Escape default and returns focus to the aut
     const panelId = trigger.attributes('aria-controls');
     const panel = panelId ? document.getElementById(panelId) : null;
     expect(panel?.hidden).toBe(false);
+    expect(panel?.hasAttribute('data-cm-floating-arrow')).toBe(true);
     expect(document.activeElement?.textContent).toBe('Apply');
     document.activeElement?.dispatchEvent(
       new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }),

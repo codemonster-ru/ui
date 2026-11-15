@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, shallowRef, useAttrs, watch, type ComponentPublicInstance, type PropType } from 'vue';
 
-import { observeCmAnchoredPosition, type CmAnchoredStyle } from '../../internal/anchored-position';
+import { observeCmAnchoredPosition, type CmAnchoredStyle } from '@codemonster-ru/ui-runtime/anchored-position';
 import { authoredTriggerElement, CmAuthoredTrigger, disclosureTriggerActions } from '../../internal/disclosure-trigger';
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
@@ -19,6 +19,7 @@ const props = defineProps({
   teleportTo: { type: [String, Object, Boolean] as PropType<string | HTMLElement | null | false>, default: null },
   disableTeleport: Boolean,
   triggerAsChild: Boolean,
+  showArrow: Boolean,
   closeOnOutsideClick: { type: Boolean, default: true },
   closeOnEscape: { type: Boolean, default: true },
   focusOnOpen: Boolean,
@@ -141,7 +142,7 @@ function onDocumentClick(event: MouseEvent): void {
 }
 
 watch(
-  [localOpen, teleportTarget, placement, trigger, panel],
+  [localOpen, teleportTarget, placement, trigger, panel, () => props.showArrow],
   ([open, target, preferred, anchor, content], _, onCleanup) => {
     if (!open || !anchor || !content) return;
     const document = anchor.ownerDocument;
@@ -206,6 +207,7 @@ useCmHydrated();
         :id="`${props.id}-panel`"
         ref="panel"
         class="cm-popover__panel"
+        :data-cm-floating-arrow="props.showArrow ? '' : undefined"
         role="dialog"
         :aria-labelledby="`${props.id}-trigger`"
         :hidden="!localOpen"
