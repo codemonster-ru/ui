@@ -29,5 +29,7 @@ export { default as VfProgressSpinner } from './components/progress-spinner/VfPr
 export type { VfProgressSpinnerProps } from './components/progress-spinner/progress-spinner.types';
 export { default as VfSelect } from './components/select/VfSelect.vue';
 export type { VfSelectProps } from './components/select/select.types';
+export { default as VfSwitch } from './components/switch/VfSwitch.vue';
+export type { VfSwitchProps, VfSwitchThumbContrast } from './components/switch/switch.types';
 export { default as VfTag } from './components/tag/CmTag.vue';
 export type { CmTagProps as VfTagProps } from './components/tag/tag.types';

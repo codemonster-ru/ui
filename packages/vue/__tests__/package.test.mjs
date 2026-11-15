@@ -115,6 +115,7 @@ test('publishes the opt-in historical icon and Vue components', async () => {
     'VfPopover',
     'VfProgressSpinner',
     'VfSelect',
+    'VfSwitch',
     'VfTag',
     'VueIconify',
   ]);

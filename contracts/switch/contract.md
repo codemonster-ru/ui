@@ -27,6 +27,11 @@ control has switch semantics. Vue exposes boolean `modelValue` and emits `update
 native changes. Vanilla HTML renders the current `checked` state and relies on submitted form data
 for the next render. The `switch` controller updates the ARIA mirror after native changes and form reset.
 
+`VfSwitch` from `@codemonster-ru/ui-vue/historical` uses the same checkbox and slots. It emits
+the checked boolean for both `update:modelValue` and `change`. `CmSwitch` emits the native `Event`
+for `change`. The historical wrapper uses the disabled thumb colors even when `thumbContrast` is
+`inverse`.
+
 ## Validation and submission
 
 `disabled` and `required` map directly to native attributes. `invalid` adds `cm-switch--invalid` and

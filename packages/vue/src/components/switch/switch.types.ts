@@ -12,3 +12,6 @@ export interface CmSwitchProps {
   static?: boolean;
   thumbContrast?: CmSwitchThumbContrast;
 }
+
+export type VfSwitchProps = CmSwitchProps;
+export type VfSwitchThumbContrast = CmSwitchThumbContrast;
