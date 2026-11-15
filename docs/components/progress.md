@@ -30,8 +30,15 @@ Use `CmProgressSpinner` when the operation has no meaningful completion percenta
 ```html
 <CmProgressSpinner label="Loading search results" />
 <CmProgressSpinner label="Deleting record" size="lg" tone="danger" />
+<CmProgressSpinner label="Loading reports" :stroke-width="6" />
 ```
 
 Vanilla markup: [progress-spinner HTML](../../contracts/progress-spinner/cases/default.html).
 
 Sizes are limited to `sm`, `md`, and `lg`; tones match `CmProgressBar`. The required `label` gives the `progressbar` an accessible name. The spinner has no numeric ARIA state because it always represents indeterminate progress. Its CSS stops motion when `prefers-reduced-motion: reduce` is active, and neither adapter requires a browser runtime.
+
+`strokeWidth` sets the width of both circles in SVG units and defaults to `4`. Set `stroke-width`
+on both circles when using the [custom-stroke HTML](../../contracts/progress-spinner/cases/custom-stroke.html).
+
+Import `VfProgressSpinner` from `@codemonster-ru/ui-vue/historical` to use the historical `Loading`
+label default, numeric pixel sizes or CSS lengths, and `warn` tone spelling.

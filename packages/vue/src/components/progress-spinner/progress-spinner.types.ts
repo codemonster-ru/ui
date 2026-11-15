@@ -5,5 +5,13 @@ export type CmProgressSpinnerTone =
 export interface CmProgressSpinnerProps {
   label: string;
   size?: CmProgressSpinnerSize;
+  strokeWidth?: number;
   tone?: CmProgressSpinnerTone;
+}
+
+export interface VfProgressSpinnerProps {
+  label?: string;
+  size?: string | number;
+  strokeWidth?: number;
+  tone?: CmProgressSpinnerTone | 'warn';
 }

@@ -45,6 +45,17 @@ describe('CmProgressSpinner', () => {
     expect(wrapper.attributes('aria-valuenow')).toBeUndefined();
   });
 
+  it('uses the shared stroke width on both circles and falls back for invalid input', async () => {
+    const wrapper = mount(CmProgressSpinner, { props: { label: 'Loading reports', strokeWidth: 2.5 } });
+    const strokes = () => wrapper.findAll('circle').map((circle) => circle.attributes('stroke-width'));
+
+    expect(strokes()).toEqual(['2.5', '2.5']);
+    await wrapper.setProps({ strokeWidth: -1 });
+    expect(strokes()).toEqual(['4', '4']);
+    await wrapper.setProps({ strokeWidth: Number.POSITIVE_INFINITY });
+    expect(strokes()).toEqual(['4', '4']);
+  });
+
   it('rejects an empty accessible label', () => {
     const wrapper = expectCmWarning('ProgressSpinner label must be a non-empty string.', () =>
       mount(CmProgressSpinner, { props: { label: '' } }),

@@ -11,6 +11,7 @@ const tones: readonly CmBadgeTone[] = [
   'success',
   'info',
   'warning',
+  'warn',
   'help',
   'danger',
   'contrast',
@@ -20,11 +21,11 @@ const props = defineProps({
     type: String as PropType<CmBadgeTone>,
     default: 'neutral',
     validator: (value: string) =>
-      ['neutral', 'primary', 'success', 'info', 'warning', 'help', 'danger', 'contrast'].includes(value),
+      ['neutral', 'primary', 'success', 'info', 'warning', 'warn', 'help', 'danger', 'contrast'].includes(value),
   },
 });
 const attrs = useAttrs();
-const tone = computed(() => (tones.includes(props.tone) ? props.tone : 'neutral'));
+const tone = computed(() => (props.tone === 'warn' ? 'warning' : tones.includes(props.tone) ? props.tone : 'neutral'));
 const classes = computed(() =>
   mergeCmClasses('cm-badge', tone.value === 'neutral' ? undefined : `cm-badge--${tone.value}`, attrs.class),
 );

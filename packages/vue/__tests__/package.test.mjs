@@ -99,11 +99,14 @@ test('publishes the opt-in historical icon and Vue components', async () => {
   assert.deepEqual(Object.keys(entry), [
     'VfAlert',
     'VfAvatar',
+    'VfBadge',
     'VfIconButton',
     'VfInput',
     'VfMenu',
     'VfMenuItem',
+    'VfProgressSpinner',
     'VfSelect',
+    'VfTag',
     'VueIconify',
   ]);
   assert.match(await renderToString(h(entry.VfMenu, null, () => 'Actions')), /role="menu"[\s\S]*Actions/u);
