@@ -1,4 +1,5 @@
 @import '../primitives/floating-reveal.css';
+@import '../primitives/scroll-edge.css';
 
 /*
  * Wide menus cascade sideways. On narrow screens, opening a submenu expands its row so the
@@ -19,6 +20,25 @@
   gap: var(--cm-space-0);
 }
 
+.cm-menu-bar[data-cm-menu-bar-scroll] {
+  --cm-scroll-edge-height: var(--cm-control-height-md);
+
+  position: relative;
+  min-inline-size: 0;
+}
+
+[data-cm-menu-bar-scroll] > .cm-menu-bar__list {
+  min-block-size: var(--cm-control-height-md);
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scroll-padding-inline: var(--cm-scroll-edge-size, 1.75rem);
+  scrollbar-width: none;
+}
+
+[data-cm-menu-bar-scroll] .cm-menu-bar__node--depth-0 {
+  flex: none;
+}
+
 .cm-menu-bar__node {
   position: relative;
   min-inline-size: 0;
@@ -30,6 +50,15 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--cm-space-1);
+}
+
+[data-cm-menu-bar-scroll] .cm-menu-bar__node--depth-0:has(> .cm-menu-bar__group-list) {
+  max-inline-size: none;
+}
+
+[data-cm-menu-bar-scroll] .cm-menu-bar__node--depth-0 > .cm-menu-bar__group-list {
+  inline-size: max-content;
+  flex-wrap: nowrap;
 }
 
 .cm-menu-bar__group-label {
@@ -98,7 +127,11 @@
   background: var(--cm-color-background-surface-hover);
 }
 
-.cm-menu-bar--pills .cm-menu-bar__node:has(.cm-menu-bar__item--active) > .cm-menu-bar__item--branch:not(:disabled) {
+.cm-menu-bar--pills
+  :is(
+    .cm-menu-bar__item--ancestor-active,
+    .cm-menu-bar__node:has(.cm-menu-bar__item--active) > .cm-menu-bar__item--branch
+  ):not(:disabled) {
   color: var(--cm-color-selected-foreground);
 }
 

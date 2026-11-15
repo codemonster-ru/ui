@@ -105,10 +105,11 @@ it('preserves focus when a hovered branch replaces the one opened by keyboard', 
 it('links wide floating panels to their triggers and uses their logical keyboard parent', async () => {
   const media = Object.assign(new EventTarget(), { matches: true });
   vi.stubGlobal('matchMedia', () => media);
-  const menu = mount(VfMenuBar, { attachTo: document.body, props: { items } });
+  const menu = mount(VfMenuBar, { attachTo: document.body, props: { items, defaultValue: 'next' } });
   try {
     await nextTick();
     const edit = menu.get<HTMLButtonElement>('[data-cm-menu-bar-branch="edit"]');
+    expect(edit.classes()).toContain('cm-menu-bar__item--ancestor-active');
     const panel = document.getElementById(edit.attributes('aria-controls') ?? '');
     expect(panel?.parentElement).toBe(menu.element);
     expect(panel?.hidden).toBe(true);
@@ -120,12 +121,103 @@ it('links wide floating panels to their triggers and uses their logical keyboard
     media.matches = false;
     media.dispatchEvent(new Event('change'));
     await nextTick();
-    expect(edit.element.nextElementSibling).toBe(panel);
-    expect(edit.attributes('aria-controls')).toBeUndefined();
+    expect(panel?.parentElement).toBe(menu.element);
+    expect(panel?.style.position).toBe('');
+    expect(edit.attributes('aria-controls')).toBe(panel?.id);
     expect(document.activeElement).toBe(find.element);
     await find.trigger('keydown', { key: 'Escape' });
     expect(document.activeElement).toBe(edit.element);
     expect(panel?.hidden).toBe(true);
+  } finally {
+    menu.unmount();
+    vi.unstubAllGlobals();
+  }
+});
+
+it.each([
+  ['ltr', 1, false],
+  ['rtl', -1, true],
+] as const)(
+  'shows overflow controls and hands off focus at each logical edge in %s',
+  async (direction, sign, reduce) => {
+    vi.stubGlobal('matchMedia', (query: string) =>
+      Object.assign(new EventTarget(), { matches: reduce && query.includes('prefers-reduced-motion') }),
+    );
+    const menu = mount(VfMenuBar, { attachTo: document.body, props: { items } });
+    try {
+      await nextTick();
+      const list = menu.get<HTMLElement>('[role="menubar"]').element;
+      list.style.direction = direction;
+      const start = menu.get<HTMLButtonElement>('[data-cm-scroll-edge="start"]').element;
+      const end = menu.get<HTMLButtonElement>('[data-cm-scroll-edge="end"]').element;
+      expect(start.hidden && end.hidden).toBe(true);
+      expect(end.getAttribute('aria-controls')).toBe(list.id);
+      let width = 180;
+      const scrollBy = vi.fn((options: ScrollToOptions) => {
+        list.scrollLeft = sign * Math.max(0, Math.min(280 - width, sign * (list.scrollLeft + (options.left ?? 0))));
+        list.dispatchEvent(new Event('scroll'));
+      });
+      Object.defineProperties(list, {
+        clientWidth: { get: () => width },
+        scrollWidth: { value: 280 },
+        scrollBy: { value: scrollBy },
+      });
+      window.dispatchEvent(new Event('resize'));
+      await nextTick();
+      expect(start.hidden).toBe(true);
+      expect(end.hidden).toBe(false);
+      end.focus();
+      end.click();
+      await nextTick();
+      expect(scrollBy).toHaveBeenCalledWith({ left: sign * 120, behavior: reduce ? 'instant' : 'smooth' });
+      expect(end.hidden).toBe(true);
+      expect(start.hidden).toBe(false);
+      expect(document.activeElement).toBe(menu.get('[data-cm-menu-bar-branch="edit"]').element);
+      start.focus();
+      start.click();
+      await nextTick();
+      expect(start.hidden).toBe(true);
+      expect(document.activeElement).toBe(menu.get('[data-cm-menu-bar-branch="file"]').element);
+      end.focus();
+      width = 320;
+      window.dispatchEvent(new Event('resize'));
+      await nextTick();
+      expect(end.hidden).toBe(true);
+      expect(document.activeElement).toBe(menu.get('[data-cm-menu-bar-branch="edit"]').element);
+    } finally {
+      menu.unmount();
+      vi.unstubAllGlobals();
+    }
+  },
+);
+
+it('releases submenu focus while a closing portal keeps its placement', async () => {
+  vi.stubGlobal('matchMedia', () => Object.assign(new EventTarget(), { matches: true }));
+  const menu = mount(VfMenuBar, { attachTo: document.body, props: { items, openPath: ['file'] } });
+  try {
+    await nextTick();
+    const trigger = menu.get('[data-cm-menu-bar-branch="file"]');
+    const panelId = trigger.attributes('aria-controls');
+    const panel = panelId ? document.getElementById(panelId) : null;
+    if (!panel) throw new Error('The menu trigger must identify its submenu.');
+    let finished!: () => void;
+    const paint = new Promise<void>((resolve) => (finished = resolve));
+    Object.defineProperty(panel, 'getAnimations', {
+      value: () => [{ transitionProperty: 'display', finished: paint }],
+    });
+    menu.get<HTMLElement>('[data-cm-menu-bar-value="new"]').element.focus();
+    await menu.setProps({ openPath: [] });
+    expect(document.activeElement).toBe(trigger.element);
+    expect(panel.hidden).toBe(true);
+    expect(panel.style.position).toBe('fixed');
+    await menu.setProps({ openPath: ['file'] });
+    finished();
+    await paint;
+    expect(panel.hidden).toBe(false);
+    expect(panel.style.position).toBe('fixed');
+    await menu.setProps({ openPath: [] });
+    await nextTick();
+    expect(panel.style.position).toBe('');
   } finally {
     menu.unmount();
     vi.unstubAllGlobals();
@@ -141,6 +233,8 @@ it('renders initially open panels inline on the server and hydrates the wide lay
   const serverTrigger = host.querySelector(selector);
   expect(serverTrigger?.getAttribute('aria-controls')).toBeNull();
   expect(serverTrigger?.nextElementSibling?.matches('ul[role="menu"]:not([hidden])')).toBe(true);
+  const focused = host.querySelector<HTMLElement>('[data-cm-menu-bar-branch="find"]');
+  focused?.focus();
   vi.stubGlobal('matchMedia', () => Object.assign(new EventTarget(), { matches: true }));
   const app = createApp();
   const warnings: string[] = [];
@@ -148,11 +242,13 @@ it('renders initially open panels inline on the server and hydrates the wide lay
   try {
     app.mount(host);
     await nextTick();
+    await nextTick();
     const trigger = host.querySelector(selector);
     expect(trigger).toBe(serverTrigger);
     const panel = document.getElementById(trigger?.getAttribute('aria-controls') ?? '');
     expect(panel?.parentElement).toBe(host.firstElementChild);
     expect(panel?.hidden).toBe(false);
+    expect(document.activeElement).toBe(focused);
     expect(warnings).toEqual([]);
   } finally {
     app.unmount();

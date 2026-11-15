@@ -278,8 +278,11 @@ The selected leaf has `aria-current="page"` and a corresponding class in both ad
 
 The [historical Vue entry](../migrate-from-vueforge.md) provides `VfMenuBar`. An open bar switches
 branches on mouse hover and closes 120 ms after the pointer leaves. Pointer reentry cancels
-the timer. Above 640 px, top-level panels float inside the navigation landmark and adjust to
-available viewport space. Narrow branches stay in flow alongside the bar.
+the timer. Once mounted, long bars scroll horizontally by touch or with a button at each
+available edge. The buttons have accessible names, and keyboard focus moves to the edge item
+when a focused button disappears. Above 640 px, top-level panels float inside the navigation
+landmark and adjust to available viewport space. At narrower widths, they expand below the
+scrolling row. Server-rendered bars wrap and keep open branches inline until hydration.
 
 ```vue
 <script setup lang="ts">
