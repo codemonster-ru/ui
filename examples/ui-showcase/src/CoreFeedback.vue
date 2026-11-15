@@ -99,12 +99,23 @@ onUnmounted(() => clearInterval(timer));
           <div class="core-theme-controls core-avatar-variants">
             <div><CmAvatar :image="avatar" image-alt="Maya Chen" shape="circle" size="lg" /><span>Image</span></div>
             <div>
-              <CmAvatar aria-label="User" shape="circle" size="lg"><CmIcon :icon="user" /></CmAvatar><span>Icon</span>
+              <CmAvatar role="img" aria-label="User" shape="circle" size="lg"><CmIcon :icon="user" /></CmAvatar
+              ><span>Icon</span>
             </div>
-            <div><CmAvatar aria-label="Unknown user" shape="circle" size="lg">?</CmAvatar><span>Slot</span></div>
+            <div>
+              <CmAvatar role="img" aria-label="Unknown user" shape="circle" size="lg">?</CmAvatar><span>Slot</span>
+            </div>
           </div>
           <div class="core-theme-controls core-avatar-variants">
-            <CmAvatar v-for="size in sizes" :key="size" label="MC" aria-label="Maya Chen" :size="size" shape="circle" />
+            <CmAvatar
+              v-for="size in sizes"
+              :key="size"
+              label="MC"
+              role="img"
+              aria-label="Maya Chen"
+              :size="size"
+              shape="circle"
+            />
             <span>sm · md · lg</span>
           </div>
         </article>
@@ -127,19 +138,12 @@ onUnmounted(() => clearInterval(timer));
       <CmProgressBar label="Import progress" :value="42" />
       <CmProgressBar :height="16" label="Step progress" :value="7" :max="12" show-value />
 
-      <CmProgressBar :height="16" label="Dynamic progress" :value="progress" show-value tone="success" />
+      <CmProgressBar :height="16" label="Dynamic progress" :value="progress" tone="success" />
       <CmProgressBar :height="16" striped label="Striped progress" :value="64" tone="info" />
       <CmProgressBar :height="16" striped animated label="Animated striped progress" :value="64" tone="info" />
-      <CmProgressBar
-        :height="16"
-        striped
-        animated
-        label="Installing module progress"
-        :value="progress"
-        tone="info"
-        show-value
-      />
+      <CmProgressBar :height="16" striped animated label="Installing module progress" :value="progress" tone="info" />
       <CmProgressBar label="Background sync progress" tone="info" indeterminate />
+      <p class="core-matrix-note">Current run: {{ progress }}%</p>
       <CmButton size="sm" variant="secondary" @click="startProgress">Start progress</CmButton>
     </div>
     <div class="core-matrix-cell">

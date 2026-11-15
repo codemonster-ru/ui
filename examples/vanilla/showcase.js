@@ -5,6 +5,7 @@ import { mountLayoutPreviews } from './showcase-layouts.js';
 import { createRuntime } from './runtime.js';
 import { fillContrastTable, mountOperations } from './showcase-reference.js';
 import { copyIcon, filterIcons } from './showcase-icon-catalog.js';
+import { mountComponentReference } from './showcase-component-reference.js';
 
 const catalog = document.querySelector('.showcase-catalog');
 fillContrastTable(catalog);
@@ -27,6 +28,7 @@ mountLayoutPreviews(catalog);
 mountLayoutRecipes(catalog);
 mountCoreRecipes(catalog);
 mountCoreMatrices(catalog, createRuntime());
+mountComponentReference(catalog);
 
 const iconCatalog = document.querySelector('#icon-catalog');
 iconCatalog?.addEventListener('input', filterIcons);
@@ -62,6 +64,7 @@ const syncThemeControls = (mode) => {
     }
     control.disabled = false;
   }
+  themeButton.setAttribute('aria-label', dark ? 'Switch to light theme' : 'Switch to dark theme');
   themeButton.hidden = false;
   if (themeModeLabel) themeModeLabel.textContent = `mode: ${mode}`;
   if (themeResolvedLabel) themeResolvedLabel.textContent = `resolved: ${dark ? 'dark' : 'light'}`;

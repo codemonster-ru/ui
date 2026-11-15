@@ -26,21 +26,19 @@
 }
 
 .core-heading-scale > *,
-.core-typography-card .showcase-prose :is(h1, h2, h3, h4, h5, h6) {
+.core-typography-card .showcase-prose :is(h3, h4, h5, .core-prose-heading) {
   color: var(--cm-color-text-primary);
   font-size: var(--showcase-heading-size);
   font-weight: var(--cm-font-weight-semibold);
   line-height: var(--showcase-heading-line-height);
 }
 
-.core-heading-1,
-.core-typography-card .showcase-prose h1 {
+.core-heading-1 {
   --showcase-heading-size: 1.875rem;
   --showcase-heading-line-height: 1.2;
 }
 
-.core-heading-2,
-.core-typography-card .showcase-prose h2 {
+.core-heading-2 {
   --showcase-heading-size: 1.625rem;
   --showcase-heading-line-height: 1.25;
 }
@@ -63,8 +61,7 @@
   --showcase-heading-line-height: 1.4;
 }
 
-.core-heading-6,
-.core-typography-card .showcase-prose h6 {
+.core-heading-6 {
   --showcase-heading-size: var(--cm-text-label-font-size);
   --showcase-heading-line-height: 1.45;
 }
@@ -198,11 +195,11 @@
   margin-block-start: 1em;
 }
 
-.core-typography-card .showcase-prose > * + :is(h1, h2, h3, h4, h5, h6) {
+.core-typography-card .showcase-prose > * + :is(h3, h4, h5, .core-prose-heading) {
   margin-block-start: 1.5rem;
 }
 
-.core-typography-card .showcase-prose > :is(h1, h2, h3, h4, h5, h6) + * {
+.core-typography-card .showcase-prose > :is(h3, h4, h5, .core-prose-heading) + * {
   margin-block-start: 0.5em;
 }
 

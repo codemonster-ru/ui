@@ -1,3 +1,6 @@
+import showcasePages from '../../examples/shared/showcase-pages.json' with { type: 'json' };
+import { renderApplicationExamples } from '../../examples/vanilla/application-examples.mjs';
+import { renderComponentReference } from './render-showcase-component-reference.mjs';
 import { coreComponentTitle, coreRecipesFor, renderCoreMatrix } from '../../examples/shared/showcase-core-matrix.mts';
 import {
   renderLayoutGuideEntry,
@@ -41,7 +44,11 @@ function page(title, content, script, base = '') {
 `;
 }
 
-function renderExample({ id, basename, componentSlug, data, canonicalHtml }, name) {
+function renderExample(
+  { id, basename, componentSlug, data, canonicalHtml },
+  name,
+  { heading = 'h4', primary = false } = {},
+) {
   const title = basename.replaceAll('-', ' ');
   const modal = ['dialog', 'drawer', 'command-palette'].includes(componentSlug);
   const layout = ['admin-layout', 'admin-shell', 'app-shell', 'document-layout', 'setup-layout'].includes(
@@ -58,9 +65,9 @@ function renderExample({ id, basename, componentSlug, data, canonicalHtml }, nam
     'showcase-demo.js',
   );
   return `<article class="showcase-example" id="${id}">
-    <h4>${escapeHtml(title)}</h4>
+    ${primary ? '' : `<${heading}>${escapeHtml(title)}</${heading}>`}
     ${data.description ? `<p>${escapeHtml(data.description)}</p>` : ''}
-    <iframe title="${escapeHtml(id)}" loading="lazy"
+    <iframe title="${escapeHtml(heading === 'h3' ? `Vanilla ${name} · ${title} preview` : id)}"${primary ? '' : ' loading="lazy"'}
       class="showcase-frame${frameSize}"
       srcdoc="${escapeHtml(demo)}"></iframe>
   </article>`;
@@ -308,16 +315,18 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
       <p class="showcase-muted core-theme-switch-note">The switch reflects the resolved theme and turns system mode into an explicit light or dark choice after interaction.</p>
     </article>
     <article class="showcase-panel core-theme-card">
-      <h3>Theme utilities</h3>
-      <p class="showcase-muted">Use the controls above to switch theme mode and verify component contrast in light, dark, and system states.</p>
+      <h3>Color roles</h3>
+      <p class="showcase-muted">The same semantic roles map to different palettes in light and dark.</p>
+      <p class="showcase-muted"><a class="cm-link" href="./colors/">Explore color and contrast</a></p>
     </article>
   </div>`;
-  const renderCases = (slug) => {
+  const renderCases = (slug, { only, except, heading } = {}) => {
     const manifest = bySlug.get(slug);
     const variants = casesByComponent.get(slug);
     if (!variants?.length) throw new Error(`Missing Vanilla showcase cases for ${slug}.`);
-    return expandedExamples(variants, icons)
-      .map((variant) => renderExample(variant, manifest.name))
+    return (only ? variants.filter(({ id }) => id === only) : expandedExamples(variants, icons))
+      .filter(({ id }) => id !== except)
+      .map((variant) => renderExample(variant, manifest.name, { heading, primary: Boolean(only) }))
       .join('\n');
   };
   const themeContracts = `<details id="theme-contracts" class="showcase-contracts"><summary>Theme contract examples and palette samples</summary>
@@ -412,8 +421,8 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
       const typeSamples =
         id === 'actions'
           ? `<section id="typography" class="showcase-group">
-      <header><h2>Typography</h2><p>Review the heading, body, content, and prose styles shared by VueForge interfaces.</p></header>
-      ${typography.replaceAll('href="#typography"', 'href="./core/#typography"')}
+      <header><h2>Typography</h2><p>Review the heading, body, content, and prose styles shared by CodeMonster UI interfaces.</p></header>
+      ${typography.replaceAll('href="#', 'href="./core/#')}
     </section>${themeContracts}`
           : '';
       return [
@@ -426,43 +435,74 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
     }),
   );
 
+  const coreGroups = groups.filter(({ id }) => id !== 'layouts' && id !== 'icons');
+  const coreLinks = [...coreGroups.slice(0, 1), { id: 'typography', title: 'Typography' }, ...coreGroups.slice(1)];
+  const [componentIndex, componentDetails] = renderComponentReference(groups, bySlug, casesByComponent, renderCases);
   const pages = {
-    core: groups
-      .filter(({ id }) => id !== 'layouts' && id !== 'icons')
-      .map(({ id }) => sections.get(id))
-      .join('\n'),
+    core: coreGroups.map(({ id }) => sections.get(id)).join('\n'),
+    components: componentIndex,
+    examples: renderApplicationExamples(),
     colors: renderColorScales(),
     layouts: sections.get('layouts'),
     icons: sections.get('icons'),
   };
-  const titles = { core: 'Core', colors: 'Colors', layouts: 'Layouts', icons: 'Icons' };
-  function renderPage(current, base) {
-    const navigation = Object.entries(titles)
-      .map(([id, label]) => `<li><a href="./${id}/"${id === current ? ' aria-current="page"' : ''}>${label}</a></li>`)
+  const navigationPages = showcasePages.filter(({ vueOnly }) => !vueOnly);
+  const coreJump = (path) => `<nav class="showcase-jump" aria-label="On this page">
+    <p>On this page</p><ul>${coreLinks.map(({ id, title }) => `<li><a href="${path}#${id}">${escapeHtml(title)}</a></li>`).join('')}</ul>
+  </nav>`;
+  function renderPage(current, base, path, content = pages[current]) {
+    const { label, title, description } = navigationPages.find(({ id }) => id === current);
+    const navigation = navigationPages
+      .map(({ id, label }) => `<li><a href="./${id}/"${id === current ? ' aria-current="page"' : ''}>${label}</a></li>`)
       .join('\n');
+    const intro = title
+      ? `<header class="showcase-intro${current === 'core' ? ' showcase-intro--core' : ''}">
+    <p class="showcase-intro__eyebrow">${escapeHtml(label)}</p>
+    <h1>${escapeHtml(title)}</h1><p>${escapeHtml(description)}</p>
+    ${
+      current === 'core'
+        ? `<div class="showcase-intro__actions">
+      <a class="showcase-intro__primary" href="./components/">Browse components</a>
+      <a class="cm-link" href="./examples/">Try examples</a>
+    </div>`
+        : ''
+    }
+  </header>`
+      : '';
     return page(
-      `${titles[current]} · CodeMonster UI Vanilla`,
-      `<header class="showcase-topbar">
+      `${label} · CodeMonster UI Vanilla`,
+      `<a class="showcase-skip" href="${path}#showcase-main">Skip to content</a>
+  <header class="showcase-topbar">
     <div class="showcase-header">
-      <a class="showcase-brand" href="./core/">CodeMonster UI · Vanilla</a>
+      <a class="showcase-brand" href="./core/">CodeMonster UI <span>Vanilla</span></a>
       <nav class="showcase-navigation" aria-label="Showcase sections"><ul>${navigation}</ul></nav>
-      <button class="cm-icon-button cm-icon-button--secondary cm-icon-button--md showcase-theme" id="showcase-theme" type="button" aria-label="Toggle color theme" hidden><span class="cm-icon-button__icon">${themeIcons}</span></button>
+      <button class="cm-icon-button cm-icon-button--secondary cm-icon-button--md showcase-theme" id="showcase-theme" type="button" aria-label="Switch to dark theme" hidden><span class="cm-icon-button__icon">${themeIcons}</span></button>
     </div>
   </header>
-  <main ${current === 'layouts' ? 'class="showcase-content showcase-content--layout-guide" aria-label="Layouts"' : `class="showcase-content${current === 'core' ? ' showcase-content--core-guide' : ''}"`}>
-    <div class="showcase-catalog${current === 'core' ? ' showcase-core' : ''}">${pages[current]}</div>
+  <main id="showcase-main" class="showcase-content" tabindex="-1">
+    ${intro}
+    ${current === 'core' ? coreJump(path) : ''}
+    <div class="showcase-catalog${current === 'core' ? ' showcase-core' : ''}">${content}</div>
   </main>`,
-      'showcase.js',
+      current === 'examples' ? 'application-examples.js' : 'showcase.js',
       base,
     );
   }
 
   await Promise.all([
-    writeFile(join(output, 'index.html'), renderPage('core', './')),
+    writeFile(join(output, 'index.html'), renderPage('core', './', './')),
     ...Object.keys(pages).map(async (id) => {
       const directory = join(output, id);
       await mkdir(directory, { recursive: true });
-      await writeFile(join(directory, 'index.html'), renderPage(id, '../'));
+      await writeFile(join(directory, 'index.html'), renderPage(id, '../', `./${id}/`));
+    }),
+    ...[...componentDetails].map(async ([slug, content]) => {
+      const directory = join(output, 'components', slug);
+      await mkdir(directory, { recursive: true });
+      await writeFile(
+        join(directory, 'index.html'),
+        renderPage('components', '../../', `./components/${slug}/`, content),
+      );
     }),
   ]);
   console.log(

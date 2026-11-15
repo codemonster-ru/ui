@@ -1,0 +1,25 @@
+[
+  {
+    "id": "core",
+    "label": "Core",
+    "title": "Build clear product interfaces",
+    "description": "Explore CodeMonster UI components in light and dark, then copy working Vue or Vanilla examples."
+  },
+  { "id": "components", "label": "Reference" },
+  {
+    "id": "examples",
+    "label": "Examples",
+    "title": "Application examples",
+    "description": "Try a release workspace built from CodeMonster UI components. Filter deployment records, queue a release, update preferences, and try a sample sign-in."
+  },
+  {
+    "id": "layouts",
+    "label": "Layouts",
+    "title": "Layouts and application shells",
+    "description": "Start with layout primitives or try a complete application shell. Change the preview width to see how each layout reflows."
+  },
+  { "id": "colors", "label": "Colors" },
+  { "id": "icons", "label": "Icons" },
+  { "id": "codeblock", "label": "CodeBlock", "vueOnly": true },
+  { "id": "playground", "label": "Playground", "vueOnly": true }
+]
