@@ -23,6 +23,9 @@ await Promise.all([
   cp(resolve(root, 'packages/tokens/dist'), resolve(output, 'tokens'), { recursive: true }),
   cp(resolve(root, 'packages/css/dist'), resolve(output, 'css'), { recursive: true }),
   cp(resolve(source, 'index.html'), resolve(output, 'accordion-example.html')),
+  ...['confirm-dialog-example.html', 'confirm-dialog-example.mjs'].map((asset) =>
+    cp(resolve(source, asset), resolve(output, asset)),
+  ),
   cp(resolve(source, 'start.js'), resolve(output, 'start.js')),
   ...['annabel', 'vueforge'].map((name) =>
     cp(resolve(root, `examples/shared/${name}-logo-icon.svg`), resolve(output, `${name}-logo-icon.svg`)),
