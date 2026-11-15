@@ -24,7 +24,13 @@ export default defineConfig({
     },
     rollupOptions: {
       // Keep shared logic external so a consumer using both adapters can bundle it once.
-      external: ['vue', '@codemonster-ru/ui-runtime/core', '@codemonster-ru/ui-icons', '@codemonster-ru/floater.js'],
+      external: [
+        'vue',
+        '@codemonster-ru/ui-runtime/core',
+        '@codemonster-ru/ui-runtime/native-modal',
+        '@codemonster-ru/ui-icons',
+        '@codemonster-ru/floater.js',
+      ],
     },
   },
 });

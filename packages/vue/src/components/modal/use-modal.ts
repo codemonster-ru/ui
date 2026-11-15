@@ -1,4 +1,5 @@
 import { cmFocusableSelector } from '@codemonster-ru/ui-runtime/core';
+import { enterCmNativeModal } from '@codemonster-ru/ui-runtime/native-modal';
 import { nextTick, onBeforeUnmount, onMounted, ref, watch, type Ref } from 'vue';
 
 function availableFocusCandidates(dialog: HTMLDialogElement, selector: string): HTMLElement[] {
@@ -27,6 +28,7 @@ export function useCmModal(
   const dialog = ref<HTMLDialogElement>();
   const localOpen = ref(open() ?? defaultOpen);
   let returnFocus: HTMLElement | null = null;
+  let releaseScroll: (() => void) | undefined;
 
   watch(open, (next) => {
     if (next !== undefined) synchronize(next);
@@ -55,16 +57,8 @@ export function useCmModal(
       if (HTMLElementConstructor && active instanceof HTMLElementConstructor && !element.contains(active)) {
         returnFocus = active;
       }
-      if (typeof element.showModal === 'function') {
-        if (!element.matches(':modal')) {
-          // SSR renders open content before hydration. Remove its non-modal open state before
-          // entering the browser's modal stack, which owns the backdrop and outside focus.
-          element.removeAttribute('open');
-          element.showModal();
-        }
-      } else {
-        element.open = true;
-      }
+      releaseScroll = enterCmNativeModal(element, releaseScroll);
+      if (!releaseScroll) element.open = true;
       void nextTick(() => {
         if (!localOpen.value) return;
         (
@@ -79,6 +73,8 @@ export function useCmModal(
       else element.open = false;
       if (restoreFocus && returnFocus?.isConnected) returnFocus.focus();
       returnFocus = null;
+      releaseScroll?.();
+      releaseScroll = undefined;
     }
   }
 
