@@ -75,13 +75,10 @@ catalog.addEventListener('cm:theme-change', (event) => {
 });
 
 const search = document.querySelector('#showcase-search');
-const cards = [...document.querySelectorAll('.showcase-card')];
+const cards = [...document.querySelectorAll('[data-layout-contracts] .showcase-card')];
 const empty = document.querySelector('#showcase-empty');
 search?.addEventListener('input', () => {
   const query = search.value.trim().toLowerCase();
   for (const card of cards) card.hidden = !card.textContent.toLowerCase().includes(query);
-  for (const group of document.querySelectorAll('.showcase-group')) {
-    group.hidden = Boolean(query) && !group.querySelector('.showcase-card:not([hidden])');
-  }
   empty.hidden = cards.some((card) => !card.hidden);
 });

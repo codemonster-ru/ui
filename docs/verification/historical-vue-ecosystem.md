@@ -32,3 +32,31 @@ scoped slot, and rendered `VfContainer` from its direct ESM subpath. It loaded t
 and resolved both the full and container stylesheet paths. The custom preset prefix emitted
 both its custom shell sidebar width and the historical alias. The [layout package README](../../packages/layouts/README.md)
 includes the installation command.
+
+## Vanilla Layouts guide
+
+The Vanilla guide opens with Container, Stack, Inline, Section, and Grid, followed by
+Responsive foundation, Error and Auth layouts, SetupLayout, AppShell, AdminLayout, AdminShell,
+and DocumentLayout in the historical order. The demonstrations use the public component CSS and
+the Vanilla runtime. An expandable inventory below them retains all 17 layout component contracts
+and the component search.
+
+Chrome compared before and after builds with the isolated `d9879116` showcase. A pixel counted as
+different when at least one RGB channel changed by more than four.
+
+| Viewport   | Theme | Before | After |
+| ---------- | ----- | -----: | ----: |
+| 390 × 844  | Light | 35.37% | 2.80% |
+| 390 × 844  | Dark  | 35.38% | 2.81% |
+| 1280 × 800 | Light | 46.70% | 0.88% |
+| 1280 × 800 | Dark  | 46.69% | 0.86% |
+
+The first four guide headings, descriptions, and sample surfaces had matching rounded bounds
+in all four configurations. Chrome reported zero JavaScript errors and zero horizontal page
+overflow. The breakpoint readout, contract filter, auth password reveal and submission, error
+preview width, AppShell layout selection, and SetupLayout progression passed on both widths and
+themes. Results and screenshots are in `/tmp/cm-layout-guide-evidence`.
+
+The current product and component names, top navigation, and contract inventory remain visible
+differences. The screenshots cover the first viewport; examples farther down the guide were
+checked through the listed interactions.

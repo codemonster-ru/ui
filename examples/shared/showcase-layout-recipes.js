@@ -1,26 +1,43 @@
 /** @param {HTMLElement} root */
 export function mountLayoutRecipes(root) {
-  const width = root.querySelector('[data-layout-width]');
-  if (!width) return () => {};
+  const value = root.querySelector('[data-layout-value]');
+  if (!value) return () => {};
 
   const breakpoint = root.querySelector('[data-layout-breakpoint]');
-  const entries = [...root.querySelectorAll('.layout-breakpoint-entry')].map((entry) => [
+  const entries = [...root.querySelectorAll('.layout-breakpoints .layout-breakpoint-entry')].map((entry) => [
     entry.querySelector('dt').textContent,
     Number.parseInt(entry.querySelector('dd').textContent, 10),
   ]);
+  const previews = [...root.querySelectorAll('.layout-guide-entry:has([data-recipe-width])')].map((section) => {
+    const frame = section.querySelector('.layout-recipe-frame');
+    const choices = [...section.querySelectorAll('[data-recipe-width]')];
+    let preferred = choices.find((input) => input.checked);
+    const select = (input) => {
+      input.checked = true;
+      frame.style.maxInlineSize = input.value + 'px';
+    };
+    for (const input of choices) {
+      input.addEventListener('change', () => {
+        preferred = input;
+        select(input);
+      });
+    }
+    return () => {
+      const available = choices.filter((input) => Number(input.value) <= innerWidth);
+      if (!available.length) available.push(choices[0]);
+      for (const input of choices) input.closest('label').hidden = !available.includes(input);
+      select(available.includes(preferred) ? preferred : available.at(-1));
+    };
+  });
   function resize() {
-    width.textContent = `${innerWidth} px`;
-    const active = entries.findLast(([, minimum]) => innerWidth >= minimum);
-    breakpoint.textContent = active?.[0] ?? 'Below xs';
+    const name = entries.findLast(([, minimum]) => innerWidth >= minimum)?.[0];
+    breakpoint.textContent = name ?? 'Below xs';
+    const layout = ['sm', 'md', 'lg', 'xl'].includes(name) ? name : name === '2xl' ? 'xl' : 'base';
+    value.textContent = `${layout} layout`;
+    for (const resizePreview of previews) resizePreview();
   }
   resize();
   window.addEventListener('resize', resize);
-
-  for (const input of root.querySelectorAll('[data-recipe-width]')) {
-    input.addEventListener('change', () => {
-      input.closest('section').querySelector('.layout-recipe-frame').style.maxInlineSize = input.value + 'px';
-    });
-  }
 
   const form = root.querySelector('[data-layout-auth]');
   const password = form.querySelector('input[autocomplete="current-password"]');
