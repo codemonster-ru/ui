@@ -175,7 +175,7 @@ export type {
 } from './components/stepper/stepper.types';
 export { default as CmSwitch } from './components/switch/CmSwitch.vue';
 export type { CmSwitchProps, CmSwitchSize, CmSwitchThumbContrast } from './components/switch/switch.types';
-export { default as CmTable } from './components/table/CmTable.vue';
+export { default as CmTable, default as VfTable } from './components/table/CmTable.vue';
 export type { CmTableDensity, CmTableProps } from './components/table/table.types';
 export { default as CmTag } from './components/tag/CmTag.vue';
 export type { CmTagProps, CmTagTone } from './components/tag/tag.types';

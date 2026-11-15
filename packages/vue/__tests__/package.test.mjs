@@ -71,6 +71,7 @@ test('publishes the Vue component adapter entries', async () => {
     'VfProgressBar',
     'VfSkeletonGate',
     'VfStepper',
+    'VfTable',
     'VfTabs',
     'VfThemeProvider',
     'VfThemeSwitch',
