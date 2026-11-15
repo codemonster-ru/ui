@@ -102,6 +102,8 @@ test('publishes the opt-in historical icon and Vue components', async () => {
     'VfAlert',
     'VfAvatar',
     'VfBadge',
+    'VfDialog',
+    'VfDrawer',
     'VfDropdown',
     'VfIconButton',
     'VfInput',
@@ -167,5 +169,18 @@ test('server-renders historical overlays around a single authored trigger', asyn
     assert.ok(source.includes(`aria-haspopup="${popup}"`));
     const panelId = /aria-controls="([^"]+)"/u.exec(source)?.[1];
     assert.ok(panelId && source.includes(`id="${panelId}"`));
+  }
+});
+
+test('generates historical modal ids and names without requiring a visible title', async () => {
+  const { VfDialog, VfDrawer } = await import('@codemonster-ru/ui-vue/historical');
+  for (const [component, name] of [
+    [VfDialog, 'Dialog'],
+    [VfDrawer, 'Drawer'],
+  ]) {
+    const source = await renderToString(h(component, { defaultOpen: true, closable: false }, () => 'Settings'));
+    assert.match(source, /<dialog[^>]*\bid="[^"]+"[^>]*\bopen\b/u);
+    assert.ok(source.includes(`aria-label="${name}"`));
+    assert.doesNotMatch(source, /<h2|<button/u);
   }
 });

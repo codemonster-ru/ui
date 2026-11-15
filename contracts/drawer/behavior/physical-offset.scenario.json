@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "drawer-physical-offset",
+  "case": "drawer-physical-offset",
+  "steps": [
+    { "expect": "visible", "target": "root", "value": true },
+    { "expect": "attribute", "target": "root", "name": "aria-label", "value": "Project guide" },
+    { "action": "press", "target": "root", "key": "Escape" },
+    { "expect": "visible", "target": "root", "value": true }
+  ]
+}

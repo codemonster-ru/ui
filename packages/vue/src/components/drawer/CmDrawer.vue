@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, useAttrs, type PropType } from 'vue';
+import { computed, useAttrs, useSlots, type CSSProperties, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
@@ -8,19 +8,29 @@ import { useCmModal } from '../modal/use-modal';
 import type { CmDrawerSide, CmDrawerSize } from './drawer.types';
 
 defineOptions({ inheritAttrs: false });
-const sides: readonly CmDrawerSide[] = ['start', 'end', 'top', 'bottom'];
+const sides: readonly CmDrawerSide[] = ['start', 'end', 'left', 'right', 'top', 'bottom'];
 const props = defineProps({
   id: { type: String, required: true },
-  title: { type: String, required: true },
-  description: { type: String, default: null },
-  open: Boolean,
+  title: { type: String, default: undefined },
+  description: { type: String as PropType<string | null>, default: null },
+  open: { type: Boolean, default: undefined },
+  defaultOpen: Boolean,
+  ariaLabel: { type: String, default: undefined },
+  ariaLabelledby: { type: String, default: undefined },
+  ariaDescribedby: { type: String, default: undefined },
   side: {
     type: String as PropType<CmDrawerSide>,
     default: 'end',
-    validator: (value: string) => ['start', 'end', 'top', 'bottom'].includes(value),
+    validator: (value: string) => ['start', 'end', 'left', 'right', 'top', 'bottom'].includes(value),
   },
   closeLabel: { type: String, default: 'Close' },
   dismissible: { type: Boolean, default: true },
+  closable: { type: Boolean, default: true },
+  closeOnEscape: { type: Boolean, default: true },
+  closeOnOverlayClick: Boolean,
+  focusDrawer: Boolean,
+  offsetTop: { type: [Number, String], default: undefined },
+  bodyPadding: { type: [Number, String], default: undefined },
   size: {
     type: String as PropType<CmDrawerSize>,
     default: 'md',
@@ -31,10 +41,15 @@ const props = defineProps({
 });
 const emit = defineEmits<{ openChange: [open: boolean]; 'update:open': [open: boolean] }>();
 const attrs = useAttrs();
+const slots = useSlots();
+const hasHeading = () => Boolean(props.title?.trim() || slots.header);
+const ariaLabel = computed(() => props.ariaLabel?.trim() || undefined);
+const explicitLabelledby = computed(() => props.ariaLabelledby?.trim() || undefined);
 assertCm(
-  [props.id, props.title, props.closeLabel].every((value) => value.trim() !== ''),
-  'Drawer id, title, and closeLabel must be non-empty strings.',
+  props.id.trim() !== '' && props.closeLabel.trim() !== '',
+  'Drawer id and closeLabel must be non-empty strings.',
 );
+assertCm(Boolean(hasHeading() || ariaLabel.value || explicitLabelledby.value), 'Drawer requires an accessible name.');
 const side = computed(() => (sides.includes(props.side) ? props.side : 'end'));
 const size = computed(() => (['sm', 'md', 'lg', 'full'].includes(props.size) ? props.size : 'md'));
 const modal = useCmModal(
@@ -43,10 +58,17 @@ const modal = useCmModal(
     emit('update:open', open);
     emit('openChange', open);
   },
+  props.defaultOpen,
 );
 const { dialog, localOpen, onCancel, onClose, onKeydown, setOpen } = modal;
+const allowEscape = computed(() => props.dismissible && props.closeOnEscape);
 function requestClose(): void {
   if (props.dismissible) setOpen(false);
+}
+function onBackdropClick(event: MouseEvent): void {
+  if (!props.closeOnOverlayClick || !dialog.value) return;
+  const { left, top, right, bottom } = dialog.value.getBoundingClientRect();
+  if (event.clientX < left || event.clientX > right || event.clientY < top || event.clientY > bottom) requestClose();
 }
 const classes = computed(() =>
   mergeCmClasses(
@@ -59,17 +81,29 @@ const classes = computed(() =>
     attrs.class,
   ),
 );
-const rootAttrs = computed(() =>
-  omitCmOwnedAttrs(attrs, [
+function cssLength(value: string | number): string {
+  return typeof value === 'number' ? `${value}px` : value;
+}
+const rootAttrs = computed(() => {
+  const forwarded = omitCmOwnedAttrs(attrs, [
     'id',
     'open',
+    'aria-label',
     'aria-labelledby',
     'aria-describedby',
     'data-cm-controller',
     'data-cm-drawer-state',
     'data-cm-drawer-dismissible',
-  ]),
-);
+    'data-cm-drawer-closable',
+    'data-cm-drawer-close-on-escape',
+    'data-cm-drawer-close-on-overlay-click',
+  ]);
+  const style: CSSProperties = {};
+  if (props.offsetTop !== undefined) style['--cm-drawer-offset-top'] = cssLength(props.offsetTop);
+  if (props.bodyPadding !== undefined) style['--cm-drawer-body-padding'] = cssLength(props.bodyPadding);
+  if (Object.keys(style).length) forwarded.style = [attrs.style, style];
+  return forwarded;
+});
 
 useCmHydrated();
 </script>
@@ -81,25 +115,36 @@ useCmHydrated();
     v-bind="rootAttrs"
     :class="classes"
     :open="localOpen || undefined"
-    :aria-labelledby="`${props.id}-title`"
-    :aria-describedby="props.description || $slots.description ? `${props.id}-description` : undefined"
+    :aria-label="ariaLabel"
+    :aria-labelledby="explicitLabelledby ?? (!ariaLabel && hasHeading() ? `${props.id}-title` : undefined)"
+    :aria-describedby="
+      props.ariaDescribedby?.trim() || (props.description || $slots.description ? `${props.id}-description` : undefined)
+    "
     data-cm-controller="drawer"
     :data-cm-drawer-state="localOpen ? 'open' : 'closed'"
     :data-cm-drawer-dismissible="props.dismissible ? 'true' : 'false'"
-    @cancel="props.dismissible ? onCancel($event) : $event.preventDefault()"
+    :data-cm-drawer-closable="props.closable ? undefined : 'false'"
+    :data-cm-drawer-close-on-escape="props.closeOnEscape ? undefined : 'false'"
+    :data-cm-drawer-close-on-overlay-click="props.closeOnOverlayClick ? 'true' : undefined"
+    @cancel="onCancel($event, allowEscape)"
     @close="onClose"
-    @keydown="props.dismissible ? onKeydown($event) : undefined"
+    @keydown="onKeydown($event, allowEscape)"
+    @click.self="onBackdropClick"
   >
-    <div class="cm-drawer__surface">
-      <header class="cm-drawer__header">
-        <h2 :id="`${props.id}-title`" class="cm-drawer__title">
+    <div
+      class="cm-drawer__surface"
+      :tabindex="props.focusDrawer ? -1 : undefined"
+      :data-autofocus="props.focusDrawer ? '' : undefined"
+    >
+      <header v-if="hasHeading() || $slots.actions || props.closable" class="cm-drawer__header">
+        <h2 v-if="hasHeading()" :id="`${props.id}-title`" class="cm-drawer__title">
           <slot name="header" :title-id="`${props.id}-title`">{{ props.title }}</slot>
         </h2>
         <div v-if="$slots.actions" class="cm-drawer__actions">
           <slot name="actions" :close="requestClose" />
         </div>
         <!-- prettier-ignore -->
-        <button class="cm-drawer__close" type="button" :aria-label="props.closeLabel" :disabled="!props.dismissible" data-cm-drawer-close @click="requestClose">×</button>
+        <button v-if="props.closable" class="cm-drawer__close" type="button" :aria-label="props.closeLabel" :disabled="!props.dismissible" data-cm-drawer-close @click="requestClose">×</button>
       </header>
       <div v-if="$slots.description" :id="`${props.id}-description`" class="cm-drawer__description">
         <slot name="description" :description-id="`${props.id}-description`" />

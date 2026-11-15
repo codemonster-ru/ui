@@ -18,3 +18,7 @@ export interface CmDialogProps {
   size?: CmDialogSize;
   dividers?: boolean;
 }
+
+export interface VfDialogProps extends Omit<CmDialogProps, 'id'> {
+  id?: string;
+}

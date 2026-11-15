@@ -9,6 +9,7 @@ import {
   VfCommandPalette,
   type CmDialogSize,
 } from '@codemonster-ru/ui-vue';
+import { VfDrawer } from '@codemonster-ru/ui-vue/historical';
 import { onMounted, onUnmounted, ref } from 'vue';
 import CoreMatrix from './CoreMatrix.vue';
 
@@ -28,6 +29,7 @@ const commands = [
 const dialog = ref(false);
 const size = ref<CmDialogSize>('md');
 const drawer = ref(false);
+const offsetDrawer = ref(false);
 const drawerOptions = ref<(typeof drawers)[number]>(drawers[1]);
 const palette = ref(false);
 const query = ref('');
@@ -91,6 +93,7 @@ onUnmounted(() => window.removeEventListener('keydown', onShortcut));
           "
           >{{ option.label }}</CmButton
         >
+        <CmButton variant="secondary" @click="offsetDrawer = true">offset drawer</CmButton>
       </div>
     </div>
     <div class="core-matrix-cell">
@@ -131,6 +134,19 @@ onUnmounted(() => window.removeEventListener('keydown', onShortcut));
       </div>
     </template>
   </CmDrawer>
+  <VfDrawer
+    id="core-offset"
+    v-model:open="offsetDrawer"
+    aria-label="Shell settings"
+    placement="left"
+    size="sm"
+    :offset-top="48"
+    :body-padding="20"
+    :close-on-escape="false"
+    rounded
+  >
+    <p>Content starts below the shell header.</p>
+  </VfDrawer>
   <CmCommandPalette
     id="core-palette"
     v-model:open="palette"

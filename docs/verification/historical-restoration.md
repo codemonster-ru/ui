@@ -38,6 +38,9 @@ migration, including behavioral or visual differences. Do not claim parity from 
 | DONE | Restored DataTable column resize (`ec5958dc`). Keyboard, pointer and autosize produced the same widths in both adapters, kept the table width fixed, and exposed the width on the accessible separator. Raw row keys, multi-sort, pinning and drag ordering remain separate. |
 | DONE | Restored historical Badge, Tag and ProgressSpinner options (`9ba8ada4`), routed NavMenu bindings (`d232e084`), and Stepper bindings and placement (`8ff4cecf`). Targeted packaged and browser checks passed for each slice. |
 | DONE | Restored Popover portal, placement, focus and close policies (`f784b486`), and authored Vue triggers in the historical Dropdown and Popover entry points. Pinned Chrome passed eight Popover behavior runs and eight paired fixture comparisons. The built example verified the body portal and focus restoration around one authored button. |
+| DONE | Restored Dialog and Drawer initial state, naming and dismissal independently. Drawer adds fixed physical sides in RTL and LTR plus offset and padding. Both adapters passed all four native geometry/dismissal runs, six pinned behavior runs, and eight exact paired screenshots. |
+| DONE | Restored Tabs custom IDs and scoped content (`1cb29a1f`), NavMenu named icons and compact mode (`62c48b06`), and DataTable column pinning (`06d2ca4a`). Chrome checked panel focus, compact accessible names, and sticky geometry after scrolling and resize at 390 px. |
+| DONE | Aligned Vue Layouts with the shared guide (`f47727a5`): changed pixels against the pinned historical views fell from 11.96–18.05% to 1.09–3.20%. Controls and responsive previews passed at both widths and in both themes. |
 | IN PROGRESS | Run package checks, lint, type checks, tests, browser behavior and accessibility checks, production builds, and fresh packed consumers. See the exact snapshots below. |
 | IN PROGRESS | The independent review verified dependency direction and reproduced native close and form reset integration defects. Those fixes were verified separately. Review the final committed candidate and reconcile remaining historical contract and visual gaps. |
 | TODO | Finish the acceptance report and verify that all assignment edits are committed and the tree is clean. |
@@ -104,6 +107,14 @@ The product name, mobile top bar and related copy remain visible differences. Se
   fix is `f8990ccc`. The full runtime measured 72.64 KiB gzip after new overlay placement and
   column resizing; aggregate budget now reflects the measured expansion. Retain all individual
   import and pure-core limits.
+- `62c48b06`, fresh copy at `/private/tmp/cmui-verify.b0ISig`: all 18 offline checks passed,
+  including the cold suite and both production builds. An independent Dialog-focused cold retry
+  also passed 839 tests; see `/private/tmp/cmui-dialog-policy.8m5f0G/cold-final.log`.
+- The pinned browser ran 132 behavior scenarios across both adapters at `8ff4cecf` without failures
+  or motion mismatches. The separate 48-frame showcase run reported no JavaScript errors and no
+  horizontal page overflow. Vue Layouts was the largest remaining viewport difference in this run
+  and was corrected afterward. Evidence: `/private/tmp/cmui-browser-checkpoint.kiEdef` and
+  `/private/tmp/cmui-browser-checkpoint.XZHnOm`.
 
 - `a9083071`, fresh copy at `/private/tmp/cmui-verify.Kvb8Dd`: installation, builds, typecheck,
   contracts, accessibility fixtures, package budgets and tree shaking passed. Cold workspace
@@ -124,7 +135,7 @@ Finish and verify each coherent slice before committing it; then select the next
 Record actual output and commands, including any check that cannot run, before advancing the
 corresponding status.
 
-Next actions: finish the in-progress Tabs, Dialog and NavMenu adornment slices, then reconcile
-the next public gaps starting with Drawer and keyboard/slot coverage. Run a fresh exact-candidate
-package and browser checkpoint before final independent acceptance. Distinguish the showcase
-viewport captures from the established 12-case fixture baseline.
+Next actions: run the exact integrated package and browser checkpoint, complete independent
+acceptance, and continue the remaining contract gaps as indicated by the trace. Prioritize
+verified behavior over adding aliases for unsupported semantics. Distinguish showcase viewport
+captures from the established 12-case fixture baseline.

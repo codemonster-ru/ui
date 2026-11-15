@@ -72,9 +72,9 @@ const cases = [
     fileName: 'ui-vue-full',
     forbiddenMarkers: [...domRuntimeMarkers, themeRuntime, unrelatedIcon],
     includesPositioning: true,
-    // Includes the restored calendar, result compositions, and anchored popups.
-    // Measured 51.72 KiB without the opt-in named icon catalogue or the Vanilla controllers.
-    maxGzipBytes: 55 * 1024,
+    // Includes the restored navigation, results, calendar and native overlays.
+    // Measured 55.57 KiB without the opt-in named icon catalogue or the Vanilla controllers.
+    maxGzipBytes: 58 * 1024,
     minGzipBytes: 15 * 1024,
     name: 'ui-vue full namespace',
   },
@@ -95,6 +95,13 @@ const cases = [
     name: 'ui-vue historical Popover without the icon catalogue',
   },
   {
+    entry: "export { VfDrawer } from '@codemonster-ru/ui-vue/historical';\n",
+    fileName: 'ui-vue-historical-drawer',
+    forbiddenMarkers: [...unrelatedRuntimeMarkers, unrelatedIcon],
+    maxGzipBytes: 5 * 1024,
+    name: 'ui-vue historical Drawer without the icon catalogue',
+  },
+  {
     entry: "export { CmThemeProvider } from '@codemonster-ru/ui-vue';\n",
     fileName: 'ui-vue-theme-provider',
     forbiddenMarkers: [...domRuntimeMarkers, themeRuntime, unrelatedIcon],
@@ -107,8 +114,8 @@ const cases = [
     fileName: 'ui-vue-historical',
     forbiddenMarkers: unrelatedRuntimeMarkers,
     includesPositioning: true,
-    // The opt-in controls, named icons, and authored overlays measured 43.84 KiB together.
-    maxGzipBytes: 46 * 1024,
+    // The opt-in controls, named icons, and historical modal defaults measured 48.68 KiB together.
+    maxGzipBytes: 51 * 1024,
     name: 'ui-vue opt-in historical namespace',
   },
   {
