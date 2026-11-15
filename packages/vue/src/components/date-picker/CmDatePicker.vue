@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="Multiple extends boolean = false, Range extends boolean = false">
-import { computed, nextTick, ref, useAttrs, watch, type PropType } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, useAttrs, watch, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
@@ -71,6 +71,7 @@ const selectionMode = computed<CmCalendarSelectionMode>(() =>
   props.range ? 'range' : props.multiple ? 'multiple' : 'single',
 );
 const currentDates = ref(normalizeValues(props.modelValue));
+const authoredDates = currentDates.value.slice();
 const firstDate = computed(() => currentDates.value[0] ?? '');
 const formValues = computed(() => (selectionMode.value === 'single' ? [firstDate.value] : currentDates.value));
 const isOpen = ref(false);
@@ -86,13 +87,15 @@ function normalizeValues(value: string | string[]): string[] {
   return selectionMode.value === 'range' ? dates.slice(0, 2).sort() : [...new Set(dates)];
 }
 
+function datesMatch(left: readonly string[], right: readonly string[]): boolean {
+  return left.length === right.length && left.every((date, index) => date === right[index]);
+}
+
 watch(
   [() => props.modelValue, selectionMode],
   ([value]) => {
     const next = normalizeValues(value);
-    if (next.length === currentDates.value.length && next.every((date, index) => date === currentDates.value[index])) {
-      return;
-    }
+    if (datesMatch(next, currentDates.value)) return;
     currentDates.value = next;
     if (firstDate.value !== '') {
       const calendar = calendarRef.value;
@@ -182,11 +185,15 @@ function canChangeMonth(delta: number): boolean {
   return calendarMonthAllowed(shiftMonth(visibleMonth.value, delta), minDate.value, maxDate.value);
 }
 
-function commit(dates: string[]): void {
-  currentDates.value = dates;
+function reportValue(dates: string[]): void {
   const value = (selectionMode.value === 'single' ? (dates[0] ?? '') : dates.slice()) as ModelValue;
   emit('update:modelValue', value);
   emit('valueChange', value);
+}
+
+function commit(dates: string[]): void {
+  currentDates.value = dates;
+  reportValue(dates);
 }
 
 function selectDay(value: string, disabled: boolean): void {
@@ -253,6 +260,35 @@ watch(isOpen, (open, _, onCleanup) => {
 watch([() => props.disabled, () => props.readonly], ([disabled, readonly]) => {
   if (disabled || readonly) setOpen(false);
 });
+
+let stopFormReset: (() => void) | undefined;
+onMounted(() => {
+  const trigger = triggerRef.value;
+  const document = trigger?.ownerDocument;
+  const view = document?.defaultView;
+  if (!trigger || !document || !view) return;
+  const pending = new Set<number>();
+  const onReset = (event: Event) => {
+    const form = trigger.form;
+    if (form === null || event.target !== form) return;
+    const timer = view.setTimeout(() => {
+      pending.delete(timer);
+      if (event.defaultPrevented || !trigger.isConnected || trigger.form !== form) return;
+      setOpen(false);
+      if (datesMatch(authoredDates, currentDates.value)) return;
+      // A caller supplying a different model value still owns that state.
+      if (datesMatch(authoredDates, normalizeValues(props.modelValue))) currentDates.value = authoredDates.slice();
+      reportValue(authoredDates.slice());
+    });
+    pending.add(timer);
+  };
+  document.addEventListener('reset', onReset, true);
+  stopFormReset = () => {
+    document.removeEventListener('reset', onReset, true);
+    for (const timer of pending) view.clearTimeout(timer);
+  };
+});
+onBeforeUnmount(() => stopFormReset?.());
 
 useCmHydrated();
 </script>

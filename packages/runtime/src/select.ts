@@ -1,6 +1,7 @@
 import { autoUpdate, computePosition, flip, offset, shift } from '@codemonster-ru/floater.js';
 import { selectClosedKeyAction, selectOpenKeyAction } from './core/select.js';
 import { dispatchCmEvent } from './events.js';
+import { observeFormReset } from './form-reset.js';
 import type { CmController, CmControllerFactory } from './runtime.js';
 
 export interface SelectValueChangeDetail {
@@ -14,6 +15,7 @@ const optionSelector = '.cm-select__option[role="option"]';
 const enabledOptionSelector = `${optionSelector}:not([aria-disabled="true"]):not([disabled])`;
 const valueSelector = '.cm-select__value';
 const hiddenInputSelector = 'input[type="hidden"]';
+const authoredValues = new WeakMap<HTMLInputElement, string>();
 
 export class CmSelectController implements CmController {
   readonly #root: Element;
@@ -22,6 +24,7 @@ export class CmSelectController implements CmController {
   readonly #clear: HTMLButtonElement | null;
   readonly #input: HTMLInputElement | null;
   #stopAutoUpdate: (() => void) | null = null;
+  #stopReset: (() => void) | undefined;
 
   constructor(root: Element) {
     const trigger = root.querySelector<HTMLButtonElement>(triggerSelector);
@@ -39,7 +42,15 @@ export class CmSelectController implements CmController {
     this.#root.addEventListener('keydown', this.#handleKeydown);
     this.#root.addEventListener('mousedown', this.#handleMouseDown);
     this.#root.ownerDocument.addEventListener('click', this.#handleDocumentClick);
-    if (this.#input && this.#trigger.disabled) this.#input.disabled = true;
+    const input = this.#input;
+    if (input) {
+      if (this.#trigger.disabled) input.disabled = true;
+      if (!authoredValues.has(input)) authoredValues.set(input, input.value);
+      this.#stopReset ??= observeFormReset(input, () => {
+        this.#renderValue(authoredValues.get(input) ?? '');
+        this.#setOpen(false, this.#listbox.contains(input.ownerDocument.activeElement));
+      });
+    }
     this.#synchronize(this.#trigger.getAttribute('aria-expanded') === 'true');
   }
 
@@ -48,6 +59,8 @@ export class CmSelectController implements CmController {
     this.#root.removeEventListener('keydown', this.#handleKeydown);
     this.#root.removeEventListener('mousedown', this.#handleMouseDown);
     this.#root.ownerDocument.removeEventListener('click', this.#handleDocumentClick);
+    this.#stopReset?.();
+    this.#stopReset = undefined;
     this.#releasePlacement();
   }
 
@@ -68,7 +81,7 @@ export class CmSelectController implements CmController {
   readonly #handleClick = (event: Event): void => {
     const target = event.target;
     const Element_ = this.#root.ownerDocument.defaultView?.Element;
-    if (!Element_ || !(target instanceof Element_)) return;
+    if (this.#trigger.matches(':disabled') || !Element_ || !(target instanceof Element_)) return;
 
     if (this.#clear && target.closest(clearSelector) === this.#clear) {
       this.#commit('');
@@ -136,6 +149,13 @@ export class CmSelectController implements CmController {
   }
 
   #commit(value: string): void {
+    this.#renderValue(value);
+    dispatchCmEvent<SelectValueChangeDetail>(this.#root, 'select-value-change', { value });
+    const view = this.#root.ownerDocument.defaultView;
+    if (view) this.#trigger.dispatchEvent(new view.Event('change', { bubbles: true }));
+  }
+
+  #renderValue(value: string): void {
     if (this.#input) this.#input.value = value;
 
     let label = '';
@@ -151,10 +171,6 @@ export class CmSelectController implements CmController {
     if (value) this.#trigger.dataset.cmFilled = 'true';
     else delete this.#trigger.dataset.cmFilled;
     if (this.#clear) this.#clear.hidden = value === '';
-
-    dispatchCmEvent<SelectValueChangeDetail>(this.#root, 'select-value-change', { value });
-    const view = this.#root.ownerDocument.defaultView;
-    if (view) this.#trigger.dispatchEvent(new view.Event('change', { bubbles: true }));
   }
 
   #setOpen(open: boolean, restoreFocus: boolean): void {

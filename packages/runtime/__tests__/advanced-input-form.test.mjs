@@ -34,3 +34,51 @@ for (const [slug, basename, name, value, factory] of cases) {
     assert.equal(input.value, value);
   });
 }
+
+test('Select restores authored form defaults after reset without dispatching a value change', async (context) => {
+  const markup = readFileSync(new URL('../../../contracts/select/cases/clearable.html', import.meta.url), 'utf8');
+  const { window } = new JSDOM(`<form id="settings"></form>${markup}`);
+  const { document } = window;
+  const form = document.querySelector('form');
+  const select = document.querySelector('[data-cm-controller="select"]');
+  const input = select.querySelector('input[type="hidden"]');
+  const clear = select.querySelector('[data-cm-select-clear]');
+  const value = select.querySelector('.cm-select__value');
+  const originalLabel = value.textContent;
+  input.setAttribute('form', form.id);
+  const runtime = new CmRuntime().register('select', createCmSelectController);
+  const nextTask = () => new Promise((resolve) => window.setTimeout(resolve, 0));
+  context.after(() => {
+    runtime.stop();
+    window.close();
+  });
+
+  const changes = [];
+  select.addEventListener('cm:select-value-change', (event) => changes.push(event.detail.value));
+  runtime.start(document);
+  clear.click();
+  assert.equal(new window.FormData(form).get(input.name), '');
+  assert.equal(clear.hidden, true);
+
+  window.addEventListener('reset', (event) => event.preventDefault(), { once: true });
+  form.reset();
+  await nextTask();
+  assert.equal(new window.FormData(form).get(input.name), '');
+
+  form.reset();
+  runtime.stop();
+  await nextTask();
+  assert.equal(new window.FormData(form).get(input.name), '');
+
+  // Reinitializing the same markup must not replace the authored default with the cleared value.
+  runtime.start(document);
+  form.reset();
+  window.addEventListener('reset', (event) => event.preventDefault(), { once: true });
+  form.reset();
+  await nextTask();
+  assert.equal(new window.FormData(form).get(input.name), 'weekly');
+  assert.equal(value.textContent, originalLabel);
+  assert.equal(clear.hidden, false);
+  assert.equal(select.querySelector('[data-cm-select-value="weekly"]').getAttribute('aria-selected'), 'true');
+  assert.deepEqual(changes, ['']);
+});

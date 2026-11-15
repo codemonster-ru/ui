@@ -15,6 +15,7 @@ import {
   type CmCalendarWeekday,
 } from './core/date-picker.js';
 import { dispatchCmEvent } from './events.js';
+import { observeFormReset } from './form-reset.js';
 import type { CmController, CmControllerFactory } from './runtime.js';
 
 export interface DatePickerValueChangeDetail {
@@ -37,6 +38,8 @@ const daySelector = '[data-cm-date-picker-value]';
 const previousSelector = '[data-cm-date-picker-previous]';
 const nextSelector = '[data-cm-date-picker-next]';
 
+const authoredDefaults = new WeakMap<Element, { dates: readonly string[]; formId: string | null }>();
+
 export class CmDatePickerController implements CmController {
   readonly #root: Element;
   readonly #trigger: HTMLButtonElement;
@@ -45,10 +48,12 @@ export class CmDatePickerController implements CmController {
   readonly #input: HTMLInputElement | null;
   readonly #mode: CmCalendarSelectionMode;
   readonly #fieldName: string;
+  readonly #defaults: { dates: readonly string[]; formId: string | null };
   #selectedDates: string[];
   #visibleMonth: string;
   #focusedDate: string;
   #stopAutoUpdate: (() => void) | null = null;
+  #stopFormReset: (() => void) | null = null;
 
   constructor(root: Element) {
     const trigger = root.querySelector<HTMLButtonElement>(triggerSelector);
@@ -69,6 +74,11 @@ export class CmDatePickerController implements CmController {
     this.#selectedDates = initial.filter((date) => parseIsoDate(date) !== null);
     if (this.#mode === 'range') this.#selectedDates = this.#selectedDates.slice(0, 2).sort();
     if (this.#mode === 'multiple') this.#selectedDates = [...new Set(this.#selectedDates)];
+    this.#defaults = authoredDefaults.get(root) ?? {
+      dates: this.#selectedDates.slice(),
+      formId: this.#input?.getAttribute('form') ?? null,
+    };
+    authoredDefaults.set(root, this.#defaults);
     this.#visibleMonth = this.#initialDate();
     this.#focusedDate = this.#visibleMonth;
   }
@@ -89,6 +99,14 @@ export class CmDatePickerController implements CmController {
       this.#syncDisplay(this.#selectedDates);
     }
     this.#synchronize(this.#trigger.getAttribute('aria-expanded') === 'true');
+    this.#stopFormReset ??= observeFormReset(
+      this.#trigger,
+      () => {
+        this.#applySelection([...this.#defaults.dates]);
+        this.#setOpen(false, false);
+      },
+      () => this.#associatedForm(),
+    );
   }
 
   disconnect(): void {
@@ -99,6 +117,8 @@ export class CmDatePickerController implements CmController {
     this.#root.ownerDocument.removeEventListener('click', this.#dismissOutside, true);
     this.#root.ownerDocument.removeEventListener('focusin', this.#dismissOutside);
     this.#releasePlacement();
+    this.#stopFormReset?.();
+    this.#stopFormReset = null;
   }
 
   #currentDates(): string[] {
@@ -112,10 +132,19 @@ export class CmDatePickerController implements CmController {
     );
   }
 
+  #associatedForm(): HTMLFormElement | null {
+    const input = this.#mode === 'single' ? this.#input : this.#arrayInputs()[0];
+    if (input?.isConnected) return input.form;
+    const formId = this.#trigger.getAttribute('form') ?? this.#defaults.formId;
+    if (formId === null) return this.#trigger.form;
+    const form = this.#trigger.ownerDocument.getElementById(formId);
+    return form?.tagName === 'FORM' ? (form as HTMLFormElement) : null;
+  }
+
   #writeArrayInputs(values: readonly string[]): void {
     if (this.#fieldName === '') return;
     const inputs = this.#arrayInputs();
-    const form = this.#input?.getAttribute('form') ?? this.#trigger.getAttribute('form');
+    const form = inputs[0]?.getAttribute('form') ?? this.#trigger.getAttribute('form') ?? this.#defaults.formId;
     for (const [index, value] of values.entries()) {
       const input = inputs[index] ?? this.#root.ownerDocument.createElement('input');
       input.type = 'hidden';
@@ -305,13 +334,16 @@ export class CmDatePickerController implements CmController {
     });
   }
 
-  #commit(dates: string[]): void {
+  #applySelection(dates: string[]): void {
     this.#selectedDates = dates;
     if (this.#mode === 'single') {
       if (this.#input) this.#input.value = dates[0] ?? '';
     } else this.#writeArrayInputs(dates);
-
     this.#syncDisplay(dates);
+  }
+
+  #commit(dates: string[]): void {
+    this.#applySelection(dates);
     if (this.#mode === 'single') {
       dispatchCmEvent<DatePickerValueChangeDetail>(this.#root, 'date-picker-value-change', { value: dates[0] ?? '' });
     } else {

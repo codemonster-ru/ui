@@ -121,3 +121,45 @@ test('Vanilla range submits ordered values and retains the field name across run
   runtime.start(document);
   assert.deepEqual(currentValues(), []);
 });
+
+test('resets authored Vanilla dates after a canceled reset, cleanup, and DOM reinsertion', async (context) => {
+  const range = readFileSync(new URL('../../../contracts/date-picker/cases/range.html', import.meta.url), 'utf8');
+  const { window } = new JSDOM(`<form id="dates"></form><form id="unrelated"></form>${range}`);
+  const { document } = window;
+  const runtime = new CmRuntime().register('date-picker', createCmDatePickerController);
+  context.after(() => {
+    runtime.stop();
+    window.close();
+  });
+  const root = document.querySelector('[data-cm-controller="date-picker"]');
+  const clear = root.querySelector('[data-cm-date-picker-clear]');
+  const form = document.getElementById('dates');
+  for (const input of root.querySelectorAll('input')) input.setAttribute('form', form.id);
+  const currentValues = () => new window.FormData(form).getAll('release_window');
+  const finishReset = () => new Promise((resolve) => window.setTimeout(resolve, 0));
+  runtime.start(document);
+  clear.click();
+  assert.deepEqual(currentValues(), []);
+
+  document.getElementById('unrelated').reset();
+  form.addEventListener('reset', (event) => event.preventDefault(), { once: true });
+  form.reset();
+  await finishReset();
+  assert.deepEqual(currentValues(), []);
+
+  form.reset();
+  runtime.stop();
+  await finishReset();
+  assert.deepEqual(currentValues(), []);
+
+  runtime.start(document);
+  root.remove();
+  await finishReset();
+  document.body.append(root);
+  await finishReset();
+  form.reset();
+  await finishReset();
+  assert.deepEqual(currentValues(), ['2026-08-13', '2026-08-20']);
+  assert.equal(root.querySelector('.cm-date-picker__value').textContent, '08/13/26 – 08/20/26');
+  assert.equal(clear.hidden, false);
+});
