@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "stepper-vertical-start",
+  "description": "Vertical stepper with labels on the logical start side.",
+  "props": {
+    "items": [
+      {
+        "value": "account",
+        "label": "Account"
+      },
+      {
+        "value": "billing",
+        "label": "Billing",
+        "description": "Payment details",
+        "disabled": true
+      },
+      {
+        "value": "review",
+        "label": "Review"
+      }
+    ],
+    "defaultValue": "account",
+    "orientation": "vertical",
+    "contentPosition": "start"
+  },
+  "slots": {}
+}

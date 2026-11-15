@@ -251,7 +251,7 @@ const accordion = [
 ];
 const selectedMenu = ref('installation');
 const horizontalStep = ref('details');
-const inlineStep = ref('plan');
+const belowStep = ref('plan');
 const verticalStep = ref('billing');
 
 const overflowTabs = ref<HTMLElement | null>(null);
@@ -355,22 +355,22 @@ const menuBarExamples = [
       <h4>Stepper · horizontal</h4>
       <div class="core-stepper-scroll" tabindex="0" role="region" aria-label="Horizontal stepper examples">
         <CmStepper
-          v-model:value="horizontalStep"
+          v-model="horizontalStep"
           :items="steps"
-          class="core-stepper-above"
+          content-position="above"
           aria-label="Horizontal stepper with labels above"
         />
         <CmStepper
-          v-model:value="inlineStep"
+          v-model:value="belowStep"
           :items="steps"
-          class="core-stepper-below"
+          content-position="below"
           aria-label="Horizontal stepper with labels below"
         />
       </div>
     </div>
     <div class="core-matrix-cell">
       <h4>Stepper · vertical</h4>
-      <CmStepper v-model:value="verticalStep" :items="extendedSteps" orientation="vertical" />
+      <CmStepper v-model:value="verticalStep" :items="extendedSteps" orientation="vertical" content-position="start" />
     </div>
     <div class="core-matrix-cell">
       <h4>Accordion · states</h4>

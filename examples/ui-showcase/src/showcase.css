@@ -622,10 +622,6 @@
   block-size: 100%;
 }
 
-#navigation .core-stepper-above .cm-stepper__trigger {
-  justify-content: space-between;
-}
-
 #navigation .cm-stepper__marker {
   inline-size: 2.125rem;
   block-size: 2.125rem;
@@ -640,10 +636,6 @@
 
 #navigation .cm-stepper__content {
   gap: 0.125rem;
-}
-
-#navigation .core-stepper-above .cm-stepper__content {
-  order: -1;
 }
 
 #navigation .cm-stepper__label {

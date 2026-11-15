@@ -151,6 +151,16 @@ Arrow keys move between steps and follow the orientation: left and right when ho
 down when vertical. That is the same roving navigation Tabs, Accordion and Menu use, taken from the
 shared core rather than written again here.
 
+Use `v-model:value` with its existing immediate updates, `defaultValue` for an initial step, or
+`v-model` for a controlled Stepper. With `modelValue` supplied, a step activation emits
+`update:modelValue` and `change` and the current step follows the value accepted by the caller.
+`VfStepper` exposes the same native component for historical Vue consumers.
+
+Set `contentPosition` to `above` or `below` for a horizontal Stepper, or `start` or `end`
+for a vertical Stepper. The vertical sides follow the text direction. Existing `bottom` and
+`inline` layouts remain available. Vanilla HTML uses the same geometry classes and starts
+with `aria-current="step"` on the authored active button.
+
 ```vue
 <script setup lang="ts">
 import { CmStepper } from '@codemonster-ru/ui-vue';
