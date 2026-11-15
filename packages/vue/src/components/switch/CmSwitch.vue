@@ -4,7 +4,7 @@ import { computed, useAttrs, type PropType } from 'vue';
 import { useCmHydrated } from '../../internal/hydration';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
-import type { CmSwitchSize } from './switch.types';
+import type { CmSwitchSize, CmSwitchThumbContrast } from './switch.types';
 
 defineOptions({ inheritAttrs: false });
 
@@ -21,6 +21,8 @@ const props = defineProps({
   invalid: Boolean,
   disabled: Boolean,
   required: Boolean,
+  static: Boolean,
+  thumbContrast: { type: String as PropType<CmSwitchThumbContrast>, default: 'auto' },
 });
 const emit = defineEmits<{
   change: [event: Event];
@@ -37,6 +39,8 @@ const classes = computed(() =>
     'cm-switch',
     `cm-switch--${size.value}`,
     props.invalid ? 'cm-switch--invalid' : undefined,
+    props.static ? 'cm-switch--static' : undefined,
+    props.thumbContrast === 'inverse' ? 'cm-switch--thumb-contrast-inverse' : undefined,
     attrs.class,
   ),
 );

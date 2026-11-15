@@ -193,6 +193,23 @@
   cursor: not-allowed;
 }
 
+.cm-switch--static .cm-switch__input:not(:disabled, :focus-visible, [aria-invalid='true']) + .cm-switch__control {
+  border-color: var(--cm-color-border-interactive);
+  background: var(--cm-color-background-surface);
+}
+
+.cm-switch--static .cm-switch__input:not(:disabled) + .cm-switch__control .cm-switch__thumb {
+  border-color: var(--cm-color-icon-secondary);
+  background: var(--cm-color-icon-secondary);
+  color: var(--cm-color-icon-inverse);
+}
+
+.cm-switch--thumb-contrast-inverse .cm-switch__input:is(:enabled, :disabled) + .cm-switch__control .cm-switch__thumb {
+  border-color: var(--cm-color-text-primary);
+  background: var(--cm-color-text-primary);
+  color: var(--cm-color-background-surface);
+}
+
 @media (forced-colors: active) {
   .cm-switch__input:checked + .cm-switch__control {
     background: Highlight;
