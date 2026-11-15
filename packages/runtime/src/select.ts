@@ -103,8 +103,11 @@ export class CmSelectController implements CmController {
   };
 
   readonly #handleKeydown = (event: Event): void => {
-    const KeyboardEvent_ = this.#root.ownerDocument.defaultView?.KeyboardEvent;
-    if (!KeyboardEvent_ || !(event instanceof KeyboardEvent_) || this.#trigger.disabled) return;
+    const view = this.#root.ownerDocument.defaultView;
+    if (!view || !(event instanceof view.KeyboardEvent) || event.defaultPrevented || this.#trigger.matches(':disabled'))
+      return;
+    const target = event.target;
+    if (target !== this.#trigger && !(target instanceof view.Node && this.#listbox.contains(target))) return;
 
     const open = !this.#listbox.hidden;
     const options = this.#enabledOptions;
@@ -114,7 +117,10 @@ export class CmSelectController implements CmController {
       if (!action || action.type !== 'open') return;
       event.preventDefault();
       this.#setOpen(true, false);
-      const next = action.focus === 'last' ? options[options.length - 1] : (this.#selectedOption() ?? options[0]);
+      const next =
+        action.focus === 'last'
+          ? options[options.length - 1]
+          : (options.find((option) => option.getAttribute('aria-selected') === 'true') ?? options[0]);
       next?.focus();
       return;
     }
@@ -143,10 +149,6 @@ export class CmSelectController implements CmController {
     if (!Node_ || !(event.target instanceof Node_) || this.#root.contains(event.target)) return;
     this.#setOpen(false, false);
   };
-
-  #selectedOption(): HTMLButtonElement | null {
-    return this.#options.find((option) => option.getAttribute('aria-selected') === 'true') ?? null;
-  }
 
   #commit(value: string): void {
     this.#renderValue(value);

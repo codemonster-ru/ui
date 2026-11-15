@@ -127,8 +127,18 @@ export class CmModalController implements CmController {
     if (!this.#dialog.open) this.setOpen(false);
   };
 
-  readonly #handleOpenRequest = (): void => this.setOpen(true);
-  readonly #handleCloseRequest = (): void => this.setOpen(false);
+  readonly #handleOpenRequest = (event: Event): void => {
+    if (this.#ownsRequest(event)) this.setOpen(true);
+  };
+
+  readonly #handleCloseRequest = (event: Event): void => {
+    if (this.#ownsRequest(event)) this.setOpen(false);
+  };
+
+  #ownsRequest(event: Event): boolean {
+    const Element_ = this.#dialog.ownerDocument.defaultView?.Element;
+    return Boolean(Element_ && event.target instanceof Element_ && event.target.closest('dialog') === this.#dialog);
+  }
 
   #isDismissible(): boolean {
     return this.#dialog.getAttribute(`data-cm-${this.#options.eventName}-dismissible`) !== 'false';

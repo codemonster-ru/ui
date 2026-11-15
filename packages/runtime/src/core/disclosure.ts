@@ -14,7 +14,7 @@
  * progressive-enhancement adapter focused it.
  */
 export const cmFocusableSelector =
-  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+  'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]):not(input[type="hidden"])';
 
 /** Where a newly opened panel should place focus. */
 export type CmDisclosureFocus = 'none' | 'first' | 'last';

@@ -1,5 +1,4 @@
-import { autoUpdate, computePosition, flip, offset, shift } from '@codemonster-ru/floater.js';
-import { afterCmFloatingExit, resolveCmAnchoredTarget } from './anchored-position.js';
+import { afterCmFloatingExit, observeCmAnchoredPosition, resolveCmAnchoredTarget } from './anchored-position.js';
 import { resolveTooltipDelay } from './core/disclosure.js';
 import type { CmController, CmControllerFactory } from './runtime.js';
 
@@ -25,17 +24,22 @@ export class CmTooltipController implements CmController {
     this.#synchronize(!this.#content.hidden);
     this.#root.addEventListener('focus', this.#handleFocus, true);
     this.#root.addEventListener('blur', this.#handleBlur, true);
-    this.#root.addEventListener('pointerenter', this.#handlePointerEnter);
-    this.#root.addEventListener('pointerleave', this.#handlePointerLeave);
+    for (const element of [this.#root, this.#content]) {
+      element.addEventListener('pointerenter', this.#handlePointerEnter);
+      element.addEventListener('pointerleave', this.#handlePointerLeave);
+    }
     this.#root.addEventListener('keydown', this.#handleKeydown);
   }
 
   disconnect(): void {
     this.#root.removeEventListener('focus', this.#handleFocus, true);
     this.#root.removeEventListener('blur', this.#handleBlur, true);
-    this.#root.removeEventListener('pointerenter', this.#handlePointerEnter);
-    this.#root.removeEventListener('pointerleave', this.#handlePointerLeave);
+    for (const element of [this.#root, this.#content]) {
+      element.removeEventListener('pointerenter', this.#handlePointerEnter);
+      element.removeEventListener('pointerleave', this.#handlePointerLeave);
+    }
     this.#root.removeEventListener('keydown', this.#handleKeydown);
+    this.#root.ownerDocument.removeEventListener('keydown', this.#handleKeydown, true);
     this.#clearTimer();
     this.#releaseFloating();
     this.#hovered = false;
@@ -61,21 +65,34 @@ export class CmTooltipController implements CmController {
   };
 
   readonly #handlePointerEnter = (): void => {
+    if (this.#hovered) return;
     this.#hovered = true;
+    this.#root.ownerDocument.addEventListener('keydown', this.#handleKeydown, true);
     this.#open();
   };
 
-  readonly #handlePointerLeave = (): void => {
+  readonly #handlePointerLeave = (event: Event): void => {
+    const { relatedTarget } = event as PointerEvent;
+    const Node_ = this.#root.ownerDocument.defaultView?.Node;
+    if (
+      Node_ &&
+      relatedTarget instanceof Node_ &&
+      (this.#root.contains(relatedTarget) || this.#content.contains(relatedTarget))
+    )
+      return;
     this.#hovered = false;
+    this.#root.ownerDocument.removeEventListener('keydown', this.#handleKeydown, true);
     if (!this.#focused) this.#close();
   };
 
   readonly #handleKeydown = (event: Event): void => {
     const KeyboardEvent_ = this.#root.ownerDocument.defaultView?.KeyboardEvent;
-    if (!KeyboardEvent_ || !(event instanceof KeyboardEvent_) || event.key !== 'Escape') return;
-    if (this.#content.hidden && this.#showTimer === undefined) return;
-    event.preventDefault();
-    event.stopPropagation();
+    if (!KeyboardEvent_ || !(event instanceof KeyboardEvent_) || event.key !== 'Escape' || event.isComposing) return;
+    if (event.currentTarget === this.#root) {
+      if (this.#content.hidden && this.#showTimer === undefined) return;
+      event.preventDefault();
+      event.stopPropagation();
+    } else if (this.#content.hidden || event.composedPath().includes(this.#root)) return;
     this.#close();
   };
 
@@ -130,30 +147,18 @@ export class CmTooltipController implements CmController {
       'top';
     const rtl = document.defaultView?.getComputedStyle(trigger).direction === 'rtl';
     const direction = side === 'start' ? (rtl ? 'right' : 'left') : side === 'end' ? (rtl ? 'left' : 'right') : side;
-    const opposite = { top: 'bottom', bottom: 'top', left: 'right', right: 'left' } as const;
     const { left, top } = content.style;
     const origin = document.createComment('tooltip');
     content.before(origin);
     target.append(content);
     content.setAttribute('data-cm-tooltip-floating', '');
 
-    let active = true;
-    const place = (): void => {
-      void computePosition(trigger, content, {
-        placement: direction,
-        strategy: 'fixed',
-        middleware: [offset(10), flip({ placements: [direction, opposite[direction]] }), shift()],
-      }).then(({ placement, x, y }) => {
-        if (active) {
-          content.setAttribute('data-cm-tooltip-floating', placement);
-          content.style.left = `${x}px`;
-          content.style.top = `${y}px`;
-        }
-      });
-    };
-    const stop = autoUpdate(trigger, place, content);
+    const stop = observeCmAnchoredPosition(trigger, content, direction, 10, null, (style, placement) => {
+      content.setAttribute('data-cm-tooltip-floating', placement);
+      content.style.left = style.left;
+      content.style.top = style.top;
+    });
     this.#stopFloating = () => {
-      active = false;
       stop();
       content.removeAttribute('data-cm-tooltip-floating');
       content.style.left = left;
@@ -161,7 +166,6 @@ export class CmTooltipController implements CmController {
       if (origin.parentNode) origin.replaceWith(content);
       else content.remove();
     };
-    place();
   }
 
   #releaseFloating(): void {
