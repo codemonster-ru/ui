@@ -12,7 +12,7 @@ Individual styles are available from the `select.css`, `date-picker.css`, and
 
 Select is component-owned: both adapters render the same trigger, listbox, and hidden input rather
 than a browser-drawn control. It requires `id` and `options` with unique string `value`, non-empty
-`label`, and optional `disabled`. It accepts `value`, `placeholder`, `clearable`, localized
+`label`, and optional `disabled`. It accepts `modelValue` in Vue, `placeholder`, `clearable`, localized
 `clearLabel`, `size` (`sm`, `md`, or `lg`), `invalid`, `disabled`, and `required`. Safe attributes
 such as `autocomplete` and `aria-describedby` reach the trigger, while `name` reaches the hidden
 input.
@@ -59,9 +59,12 @@ component-owned control sits outside constraint validation. Refusing an empty su
 application's responsibility.
 
 Disabled Select values are omitted from form submissions. In server-rendered HTML, put
-`disabled` on both the trigger and the named hidden input.
-An uncanceled native form reset restores the submitted value and visible selection that were
-authored in the original server markup. Reset does not dispatch a selection change event.
+`disabled` on both the trigger and the named hidden input. To associate the control with a
+separate form, pass `form` in Vue or set that attribute on the trigger and hidden input in
+Vanilla. An uncanceled reset restores the initial submitted value and visible label. Vue
+emits `update:modelValue` if the value changes. Reset does not emit a selection event. If you
+call `form.reset()` programmatically, read the new Select value after reset handling has run;
+the component updates its hidden input on the next task.
 
 ## DatePicker
 

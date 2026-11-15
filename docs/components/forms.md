@@ -254,6 +254,11 @@ rendering takes its initial mode from `defaultTheme`; browser preferences are re
 - Checked named Checkbox, Radio, and Switch controls contribute their string value. Unchecked
   controls are absent; normalize missing values in application code.
 - Related Radio controls use the same native `name`; browser exclusivity remains authoritative.
+- A native reset restores the initial values of Vue Input, Textarea, Checkbox, Switch, and Radio
+  controls. Bind `v-model` to keep the application in sync after reset. For a Radio group whose
+  model starts `undefined`, restore that value in the form's `@reset` handler: the radio's model
+  event carries an option value. Alternatively, use an initial string that matches none of the
+  group's option values.
 - Textarea submits its current DOM text and preserves native multiline constraints.
 - A readonly input remains successful form data; a disabled input does not submit.
 - Field's required marker is visual-only, so set native `required` on Input as shown.

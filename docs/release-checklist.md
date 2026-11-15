@@ -195,6 +195,6 @@ the release notes or issue tracker.
 - Confirm all release tags point to the same reviewed release commit.
 - Confirm internal dependency ranges resolve to published versions from the registry.
 - Confirm `latest` or `next` is correct for every package.
-- Confirm registry consumers pass with npm, pnpm, and Yarn.
+- Confirm the npm registry smoke passes and the packed consumers passed with npm, pnpm, and Yarn.
 - Record final workflow URLs, integrity values, and smoke results in the release issue.
 - Announce the release after the complete registry consumer passes.

@@ -57,8 +57,9 @@ Import the generated properties once in the application stylesheet:
 @import '@codemonster-ru/ui-tokens/tokens.css';
 ```
 
-The light theme is the default. Set `data-cm-theme="dark"` on the document root to apply the dark
-semantic color overrides, or set `data-cm-theme="light"` explicitly.
+Use `data-cm-theme="light"` or `data-cm-theme="dark"` on the document root to force a theme.
+With no attribute or `data-cm-theme="system"`, the stylesheet follows `prefers-color-scheme`
+and falls back to light.
 
 Consumers that only need the portable breakpoint custom properties can import the smaller entry:
 
