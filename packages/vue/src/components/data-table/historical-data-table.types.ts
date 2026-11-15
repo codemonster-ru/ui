@@ -35,8 +35,11 @@ export interface VfDataTableLabels {
   error: string;
   loading: string;
   pagination: string;
+  paginationSummary: (firstRow: number, lastRow: number, totalRows: number) => string;
   rows: string;
   rowsPerPage: string;
+  pageSummary: (page: number, pageCount: number) => string;
+  goToPage: (page: number) => string;
   previousPage: string;
   nextPage: string;
   selectAllRows: string;

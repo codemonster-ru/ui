@@ -97,8 +97,16 @@ models. Use `rowKey` with a field path or resolver: numeric `42` and string `"42
 The default key is the original source index, so selection remains attached while client sorting
 reorders the view. Client sorting and, when enabled, client paging are the historical defaults.
 The adapter also restores caption and cell/expanded slots, optional column headers, and a
-generated table ID. Pointer column reordering and historical callback labels and page-number
-controls remain separate.
+generated table ID.
+
+Enable `pagination` on `VfDataTable` for numbered pages. Up to seven pages show every number.
+Longer ranges show the first and last pages, numbers near the current page, and ellipses for
+omitted pages. Below a 480 px pager width, the current page and arrow buttons stay visible.
+Use `labels.pageSummary(page, pageCount)` for the current page name, `labels.goToPage(page)`
+for other page buttons, and `labels.paginationSummary(first, last, total)` for the row range.
+Use `v-model:page` and `v-model:page-size` to own the selection. For server-paged rows, set
+`paginationMode="manual"` and provide `totalRows`. Client paging derives its count from the
+supplied rows. `CmDataTable` and the Vanilla controller use the previous/next pager by default.
 
 Select-all affects only eligible rendered rows. Vue preserves selections outside the current page.
 A disabled row that is already selected remains selected until the application changes the

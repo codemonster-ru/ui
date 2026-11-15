@@ -68,6 +68,11 @@
       "required": false,
       "scopeContract": "data-table-expanded-row",
       "description": "Details for an expanded data row."
+    },
+    "pagination": {
+      "required": false,
+      "scopeContract": "data-table-pagination",
+      "description": "Vue pagination contents with the page, page count and size, size options, total, and rendered row count."
     }
   },
   "events": {
