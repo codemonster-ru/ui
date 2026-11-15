@@ -96,6 +96,12 @@ from the current root-only ESM Vue export.
 - Tooltip passed six Vue interaction tests and four built canonical markup cases. Chrome used the
   authored button in Vue light and Vanilla dark. Tab showed the body portal 10 px below the
   trigger and Escape hid it while retaining focus. Both triggers referenced the portal ID.
+- NavMenu passed two Vue source tests and the built canonical suite. The routed fixture produced
+  identical light and dark captures in both adapters. All three Chrome behavior scenarios passed
+  in Vue and Vanilla. At 390 and 1280 px the production showcases skipped the disabled route in
+  the Tab sequence and opened both the Core anchor and the Grid guide with Enter. Vue updated
+  `aria-current` for the same-document route. The showcase link adapter resolves string and object
+  paths to native anchors. A third-party router package was outside this check.
 - New CSS subpaths are covered by the distributed package test and by the aggregate-style
   reachability check. Historical component styles use VueForge selectors and tokens. The new
   counterparts use the existing shared CodeMonster selectors and tokens. CSS class name and

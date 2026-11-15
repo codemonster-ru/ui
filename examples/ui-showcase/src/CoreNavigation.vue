@@ -11,8 +11,35 @@ import {
   CmTabs,
 } from '@codemonster-ru/ui-vue';
 import { folderOpen, grid, layers } from '@codemonster-ru/ui-icons';
-import { ref, watchPostEffect } from 'vue';
+import { defineComponent, h, ref, watchPostEffect, type PropType } from 'vue';
 import CoreMatrix from './CoreMatrix.vue';
+
+const GuideLink = defineComponent({
+  props: {
+    to: { type: [String, Object] as PropType<string | { path: string; hash?: string }>, required: true },
+  },
+  setup(props, { slots }) {
+    return () =>
+      h(
+        'a',
+        { href: typeof props.to === 'string' ? props.to : props.to.path + (props.to.hash ?? '') },
+        slots.default?.(),
+      );
+  },
+});
+const guideValue = ref('grid');
+const guideItems = [
+  { value: 'overview', label: 'Overview', to: '/core/#actions' },
+  {
+    value: 'guides',
+    label: 'Guides',
+    children: [
+      { value: 'grid', label: 'Grid', to: { path: '/layouts/', hash: '#demo-grid' } },
+      { value: 'billing', label: 'Billing', to: '/billing/', disabled: true },
+    ],
+  },
+  { value: 'icons', label: 'Icons', href: '/icons/' },
+];
 
 const links = [
   { label: 'Docs', href: '/core/' },
@@ -359,6 +386,13 @@ const menuBarExamples = [
       <h4>Navigation menu and menu bar</h4>
       <CmNavMenu v-model:value="selectedMenu" variant="inline" :items="menu" class="core-nav-plain" />
       <CmNavMenu v-model:value="pillMenu" variant="pills" :items="menu" aria-label="Pill navigation" />
+      <CmNavMenu
+        v-model="guideValue"
+        variant="pills"
+        :items="guideItems"
+        :link-component="GuideLink"
+        aria-label="Product guides"
+      />
       <div class="core-matrix-grid core-nav-variants">
         <div class="core-matrix-cell">
           <h5>Sidebar with icons</h5>

@@ -42,7 +42,7 @@ export function behaviorTarget(slug: string, name: string): HTMLElement | null {
   const component = slug === 'column-chooser' ? 'popover' : slug;
   const selector =
     selectors[name] ??
-    (name.startsWith('item-') ? '[data-cm-menu-item]' : null) ??
+    (name.startsWith('item-') ? (slug === 'nav-menu' ? '[data-cm-nav-menu-value]' : '[data-cm-menu-item]') : null) ??
     (name === 'close' ? `[data-cm-${slug}-close]` : null) ??
     (name === 'tooltip' ? '.cm-tooltip__content' : null) ??
     `.cm-${component}__${Object.hasOwn(ordinal, index) ? part : name}`;
