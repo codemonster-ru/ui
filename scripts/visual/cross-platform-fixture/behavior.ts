@@ -1,5 +1,7 @@
 const ordinal: Record<string, number> = { first: 0, second: 1, third: 2, last: -1 };
 const selectors: Record<string, string> = {
+  'all-columns': '[data-cm-column-chooser-all]',
+  'column-owner': '[data-cm-column-chooser-key="owner"]',
   'mobile-toggle': '[data-cm-mobile-sidebar-toggle]',
   'sidebar-toggle': '[data-cm-sidebar-toggle]',
   'header-first': 'th[aria-sort]',
@@ -62,6 +64,7 @@ export function initializeBehavior(root: HTMLElement) {
     'drawer-open-change',
     'popover-open-change',
     'dropdown-open-change',
+    'column-chooser-visible-columns-change',
     'menu-select',
     'tabs-value-change',
     'command-palette-select',

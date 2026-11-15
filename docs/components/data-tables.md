@@ -107,14 +107,9 @@ count and render `firstRow-lastRow of totalRows`; omit it when the application o
 The page and range summary templates plus visible previous/next text can be localized independently
 from the buttons' accessible labels.
 
-Vanilla templates render visible columns in the same order in the header and each row. The application can
-render `CmCheckbox` controls inside a `CmPopover` or dialog and persist that array wherever its
-product requires. Keep required column keys in every update, normalize selected keys back to the
-original column order, and derive the chooser's checked/indeterminate aggregate state from the
-optional columns. The application owns the trigger and placement, required-column policy,
-authorization, persistence, optimistic updates, rollback, and any server rerender. This composition
-is intentionally not a standalone DataTableColumnChooser contract without matching Vue and Vanilla HTML
-product demand.
+Vanilla templates render visible columns in the same order in the header and each row. Use the
+[ColumnChooser](#choosing-columns) to report an ordered list of visible column keys. The
+application owns the required-column policy, persistence and table rendering.
 
 The controller cycles one sortable column through ascending, descending, and unsorted states. It
 synchronizes native row checkboxes and clamps previous/next page requests. It does not reorder,
@@ -139,9 +134,9 @@ hide, or replace rows. Without JavaScript, users retain a readable semantic tabl
 
 ## Choosing columns
 
-`CmColumnChooser` is a popover of checkboxes that decides which columns a table shows. It renders
-the Popover structure and is driven by the Popover controller rather than a mechanism of its own,
-and it reports the shown keys in declaration order so the table can be handed them directly.
+`CmColumnChooser` is a popover of checkboxes that decides which columns a table shows. Popover owns
+disclosure and focus. The chooser reports the shown keys in declaration order so the table can be
+handed them directly.
 
 Required columns are always shown and cannot be cleared. A chooser whose columns are all required
 reads as fully shown and disabled, because there is nothing left to reveal — which is deliberately
@@ -176,3 +171,35 @@ const rows = [
 ```
 
 Vanilla markup: [column-chooser HTML](../../contracts/column-chooser/cases/default.html).
+
+Render the initial checked state in HTML. Put `data-cm-column-chooser-key` on each option checkbox
+and `data-cm-column-chooser-all` on the aggregate checkbox. Mark required options with
+`data-cm-column-chooser-required`, `checked` and `disabled`. Give every checkbox a native label
+and use a unique trigger and panel ID for each chooser.
+
+Register both `popover` and `column-chooser` for the canonical root's
+`data-cm-controller="popover column-chooser"`. The Vanilla showcase bundle registers both for you.
+
+```ts
+import {
+  CmRuntime,
+  createCmColumnChooserController,
+  createCmPopoverController,
+  type ColumnChooserVisibleColumnsChangeDetail,
+} from '@codemonster-ru/ui-runtime';
+
+const runtime = new CmRuntime()
+  .register('popover', createCmPopoverController)
+  .register('column-chooser', createCmColumnChooserController);
+runtime.start(document);
+
+document.addEventListener('cm:column-chooser-visible-columns-change', (event) => {
+  const { visibleColumnKeys } = (event as CustomEvent<ColumnChooserVisibleColumnsChangeDetail>).detail;
+  console.log(visibleColumnKeys);
+});
+```
+
+The event bubbles after the controller updates the checked and indeterminate properties. Use
+the reported keys to update the table or request a new server render. Opening and closing the
+panel leaves the selection intact. For an enhanced subtree that will be removed, call
+`runtime.stop(root)` or use `runtime.observe(container)` for automatic disposal.

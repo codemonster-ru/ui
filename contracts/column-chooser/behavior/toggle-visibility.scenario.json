@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "column-chooser-toggle-visibility",
+  "case": "column-chooser-default",
+  "steps": [
+    { "action": "click", "target": "trigger" },
+    { "action": "click", "target": "column-owner" },
+    { "expect": "eventCount", "target": "root", "name": "column-chooser-visible-columns-change", "count": 1 },
+    { "action": "click", "target": "all-columns" },
+    { "expect": "eventCount", "target": "root", "name": "column-chooser-visible-columns-change", "count": 2 },
+    { "action": "click", "target": "all-columns" },
+    { "expect": "eventCount", "target": "root", "name": "column-chooser-visible-columns-change", "count": 3 },
+    { "expect": "visible", "target": "panel", "value": true }
+  ]
+}

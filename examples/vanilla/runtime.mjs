@@ -4,6 +4,7 @@ import {
   createCmAdminLayoutController,
   createCmAppShellController,
   createCmCheckboxController,
+  createCmColumnChooserController,
   createCmCommandPaletteController,
   createCmDataTableController,
   createCmDatePickerController,
@@ -31,6 +32,7 @@ export function createRuntime() {
     .register('admin-layout', createCmAdminLayoutController)
     .register('app-shell', createCmAppShellController)
     .register('checkbox', createCmCheckboxController)
+    .register('column-chooser', createCmColumnChooserController)
     .register('command-palette', createCmCommandPaletteController)
     .register('data-table', createCmDataTableController)
     .register('date-picker', createCmDatePickerController)

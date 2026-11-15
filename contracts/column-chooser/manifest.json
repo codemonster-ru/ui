@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "name": "ColumnChooser",
   "slug": "column-chooser",
-  "description": "A popover of checkboxes that chooses which DataTable columns are shown. It renders the Popover structure and is driven by the Popover controller rather than a mechanism of its own.",
+  "description": "A popover of native checkboxes that chooses which DataTable columns are shown. Popover controls disclosure and ColumnChooser derives the selected keys and aggregate checkbox.",
   "props": {
     "id": {
       "type": "string",
@@ -38,5 +38,5 @@
       "payloadContract": "string-list"
     }
   },
-  "states": ["default", "open", "disabled"]
+  "states": ["default", "open", "disabled", "mixed"]
 }
