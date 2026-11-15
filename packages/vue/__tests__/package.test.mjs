@@ -130,6 +130,8 @@ test('publishes the opt-in historical icon and Vue components', async () => {
     'VfTag',
     'VfTextarea',
     'VueIconify',
+    'useDisclosure',
+    'useId',
     'useTableOfContents',
   ]);
   assert.match(await renderToString(h(entry.VfMenu, null, () => 'Actions')), /role="menu"[\s\S]*Actions/u);
