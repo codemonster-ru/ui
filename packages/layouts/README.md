@@ -27,8 +27,9 @@ A layout composes components into a page shell: its regions, their geometry, and
 whether a region is shown. Components live in [`ui-vue`](../vue/README.md); the two are separate
 packages so that the two things can be named apart.
 
-Layouts render the same canonical DOM as Vanilla templates, and their state is expressed as
-`data-cm-*` attributes rather than framework-specific slot scopes, so both adapters can carry it.
+Layouts render the same canonical DOM as Vanilla templates and publish their state in
+`data-cm-*` attributes. Vue consumers can also compose their controls through native scoped slots
+and component ref methods.
 
 ## Documentation
 

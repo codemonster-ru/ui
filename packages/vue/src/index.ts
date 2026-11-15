@@ -48,7 +48,8 @@ export type { CmFieldsetDefaultSlotProps, CmFieldsetProps } from './components/f
 export { default as CmGrid } from './components/grid/CmGrid.vue';
 export type { CmGridElement, CmGridProps } from './components/grid/grid.types';
 export { default as CmIcon } from './components/icon/CmIcon.vue';
-export type { CmIconFamily, CmIconGeometry, CmIconVariant } from './components/icon/icon.types';
+export { default as VueIconify } from './components/icon/VueIconify.vue';
+export type { CmIconFamily, CmIconGeometry, CmIconVariant, VueIconifyProps } from './components/icon/icon.types';
 export { default as CmIconButton } from './components/icon-button/CmIconButton.vue';
 export type {
   CmIconButtonProps,

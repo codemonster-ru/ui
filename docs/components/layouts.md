@@ -6,18 +6,11 @@ rather than `ui-vue`, because a layout is not a component and the two are worth 
 
 ## State lives in attributes
 
-A layout's state is small — a sidebar is collapsed or not, a mobile drawer is open or not — but it
-has to cross a boundary that Vue slot scopes cannot. The VueForge layouts handed every slot a scope
-object holding the state plus five functions to change it; Vanilla templates have no Vue slot scope, which is why those
-layouts were never portable.
-
-So the state is written on the layout root as `data-cm-*` attributes. Vue and Vanilla markup expose it, CSS
-reads it, and a runtime controller flips it. Controls are marked rather than wired:
-`data-cm-mobile-sidebar-toggle` on the button, `data-cm-mobile-sidebar-close` on the backdrop. That
-is the same arrangement Tabs and Accordion already use.
-
-One consequence worth having: the layout is correct before JavaScript runs. A server-rendered page
-opens with the right sidebar state, and CSS handles the drawer.
+Vue and Vanilla expose layout state on the root as `data-cm-*` attributes. CSS uses those
+attributes to render the initial server state and subsequent updates. Vanilla uses marked
+controls such as `data-cm-mobile-sidebar-toggle` on the button and `data-cm-mobile-sidebar-close`
+on the backdrop. Vue also exposes scoped slots and component ref methods for consumers composing
+their own controls.
 
 ## AdminLayout
 
@@ -26,6 +19,14 @@ optional footer. Below 48rem the sidebar becomes a drawer with a backdrop.
 
 Escape closes the drawer and leaves a collapsed sidebar alone — collapsing is a preference someone
 set, while the drawer is covering the page right now.
+
+Use `defaultSidebarCollapsed` or `defaultMobileSidebarOpen` for an initial uncontrolled state.
+Use `v-model:sidebar-collapsed` and `v-model:mobile-sidebar-open` when the parent owns state.
+If you omit `id`, the component generates an SSR-safe ID for the sidebar and toggle. The
+`brand`, `aside`, `header`, and default slots receive `isSidebarCollapsed`, `isSidebarCompact`,
+`isMobileSidebarOpen`, and the corresponding collapse, expand, open, close, and toggle methods.
+The `mobile-toggle` slot receives `mobileToggleAttrs` for `aria-label`, `aria-controls`, and
+`aria-expanded`, along with `toggleMobileSidebar` and the open and close methods.
 
 ```vue
 <script setup lang="ts">
@@ -55,6 +56,9 @@ Vanilla markup: [admin-layout HTML](../../contracts/admin-layout/cases/default.h
 state at all, so it needs neither attributes nor a controller — it is the frame, and everything that
 changes lives in what fills it.
 
+Use `:fill-viewport="false"` to size the frame to its content. Both `header-actions` and
+`headerActions` are accepted as slot names.
+
 ```vue
 <template>
   <CmAdminShell>
@@ -70,12 +74,14 @@ changes lives in what fills it.
 `CmAppShell` is the widest frame: header, subheader, sidebar, content, aside, and footer. `layout`
 selects which regions exist — `content`, `sidebar-content`, or `sidebar-content-aside`.
 
-Its sticky offsets are published as custom properties rather than measured, so the frame is correct
-before any script runs. Declare `--cm-layout-header-height` for that case;
-`CmShellMetricsController` replaces it with the observed height once a browser is involved.
+Use `sticky-header`, `sticky-sidebar`, and `sticky-aside` to opt into sticky placement.
+`sticky-header` measures the rendered header and subheader in the browser. The server render uses
+the declared `--cm-layout-header-height` and `--cm-layout-subheader-height` tokens.
 
-The collapse control is marked, not supplied. Tag your own button with `data-cm-sidebar-toggle` and
-both implementations keep its `aria-expanded` in step with the root's `data-cm-sidebar-collapsed`.
+The default and `sidebar` slots receive `isSidebarCollapsed`, `collapseSidebar`, `expandSidebar`,
+and `toggleSidebarCollapsed`. Vue and Vanilla also accept a button marked `data-cm-sidebar-toggle`.
+Both implementations keep its `aria-expanded` in step with the root's `data-cm-sidebar-collapsed`.
+On desktop the sidebar narrows to a rail, and on small screens it remains reachable above the content.
 
 ```vue
 <script setup lang="ts">
@@ -105,6 +111,9 @@ Register both controllers, since the root names both: `app-shell` collapses the 
 
 `CmDocumentLayout` is the reading counterpart: header, subheader, chapter sidebar, body, a
 contextual aside, and footer. It has no state of its own, so it names only `shell-metrics`.
+`layout` defaults to `content`. Set `layout="sidebar-content-aside"` to show both side regions.
+The `content-subheader` slot appears above the body. Set `edge-notches` to decorate the edges of
+the header and footer.
 
 ```vue
 <script setup lang="ts">
@@ -112,7 +121,7 @@ import { CmDocumentLayout } from '@codemonster-ru/ui-layouts';
 </script>
 
 <template>
-  <CmDocumentLayout>
+  <CmDocumentLayout layout="sidebar-content-aside" sticky-header sticky-sidebar>
     <template #header>Guide</template>
     <template #sidebar>Chapters</template>
     <template #aside>On this page</template>
@@ -125,6 +134,9 @@ import { CmDocumentLayout } from '@codemonster-ru/ui-layouts';
 
 `CmSetupLayout` is a centred panel for one step of a setup or onboarding flow, with a heading, body
 and actions. Enter advances and Escape goes back.
+
+The `next` and `back` events in Vue provide the original keyboard event. A key's default action is
+cancelled only when Vue has a listener for that navigation event. The aside defaults to `left`.
 
 The Enter rule is worth knowing, because a wizard that steals the key is worse than one that never
 offered the shortcut. Enter advances from a single-line text field or from ordinary content, and is

@@ -26,3 +26,11 @@ export function resolveCmIcon(
 ): CmIconRendering | null {
   return geometry[`${family}/${variant}`] ?? geometry['classic/solid'] ?? null;
 }
+
+/** Gives each SVG instance its own masks, clip paths, and fragment references. */
+export function scopeCmIconIds(body: string, scope: string): string {
+  const prefix = scope.replace(/[^A-Za-z0-9_-]/gu, (char) => `_${char.codePointAt(0)?.toString(16)}_`);
+  return body
+    .replace(/(\s(?:id="|(?:xlink:)?href="#))([^"\s]+)(?=")/gu, `$1${prefix}-$2`)
+    .replace(/url\(#([^\s)]+)\)/gu, `url(#${prefix}-$1)`);
+}
