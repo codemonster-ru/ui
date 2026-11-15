@@ -36,7 +36,10 @@ second website is needed. Package consumers need no migration.
 - **Focused browser checks:** filtered the catalogs by name, purpose, and category; switched
   snippet tabs with the keyboard and compared pasted source. Checked 50 Core calendar openings,
   28 narrow overlay interactions and focus restorations, 16 form-card layouts, and 64 workspace
-  axe scans with four complete workspace flows. The guide review covered 80 real page renders
+  axe scans with four complete workspace flows. All 124 primary fixture frames fit the narrow
+  viewport horizontally. Nav Menu has room for its full menu, and the five tested viewport-height
+  Vanilla layouts keep a stable height. Eight other Vue previews scroll vertically by 4–23 px on
+  narrow screens; keyboard scrolling can reach the content. The guide review covered 80 real page renders
   and checked larger text on a dense guide. An independent reviewer checked screenshots, route
   semantics, search ordering and keyboard behavior; the findings were addressed before handoff.
 - **Engineering:** all 678 workspace tests passed. Type checking, docs and package contracts,

@@ -78,6 +78,25 @@ async function checkAccessibility(page, label) {
   accessibilityScans++;
 }
 
+async function checkReferenceFrames(page, base, adapter) {
+  const preview = page.locator('.reference-preview iframe').first();
+  const demo = preview.contentFrame().locator('.showcase-demo:not([inert])');
+
+  if (adapter === 'vue') {
+    await page.goto(url(base, 'components/nav-menu/'));
+    await demo.waitFor();
+    assert(await demo.evaluate(() => document.documentElement.scrollHeight <= innerHeight));
+  } else {
+    await page.goto(url(base, 'components/admin-shell/'));
+    await demo.waitFor();
+    await demo.evaluate(async () => {
+      for (let count = 0; count < 6; count++) await new Promise(requestAnimationFrame);
+    });
+    // The fixture fills its viewport, so the parent must never size the viewport from the fixture.
+    assert.equal(await preview.evaluate((frame) => frame.style.blockSize), '');
+  }
+}
+
 async function checkNavigation(page, base, adapter, width) {
   const search = page.getByRole('button', { name: 'Search components and guides' });
   await page.goto(base);
@@ -197,6 +216,7 @@ try {
                 await scale.evaluate((style) => style.remove());
               }
             }
+            if (width === 360 && theme === 'dark') await checkReferenceFrames(page, base, adapter);
             if ((width === 360 || width === 1440) && theme === 'dark')
               await checkNavigation(page, base, adapter, width);
             assert.deepEqual(errors, [], `${adapter} ${width} ${theme}: network/runtime errors`);

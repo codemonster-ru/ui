@@ -25,7 +25,7 @@ if (modal) {
 }
 
 const frame = window.frameElement;
-if (frame && !frame.classList.contains('showcase-frame--tall')) {
+if (frame && !frame.matches('.showcase-frame--tall, .reference-frame--tall')) {
   new ResizeObserver(() => {
     frame.style.blockSize = `${Math.ceil(demo.getBoundingClientRect().height)}px`;
   }).observe(demo);
