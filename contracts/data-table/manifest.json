@@ -63,8 +63,18 @@
     },
     "clearSortLabelTemplate": { "type": "string", "required": false, "default": "Clear sorting for {column}" }
   },
-  "slots": {},
+  "slots": {
+    "expandedRow": {
+      "required": false,
+      "scopeContract": "data-table-expanded-row",
+      "description": "Details for an expanded data row."
+    }
+  },
   "events": {
+    "expansionChange": {
+      "description": "Vanilla reports the row ID and its new expanded state.",
+      "payloadContract": "data-table-row-expansion"
+    },
     "columnResizeEnd": {
       "description": "Reports the final current CSS widths by column key.",
       "payloadContract": "data-table-column-widths"

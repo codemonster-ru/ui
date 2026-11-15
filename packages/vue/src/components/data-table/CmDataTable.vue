@@ -137,13 +137,16 @@ const emit = defineEmits<{
   'column-resize-end': [columnWidths: CmDataTableColumnWidths];
   'update:sort': [sort: CmDataTableSort | null];
 }>();
+type ExpandedRowSlot = (props: { row: Row; rowKey: string; rowIndex: number }) => unknown;
+
 const slots = defineSlots<{
   caption?: () => unknown;
   empty?: () => unknown;
   error?: () => unknown;
   loading?: () => unknown;
   footer?: () => unknown;
-  'expanded-row'?: (props: { row: Row; rowKey: string; rowIndex: number }) => unknown;
+  'expanded-row'?: ExpandedRowSlot;
+  expandedRow?: ExpandedRowSlot;
   [slot: `header${string}`]: ((props: { column: CmDataTableColumn }) => unknown) | undefined;
   [slot: `cell${string}`]:
     | ((props: { row: Row; column: CmDataTableColumn; value: CmDataTableCellValue; rowIndex: number }) => unknown)
@@ -645,6 +648,17 @@ function toggleExpandedRow(id: string): void {
   emit('update:expandedRowKeys', keys);
 }
 
+function expansionLabel(id: string, expanded: boolean): string {
+  return formatTemplate(expanded ? props.collapseRowLabelTemplate : props.expandRowLabelTemplate, {
+    row: rowLabel(id),
+  });
+}
+
+function expansionSlot(): 'expanded-row' | 'expandedRow' | undefined {
+  if (slots['expanded-row']) return 'expanded-row';
+  return slots.expandedRow ? 'expandedRow' : undefined;
+}
+
 function rowLabel(id: string): string {
   return id
     .split('-')
@@ -755,7 +769,7 @@ useCmHydrated();
                 @change="changeAllSelection(($event.target as HTMLInputElement).checked)"
               />
             </th>
-            <th v-if="$slots['expanded-row']" class="cm-data-table__expansion" scope="col" aria-label="Row details" />
+            <th v-if="expansionSlot()" class="cm-data-table__expansion" scope="col" aria-label="Row details" />
             <th
               v-for="(column, index) in visibleColumns"
               :key="column.key"
@@ -807,7 +821,7 @@ useCmHydrated();
           <template v-if="skeletonLoading">
             <tr v-for="row in skeletonRowCount" :key="row" aria-hidden="true">
               <td v-if="props.selectable" class="cm-data-table__selection" />
-              <td v-if="$slots['expanded-row']" class="cm-data-table__expansion" />
+              <td v-if="expansionSlot()" class="cm-data-table__expansion" />
               <td v-for="column in visibleColumns" :key="column.key" v-bind="cellAttrs(column)">
                 <CmSkeleton class="cm-data-table__skeleton" radius="control" />
               </td>
@@ -816,7 +830,7 @@ useCmHydrated();
           <tr v-else-if="state">
             <td
               class="cm-data-table__state"
-              :colspan="Math.max(1, columnCount + Number(Boolean($slots['expanded-row'])))"
+              :colspan="Math.max(1, columnCount + Number(Boolean(expansionSlot())))"
               role="status"
             >
               <slot :name="state">{{ props[`${state}Text`] }}</slot>
@@ -839,17 +853,15 @@ useCmHydrated();
                     @change="changeRowSelection(row.id, ($event.target as HTMLInputElement).checked)"
                   />
                 </td>
-                <td v-if="$slots['expanded-row']" class="cm-data-table__expansion">
+                <td v-if="expansionSlot()" class="cm-data-table__expansion">
                   <CmIconButton
                     size="sm"
-                    :label="
-                      formatTemplate(
-                        expandedRowKeys.has(row.id) ? props.collapseRowLabelTemplate : props.expandRowLabelTemplate,
-                        { row: rowLabel(row.id) },
-                      )
-                    "
+                    :label="expansionLabel(row.id, expandedRowKeys.has(row.id))"
                     :aria-expanded="expandedRowKeys.has(row.id)"
                     :aria-controls="expandedRowKeys.has(row.id) ? expandedContentId(row.id) : undefined"
+                    data-cm-data-table-expand=""
+                    :data-cm-data-table-expand-label="expansionLabel(row.id, false)"
+                    :data-cm-data-table-collapse-label="expansionLabel(row.id, true)"
                     @click="toggleExpandedRow(row.id)"
                   >
                     <CmIcon :icon="chevronDown" />
@@ -868,12 +880,17 @@ useCmHydrated();
                 </td>
               </tr>
               <tr
-                v-if="$slots['expanded-row'] && expandedRowKeys.has(row.id)"
+                v-if="expansionSlot() && expandedRowKeys.has(row.id)"
                 :id="expandedContentId(row.id)"
                 class="cm-data-table__expanded-row"
               >
                 <td :colspan="columnCount + 1">
-                  <slot name="expanded-row" :row="row.record" :row-key="row.id" :row-index="rowIndex" />
+                  <slot
+                    :name="expansionSlot() ?? 'expanded-row'"
+                    :row="row.record"
+                    :row-key="row.id"
+                    :row-index="rowIndex"
+                  />
                 </td>
               </tr>
             </template>

@@ -31,6 +31,11 @@ export interface DataTableSelectionChangeDetail {
   selectedRowIds: string[];
 }
 
+export interface DataTableExpansionChangeDetail {
+  rowId: string;
+  expanded: boolean;
+}
+
 export interface DataTablePageChangeDetail {
   page: number;
 }
@@ -40,6 +45,8 @@ export interface DataTablePageSizeChangeDetail {
 }
 
 const sortSelector = '[data-cm-data-table-sort]';
+const expansionSelector = 'button[data-cm-data-table-expand]';
+const tableOwnerSelector = '[data-cm-controller~="data-table"]';
 const rowSelector = '[data-cm-data-table-row]';
 const rowInputSelector = '[data-cm-data-table-select-row]';
 const selectAllSelector = '[data-cm-data-table-select-all]';
@@ -84,6 +91,10 @@ export class CmDataTableController implements CmController {
     this.#synchronizeSort();
     this.#synchronizeSelection();
     this.#synchronizePage();
+    for (const button of this.#controls<HTMLButtonElement>(expansionSelector, this.#table)) {
+      const disclosure = this.#expansionFor(button);
+      if (disclosure) this.#setExpanded(button, disclosure.panel, !disclosure.panel.hidden);
+    }
     if (this.#table.tHead?.querySelector('[data-cm-data-table-pin]')) {
       this.#stopPinning = observeDataTablePins(this.#table, (offsets) => {
         for (const cell of this.#pinnedCells()) {
@@ -227,8 +238,14 @@ export class CmDataTableController implements CmController {
     const target = this.#eventElement(event);
     if (!target) return;
 
+    const expansionButton = target.closest<HTMLButtonElement>(expansionSelector);
+    if (expansionButton) {
+      this.#toggleExpansion(expansionButton);
+      return;
+    }
+
     const sortButton = target.closest<HTMLElement>(sortSelector);
-    if (sortButton && this.#root.contains(sortButton)) {
+    if (sortButton?.closest('table') === this.#table) {
       this.#requestSort(sortButton);
       return;
     }
@@ -244,7 +261,7 @@ export class CmDataTableController implements CmController {
     if (!target) return;
 
     const selectAll = target.closest<HTMLInputElement>(selectAllSelector);
-    if (selectAll && this.#root.contains(selectAll)) {
+    if (selectAll?.closest('table') === this.#table) {
       for (const input of this.#rowInputs()) {
         if (!input.disabled) input.checked = selectAll.checked;
       }
@@ -253,7 +270,7 @@ export class CmDataTableController implements CmController {
     }
 
     const rowInput = target.closest<HTMLInputElement>(rowInputSelector);
-    if (rowInput && this.#root.contains(rowInput)) {
+    if (rowInput?.closest('table') === this.#table && rowInput.closest(rowSelector)) {
       this.#reportSelection();
       return;
     }
@@ -264,7 +281,56 @@ export class CmDataTableController implements CmController {
 
   #eventElement(event: Event): Element | null {
     const ElementConstructor = this.#root.ownerDocument.defaultView?.Element;
-    return ElementConstructor && event.target instanceof ElementConstructor ? event.target : null;
+    return ElementConstructor && event.target instanceof ElementConstructor && this.#owns(event.target)
+      ? event.target
+      : null;
+  }
+
+  #owns(element: Element): boolean {
+    const owner = element.closest(tableOwnerSelector);
+    return this.#root.contains(element) && (!owner || owner === this.#root);
+  }
+
+  #controls<T extends Element>(selector: string, scope = this.#root): T[] {
+    return [...scope.querySelectorAll<T>(selector)].filter(
+      (control) => this.#owns(control) && (scope !== this.#table || control.closest('table') === this.#table),
+    );
+  }
+
+  #expansionFor(button: HTMLButtonElement): { rowId: string; panel: HTMLElement } | null {
+    if (button.closest('table') !== this.#table) return null;
+    const row = button.closest<HTMLElement>(`tr${rowSelector}`);
+    const rowId = row?.dataset.cmDataTableRow;
+    const controls = button.getAttribute('aria-controls');
+    const panel = controls ? button.ownerDocument.getElementById(controls) : null;
+    if (
+      !rowId ||
+      !panel?.matches('tr.cm-data-table__expanded-row') ||
+      panel === row ||
+      row?.parentElement?.tagName !== 'TBODY' ||
+      panel.parentElement !== row.parentElement
+    ) {
+      return null;
+    }
+    return { rowId, panel };
+  }
+
+  #setExpanded(button: HTMLButtonElement, panel: HTMLElement, expanded: boolean): void {
+    if (!expanded && panel.contains(panel.ownerDocument.activeElement)) button.focus();
+    button.setAttribute('aria-expanded', String(expanded));
+    panel.hidden = !expanded;
+    const label = expanded ? button.dataset.cmDataTableCollapseLabel : button.dataset.cmDataTableExpandLabel;
+    if (label?.trim()) button.setAttribute('aria-label', label);
+  }
+
+  #toggleExpansion(button: HTMLButtonElement): void {
+    if (button.disabled) return;
+    const disclosure = this.#expansionFor(button);
+    if (!disclosure) return;
+    const { panel, rowId } = disclosure;
+    const expanded = panel.hidden;
+    this.#setExpanded(button, panel, expanded);
+    dispatchCmEvent<DataTableExpansionChangeDetail>(this.#root, 'data-table-expansion-change', { rowId, expanded });
   }
 
   get #sortState(): CmDataTableSortState | null {
@@ -287,7 +353,7 @@ export class CmDataTableController implements CmController {
 
   #synchronizeSort(): void {
     const sort = this.#sortState;
-    for (const button of this.#root.querySelectorAll<HTMLElement>(sortSelector)) {
+    for (const button of this.#controls<HTMLElement>(sortSelector, this.#table)) {
       const key = button.dataset.cmDataTableSort ?? '';
       button.closest('th')?.setAttribute('aria-sort', ariaSortFor(sort, key));
       const template = {
@@ -307,14 +373,16 @@ export class CmDataTableController implements CmController {
   }
 
   #rowInputs(): HTMLInputElement[] {
-    return [...this.#root.querySelectorAll<HTMLInputElement>(rowInputSelector)];
+    return this.#controls<HTMLInputElement>(rowInputSelector, this.#table).filter((input) =>
+      input.closest(rowSelector),
+    );
   }
 
   #synchronizeSelection(): void {
     const inputs = this.#rowInputs();
     const enabled = inputs.filter((input) => !input.disabled);
     const selected = enabled.filter((input) => input.checked);
-    const selectAll = this.#root.querySelector<HTMLInputElement>(selectAllSelector);
+    const [selectAll] = this.#controls<HTMLInputElement>(selectAllSelector, this.#table);
     if (selectAll) {
       selectAll.checked = enabled.length > 0 && selected.length === enabled.length;
       selectAll.indeterminate = selected.length > 0 && selected.length < enabled.length;
@@ -374,16 +442,16 @@ export class CmDataTableController implements CmController {
     this.#root.setAttribute('data-cm-data-table-page-count', String(pageCount));
     const page = Math.min(positiveInteger(this.#root.getAttribute('data-cm-data-table-page'), 1), pageCount);
     this.#root.setAttribute('data-cm-data-table-page', String(page));
-    for (const button of this.#root.querySelectorAll<HTMLButtonElement>(pageSelector)) {
+    for (const button of this.#controls<HTMLButtonElement>(pageSelector)) {
       const action = button.dataset.cmDataTablePageAction;
       button.disabled = action === 'previous' ? page <= 1 : action === 'next' ? page >= pageCount : true;
     }
-    const pageSummary = this.#root.querySelector<HTMLElement>('.cm-data-table__page-summary');
+    const [pageSummary] = this.#controls<HTMLElement>('.cm-data-table__page-summary');
     if (pageSummary) {
       const template = pageSummary.dataset.cmDataTablePageSummaryTemplate ?? 'Page {page} of {pageCount}';
       pageSummary.textContent = formatTemplate(template, { page, pageCount });
     }
-    const paginationSummary = this.#root.querySelector<HTMLElement>('.cm-data-table__pagination-summary');
+    const [paginationSummary] = this.#controls<HTMLElement>('.cm-data-table__pagination-summary');
     if (paginationSummary && totalRows !== null) {
       if (totalRows === 0) {
         paginationSummary.textContent = paginationSummary.dataset.cmDataTableEmptyPaginationSummary ?? '0 rows';

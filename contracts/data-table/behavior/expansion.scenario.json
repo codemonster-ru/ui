@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "data-table-expansion",
+  "case": "data-table-expansion",
+  "steps": [
+    { "action": "click", "target": "expand-first" },
+    { "expect": "attribute", "target": "expand-first", "name": "aria-expanded", "value": "false" },
+    { "expect": "attribute", "target": "expand-first", "name": "aria-label", "value": "Expand Atlas" },
+    { "expect": "attribute", "target": "detail-first", "name": "hidden", "value": "" },
+    { "action": "click", "target": "sort-first" },
+    { "action": "click", "target": "page-next" },
+    { "action": "click", "target": "select-nova" },
+    { "expect": "attribute", "target": "header-first", "name": "aria-sort", "value": "descending" },
+    { "expect": "text", "target": "page-summary", "value": "Page 3 of 3" },
+    { "expect": "attribute", "target": "root", "name": "data-cm-data-table-selected-count", "value": "2" },
+    { "expect": "attribute", "target": "detail-first", "name": "hidden", "value": "" },
+    { "action": "click", "target": "expand-first" },
+    { "expect": "attribute", "target": "expand-first", "name": "aria-expanded", "value": "true" },
+    { "expect": "attribute", "target": "detail-first", "name": "hidden", "value": null },
+    { "expect": "eventCount", "target": "root", "name": "cm:data-table-expansion-change", "count": 2 }
+  ]
+}

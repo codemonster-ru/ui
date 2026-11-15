@@ -22,6 +22,7 @@ export {
 } from './data-table-resize.js';
 export type { CmDataTableResizeBoundary } from './data-table-resize.js';
 export type {
+  DataTableExpansionChangeDetail,
   DataTablePageChangeDetail,
   DataTablePageSizeChangeDetail,
   DataTableSelectionChangeDetail,
