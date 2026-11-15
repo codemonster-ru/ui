@@ -31,6 +31,9 @@ is sunset: no new components, no new fixes. Its packages and documentation now l
 [`codemonster-ru/vueforge`](https://github.com/codemonster-ru/vueforge), where existing consumers
 can continue to install them; nothing in this repository builds or publishes them anymore.
 
+See the [VueForge migration guide](./docs/migrate-from-vueforge.md) for current package entries,
+shared styles, and standalone Vanilla integration.
+
 ### Requirements
 
 - Node.js `>=24.15.0` for the repository workspace and development scripts. The required version is
