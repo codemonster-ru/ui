@@ -335,11 +335,25 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
         </details>`,
         ];
       }
-      const isCore = id !== 'icons';
+      if (id === 'icons') {
+        return [
+          id,
+          `${renderIconCatalog()}
+          <details class="showcase-contracts"><summary>Icon component and operations examples</summary>
+            <section id="demo-icon" class="showcase-panel" aria-labelledby="component-icon">
+              <h3 id="component-icon" class="showcase-icon-intro-heading">Icon</h3>
+              ${renderIconIntro()}
+              <details class="showcase-contracts"><summary>Contract examples</summary>
+                <div class="showcase-variants">${renderCases('icon')}</div>
+              </details>
+            </section>
+            ${renderOperations()}
+          </details>`,
+        ];
+      }
       const cards = slugs.map((slug) => {
-        const manifest = bySlug.get(slug);
         const wide = ['button', 'table', 'data-table'].includes(slug);
-        const matrix = isCore ? renderCoreMatrix(slug, (caseId) => caseMarkup.get(caseId), './avatar.png') : '';
+        const matrix = renderCoreMatrix(slug, (caseId) => caseMarkup.get(caseId), './avatar.png');
         const actions =
           slug === 'button'
             ? Object.entries(buttonMatrices)
@@ -353,11 +367,10 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
             : renderMatrix(slug, actionMatrices[slug], loadingMarkup, iconMarkup);
         const cardClass = matrixTitle
           ? 'core-component core-group-cell'
-          : `${isCore ? 'core-component' : 'showcase-card'} showcase-panel${wide ? ' showcase-panel--wide' : ''}`;
+          : `core-component showcase-panel${wide ? ' showcase-panel--wide' : ''}`;
         const heading = matrixTitle ? 'h4' : 'h3';
         return `<section id="demo-${slug}" class="${cardClass}" aria-labelledby="component-${slug}">
-        <${heading} id="component-${slug}"${matrixTitle ? ' class="showcase-label"' : slug === 'icon' ? ' class="showcase-icon-intro-heading"' : ''}>${escapeHtml(isCore ? coreComponentTitle(slug) : manifest.name)}</${heading}>
-        ${slug === 'icon' ? renderIconIntro() : ''}
+        <${heading} id="component-${slug}"${matrixTitle ? ' class="showcase-label"' : ''}>${escapeHtml(coreComponentTitle(slug))}</${heading}>
         ${actions}
         ${matrix ? `<div data-core-matrix>${matrix}</div>` : ''}
         <details class="showcase-contracts"><summary>Contract examples</summary><div class="showcase-variants">${renderCases(slug)}</div></details>
@@ -385,7 +398,6 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
         `${typeSamples}<section class="showcase-group" id="${id}">
       <header><h2>${escapeHtml(title)}</h2><p>${escapeHtml(description)}</p></header>
       ${grid}
-      ${id === 'icons' ? renderIconCatalog() + renderOperations() : ''}
     </section>`,
       ];
     }),

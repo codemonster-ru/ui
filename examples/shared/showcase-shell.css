@@ -974,58 +974,6 @@ body {
   font-size: var(--cm-font-size-sm);
 }
 
-.showcase-icon-scroll {
-  min-inline-size: 0;
-  max-inline-size: 100%;
-  overflow-x: auto;
-}
-
-.showcase-icon-table {
-  inline-size: 100%;
-  min-inline-size: 34rem;
-  table-layout: fixed;
-  border-collapse: collapse;
-  background: var(--cm-color-background-surface);
-}
-
-.showcase-icon-table--brands {
-  --showcase-icon-name-width: 70%;
-
-  min-inline-size: 0;
-}
-
-.showcase-icon-table :is(th, td) {
-  padding: var(--cm-space-2) var(--cm-space-3);
-  border: 1px solid var(--cm-color-border-subtle);
-  text-align: center;
-}
-
-.showcase-icon-table thead {
-  color: var(--cm-color-text-muted);
-  font-size: 0.6875rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.showcase-icon-table tbody tr {
-  block-size: 4rem;
-}
-
-.showcase-icon-table th:first-child {
-  inline-size: var(--showcase-icon-name-width, 35%);
-  text-align: start;
-  overflow-wrap: anywhere;
-}
-
-.showcase-icon-name {
-  white-space: nowrap;
-}
-
-.showcase-icon-table .cm-icon {
-  inline-size: 2rem;
-  block-size: 2rem;
-}
-
 .showcase-content:has(#actions) .showcase-contracts .showcase-variants {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
@@ -1046,11 +994,6 @@ body {
   padding: var(--cm-space-1) var(--cm-space-2);
   border: 1px solid var(--cm-color-border-subtle);
   border-radius: var(--cm-radius-control);
-}
-
-#icons,
-#icon-catalog {
-  grid-template-columns: minmax(0, 1fr);
 }
 
 .core-example-grid {
@@ -1082,22 +1025,6 @@ body {
 .core-example .cm-menu,
 .core-example .cm-menu-bar {
   max-inline-size: 100%;
-}
-
-.showcase-icon-toolbar {
-  display: grid;
-  grid-template-columns: minmax(0, 24rem) 1fr;
-  align-items: end;
-  gap: var(--cm-space-2);
-}
-
-#icon-catalog .showcase-icon-toolbar label {
-  grid-column: 1 / -1;
-}
-
-.showcase-icon-toolbar [data-icon-count] {
-  justify-self: end;
-  margin: 0;
 }
 
 #demo-setup-layout [data-cm-nav-menu-value='license'] {
@@ -1137,26 +1064,6 @@ body {
 .setup-preview-progress progress::-webkit-progress-value {
   border-radius: var(--cm-radius-control);
   background: var(--cm-color-interactive-primary-background);
-}
-
-@media (width < 480px) {
-  .showcase-icon-toolbar {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .showcase-icon-toolbar [data-icon-count] {
-    justify-self: start;
-  }
-
-  .showcase-icon-name {
-    white-space: normal;
-  }
-
-  .showcase-icon-table:not(.showcase-icon-table--brands) {
-    --showcase-icon-name-width: 12.5rem;
-
-    min-inline-size: 33.75rem;
-  }
 }
 
 .core-example input:not([type='checkbox'], [type='radio']) {

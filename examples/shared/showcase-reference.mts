@@ -163,45 +163,66 @@ export function renderIconIntro() {
 export function renderIconCatalog() {
   const system = iconNames.filter((name) => !iconCatalog[name].brand);
   const brands = iconNames.filter((name) => iconCatalog[name].brand);
-  function entries(names: readonly IconName[], family: icons.CmIconFamily, variants = icons.cmIconVariants) {
-    return `<div class="showcase-icon-scroll" tabindex="0" aria-label="${family} icon table">
-      <table class="showcase-icon-table${variants.length === 1 ? ' showcase-icon-table--brands' : ''}"><thead><tr><th scope="col">Icon</th>${variants.map((variant) => `<th scope="col">${variant}</th>`).join('')}</tr></thead><tbody>
-      ${names
-        .map((name) => {
-          const geometry: icons.CmIconGeometry = icons[name];
-          const { keywords, title } = iconCatalog[name];
-          const search = [name, title, ...keywords]
-            .join(' ')
-            .replaceAll('&', '&amp;')
-            .replaceAll('"', '&quot;')
-            .replaceAll('<', '&lt;');
-          return `<tr data-icon-name="${name}" data-icon-search="${search}">
-          <th scope="row"><span class="showcase-icon-name">${name} ${button('Copy', 'secondary', ` data-copy-icon aria-label="Copy ${name} icon name"`, 'sm')}</span></th>
-          ${variants
-            .map((variant) => {
-              const rendering = geometry[`${family}/${variant}`];
-              return `<td>${rendering ? iconSvg(rendering, family, variant, `catalog-${name}-${family}-${variant}`) : '—'}</td>`;
-            })
-            .join('')}</tr>`;
-        })
-        .join('')}</tbody></table></div>`;
+  const copyButton = (name: IconName) =>
+    `<button type="button" data-copy-icon aria-label="Copy ${name} icon name">Copy</button>`;
+  function entryAttributes(name: IconName) {
+    const { keywords, title } = iconCatalog[name];
+    const search = [name, title, ...keywords]
+      .join(' ')
+      .replaceAll('&', '&amp;')
+      .replaceAll('"', '&quot;')
+      .replaceAll('<', '&lt;');
+    return `data-icon-name="${name}" data-icon-search="${search}"`;
   }
-  return `<section class="showcase-group" id="icon-catalog">
-    <header><h2>System and brand icons</h2><p>Find an icon, compare every system weight at 32 px, and copy its catalog name.</p></header>
-    <div class="showcase-icon-toolbar"><label for="icon-catalog-search">Search by name or keyword</label>
-    <input class="cm-input" id="icon-catalog-search" type="search" placeholder="Search by name or keyword">
-    <p role="status" data-icon-count data-total="${iconNames.length}">${iconNames.length} of ${iconNames.length} icons</p></div>
-    <p data-icon-empty hidden>No matching icons.</p>
-    <p role="status" data-icon-copy-status></p>
-    ${renderShowcaseTabs(
-      'catalog',
-      'Icon families',
-      icons.cmIconFamilies.map((family) => ({
-        title: family === 'classic' ? 'Classic' : 'Duotone',
-        panel: `<h3>${family === 'classic' ? 'Classic' : 'Duotone'}</h3><p>${family === 'classic' ? 'Original single-color family.' : 'Two-tone icon family.'}</p>${entries(system, family)}`,
-      })),
-    )}
-    <section><h3>Brands</h3>${entries(brands, 'classic', ['solid'])}</section>
+  function symbol(name: IconName, family: icons.CmIconFamily, variant: icons.CmIconVariant) {
+    const rendering = icons.resolveCmIcon(icons[name], family, variant);
+    if (!rendering) throw new Error(`Missing catalog icon: ${name} ${family}/${variant}`);
+    return iconSvg(rendering, family, variant, `catalog-${name}-${family}-${variant}`);
+  }
+  function familyPanel(family: icons.CmIconFamily, title: string, description: string) {
+    return `<section data-icon-group>
+      <header class="family-heading"><h3>${title}</h3><p>${description}</p></header>
+      <div class="variant-table" role="table" tabindex="0" aria-label="${title} icon weights">
+        <div class="variant-row variant-row--head" role="row">
+          <strong role="columnheader">Icon</strong>
+          ${icons.cmIconVariants.map((variant) => `<strong role="columnheader">${variant}</strong>`).join('')}
+        </div>
+        ${system
+          .map(
+            (name) => `<div class="variant-row" role="row" ${entryAttributes(name)}>
+              <div class="icon-identity" role="rowheader"><strong>${name}</strong>${copyButton(name)}</div>
+              ${icons.cmIconVariants.map((variant) => `<span role="cell">${symbol(name, family, variant)}</span>`).join('')}
+            </div>`,
+          )
+          .join('')}
+      </div>
+      <p class="catalog-empty" data-icon-empty hidden>No system icons match.</p>
+    </section>`;
+  }
+  return `<section class="icon-catalog" id="icon-catalog" aria-labelledby="icon-catalog-heading">
+    <header class="page-heading">
+      <div><p class="eyebrow">Complete icon catalog</p><h2 id="icon-catalog-heading">System and brand icons</h2></div>
+      <p>Find an icon, compare every system weight at 32 px, and copy its typed catalog name.</p>
+    </header>
+    <div class="catalog-toolbar">
+      <label class="catalog-search"><span>Find an icon</span><input class="cm-input" id="icon-catalog-search" type="search" placeholder="Search by name or keyword"></label>
+      <p role="status"><span data-icon-count data-total="${iconNames.length}">${iconNames.length} of ${iconNames.length} icons</span><span data-icon-copy-status></span></p>
+    </div>
+    <div class="family-tabs">${renderShowcaseTabs('catalog', 'Icon families', [
+      { title: 'Classic', panel: familyPanel('classic', 'Classic', 'Original single-color family.') },
+      { title: 'Duotone', panel: familyPanel('duotone', 'Duotone', 'Two-color Solid; outline weights match Classic.') },
+    ])}</div>
+    <section class="brand-section" data-icon-group aria-labelledby="brand-icons-heading">
+      <header class="family-heading"><h3 id="brand-icons-heading">Brands</h3>
+      <p>Trademark assets use their approved single-color shape and the solid variant.</p></header>
+      <div class="brand-grid">${brands
+        .map(
+          (name) => `<article class="brand-card" ${entryAttributes(name)}>${symbol(name, 'classic', 'solid')}
+            <strong>${name}</strong>${copyButton(name)}</article>`,
+        )
+        .join('')}</div>
+      <p class="catalog-empty" data-icon-empty hidden>No brand icons match.</p>
+    </section>
   </section>`;
 }
 
