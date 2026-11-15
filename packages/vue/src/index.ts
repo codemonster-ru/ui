@@ -178,10 +178,8 @@ export { default as CmTable } from './components/table/CmTable.vue';
 export type { CmTableDensity, CmTableProps } from './components/table/table.types';
 export { default as CmTag } from './components/tag/CmTag.vue';
 export type { CmTagProps, CmTagTone } from './components/tag/tag.types';
-export {
-  default as CmThemeProvider,
-  default as VfThemeProvider,
-} from './components/theme-provider/CmThemeProvider.vue';
+export { default as CmThemeProvider } from './components/theme-provider/CmThemeProvider.vue';
+export { default as VfThemeProvider } from './components/theme-provider/VfThemeProvider.vue';
 export { useCmTheme, useCmTheme as useTheme } from './components/theme-provider/use-theme';
 export type { CmThemeContext, CmThemeProviderProps } from './components/theme-provider/use-theme';
 export { default as CmThemeSwitch } from './components/theme-switch/CmThemeSwitch.vue';
