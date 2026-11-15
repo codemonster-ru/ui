@@ -6,7 +6,7 @@ import {
   observeDataTablePins,
   resizedDataTableWidths,
   type CmDataTableResizeBoundary,
-} from '@codemonster-ru/ui-runtime';
+} from '@codemonster-ru/ui-runtime/data-table-dom';
 import {
   computed,
   nextTick,
@@ -35,6 +35,7 @@ import CmIconButton from '../icon-button/CmIconButton.vue';
 import CmIcon from '../icon/CmIcon.vue';
 import CmProgressSpinner from '../progress-spinner/CmProgressSpinner.vue';
 import CmSkeleton from '../skeleton/CmSkeleton.vue';
+import { tableRowField } from './row-field';
 import type {
   CmDataTableCellValue,
   CmDataTableColumn,
@@ -77,9 +78,13 @@ const props = defineProps({
     default: undefined,
   },
   selectedRowIds: { type: Array as PropType<readonly string[]>, default: () => [] },
+  controlledSelection: Boolean,
+  rowLabelResolver: { type: Function as PropType<(rowIndex: number) => string>, default: undefined },
   expandedRowKeys: { type: Array as PropType<readonly string[] | null>, default: null },
   defaultExpandedRowKeys: { type: Array as PropType<readonly string[]>, default: () => [] },
   sort: { type: Object as PropType<CmDataTableSort | null>, default: null },
+  sortList: { type: Array as PropType<readonly CmDataTableSort[]>, default: undefined },
+  multiSort: Boolean,
   sortingMode: {
     type: String as PropType<CmDataTableMode>,
     default: 'manual',
@@ -136,6 +141,7 @@ const emit = defineEmits<{
   'update:columnWidths': [columnWidths: CmDataTableColumnWidths];
   'column-resize-end': [columnWidths: CmDataTableColumnWidths];
   'update:sort': [sort: CmDataTableSort | null];
+  'update:sortList': [sort: CmDataTableSort[]];
 }>();
 type ExpandedRowSlot = (props: { row: Row; rowKey: string; rowIndex: number }) => unknown;
 
@@ -190,21 +196,12 @@ const normalizedColumns = computed(() => {
   return columns;
 });
 
-function rowField(row: object, path: string): unknown {
-  return path.split('.').reduce<unknown>((value, key) => {
-    if (value === null || typeof value !== 'object' || !Object.prototype.hasOwnProperty.call(value, key)) {
-      return undefined;
-    }
-    return (value as Record<string, unknown>)[key];
-  }, row);
-}
-
 function isCellValue(value: unknown): value is CmDataTableCellValue {
   return value === null || typeof value === 'string' || (typeof value === 'number' && Number.isFinite(value));
 }
 
 function rawRowId(row: Row, sourceIndex: number, key: CmDataTableRowKeyResolver<Row>): string | undefined {
-  const value = typeof key === 'function' ? key(row, sourceIndex) : rowField(row, key);
+  const value = typeof key === 'function' ? key(row, sourceIndex) : tableRowField(row, key);
   if (typeof key === 'string' && value === undefined) return String(sourceIndex);
   if (typeof value === 'string' && value.trim()) return value;
   if (typeof value === 'number' && Number.isFinite(value)) return String(value);
@@ -229,7 +226,7 @@ const normalizedRows = computed(() => {
       }
       const cells = Object.fromEntries(
         [...keys].map((key): [string, CmDataTableCellValue] => {
-          const value = rowField(record, key);
+          const value = tableRowField(record, key);
           return [key, isCellValue(value) ? value : null];
         }),
       );
@@ -416,6 +413,22 @@ function normalizeSort(sort: CmDataTableSort | null): CmDataTableSort | null {
 }
 
 const localSort = ref<CmDataTableSort | null>(normalizeSort(props.sort));
+const activeSort = computed(() => {
+  if (props.sortList === undefined) return localSort.value ? [localSort.value] : [];
+  const seen = new Set<string>();
+  const sorted: CmDataTableSort[] = [];
+  for (const candidate of props.sortList) {
+    const sort = normalizeSort(candidate);
+    if (!sort || seen.has(sort.key)) continue;
+    sorted.push(sort);
+    seen.add(sort.key);
+    if (!props.multiSort) break;
+  }
+  return sorted;
+});
+const sortOrder = computed(
+  () => new Map(activeSort.value.map((sort, index) => [sort.key, { sort, priority: index + 1 }])),
+);
 const localSelectedRowIds = ref([...props.selectedRowIds]);
 const localExpandedRowKeys = ref([...props.defaultExpandedRowKeys]);
 const expandedRowKeys = computed(() => new Set(props.expandedRowKeys ?? localExpandedRowKeys.value));
@@ -459,14 +472,19 @@ function compareCells(left: CmDataTableCellValue | undefined, right: CmDataTable
 
 const renderedRows = computed(() => {
   let rows = normalizedRows.value;
-  const sort = localSort.value;
+  const sorts = activeSort.value;
   // Manual paging supplies one ordered slice from the application.
-  if (sort && props.sortingMode === 'client' && !(props.pagination && props.paginationMode === 'manual')) {
+  if (sorts.length && props.sortingMode === 'client' && !(props.pagination && props.paginationMode === 'manual')) {
     rows = [...rows].sort((left, right) => {
-      const leftValue = left.cells[sort.key];
-      const rightValue = right.cells[sort.key];
-      const comparison = compareCells(leftValue, rightValue);
-      return sort.direction === 'descending' && leftValue != null && rightValue != null ? -comparison : comparison;
+      for (const sort of sorts) {
+        const leftValue = left.cells[sort.key];
+        const rightValue = right.cells[sort.key];
+        const comparison = compareCells(leftValue, rightValue);
+        if (comparison !== 0) {
+          return sort.direction === 'descending' && leftValue != null && rightValue != null ? -comparison : comparison;
+        }
+      }
+      return 0;
     });
   }
   if (!clientPagination.value) return rows;
@@ -475,14 +493,17 @@ const renderedRows = computed(() => {
 });
 const renderedRowIds = computed(() => renderedRows.value.map(({ id }) => id));
 
-const selectedIds = computed(() => new Set(localSelectedRowIds.value));
+const currentSelectedRowIds = computed(() =>
+  props.controlledSelection ? props.selectedRowIds : localSelectedRowIds.value,
+);
+const selectedIds = computed(() => new Set(currentSelectedRowIds.value));
 const enabledRowIds = computed(() =>
   renderedRows.value.flatMap((row, index) =>
     row.selectable !== false && (props.rowSelectable?.(row.record, index) ?? true) ? [row.id] : [],
   ),
 );
 const enabledIds = computed(() => new Set(enabledRowIds.value));
-const selectionState = computed(() => resolveSelectionState(enabledRowIds.value, localSelectedRowIds.value));
+const selectionState = computed(() => resolveSelectionState(enabledRowIds.value, currentSelectedRowIds.value));
 const allSelected = computed(() => selectionState.value.all);
 const partiallySelected = computed(() => selectionState.value.partial);
 const selectAll = ref<HTMLInputElement>();
@@ -648,9 +669,9 @@ function toggleExpandedRow(id: string): void {
   emit('update:expandedRowKeys', keys);
 }
 
-function expansionLabel(id: string, expanded: boolean): string {
+function expansionLabel(id: string, expanded: boolean, index: number): string {
   return formatTemplate(expanded ? props.collapseRowLabelTemplate : props.expandRowLabelTemplate, {
-    row: rowLabel(id),
+    row: rowLabel(id, index),
   });
 }
 
@@ -659,11 +680,14 @@ function expansionSlot(): 'expanded-row' | 'expandedRow' | undefined {
   return slots.expandedRow ? 'expandedRow' : undefined;
 }
 
-function rowLabel(id: string): string {
-  return id
-    .split('-')
-    .map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
-    .join(' ');
+function rowLabel(id: string, index: number): string {
+  return (
+    props.rowLabelResolver?.(index) ??
+    id
+      .split('-')
+      .map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
+      .join(' ')
+  );
 }
 
 function expandedContentId(id: string): string {
@@ -672,20 +696,32 @@ function expandedContentId(id: string): string {
 }
 
 function sortLabel(column: CmDataTableColumn): string {
+  const entry = sortOrder.value.get(column.key);
   const template = {
     ascending: props.sortAscendingLabelTemplate,
     clear: props.clearSortLabelTemplate,
     descending: props.sortDescendingLabelTemplate,
-  }[sortLabelFor(localSort.value, column.key)];
-  return formatTemplate(template, { column: column.header });
+  }[sortLabelFor(entry?.sort ?? null, column.key)];
+  const action = formatTemplate(template, { column: column.header });
+  return activeSort.value.length > 1 && entry
+    ? `${action}, sorted ${entry.sort.direction}, priority ${entry.priority}`
+    : action;
 }
 
 function columnAriaSort(column: CmDataTableColumn): CmDataTableSortDirection | 'none' {
-  return ariaSortFor(localSort.value, column.key);
+  return ariaSortFor(activeSort.value[0] ?? null, column.key);
 }
 
 function changeSort(column: CmDataTableColumn): void {
   if (!column.sortable) return;
+  if (props.sortList !== undefined) {
+    const current = sortOrder.value.get(column.key);
+    const sort = nextSortState(current?.sort ?? null, column.key);
+    const next = props.multiSort ? activeSort.value.filter(({ key }) => key !== column.key) : [];
+    if (sort) next.splice(props.multiSort && current ? current.priority - 1 : next.length, 0, sort);
+    emit('update:sortList', next);
+    return;
+  }
   const sort = nextSortState(localSort.value, column.key);
   localSort.value = sort;
   emit('update:sort', sort);
@@ -694,22 +730,29 @@ function changeSort(column: CmDataTableColumn): void {
 
 function reportSelection(ids: string[]): void {
   const visible = new Set(renderedRowIds.value);
-  const next = [...new Set([...ids, ...localSelectedRowIds.value.filter((id) => !visible.has(id))])];
-  localSelectedRowIds.value = next;
+  const next = [...new Set([...ids, ...currentSelectedRowIds.value.filter((id) => !visible.has(id))])];
+  if (!props.controlledSelection) localSelectedRowIds.value = next;
   emit('update:selectedRowIds', next);
   emit('selectionChange', next);
 }
 
-function changeRowSelection(rowId: string, checked: boolean): void {
+function changeRowSelection(rowId: string, input: HTMLInputElement): void {
   if (!enabledIds.value.has(rowId)) return;
-  const next = new Set(localSelectedRowIds.value);
-  if (checked) next.add(rowId);
+  const next = new Set(currentSelectedRowIds.value);
+  if (input.checked) next.add(rowId);
   else next.delete(rowId);
   reportSelection(renderedRowIds.value.filter((id) => next.has(id)));
+  if (props.controlledSelection) input.checked = selectedIds.value.has(rowId);
 }
 
-function changeAllSelection(checked: boolean): void {
-  reportSelection(toggleAllSelection(renderedRowIds.value, enabledRowIds.value, localSelectedRowIds.value, checked));
+function changeAllSelection(input: HTMLInputElement): void {
+  reportSelection(
+    toggleAllSelection(renderedRowIds.value, enabledRowIds.value, currentSelectedRowIds.value, input.checked),
+  );
+  if (props.controlledSelection) {
+    input.checked = allSelected.value;
+    input.indeterminate = partiallySelected.value;
+  }
 }
 
 function changePage(page: number): void {
@@ -737,8 +780,8 @@ useCmHydrated();
     v-bind="rootAttrs"
     :class="classes"
     data-cm-controller="data-table"
-    :data-cm-data-table-sort-key="localSort?.key ?? ''"
-    :data-cm-data-table-sort-direction="localSort?.direction ?? ''"
+    :data-cm-data-table-sort-key="activeSort[0]?.key ?? ''"
+    :data-cm-data-table-sort-direction="activeSort[0]?.direction ?? ''"
     :data-cm-data-table-page="localPage"
     :data-cm-data-table-page-count="resolvedPageCount"
     :data-cm-data-table-page-size="localPageSize"
@@ -766,7 +809,7 @@ useCmHydrated();
                 :checked="allSelected"
                 :disabled="enabledRowIds.length === 0"
                 data-cm-data-table-select-all
-                @change="changeAllSelection(($event.target as HTMLInputElement).checked)"
+                @change="changeAllSelection($event.target as HTMLInputElement)"
               />
             </th>
             <th v-if="expansionSlot()" class="cm-data-table__expansion" scope="col" aria-label="Row details" />
@@ -786,10 +829,17 @@ useCmHydrated();
                 :data-cm-data-table-sort-ascending-label-template="props.sortAscendingLabelTemplate"
                 :data-cm-data-table-sort-descending-label-template="props.sortDescendingLabelTemplate"
                 :data-cm-data-table-clear-sort-label-template="props.clearSortLabelTemplate"
+                :data-cm-sort-direction="activeSort.length > 1 ? sortOrder.get(column.key)?.sort.direction : undefined"
                 @click="changeSort(column)"
               >
                 <slot :name="columnSlot('header', column.key)" :column="column">{{ column.header }}</slot>
                 <span class="cm-data-table__sort-indicator" aria-hidden="true"></span>
+                <span
+                  v-if="activeSort.length > 1 && sortOrder.has(column.key)"
+                  class="cm-data-table__sort-priority"
+                  aria-hidden="true"
+                  >{{ sortOrder.get(column.key)?.priority }}</span
+                >
               </button>
               <template v-else>
                 <slot :name="columnSlot('header', column.key)" :column="column">{{ column.header }}</slot>
@@ -845,23 +895,23 @@ useCmHydrated();
                 <td v-if="props.selectable" class="cm-data-table__selection">
                   <input
                     type="checkbox"
-                    :aria-label="formatTemplate(props.selectRowLabelTemplate, { row: rowLabel(row.id) })"
+                    :aria-label="formatTemplate(props.selectRowLabelTemplate, { row: rowLabel(row.id, rowIndex) })"
                     :value="row.id"
                     :checked="selectedIds.has(row.id)"
                     :disabled="!enabledIds.has(row.id)"
                     data-cm-data-table-select-row
-                    @change="changeRowSelection(row.id, ($event.target as HTMLInputElement).checked)"
+                    @change="changeRowSelection(row.id, $event.target as HTMLInputElement)"
                   />
                 </td>
                 <td v-if="expansionSlot()" class="cm-data-table__expansion">
                   <CmIconButton
                     size="sm"
-                    :label="expansionLabel(row.id, expandedRowKeys.has(row.id))"
+                    :label="expansionLabel(row.id, expandedRowKeys.has(row.id), rowIndex)"
                     :aria-expanded="expandedRowKeys.has(row.id)"
                     :aria-controls="expandedRowKeys.has(row.id) ? expandedContentId(row.id) : undefined"
                     data-cm-data-table-expand=""
-                    :data-cm-data-table-expand-label="expansionLabel(row.id, false)"
-                    :data-cm-data-table-collapse-label="expansionLabel(row.id, true)"
+                    :data-cm-data-table-expand-label="expansionLabel(row.id, false, rowIndex)"
+                    :data-cm-data-table-collapse-label="expansionLabel(row.id, true, rowIndex)"
                     @click="toggleExpandedRow(row.id)"
                   >
                     <CmIcon :icon="chevronDown" />

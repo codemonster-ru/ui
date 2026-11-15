@@ -220,12 +220,17 @@
   color: var(--cm-color-text-muted);
 }
 
-[aria-sort='ascending'] .cm-data-table__sort-indicator::before {
+:is([aria-sort='ascending'], [data-cm-sort-direction='ascending']) .cm-data-table__sort-indicator::before {
   content: '↑';
 }
 
-[aria-sort='descending'] .cm-data-table__sort-indicator::before {
+:is([aria-sort='descending'], [data-cm-sort-direction='descending']) .cm-data-table__sort-indicator::before {
   content: '↓';
+}
+
+.cm-data-table__sort-priority {
+  color: var(--cm-color-text-muted);
+  font-size: var(--cm-text-caption-font-size);
 }
 
 .cm-data-table__state {

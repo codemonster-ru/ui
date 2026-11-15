@@ -14,7 +14,7 @@ migration, including behavioral or visual differences. Do not claim parity from 
 | Status | Work and acceptance evidence |
 | --- | --- |
 | DONE | Repository preflight: clean tree, both commits present, npm workspaces and eight CI jobs inspected. |
-| IN PROGRESS | [Vue core contract trace](historical-vue-core.md) inventories the 46 historical components. Initial compositions and variants (`0fb58ad8`), Link routing (`72dc5ceb`), and DataTable slots, selection, expansion and loading (`0b8ecc8d`, `2fafc9cf`) passed targeted checks. Continue raw DataTable rows, historical Switch and the remaining API gaps in the trace. |
+| IN PROGRESS | [Vue core contract trace](historical-vue-core.md) inventories the 46 historical components. The current package and opt-in entry expose all 46 names. Remaining contracts need individual evidence, including DataTable labelled pagination and drag reorder, overlay variants, and package/plugin differences in the trace. |
 | IN PROGRESS | [Layout and icon trace](historical-vue-ecosystem.md) records shell, icon and static layout restoration (`172297ec`, `f6781197`). The Vue theme provider and switch variants (`a235eb36`) passed 10 focused tests, including SSR and cross-tab storage. Check final package entry points and remaining composables against the reference. |
 | DONE | Restored the Playground section through the historical published releases (`vueforge-playground@3.0.1`, runtime `2.1.0`, Vite plugin `1.0.0`). The private showcase builds against real package entry points. Chrome verified both script-sandboxed frames, the direct Vue preview, both Vite modules, source tabs, console output, theme and mobile width. |
 | DONE | Added a [standalone Vanilla Playground](../recipes/playground.md) for editing and running HTML, CSS and JavaScript (`4a4473d1`). Chrome tested no-script fallback, keyboard Run and Reset, iframe origin separation, and the documented limits on resource requests and top navigation at 390 and 1280 px. |
@@ -50,6 +50,9 @@ migration, including behavioral or visual differences. Do not claim parity from 
 | DONE | Historical Switch, Checkbox and Radio expose the original model event payloads and slots (`08061eaf`, `28a555a9`). Chrome verified keyboard and native form behavior, checked and mixed accessibility state, and a Checkbox runtime-to-Vue hydration handoff. |
 | DONE | Restored the historical single Accordion's model, scoped trigger/content, height and opacity motion, and focus return. Chrome measured the same 36 px trigger and 49 px open panel as the isolated reference at both 390 and 1280 px. Source and packaged SSR tests passed. |
 | DONE | Restored labelled MenuBar groups and route leaves and the historical original-item event. Pinned Chrome passed six keyboard runs and six exact light/dark comparisons. The built Vue demo reached the real Layouts guide with Enter at both widths. The native import measures 5.38 KiB gzip without the named icon catalogue. |
+| DONE | Restored historical DataTable typed keys and controlled selection, original cell and expansion scopes, and ordered sort models. Chrome verified the published Vue example at both widths: priority, tie order, one primary ARIA sort and reset to page one. The direct compatibility import measures 12.56 KiB gzip and carries no Vanilla controllers. |
+| DONE | Vanilla DataTable expands authored detail rows (`0924c05a`), scopes events to the nearest table, and leaves sorting, selection and paging independent. Chrome exercised keyboard expansion and focus in both adapters. |
+| DONE | Native modals now prevent background scrolling (`f0591f37`). Pinned Chrome verified classic and overlay scrollbars, internal scrolling, nested Escape and original page position in Vue, Vanilla, and a mixed pair. |
 | DONE | Aligned Vue Layouts with the shared guide (`f47727a5`): changed pixels against the pinned historical views fell from 11.96–18.05% to 1.09–3.20%. Controls and responsive previews passed at both widths and in both themes. |
 | DONE | Restored the Vue showcase's narrow navigation controls without shifting content when the system draws scrollbars. Shortened the shared Colors introduction to restore its mobile text rhythm. Pinned Chrome passed overflow, active-route and keyboard checks at 390 and 1280 px. |
 | IN PROGRESS | Run package checks, lint, type checks, tests, browser behavior and accessibility checks, production builds, and fresh packed consumers. See the exact snapshots below. |
@@ -170,7 +173,9 @@ Finish and verify each coherent slice before committing it; then select the next
 Record actual output and commands, including any check that cannot run, before advancing the
 corresponding status.
 
-Next actions: run the exact integrated package and browser checkpoint, complete independent
-acceptance, and continue the remaining contract gaps as indicated by the trace. Prioritize
-verified behavior over adding aliases for unsupported semantics. Distinguish showcase viewport
-captures from the established 12-case fixture baseline.
+Next actions: restore numbered DataTable navigation and its callback labels, finish the public
+Vue composable slices, then run the package and pinned browser checkpoints on the exact assembled
+commit. Keep tracing column reorder, old portal and scroller behavior, and the package migration
+gaps until independent acceptance. The strict stored screenshot gate is still unverified on the
+hosted renderer; local capture differences are documented above. Distinguish full showcase
+viewports from the established 12-case fixture baseline and from the paired adapter fixtures.
