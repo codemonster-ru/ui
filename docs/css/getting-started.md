@@ -55,8 +55,9 @@ custom-media, CSS-in-JS, or framework build step.
 
 ## Themes
 
-Light mode is the deterministic default. Put `data-cm-theme` on the document root when the initial
-mode is known:
+Put `data-cm-theme` on the document root when the initial mode is known. Use `light` or `dark`
+to force a theme, or `system` to follow the operating system. With no attribute, the document
+also follows the system, falling back to light:
 
 ```html
 <html data-cm-theme="dark">

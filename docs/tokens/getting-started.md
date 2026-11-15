@@ -51,7 +51,7 @@ document root or on a nested theme boundary:
 ```
 
 The generated dark block contains only values that differ from light. Both exported TypeScript
-presets remain complete 206-token objects.
+presets contain the complete token schema.
 
 ### Override tokens
 
@@ -122,10 +122,11 @@ breakpoint values.
 
 ## Server rendering
 
-Choose `data-cm-theme` before rendering the response when the mode is known. This avoids changing
-the mode after first paint. If no attribute is rendered, the light `:root` preset is deterministic.
-Vanilla applications can publish the same CSS artifacts without executing package JavaScript in the
-browser.
+Render the chosen `data-cm-theme` on the document root before first paint. An explicit `light` or
+`dark` choice overrides the system. Set `system` or omit the attribute for CSS to follow
+`prefers-color-scheme`, with light as the fallback. For a nested preview, use an explicit
+`light` or `dark` boundary; `system` resolution belongs to the document root.
+See the [theme recipe](../recipes/theme-switch.md) for persisting a choice across requests.
 
 ## Public entries
 

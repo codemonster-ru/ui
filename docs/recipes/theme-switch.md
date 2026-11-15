@@ -1,83 +1,71 @@
 # Theme switch recipe
 
-Use this maintained recipe when migrating `VfThemeSwitch` and `VfThemeProvider`. CodeMonster UI
-provides the control presentation, tokens, and theme selectors; the application owns the preference
-model, persistence, system-theme policy, initial SSR attribute, and every mutation of that state.
+The shared CSS recognizes three document preferences: `light`, `dark`, and `system`.
+`system` uses `prefers-color-scheme` even with JavaScript disabled. For a preview inside
+a page, put an explicit `data-cm-theme="light"` or `data-cm-theme="dark"` on the preview
+container. Import the [tokens and shared CSS](../css/getting-started.md) once.
 
-The example below intentionally chooses a two-state `light`/`dark` policy stored in local storage.
-An application that supports `system` mode, accounts, cookies, or tenant defaults should change the
-controller, not add those policies to `CmButton`.
+## Vue
 
-## Vue recipe
-
-The server renders the same neutral initial button content for hydration. A small bootstrap script
-should set `data-cm-theme` before the stylesheets load; the component then reads the resolved attribute
-after mount and owns subsequent changes.
+Wrap the app in `CmThemeProvider`; `CmThemeSwitch` consumes the provided preference
+and updates it when a user chooses a mode. If you build your own theme control, use
+`useCmTheme()` in a child of this provider to read `theme` and `resolvedTheme` or call
+`setTheme(mode)`. Calling it outside the provider throws.
 
 ```vue
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
-import { CmButton } from '@codemonster-ru/ui-vue';
+import { CmThemeProvider, CmThemeSwitch } from '@codemonster-ru/ui-vue';
+import type { CmThemeMode } from '@codemonster-ru/ui-runtime/core';
 
-type Theme = 'light' | 'dark';
-
-const storageKey = 'app-theme';
-const theme = ref<Theme>('light');
-const nextTheme = computed<Theme>(() => (theme.value === 'dark' ? 'light' : 'dark'));
-const actionLabel = computed(() => `Switch to ${nextTheme.value} theme`);
-
-onMounted(() => {
-  theme.value = document.documentElement.getAttribute('data-cm-theme') === 'dark' ? 'dark' : 'light';
-});
-
-function setTheme(value: Theme): void {
-  theme.value = value;
-  document.documentElement.setAttribute('data-cm-theme', value);
-  window.localStorage.setItem(storageKey, value);
-}
+defineProps<{ initialTheme?: CmThemeMode }>();
 </script>
 
 <template>
-  <CmButton type="button" variant="secondary" :aria-label="actionLabel" @click="setTheme(nextTheme)">
-    <span aria-hidden="true">{{ theme === 'dark' ? '☾' : '☀' }}</span>
-    Theme
-  </CmButton>
+  <CmThemeProvider :default-theme="initialTheme ?? 'system'">
+    <CmThemeSwitch legend="Color theme" />
+    <!-- application content -->
+  </CmThemeProvider>
 </template>
 ```
 
-Run an application-owned bootstrap before the CSS links and Vue entry. It resolves the initial
-preference without waiting for hydration:
+The provider uses the `cm-theme` cookie by default. If you deliberately configure a
+`storage-key`, it uses local storage instead. The server cannot read local storage; a
+static app can use a small CSP-approved bootstrap before CSS if it must apply such a
+preference before first paint.
 
-```ts file=/theme-bootstrap.ts
-type Theme = 'light' | 'dark';
+## Server rendering
 
-export {};
+Read the cookie through the runtime's pure server-safe entry:
 
-const storageKey = 'app-theme';
-const stored = window.localStorage.getItem(storageKey);
-const theme: Theme = stored === 'dark' ? 'dark' : 'light';
+```ts file=/initial-theme.ts
+import { readCmThemeCookie } from '@codemonster-ru/ui-runtime/core';
 
-document.documentElement.setAttribute('data-cm-theme', theme);
+export function initialTheme(cookieHeader: string | null) {
+  return readCmThemeCookie(cookieHeader) ?? 'system';
+}
 ```
 
-If the product supports a `system` preference, store `system` as the preference but write the
-resolved `light` or `dark` value to `data-cm-theme`. Listen to `matchMedia` only while that preference
-is active. This distinction prevents a system change from overwriting an explicit user choice.
+Render the result in the document's `data-cm-theme` attribute. In Vue SSR, pass that same
+value as `initialTheme` during server render and hydration. If you cache HTML responses,
+make the cache account for the chosen theme.
 
 ## Vanilla HTML
 
-Compose the same layout using the canonical markup for [theme-switch](../../contracts/theme-switch/cases/default.html).
-Load styles and initialize interactive components as described in the [Vanilla guide](../vanilla.md).
+Render the [canonical radio group](../../contracts/theme-switch/cases/default.html)
+and set the checked radio to match the document preference. Register only the controller
+the page needs:
 
-## Ownership and accessibility
+```ts file=/theme-runtime.ts
+import { CmRuntime, createCmThemeSwitchController } from '@codemonster-ru/ui-runtime';
 
-- `CmButton` owns only native button semantics and visual states. It does not read storage, inspect
-  `prefers-color-scheme`, mutate the document root, or synchronize tabs.
-- The accessible name describes the next action, not merely the current icon. Decorative sun/moon
-  glyphs remain hidden from assistive technology.
-- Apply the initial theme before first paint where possible. For strict CSP, serve a nonce- or
-  hash-approved bootstrap rather than enabling unrestricted inline scripts.
-- Broadcast preference changes only if the product requires cross-tab synchronization, and detach
-  any listeners with the owning application lifecycle.
-- A theme preview that must not persist should use separate temporary state and restore the committed
-  preference on cancel.
+const runtime = new CmRuntime().register('theme-switch', createCmThemeSwitchController);
+runtime.start(document);
+```
+
+The controller writes the document attribute and the `cm-theme` cookie on change.
+Listen for the bubbling `cm:theme-change` event for `detail.mode` (the preference) and
+`detail.resolved` (what the visitor sees). The controller preserves the server's
+initial markup. See [Vanilla setup](../vanilla.md) for bundles and teardown.
+
+If you are migrating the historical `VfThemeProvider` and `VfThemeSwitch`, see
+[the historical Vue plugin recipe](./vue-theme-plugin.md).

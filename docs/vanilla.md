@@ -10,7 +10,9 @@ description: 'Serve CodeMonster UI assets directly from server templates'
 Use `@codemonster-ru/ui-tokens` and `@codemonster-ru/ui-css` for server-authored HTML. Install
 `@codemonster-ru/ui-runtime` as well if your markup uses interactive controllers. These
 examples use the v2 package exports. Until v2 is published, install the built workspace
-tarballs in your consumer application.
+tarballs in your consumer application. Follow the [local build instructions](./getting-started.md#install-a-local-20-build)
+and pack only tokens, CSS, and runtime for a Vanilla integration. You can also
+[serve the standalone build](#browser-assets) and skip package installation in the consumer.
 
 ```js
 import '@codemonster-ru/ui-tokens/tokens.css';
@@ -26,6 +28,12 @@ Use an application bundler for these bare imports. Render the
 [Accordion markup](../contracts/accordion/cases/default.html) or other canonical HTML in
 your server template and register only the controllers it uses. A static page can use the
 stylesheet imports alone.
+
+Use native events for native controls. For controller events, listen at the component or its
+container. For example, an Accordion dispatches the bubbling `cm:open-change` event with
+`detail.openItems` on its root. See each component contract for supported updates: a modal takes
+an [open or close request](./components/overlays.md), while form controls retain their documented
+native submission or application validation behavior.
 
 ## Browser assets
 
@@ -55,8 +63,9 @@ const runtime = createRuntime();
 runtime.start(document);
 ```
 
-For dynamic fragments, call `runtime.start(fragment)` after insertion and
-`runtime.stop(fragment)` before removal. Use `const dispose = runtime.observe(container)`
+For dynamic fragments, pass the inserted element to `runtime.start(element)` after insertion and
+`runtime.stop(element)` before removal. A DOM `DocumentFragment` is emptied when inserted, so
+pass a node that stays in the document. Use `const dispose = runtime.observe(container)`
 when the runtime should discover inserted fragments and clean up removed controllers. Call
 `dispose()` when the container is retired. The browser bundle includes Floater and has
 no bare imports. Build the assets once in this repository and serve them as static files in

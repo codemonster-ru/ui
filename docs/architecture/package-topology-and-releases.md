@@ -67,7 +67,8 @@ The graph follows these rules:
 - UI frameworks remain peer dependencies of their adapters;
 - `ui-css` and `ui-utilities` consume generated token artifacts through declared build and package
   relationships;
-- adapter JavaScript does not require `ui-runtime` for framework-owned roots;
+- Vue adapters use the shared behavior core from `ui-runtime`, while the DOM controllers
+  enhance Vanilla roots;
 - component-level CSS exports remain usable without importing adapter JavaScript;
 - full linked stylesheets are self-contained or have explicit documented companion imports;
 - workspace aliases cannot be required for packed consumers.
@@ -98,8 +99,9 @@ Publish only changed packages and their required dependants in this topological 
 1. `ui-tokens`;
 2. `ui-icons` and `ui-runtime` where changed;
 3. `ui-css` and `ui-utilities`;
-4. `ui-vue` and `ui-layouts`;
-5. examples and documentation after registry consumers pass.
+4. `ui-vue`;
+5. `ui-layouts`, which declares `ui-vue` as a peer;
+6. examples and documentation after registry consumers pass.
 
 Independent packages at the same level may verify in parallel, but dependent publication waits for
 registry verification of its prerequisites.

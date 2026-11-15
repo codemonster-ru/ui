@@ -104,13 +104,14 @@ your lock early. Changing the enabled state or target lets the hook acquire agai
 
 Use the canonical HTML for [dialog](../../contracts/dialog/contract.md), [drawer](../../contracts/drawer/contract.md), [dropdown](../../contracts/dropdown/contract.md), [popover](../../contracts/popover/contract.md), [tooltip](../../contracts/tooltip/contract.md) in Vanilla.
 
-Register all four controllers once in a frontend entry:
+Register the controllers your markup uses in a frontend entry:
 
 ```ts
 import {
   CmRuntime,
   createCmDialogController,
   createCmDrawerController,
+  createCmDropdownController,
   createCmPopoverController,
   createCmTooltipController,
 } from '@codemonster-ru/ui-runtime';
@@ -118,6 +119,7 @@ import {
 new CmRuntime()
   .register('dialog', createCmDialogController)
   .register('drawer', createCmDrawerController)
+  .register('dropdown', createCmDropdownController)
   .register('popover', createCmPopoverController)
   .register('tooltip', createCmTooltipController)
   .start(document);
@@ -137,8 +139,9 @@ dialog?.addEventListener('cm:dialog-open-change', (event) => {
 ```
 
 Drawer supports the matching `cm:drawer-open-request`; both modal controllers also accept their
-`*-close-request`. Popover owns its trigger. Persist meaningful open state in application data when
-it must survive navigation; runtime state is intentionally page-local.
+`*-close-request`. Send the request to the intended modal; a nested modal's request does not
+change its ancestor. Popover owns its trigger. Persist meaningful open state in application data
+when it must survive navigation; runtime state is intentionally page-local.
 
 Add `data-cm-floating-arrow` to an authored `.cm-popover__panel` or `.cm-dropdown__menu` to
 show a decorative arrow. The installed controller keeps the arrow on the trigger's side
@@ -157,8 +160,9 @@ when the surface flips or shifts to fit the viewport.
 - Keep modal titles specific and visible. Use `description` for concise supporting text.
 - Popover is non-modal: it positions the panel relative to the trigger and allows focus to leave.
   Escape and outside clicks dismiss it by default.
-- Rich Tooltip content must remain brief and cannot contain controls. Never place required
-  instructions exclusively in a Tooltip.
+- Rich Tooltip content must remain brief and cannot contain controls. You can move the pointer
+  onto the tooltip to read it, or press Escape to dismiss it without moving focus. Provide
+  required instructions where they do not depend on a tooltip.
 - Keep content inside a component-owned trigger button noninteractive. Use authored trigger
   composition for existing buttons: Tooltip accepts one in its default slot, and Vue Popover
   and Dropdown accept one with `triggerAsChild` or through their historical entries.

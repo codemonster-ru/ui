@@ -16,8 +16,10 @@ generate its ID. Vanilla markup must supply a unique ID and reference it on the 
 `placement` supports `top`, `bottom`, `start`, and `end`. Hover or focus shows the tooltip
 after `delay` (`none`, `short`, or `long`). A finite nonnegative `openDelay` takes
 precedence. Use `data-cm-tooltip-open-delay` for the equivalent Vanilla setting. The tooltip
-closes when pointer and focus both leave, or when Escape is pressed on the trigger. Escape keeps
-the trigger focused. The panel remains in the DOM and `hidden` tracks whether it is visible.
+stays visible while the pointer is over the trigger, the panel, or the space between them. It
+closes when the pointer leaves and the trigger does not have focus. Escape dismisses it while
+focused or hovered without moving focus. The panel remains in the DOM and `hidden` tracks
+whether it is visible.
 `defaultVisible` sets only the initial render state.
 
 The visible tooltip can be positioned in another container. Use `teleportTo` with a selector or

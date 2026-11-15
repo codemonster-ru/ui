@@ -26,7 +26,8 @@ that role refuses `aria-required`, and a combobox is the role this widget actual
 neither native attribute applies to a button; `disabled` maps to the native `disabled` attribute.
 `id` is required, as it is for the other components that own related identifiers; it names the
 trigger and the listbox derives its own as `{id}-listbox`. Safe attributes such as `autocomplete` and
-`aria-describedby` reach the trigger, while `name` reaches the hidden input.
+`aria-describedby` reach the trigger, while `name` reaches the hidden input. Use `form` to
+associate both the trigger and the named input with a form outside the component's subtree.
 
 ## Visual configuration
 
@@ -97,6 +98,9 @@ Vue owns its state, event handling and rendering, and emits `update:modelValue` 
 Vanilla enhances the authored HTML through `createCmSelectController`; it dispatches
 `cm:select-value-change` from the root and a bubbling native `change` from the trigger. Both
 adapters use the same keyboard rules and positioning dependency.
+
+An uncanceled form reset restores the initial value. When Vue changes its model on reset, it
+emits `update:modelValue`; neither adapter reports the reset as a committed selection.
 
 `required` is announced through `aria-required` but is not enforced by the browser, because a
 component-owned control sits outside constraint validation. Refusing an empty submission is the
