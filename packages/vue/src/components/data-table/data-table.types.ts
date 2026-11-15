@@ -4,6 +4,7 @@ export type CmDataTableDensity = 'default' | 'compact';
 export type CmDataTableSortDirection = 'ascending' | 'descending';
 export type CmDataTableMode = 'client' | 'manual';
 export type CmDataTableCellValue = string | number | null;
+export type CmDataTableColumnPin = 'start' | 'end';
 export type { CmDataTableColumnWidths } from '@codemonster-ru/ui-runtime/core';
 
 export interface CmDataTableColumn {
@@ -17,6 +18,7 @@ export interface CmDataTableColumn {
   maxWidth?: string;
   nowrap?: boolean;
   resizable?: boolean;
+  pinned?: CmDataTableColumnPin;
   scope?: 'col' | 'row' | 'colgroup' | 'rowgroup';
 }
 

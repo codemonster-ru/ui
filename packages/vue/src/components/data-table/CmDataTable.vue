@@ -3,6 +3,7 @@ import { chevronDown } from '@codemonster-ru/ui-icons';
 import {
   measureDataTableColumnContent,
   measureDataTableResizeBoundary,
+  observeDataTablePins,
   resizedDataTableWidths,
   type CmDataTableResizeBoundary,
 } from '@codemonster-ru/ui-runtime';
@@ -164,6 +165,7 @@ const normalizedColumns = computed(() => {
       (column.align !== undefined && !['start', 'center', 'end'].includes(column.align)) ||
       (column.verticalAlign !== undefined && !['top', 'middle', 'bottom', 'baseline'].includes(column.verticalAlign)) ||
       (column.scope !== undefined && !['col', 'row', 'colgroup', 'rowgroup'].includes(column.scope)) ||
+      (column.pinned !== undefined && column.pinned !== 'start' && column.pinned !== 'end') ||
       keys.has(column.key)
     ) {
       warnCm(`Invalid DataTable column: ${column.key}. The column is not rendered.`);
@@ -223,7 +225,7 @@ const requestedColumns = computed(() => {
   }
   return visible;
 });
-const visibleColumns = computed(() => {
+const orderedColumns = computed(() => {
   if (props.columnOrder === null) return requestedColumns.value;
   const columns = new Map(requestedColumns.value.map((column) => [column.key, column]));
   const ordered = props.columnOrder.flatMap((key) => {
@@ -234,8 +236,23 @@ const visibleColumns = computed(() => {
   });
   return [...ordered, ...columns.values()];
 });
+const visibleColumns = computed(() => [
+  ...orderedColumns.value.filter((column) => column.pinned === 'start'),
+  ...orderedColumns.value.filter((column) => !column.pinned),
+  ...orderedColumns.value.filter((column) => column.pinned === 'end'),
+]);
 const localColumnWidths = ref<CmDataTableColumnWidths>({ ...props.defaultColumnWidths });
 const tableRef = ref<HTMLTableElement | null>(null);
+const pinOffsets = ref<Readonly<Record<string, number>> | null>(null);
+watch(
+  [tableRef, visibleColumns],
+  ([table, columns], _, onCleanup) => {
+    pinOffsets.value = null;
+    if (!table || !columns.some(({ pinned }) => pinned)) return;
+    onCleanup(observeDataTablePins(table, (offsets) => (pinOffsets.value = offsets)));
+  },
+  { flush: 'post' },
+);
 const previewColumnWidths = ref<CmDataTableColumnWidths | null>(null);
 const activeColumnWidths = computed(() => previewColumnWidths.value ?? props.columnWidths ?? localColumnWidths.value);
 const fixedColumns = computed(
@@ -465,24 +482,28 @@ const paginationSummary = computed(() => {
 });
 const columnCount = computed(() => visibleColumns.value.length + (props.selectable ? 1 : 0));
 
-function cellAttrs(column: CmDataTableColumn): { class?: string; style?: CSSProperties } {
+function cellAttrs(column: CmDataTableColumn) {
   const style = cellStyle(column);
   return {
     ...(column.align && column.align !== 'start' ? { class: `cm-data-table__cell--${column.align}` } : {}),
     ...(style ? { style } : {}),
+    'data-cm-data-table-column': props.resizableColumns || column.pinned ? column.key : undefined,
+    'data-cm-data-table-pin': column.pinned,
   };
 }
 
 function cellStyle(column: CmDataTableColumn): CSSProperties | undefined {
   const width = activeColumnWidths.value[column.key] ?? column.width;
   const { minWidth, maxWidth, verticalAlign, nowrap } = column;
-  if (!(width || minWidth || maxWidth || verticalAlign || nowrap)) return undefined;
+  const offset = column.pinned ? pinOffsets.value?.[column.key] : undefined;
+  if (!(width || minWidth || maxWidth || verticalAlign || nowrap) && offset === undefined) return undefined;
   return {
     inlineSize: width,
     minInlineSize: minWidth,
     maxInlineSize: maxWidth,
     verticalAlign,
     whiteSpace: nowrap ? 'nowrap' : undefined,
+    '--cm-data-table-pin-offset': offset === undefined ? undefined : `${offset}px`,
   };
 }
 
@@ -658,6 +679,7 @@ useCmHydrated();
         class="cm-data-table__table"
         :inert="maskLoading || undefined"
         :data-cm-data-table-fixed-columns="fixedColumns ? '' : undefined"
+        :data-cm-data-table-pins-ready="pinOffsets ? '' : undefined"
       >
         <caption v-if="props.caption || $slots.caption" class="cm-data-table__caption">
           <slot name="caption">{{ props.caption }}</slot>
@@ -682,7 +704,6 @@ useCmHydrated();
               v-bind="cellAttrs(column)"
               :scope="column.scope ?? 'col'"
               :aria-sort="column.sortable ? columnAriaSort(column) : undefined"
-              :data-cm-data-table-column="props.resizableColumns ? column.key : undefined"
             >
               <button
                 v-if="column.sortable"
@@ -729,12 +750,7 @@ useCmHydrated();
             <tr v-for="row in skeletonRowCount" :key="row" aria-hidden="true">
               <td v-if="props.selectable" class="cm-data-table__selection" />
               <td v-if="$slots['expanded-row']" class="cm-data-table__expansion" />
-              <td
-                v-for="column in visibleColumns"
-                :key="column.key"
-                v-bind="cellAttrs(column)"
-                :data-cm-data-table-column="props.resizableColumns ? column.key : undefined"
-              >
+              <td v-for="column in visibleColumns" :key="column.key" v-bind="cellAttrs(column)">
                 <CmSkeleton class="cm-data-table__skeleton" radius="control" />
               </td>
             </tr>
@@ -781,12 +797,7 @@ useCmHydrated();
                     <CmIcon :icon="chevronDown" />
                   </CmIconButton>
                 </td>
-                <td
-                  v-for="column in visibleColumns"
-                  :key="column.key"
-                  v-bind="cellAttrs(column)"
-                  :data-cm-data-table-column="props.resizableColumns ? column.key : undefined"
-                >
+                <td v-for="column in visibleColumns" :key="column.key" v-bind="cellAttrs(column)">
                   <slot
                     :name="`cell-${column.key}`"
                     :row="row"

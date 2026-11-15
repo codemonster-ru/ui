@@ -22,6 +22,8 @@
 }
 
 .cm-data-table__table {
+  --cm-data-table-pin-offset: 0px;
+
   inline-size: 100%;
   min-inline-size: calc(var(--cm-space-16) * 9);
   border-collapse: separate;
@@ -116,6 +118,28 @@
   inset-block-start: 0;
 }
 
+.cm-data-table__table[data-cm-data-table-pins-ready] > :is(thead, tbody, tfoot) > tr > [data-cm-data-table-pin] {
+  position: sticky;
+  z-index: 1;
+  background-color: var(--cm-color-background-surface);
+}
+
+.cm-data-table__table[data-cm-data-table-pins-ready] > thead > tr > th[data-cm-data-table-pin] {
+  z-index: 3;
+}
+
+:where(.cm-data-table--sticky-header) .cm-data-table__table[data-cm-data-table-pins-ready] .cm-data-table__head th {
+  z-index: 2;
+}
+
+.cm-data-table__table[data-cm-data-table-pins-ready] > :is(thead, tbody, tfoot) > tr > [data-cm-data-table-pin='start'] {
+  inset-inline-start: var(--cm-data-table-pin-offset);
+}
+
+.cm-data-table__table[data-cm-data-table-pins-ready] > :is(thead, tbody, tfoot) > tr > [data-cm-data-table-pin='end'] {
+  inset-inline-end: var(--cm-data-table-pin-offset);
+}
+
 .cm-data-table__row--selected {
   color: inherit;
 }
@@ -157,7 +181,7 @@
 
 .cm-data-table__loading-mask {
   position: absolute;
-  z-index: 2;
+  z-index: 4;
   inset: 0;
   display: grid;
   place-items: center;

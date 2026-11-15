@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "id": "data-table-pinned",
+  "description": "Two start columns and one end column remain visible while the resizable table scrolls.",
+  "props": {
+    "id": "pinned-projects",
+    "caption": "Pinned projects",
+    "columns": [
+      {
+        "key": "status",
+        "header": "Status"
+      },
+      {
+        "key": "actions",
+        "header": "Action",
+        "pinned": "end"
+      },
+      {
+        "key": "name",
+        "header": "Name",
+        "pinned": "start"
+      },
+      {
+        "key": "team",
+        "header": "Team",
+        "pinned": "start"
+      },
+      {
+        "key": "queue",
+        "header": "Queue"
+      }
+    ],
+    "rows": [
+      {
+        "id": "apollo",
+        "cells": {
+          "name": "Apollo",
+          "team": "Core",
+          "status": "In progress",
+          "queue": "Production",
+          "actions": "Edit"
+        }
+      },
+      {
+        "id": "zephyr",
+        "cells": {
+          "name": "Zephyr",
+          "team": "Docs",
+          "status": "Ready",
+          "queue": "Review",
+          "actions": "Open"
+        }
+      }
+    ],
+    "resizableColumns": true,
+    "defaultColumnWidths": {
+      "name": "88px",
+      "team": "82px",
+      "status": "200px",
+      "queue": "162px",
+      "actions": "80px"
+    },
+    "stickyHeader": true
+  },
+  "slots": {}
+}

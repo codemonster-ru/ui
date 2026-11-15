@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils';
-import { h } from 'vue';
+import { h, nextTick } from 'vue';
 import { describe, expect, it } from 'vitest';
 
 import CmDataTable from './data-table/CmDataTable.vue';
@@ -17,6 +17,50 @@ const rows = [
 ];
 
 describe('Vue data table components', () => {
+  it('groups pins around the visible order and recomputes offsets when a pinned column is hidden', async () => {
+    const wrapper = mount(CmDataTable, {
+      props: {
+        id: 'project-pins',
+        columns: [
+          { key: 'actions', header: 'Actions', pinned: 'end' },
+          { key: 'status', header: 'Status' },
+          { key: 'name', header: 'Name', pinned: 'start' },
+          { key: 'team', header: 'Team', pinned: 'start' },
+          { key: 'priority', header: 'Priority', pinned: 'end' },
+        ],
+        rows: [{ id: 'apollo', cells: { name: 'Apollo', team: 'Core', status: 'Open', priority: 'High' } }],
+        columnOrder: ['priority', 'team', 'status', 'name', 'actions'],
+      },
+    });
+    expect(wrapper.findAll('thead th').map((cell) => cell.text())).toEqual([
+      'Team',
+      'Name',
+      'Status',
+      'Priority',
+      'Actions',
+    ]);
+
+    const width = (key: string, value: number) => {
+      wrapper.get(`thead th[data-cm-data-table-column="${key}"]`).element.getBoundingClientRect = () =>
+        ({ width: value }) as DOMRect;
+    };
+    width('team', 72);
+    width('actions', 80);
+    window.dispatchEvent(new Event('resize'));
+    await nextTick();
+    const offset = (key: string) =>
+      wrapper
+        .get<HTMLElement>(`tbody td[data-cm-data-table-column="${key}"]`)
+        .element.style.getPropertyValue('--cm-data-table-pin-offset');
+    expect(offset('name')).toBe('72px');
+    expect(offset('priority')).toBe('80px');
+
+    await wrapper.setProps({ visibleColumnKeys: ['name', 'status', 'priority'] });
+    expect(offset('name')).toBe('0px');
+    expect(offset('priority')).toBe('0px');
+    wrapper.unmount();
+  });
+
   it('resizes the adjacent pair through its labelled keyboard separator and reports final widths', async () => {
     const wrapper = mount(CmDataTable, {
       props: {

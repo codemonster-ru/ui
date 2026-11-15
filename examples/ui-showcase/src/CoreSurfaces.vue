@@ -28,6 +28,12 @@ const columns = sortableColumns.map(({ key, header, ...props }) => ({
   header,
   align: 'align' in props ? props.align : undefined,
 }));
+const pinnedColumns = [
+  ...columns.map((column) =>
+    column.key === 'member' ? { ...column, pinned: 'start' as const, minWidth: '8rem' } : column,
+  ),
+  { key: 'actions', header: 'Actions', pinned: 'end' as const, minWidth: '6rem' },
+];
 const rows = [
   ['Alice', 'Design', 'Available', 12],
   ['Bob', 'Platform', 'Busy', 8],
@@ -307,18 +313,9 @@ const pageSize = ref(3);
       <div v-if="id === 'loading'" class="core-matrix-cell">
         <h4>Table · pinned columns</h4>
         <p>Scroll horizontally to keep Member and Actions visible.</p>
-        <CmTable class="core-pinned-table" striped column-dividers>
-          <template #header>
-            <tr>
-              <th v-for="column in columns" :key="column.key" scope="col">{{ column.header }}</th>
-              <th scope="col">Actions</th>
-            </tr>
-          </template>
-          <tr v-for="row in rows.slice(0, 5)" :key="row.id">
-            <td v-for="column in columns" :key="column.key">{{ row.cells[column.key] }}</td>
-            <td><CmButton size="sm" variant="ghost" href="#forms">Edit</CmButton></td>
-          </tr>
-        </CmTable>
+        <CmDataTable id="pinned-team-table" :columns="pinnedColumns" :rows="rows.slice(0, 5)" striped column-dividers>
+          <template #cellActions><CmButton size="sm" variant="ghost" href="#forms">Edit</CmButton></template>
+        </CmDataTable>
       </div>
       <div v-if="id === 'error'" class="core-matrix-cell">
         <h4>Table · skeleton</h4>

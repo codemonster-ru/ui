@@ -74,3 +74,9 @@ within the two columns' size bounds. Double-click fits the first column to its w
 rendered cell. The Vue adapter reports `update:columnWidths` during a resize and
 `column-resize-end` at the end. Vanilla dispatches the corresponding
 `cm:data-table-column-widths-change` and `cm:data-table-column-resize-end` events.
+
+A column's `pinned` value of `start` or `end` keeps it at that logical edge while the table scrolls.
+The Vue adapter groups the visible columns by pin side and retains each group's order. Vanilla
+HTML authors the same final order. The measured header widths determine cumulative offsets for
+adjacent pins and are updated after a resize. Native selection, sorting, and resizing controls
+keep their own behavior in pinned cells.
