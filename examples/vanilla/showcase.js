@@ -6,7 +6,10 @@ import { createRuntime } from './runtime.js';
 import { fillContrastTable, mountOperations } from './showcase-reference.js';
 import { copyIcon, filterIcons } from './showcase-icon-catalog.js';
 import { mountComponentReference } from './showcase-component-reference.js';
+import { mountGuideCopy } from './showcase-guide-copy.js';
+import { mountShowcaseNavigation } from './showcase-navigation.js';
 
+mountShowcaseNavigation(document.querySelector('.showcase-topbar'), './');
 const catalog = document.querySelector('.showcase-catalog');
 fillContrastTable(catalog);
 for (const button of catalog.querySelectorAll('[data-showcase-copy-color]')) {
@@ -27,8 +30,10 @@ mountOperations(catalog);
 mountLayoutPreviews(catalog);
 mountLayoutRecipes(catalog);
 mountCoreRecipes(catalog);
-mountCoreMatrices(catalog, createRuntime());
-mountComponentReference(catalog);
+const runtime = createRuntime();
+mountCoreMatrices(catalog, runtime);
+mountComponentReference(catalog, runtime);
+mountGuideCopy(catalog);
 
 const iconCatalog = document.querySelector('#icon-catalog');
 iconCatalog?.addEventListener('input', filterIcons);

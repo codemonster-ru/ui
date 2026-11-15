@@ -1,19 +1,21 @@
 ---
-title: 'CodeMonster UI'
+title: 'CodeMonster UI documentation'
 description: 'Cross-platform design-system components for Vue and Vanilla HTML'
 order: 1
 ---
 
-# CodeMonster UI
+# Documentation
 
-CodeMonster UI is a shared design system for Vue 3 applications and Vanilla HTML pages, including server-rendered templates. Framework-independent tokens, CSS, canonical HTML, and interaction contracts keep both
-adapters aligned without hiding their native composition models.
+Use CodeMonster UI in Vue 3 or with Vanilla HTML. Both integrations share design tokens,
+CSS, and component behavior, with support for server-rendered templates.
 
 ## Start here
 
-- [Install CodeMonster UI for Vue or Vanilla](./getting-started.md).
-- [Run the Vue or Vanilla showcase locally](../README.md#preview-locally).
-- [Choose the stable 1.1 release or a local 2.0 build](./getting-started.md#choose-a-release).
+- [Install CodeMonster UI](./getting-started.md#choose-a-release)
+- [Vue quick start](./getting-started.md#vue-quick-start)
+- [Vanilla quick start](./vanilla.md#quick-start)
+
+Choose the [stable Vue 1.1 release](./codemonster-ui-1.1-release-notes.md) or use the [draft 2.0 packages](./codemonster-ui-2.0-release-notes.md) from this checkout. Both showcases can run locally from the repository. [Preview instructions](../README.md#preview-locally)
 
 ## Components
 
@@ -22,11 +24,19 @@ Vanilla HTML for every shared component. Start with [Button](./components/button
 [forms](./components/forms.md), [overlays](./components/overlays.md), or
 [Table and DataTable](./components/data-tables.md).
 
-## Integration
+## Design foundations
+
+- [Design tokens and overrides](./tokens/getting-started.md)
+- [Theme selection and persistence](./recipes/theme-switch.md)
+- [CSS and typography](./css/getting-started.md#typography)
+- [Icons and accessible labels](./components/display.md#icons)
+- [Layout primitives](./components/layout-primitives.md) and [application layouts](./components/layouts.md)
+
+## Application integration
 
 - [Serve Vanilla assets and manage dynamic HTML](./vanilla.md).
-- [Integrate forms, overlays, and server-rendered pages](./integration.md).
-- [Configure design tokens and themes](./tokens/getting-started.md).
+- [Integrate forms and overlays](./integration.md) or [render and hydrate on the server](./integration.md#server-rendering-and-hydration).
+- [Use TypeScript with the public package entries](./integration.md#typescript).
 - [Load shared CSS](./css/getting-started.md) and [generated utilities](./css/utilities.md).
 - [Migrate an existing VueForge app](./migrate-from-vueforge.md).
 

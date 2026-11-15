@@ -1,7 +1,9 @@
 .showcase-core .core-typography-card {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   align-content: start;
   gap: var(--cm-space-4);
+  overflow-wrap: anywhere;
 }
 
 .core-card-label {

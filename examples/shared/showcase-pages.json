@@ -1,11 +1,12 @@
 [
   {
     "id": "core",
-    "label": "Core",
+    "label": "Overview",
     "title": "Build clear product interfaces",
     "description": "Explore CodeMonster UI components in light and dark, then copy working Vue or Vanilla examples."
   },
-  { "id": "components", "label": "Reference" },
+  { "id": "components", "label": "Components" },
+  { "id": "docs", "label": "Guides" },
   {
     "id": "examples",
     "label": "Examples",
@@ -15,11 +16,12 @@
   {
     "id": "layouts",
     "label": "Layouts",
+    "resource": true,
     "title": "Layouts and application shells",
     "description": "Start with layout primitives or try a complete application shell. Change the preview width to see how each layout reflows."
   },
-  { "id": "colors", "label": "Colors" },
-  { "id": "icons", "label": "Icons" },
-  { "id": "codeblock", "label": "CodeBlock", "vueOnly": true },
-  { "id": "playground", "label": "Playground", "vueOnly": true }
+  { "id": "colors", "label": "Colors", "resource": true },
+  { "id": "icons", "label": "Icons", "resource": true },
+  { "id": "codeblock", "label": "CodeBlock", "resource": true, "vueOnly": true },
+  { "id": "playground", "label": "Playground", "resource": true, "vueOnly": true }
 ]

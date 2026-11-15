@@ -1,6 +1,6 @@
 ---
 title: 'Application integration'
-description: 'Use CodeMonster UI in forms, overlays, server-rendered pages, and mixed applications'
+description: 'Use CodeMonster UI in forms, overlays, mixed applications, and server-side rendering (SSR)'
 ---
 
 # Application integration
@@ -78,8 +78,8 @@ available by keyboard.
 
 ## Server rendering and hydration
 
-Both integration modes use the same token and component styles. Load tokens before the
-component stylesheet and render the theme preference in `data-cm-theme` before first paint.
+For server-side rendering (SSR), both integration modes use the same token and component styles.
+Load tokens before the component stylesheet and render the theme preference in `data-cm-theme` before first paint.
 For a stored choice, use the same preference on the server and for the initial client render.
 [Theme and cookie setup](./recipes/theme-switch.md#server-rendering)
 
@@ -94,6 +94,17 @@ For a stored choice, use the same preference on the server and for the initial c
   from the Vanilla container and hydrate the Vue application in its own root.
 
 [Vanilla setup and dynamic HTML](./vanilla.md) · [Rendering contract](./architecture/rendering-strategy.md)
+
+## TypeScript
+
+Import types from the same public package entry that exports the component or helper. For an
+ordinary Vue template, the Vue language tools infer prop and event types from the component.
+When defining configuration or wrappers, use exported types such as `CmInputProps` from
+`@codemonster-ru/ui-vue`. A Vanilla integration can use types from `@codemonster-ru/ui-runtime`
+when it manages controllers in TypeScript. The browser bundle and ordinary HTML work with JavaScript.
+
+For bundled applications use TypeScript’s `Bundler` module resolution. For Node ESM applications,
+use `NodeNext` to resolve the package export conditions. [Token types and overrides](./tokens/getting-started.md#typescript-consumption)
 
 ## Package entry points
 

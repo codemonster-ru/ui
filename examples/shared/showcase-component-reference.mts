@@ -1,6 +1,9 @@
+import { documentationUrl } from './showcase-guide-links.mts';
+
 export interface ReferenceGroup {
   id: string;
   title: string;
+  description?: string;
   components: string[];
 }
 
@@ -52,6 +55,15 @@ export const referenceSupplements = [
     target: './core/#modals',
   },
 ] as const;
+
+export function referenceCatalog(groups: ReferenceGroup[], components: Map<string, ReferenceComponent>) {
+  return groups.flatMap(({ id, title, components: slugs }) =>
+    [
+      ...slugs.map((slug) => components.get(slug)).filter((item): item is ReferenceComponent => Boolean(item)),
+      ...referenceSupplements.filter(({ group }) => id === group),
+    ].map(({ slug, name, description }) => ({ slug, name, description, category: title, categoryId: id })),
+  );
+}
 
 const guidesBySlug: Record<string, string> = {
   'theme-switch': 'recipes/theme-switch.md',
@@ -130,6 +142,12 @@ const accessibilityNotes: Record<string, string> = {
   accordion:
     'Tab to a trigger. Use the arrow keys, Home or End to move between triggers, and Enter or Space to toggle.',
   alert: 'Use a status message for routine feedback. Reserve the alert role for errors that need immediate attention.',
+  button:
+    'Give the action a visible name and keep its label present while it is busy. Use a link with a destination for navigation.',
+  'data-table':
+    'Give the table a meaningful caption. Label selection, sorting and pagination controls so their purpose stays clear out of context.',
+  'date-picker':
+    'Label the trigger with the date being requested. Keep the displayed value, validation message and any range limits clear.',
   'command-palette':
     'Name the palette, keep focus within it while open and return focus to the opener after dismissal.',
   dialog:
@@ -139,29 +157,43 @@ const accessibilityNotes: Record<string, string> = {
     'Associate the label and supporting text with the real form control. Keep invalid state and error text in sync.',
   icon: 'Hide decorative icons from assistive technology and give meaningful stand-alone icons an accessible name.',
   'icon-button': 'Supply a concise accessible label that describes the action the icon performs.',
+  input:
+    'Provide a visible label, associate error text with the input, and keep the accessible name when adding a clear or reveal action.',
   menu: 'Use a menu for actions with arrow-key navigation. Use ordinary links for a site navigation list.',
   'menu-bar':
     'Move across the bar with Left and Right and use Down to enter a submenu. Escape returns to the owning item.',
   radio: 'Give related radios the same name and use a fieldset and legend when the group needs its own label.',
+  select:
+    'Name the trigger with its field label. Keep a clear label for each option and associate validation text with the control.',
   tabs: 'Use arrow keys to move between tabs. Keep each tab paired with the panel it names.',
   tooltip:
     'Expose the explanation from pointer hover and keyboard focus. Keep essential instructions visible in the page.',
+};
+
+const accessibilityGuides: Record<string, string> = {
+  button: 'components/button.md#forms-and-accessibility',
+  'data-table': 'components/data-tables.md#scope-accessibility-and-security',
+  table: 'components/data-tables.md#scope-accessibility-and-security',
+  'date-picker': 'components/advanced-inputs.md#accessibility-and-security',
+  select: 'components/advanced-inputs.md#accessibility-and-security',
+  'command-palette': 'components/advanced-inputs.md#accessibility-and-security',
 };
 
 export function escapeReference(value: string) {
   return value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
 }
 
-function publicName(name: string) {
+export function publicName(name: string) {
   return name.replace(/([a-z0-9])([A-Z])/gu, '$1 $2');
 }
 
-function guideLink(path: string) {
-  return `<a class="cm-link cm-link--underline-hover" href="${docsPath}/docs/${path}">Developer guide</a>`;
+function guideLink(path: string, base: string, label = 'Developer guide') {
+  return `<a class="cm-link cm-link--underline-hover" href="${base}${documentationUrl(path)}">${label}</a>`;
 }
 
 export function referenceFrameClass(slug: string) {
   if (tallPreviews.has(slug)) return ' reference-frame--tall';
+  if (['table', 'data-table', 'form-layout'].includes(slug)) return ' reference-frame--content';
   return floatingComponents.has(slug) ? ' reference-frame--floating' : '';
 }
 
@@ -299,37 +331,50 @@ export function renderReferenceIndex(
   components: Map<string, ReferenceComponent>,
   base = '.',
 ) {
-  const count = components.size + referenceSupplements.length;
-  return `<section class="component-reference" data-component-reference>
+  const orderedGroups = [...groups.filter(({ id }) => id !== 'theme'), ...groups.filter(({ id }) => id === 'theme')];
+  const catalog = referenceCatalog(orderedGroups, components);
+  return `<section class="component-reference reference-catalog" data-component-reference>
     <header class="reference-intro">
       <h1>Component reference</h1>
-      <p>Explore live components, compare Vue and Vanilla usage, and find the API for each component.</p>
-      <div class="reference-links">
-        <a class="cm-link cm-link--underline-hover" href="${docsPath}/docs/getting-started.md">Installation and quick starts</a>
-        <a class="cm-link cm-link--underline-hover" href="${docsPath}/docs/tokens/getting-started.md">Design tokens</a>
-      </div>
+      <p>Find a component, try it in the browser, and copy a working Vue or Vanilla example.</p>
     </header>
-    <div class="reference-search" data-reference-search hidden>
-      <label for="reference-query">Find a component</label>
-      <input class="cm-input cm-input--md" id="reference-query" type="search" placeholder="Search button, tabs, date picker…" autocomplete="off" />
-    </div>
-    <p class="reference-count" role="status" data-reference-count>${count} components</p>
+    <search class="reference-search" aria-label="Filter component catalog" data-reference-search hidden>
+      <div class="reference-search-controls">
+        <label>Find a component
+          <input class="cm-input cm-input--md" id="reference-query" type="search" placeholder="Name, purpose, or category" autocomplete="off" />
+        </label>
+        <label>Category
+          <select id="reference-category">
+            <option value="">All categories</option>
+            ${orderedGroups.map(({ id, title }) => `<option value="${id}">${escapeReference(title)}</option>`).join('')}
+          </select>
+        </label>
+        <button class="cm-button cm-button--secondary cm-button--md reference-clear" type="button" data-reference-clear hidden>
+          <span class="cm-button__label">Clear filters</span>
+        </button>
+      </div>
+      <p class="reference-count" role="status" data-reference-count>${catalog.length} components</p>
+    </search>
     <div class="reference-groups">
-      ${groups
+      ${orderedGroups
         .map(
-          ({ id, title, components: slugs }) => `<section class="showcase-panel reference-group" data-reference-group>
-        <h2>${escapeReference(title)}</h2>
-        <ul>${[
-          ...slugs.map((slug) => components.get(slug)).filter((item): item is ReferenceComponent => Boolean(item)),
-          ...referenceSupplements.filter(({ group }) => id === group),
-        ]
+          ({ id, title, description }) => `<section class="reference-group" id="${id}" data-reference-group>
+        <header>
+          <h2>${escapeReference(title)}</h2>
+          ${description ? `<p>${escapeReference(description)}</p>` : ''}
+        </header>
+        <ul>${catalog
+          .filter(({ categoryId }) => categoryId === id)
           .map(
             ({
               slug,
               name,
-              description,
-            }) => `<li data-reference-item data-reference-terms="${escapeReference([slug, 'Cm' + name, publicName(name), title, description ?? ''].join(' '))}">
-          <a class="cm-link cm-link--underline-hover" href="${base}/components/${slug}/">${escapeReference(publicName(name))}</a>
+              description: summary,
+            }) => `<li data-reference-item data-reference-terms="${escapeReference([slug, name, 'Cm' + name, publicName(name), title, summary ?? ''].join(' '))}">
+          <a class="reference-card" href="${base}/components/${slug}/">
+            <strong>${escapeReference(publicName(name))}</strong>
+            ${summary ? `<span>${escapeReference(summary.split(/(?<=[.!?])\s/u, 1)[0].replaceAll('`', ''))}</span>` : ''}
+          </a>
         </li>`,
           )
           .join('')}</ul>
@@ -345,29 +390,34 @@ function renderReferenceEntry(
   entries: Record<string, ReferenceProp | ReferenceEntry>,
 ) {
   const title = { props: 'Properties', slots: 'Content slots', events: 'Events' }[kind];
-  return `<section>
-    <h3>${title}</h3>
+  return `<section class="reference-api-section">
+    <h3 id="${kind}" tabindex="-1">${title}</h3>
     <dl class="reference-api-list">${Object.entries(entries)
       .map(([name, entry]) => {
-        const details: string[] = [];
-        if ('type' in entry) {
-          details.push(entry.values?.join(' / ') ?? entry.type);
-          if (Object.hasOwn(entry, 'default')) details.push('Default ' + JSON.stringify(entry.default));
-        }
-        if (entry.required) details.push('Required');
-        if ('native' in entry && entry.native) details.push('Native');
-        return `<div><dt><code>${escapeReference(name)}</code></dt>
-        <dd>${details.length ? `<span class="reference-api-meta">${escapeReference(details.join(' · '))}</span>` : ''}
-        ${entry.description ? `<span>${escapeReference(entry.description)}</span>` : ''}</dd></div>`;
+        const prop = 'type' in entry ? entry : undefined;
+        const type = prop?.values?.join(' | ') ?? prop?.type;
+        const defaultValue = prop && Object.hasOwn(prop, 'default') && JSON.stringify(prop.default);
+        return `<div>
+          <dt>
+            <code>${escapeReference(name)}</code>
+            ${entry.required ? '<span class="reference-api-badge">Required</span>' : ''}
+            ${'native' in entry && entry.native ? '<span class="reference-api-badge">Native</span>' : ''}
+          </dt>
+          <dd>
+            ${type ? `<code class="reference-api-type">${escapeReference(type)}</code>` : ''}
+            ${entry.description ? `<span>${escapeReference(entry.description)}</span>` : ''}
+            ${defaultValue ? `<span class="reference-api-default">Default: <code>${escapeReference(defaultValue)}</code></span>` : ''}
+          </dd>
+        </div>`;
       })
       .join('')}</dl>
   </section>`;
 }
 
-function renderSource(title: string, source: string) {
-  return `<section class="reference-source">
+function renderSource(id: 'vue' | 'vanilla', title: string, source: string) {
+  return `<section class="reference-source" id="snippet-${id}" data-reference-source="${id}">
     <div class="reference-source-heading">
-      <h3>${title}</h3>
+      <h3>${title} example</h3>
       <button type="button" class="cm-button cm-button--secondary cm-button--sm" hidden data-reference-copy aria-label="Copy ${title} example">
         <span class="cm-button__label">Copy code</span>
       </button>
@@ -377,90 +427,158 @@ function renderSource(title: string, source: string) {
   </section>`;
 }
 
-function overviewLink(base: string) {
-  return `<a class="cm-link cm-link--underline-hover reference-back" href="${base}/components/">All components</a>`;
+function breadcrumb(base: string, entry?: ReturnType<typeof referenceCatalog>[number]) {
+  return `<nav class="reference-breadcrumb" aria-label="Breadcrumb">
+    <ol>
+      <li><a class="cm-link cm-link--underline-hover" href="${base}/components/">Components</a></li>
+      ${entry ? `<li><a class="cm-link cm-link--underline-hover" href="${base}/components/#${entry.categoryId}">${escapeReference(entry.category)}</a></li>` : ''}
+    </ol>
+  </nav>`;
 }
 
-export function renderReferenceDetail(
-  component: ReferenceComponent,
-  example: ReferenceCase,
-  preview: string,
-  variants: string,
-  base = '.',
+interface DetailOptions {
+  component: ReferenceComponent;
+  example: ReferenceCase;
+  preview: string;
+  variants: string;
+  catalog: ReturnType<typeof referenceCatalog>;
+  base?: string;
+}
+
+function renderRelated(
+  slug: string,
+  catalog: ReturnType<typeof referenceCatalog>,
+  base: string,
+  guide: string,
+  galleryLink: string,
 ) {
+  const category = catalog.find((entry) => entry.slug === slug)?.categoryId;
+  const related = catalog.filter((entry) => entry.categoryId === category && entry.slug !== slug).slice(0, 4);
+  return `<section class="reference-section">
+    <h2 id="related" tabindex="-1">Related resources</h2>
+    <div class="reference-links">
+      ${guideLink(guide, base)}
+      ${galleryLink}
+      ${related.map(({ slug: sibling, name }) => `<a class="cm-link cm-link--underline-hover" href="${base}/components/${sibling}/">${escapeReference(publicName(name))}</a>`).join('')}
+    </div>
+  </section>`;
+}
+
+export function renderReferenceDetail({ component, example, preview, variants, catalog, base = '.' }: DetailOptions) {
   const { slug, name, description, props, slots, events, states } = component;
   const guide =
     guidesBySlug[slug] ?? (layoutPrimitives.has(slug) ? 'components/layout-primitives.md' : 'components/layouts.md');
   const accessibility = accessibilityNotes[slug];
-  const gallery =
-    slug === 'icon' ? './icons/' : layoutPackages.has(slug) || layoutPrimitives.has(slug) ? './layouts/' : './core/';
-  const apiSections = (
+  const catalogEntry = catalog.find((entry) => entry.slug === slug);
+  const gallery = slug === 'icon' ? '/icons/' : catalogEntry?.categoryId === 'layouts' ? '/layouts/' : '/core/';
+  const galleryAnchor = gallery === '/core/' && catalogEntry ? `#${catalogEntry.categoryId}` : '';
+  const detailUrl = `${base}/components/${slug}/`;
+  const apiEntries = (
     [
-      ['props', props],
-      ['slots', slots],
-      ['events', events],
+      ['props', 'Properties', props],
+      ['events', 'Events', events],
+      ['slots', 'Content slots', slots],
     ] as const
-  )
-    .filter(([, entries]) => Object.keys(entries).length > 0)
-    .map(([kind, entries]) => renderReferenceEntry(kind, entries))
-    .join('');
-  return `<article class="component-reference" data-component-reference>
+  ).filter(([, , entries]) => Object.keys(entries).length > 0);
+  const sections = [
+    ['preview', 'Live preview'],
+    ['usage', 'Basic usage'],
+    ...(variants || states.length ? [['variants', 'Variants and states']] : []),
+    ...(apiEntries.length ? [['api', 'API reference']] : []),
+    ['accessibility', 'Accessibility'],
+    ['related', 'Related resources'],
+  ];
+  const displayName = escapeReference(publicName(name));
+  const activeAdapter = base ? 'vanilla' : 'vue';
+  const accessibilityGuide =
+    accessibilityGuides[slug] ??
+    (catalogEntry?.categoryId === 'forms' ? 'components/forms.md#native-form-and-accessibility-rules' : guide);
+  return `<article class="component-reference reference-detail" data-component-reference>
     <header class="reference-intro">
-      ${overviewLink(base)}
-      <h1>${escapeReference(publicName(name))}</h1>
+      ${breadcrumb(base, catalogEntry)}
+      <h1>${displayName}</h1>
       ${description ? `<p>${escapeReference(description.replaceAll('`', ''))}</p>` : ''}
-      <div class="reference-links">
-        ${guideLink(guide)}
-        <a class="cm-link cm-link--underline-hover" href="${docsPath}/contracts/${slug}/manifest.json">Contract source</a>
-        <a class="cm-link cm-link--underline-hover" href="${base}${gallery.slice(1)}">More examples in the showcase</a>
-      </div>
     </header>
-    <section class="showcase-panel reference-preview" data-reference-preview="${slug}">
-      <h2>Try it</h2>
+    <details class="reference-contents" data-reference-contents>
+      <summary>On this page</summary>
+      <nav aria-label="On this page">
+        <ul>${sections.map(([id, label]) => `<li><a href="${detailUrl}#${id}">${label}</a></li>`).join('')}</ul>
+      </nav>
+    </details>
+    <div class="reference-body">
+    <section class="reference-section reference-preview" data-reference-preview="${slug}">
+      <h2 id="preview" tabindex="-1">Live preview</h2>
       ${preview}
-      ${accessibility ? `<p class="reference-accessibility"><strong>Accessibility</strong> ${escapeReference(accessibility)}</p>` : ''}
-      ${
-        variants
-          ? `<details class="showcase-contracts"><summary>More examples and states</summary>
-        <div class="showcase-variants">${variants}</div>
-      </details>`
-          : ''
-      }
     </section>
-    <section class="showcase-panel reference-usage">
-      <h2>Usage</h2>
-      <p>Use these imports with a build tool such as Vite. See the
-        <a class="cm-link cm-link--underline-hover" href="${docsPath}/docs/getting-started.md">installation guide</a>
-        to build and install the 2.0 workspace packages.</p>
-      <div class="reference-snippets">
-        ${renderSource('Vue', vueSource(component, example))}
-        ${example.canonicalHtml ? renderSource('Vanilla HTML', vanillaReferenceSource(slug, example.canonicalHtml)) : ''}
+    <section class="reference-section reference-usage">
+      <h2 id="usage" tabindex="-1">Basic usage</h2>
+      <p>These examples use the 2.0 packages and a build tool such as Vite. ${guideLink('getting-started.md', base, 'Installation guide')}</p>
+      <div class="reference-snippets" data-reference-snippets="${activeAdapter}">
+        ${
+          example.canonicalHtml
+            ? `<div class="cm-tabs__list reference-snippet-tabs" role="tablist" aria-label="Example language" hidden>
+            <button type="button" class="cm-tabs__tab" role="tab" id="snippet-tab-vue" aria-controls="snippet-vue" aria-selected="false" data-cm-tab-value="vue">Vue</button>
+            <button type="button" class="cm-tabs__tab" role="tab" id="snippet-tab-vanilla" aria-controls="snippet-vanilla" aria-selected="false" data-cm-tab-value="vanilla">Vanilla HTML</button>
+          </div>`
+            : ''
+        }
+        ${renderSource('vue', 'Vue', vueSource(component, example))}
+        ${example.canonicalHtml ? renderSource('vanilla', 'Vanilla HTML', vanillaReferenceSource(slug, example.canonicalHtml)) : ''}
       </div>
     </section>
     ${
-      apiSections || states.length
-        ? `<section class="showcase-panel reference-api">
-      <h2>Component contract</h2>
-      <p>See the developer guide for framework-specific options and integration details.</p>
+      variants || states.length
+        ? `<section class="reference-section reference-variants">
+      <h2 id="variants" tabindex="-1">Variants and states</h2>
       ${states.length ? `<ul class="reference-states" aria-label="Supported states">${states.map((state) => `<li><code>${escapeReference(state)}</code></li>`).join('')}</ul>` : ''}
-      ${apiSections}
+      ${variants ? `<details><summary>More examples and states</summary><div class="reference-variant-grid">${variants}</div></details>` : ''}
     </section>`
         : ''
     }
+    ${
+      apiEntries.length
+        ? `<section class="reference-section reference-api">
+      <h2 id="api" tabindex="-1">API reference</h2>
+      <p>Names below come from the shared component contract. The developer guide explains how to use them as Vue props, events and slots, or as Vanilla markup and runtime settings.</p>
+      <div class="reference-links">
+        ${guideLink(guide, base)}
+        <a class="cm-link cm-link--underline-hover" href="${docsPath}/contracts/${slug}/manifest.json">Contract source</a>
+      </div>
+      <ul class="reference-api-index" aria-label="API sections">
+        ${apiEntries.map(([kind, title, entries]) => `<li><a class="cm-link cm-link--underline-hover" href="${detailUrl}#${kind}">${title} <span>${Object.keys(entries).length}</span></a></li>`).join('')}
+      </ul>
+      ${apiEntries.map(([kind, , entries]) => renderReferenceEntry(kind, entries)).join('')}
+    </section>`
+        : ''
+    }
+    <section class="reference-section">
+      <h2 id="accessibility" tabindex="-1">Accessibility</h2>
+      ${accessibility ? `<p>${escapeReference(accessibility)}</p>` : ''}
+      <p>${guideLink(accessibilityGuide, base, 'Integration and accessibility guidance')}</p>
+    </section>
+    ${renderRelated(slug, catalog, base, guide, `<a class="cm-link cm-link--underline-hover" href="${base}${gallery}${galleryAnchor}">Showcase examples</a>`)}
+    </div>
   </article>`;
 }
 
-export function renderReferenceSupplement(supplement: (typeof referenceSupplements)[number], base = '.') {
+export function renderReferenceSupplement(
+  supplement: (typeof referenceSupplements)[number],
+  catalog: ReturnType<typeof referenceCatalog>,
+  base = '.',
+) {
   const target =
     base === '.' && supplement.slug === 'confirm-dialog' ? '/confirm-dialog-example.html' : supplement.target.slice(1);
 
   return `<article class="component-reference" data-component-reference>
     <header class="reference-intro">
-      ${overviewLink(base)}
+      ${breadcrumb(
+        base,
+        catalog.find((entry) => entry.slug === supplement.slug),
+      )}
       <h1>${publicName(supplement.name)}</h1>
       <p>${supplement.description}</p>
       <div class="reference-links">
-        ${guideLink(supplement.guide)}
+        ${guideLink(supplement.guide, base)}
         <a class="cm-link cm-link--underline-hover" href="${base}${target}">Try the ${supplement.group === 'theme' ? 'theme controls' : 'confirmation flow'}</a>
       </div>
     </header>
@@ -469,7 +587,7 @@ export function renderReferenceSupplement(supplement: (typeof referenceSupplemen
 
 export function renderReferenceMissing(base = '.') {
   return `<section class="component-reference"><header class="reference-intro">
-    ${overviewLink(base)}
+    ${breadcrumb(base)}
     <h1>Component unavailable</h1>
     <p>Choose a component from the reference index.</p>
   </header></section>`;

@@ -8,9 +8,9 @@ export const workspaceViews = [
 export const releaseEnvironments = ['Production', 'Staging', 'Preview'].map((value) => ({ value, label: value }));
 
 export const releaseStates = {
-  released: { label: 'Released', tone: 'success', hint: 'Deployed successfully' },
-  queued: { label: 'Queued', tone: 'info', hint: 'Scheduled for deployment' },
-  review: { label: 'In review', tone: 'warning', hint: 'Waiting for approval' },
+  released: { label: 'Released', tone: 'success' },
+  queued: { label: 'Queued', tone: 'info' },
+  review: { label: 'In review', tone: 'warning' },
 } as const;
 
 export type ReleaseState = keyof typeof releaseStates;
@@ -52,10 +52,9 @@ export function filterReleases(releases: readonly ReleaseRecord[], query: string
 export function summarizeReleases(releases: readonly ReleaseRecord[]) {
   const counts = { released: 0, queued: 0, review: 0 };
   for (const { state } of releases) counts[state]++;
-  return Object.entries(releaseStates).map(([state, { label, hint }]) => ({
+  return Object.entries(releaseStates).map(([state, { label }]) => ({
     state,
     label,
-    hint,
     count: counts[state as ReleaseState],
   }));
 }

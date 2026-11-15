@@ -34,6 +34,7 @@ const viewItems = [
         :label="placement"
         :placement="placement"
         :content="`Tooltip placement: ${placement}`"
+        teleport-to="body"
         class="core-tooltip-sample"
       />
     </div>
