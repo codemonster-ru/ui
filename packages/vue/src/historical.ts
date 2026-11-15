@@ -78,5 +78,12 @@ export { useClickOutside, useEscapeKey } from './composables/document-events';
 export type { UseClickOutsideOptions, UseEscapeKeyOptions } from './composables/document-events';
 export { useFloating } from './composables/floating';
 export type { FloatingMiddlewareData, UseFloatingOptions } from './composables/floating';
+export { useBreakpoint, useBreakpoints, useBreakpointValue } from './composables/breakpoints';
+export type {
+  UseBreakpointOptions,
+  VfBreakpointName,
+  VfBreakpointValue,
+  VfBreakpointValues,
+} from './composables/breakpoints';
 export { useFocusTrap } from './composables/focus-trap';
 export type { UseFocusTrapOptions } from './composables/focus-trap';
