@@ -31,7 +31,8 @@ Columns have a unique kebab-case `key`, non-empty `header`, optional `sortable`,
 `align` (`start`, `center`, or `end`). Rows have a unique kebab-case `id` and a `cells` record whose
 values are strings, finite numbers, or null. Values are rendered as escaped text.
 Set a row's `selectable` field to `false` when it must remain visible but cannot be added to or
-removed from the current selection.
+removed from the current selection. In Vue, `rowSelectable(row, rowIndex)` can apply the same
+restriction conditionally to a rendered row.
 Pass `visibleColumnKeys` in the desired display order to hide or rearrange columns without changing
 the complete column and row data. The application owns the chooser UI and persistence.
 
@@ -68,11 +69,28 @@ const rows = [
 </template>
 ```
 
-DataTable does not reorder or fetch rows after an interaction. Handle `sortChange`,
-`selectionChange`, and `pageChange` or their Vue models, then supply the authoritative rows and
-state. This keeps remote queries, authorization, caching, and error handling in the application.
-Select-all affects only eligible rendered rows. A disabled row that is already selected remains
-selected until the application changes the controlled selection.
+DataTable uses manual sorting and paging by default. Handle `sortChange`, `selectionChange`,
+and `pageChange` or their Vue models, then supply the authoritative rows and state. DataTable
+does no fetching.
+
+When Vue has the complete row collection, set `sortingMode="client"` to sort scalar values
+in the browser and `paginationMode="client"` to derive the row count and display one page.
+Client sorting orders finite numbers numerically and text case-insensitively with natural
+number ordering. Empty values stay last. Active client sorting runs before client paging.
+Explicit manual paging (`pagination` with `paginationMode="manual"`) preserves the supplied
+page's order and still reports sort requests. Set `:pagination="false"` to hide the pager
+and show all supplied rows.
+
+Select-all affects only eligible rendered rows. Vue preserves selections outside the current page.
+A disabled row that is already selected remains selected until the application changes the
+selection.
+
+Vue accepts a `caption` slot and a `footer` slot containing native table rows. Use
+`header-<key>` to customize a heading with its `column`, or `cell-<key>` to render a value
+with `row`, `column`, `value`, and the zero-based `rowIndex`. Sortable headings keep their
+native sort button and accessible action label. Use the `loading`, `error`, and `empty` slots
+to customize their status row. The equivalent Vanilla markup contains the authored text and
+elements directly in the corresponding table regions.
 
 Localize selection and sorting accessible names with `selectAllLabel`, `selectRowLabelTemplate`,
 `sortAscendingLabelTemplate`, `sortDescendingLabelTemplate`, and `clearSortLabelTemplate`. The row
@@ -124,8 +142,8 @@ hide, or replace rows. Without JavaScript, users retain a readable semantic tabl
 - Format dates, money, links, and status text before passing the shared scalar data model.
 - Treat row and column values as untrusted. Both adapters escape them and reject arbitrary HTML,
   executable accessors, unknown cell keys, duplicate identifiers, and non-finite numbers.
-- Rich cells, headers, state actions, footers, and expanded rows belong in an application-owned
-  `CmTable` composition, where trusted Vue or Vanilla HTML markup remains explicit.
+- Supply rich cell and header content as trusted Vue slots or authored Vanilla markup. For
+  expanded rows, compose `CmTable` with application-owned disclosure state.
 - Multi-sort query semantics and interactive column pinning, resizing, and reordering remain
   application-owned policy. `visibleColumnKeys` covers the stable shared visibility/order state.
 - For skeleton rows, compose `CmSkeleton` with `CmTable`; DataTable's portable loading state remains
