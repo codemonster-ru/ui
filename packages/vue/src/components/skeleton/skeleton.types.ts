@@ -5,3 +5,9 @@ export interface CmSkeletonProps {
   radius?: CmSkeletonRadius;
   animated?: boolean;
 }
+
+export interface VfSkeletonProps {
+  minHeight?: string | number;
+  radius?: string;
+  animated?: boolean;
+}

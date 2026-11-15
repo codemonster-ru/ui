@@ -20,7 +20,7 @@ export type {
   CmButtonSize as VfControlSize,
   CmButtonVariant as VfButtonVariant,
 } from './components/button/button.types';
-export { default as CmCard } from './components/card/CmCard.vue';
+export { default as CmCard, default as VfCard } from './components/card/CmCard.vue';
 export type { CmCardElement, CmCardProps } from './components/card/card.types';
 export { default as CmCheckbox } from './components/checkbox/CmCheckbox.vue';
 export type { CmCheckboxProps, CmCheckboxSize } from './components/checkbox/checkbox.types';
@@ -63,8 +63,12 @@ export type {
   CmDatePickerSize,
   CmDatePickerValue,
 } from './components/date-picker/date-picker.types';
-export { default as CmDivider } from './components/divider/CmDivider.vue';
-export type { CmDividerOrientation, CmDividerProps } from './components/divider/divider.types';
+export { default as CmDivider, default as VfDivider } from './components/divider/CmDivider.vue';
+export type {
+  CmDividerOrientation,
+  CmDividerOrientation as VfDividerOrientation,
+  CmDividerProps,
+} from './components/divider/divider.types';
 export { default as CmDialog } from './components/dialog/CmDialog.vue';
 export type { CmDialogProps, CmDialogSize } from './components/dialog/dialog.types';
 export { default as CmDropdown } from './components/dropdown/CmDropdown.vue';
@@ -156,7 +160,8 @@ export type { CmSelectOption, CmSelectPlacement, CmSelectProps, CmSelectSize } f
 export { default as CmSection } from './components/section/CmSection.vue';
 export type { CmSectionElement, CmSectionProps } from './components/section/section.types';
 export { default as CmSkeleton } from './components/skeleton/CmSkeleton.vue';
-export type { CmSkeletonProps, CmSkeletonRadius } from './components/skeleton/skeleton.types';
+export { default as VfSkeleton } from './components/skeleton/VfSkeleton.vue';
+export type { CmSkeletonProps, CmSkeletonRadius, VfSkeletonProps } from './components/skeleton/skeleton.types';
 export { default as CmSkeletonGate } from './components/skeleton-gate/CmSkeletonGate.vue';
 export { default as VfSkeletonGate } from './components/skeleton-gate/CmSkeletonGate.vue';
 export { default as CmStack } from './components/stack/CmStack.vue';
