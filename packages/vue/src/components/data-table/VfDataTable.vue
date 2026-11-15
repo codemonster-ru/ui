@@ -48,6 +48,7 @@ const slots = defineSlots<{
   [slot: `cell${string}`]:
     ((scope: { row: Row; column: VfDataTableColumn; value: unknown; rowIndex: number }) => unknown) | undefined;
 }>();
+const passthroughSlots = ['caption', 'empty', 'error', 'loading', 'footer'] as const;
 const id = useId({ prefix: 'vf-data-table', providedId: () => props.id });
 const page = ref(props.defaultPage);
 const pageSize = ref(props.defaultPageSize);
@@ -199,11 +200,7 @@ function sourceColumn(column: VfDataTableColumn): VfDataTableColumn {
     @update:column-widths="emit('update:columnWidths', $event)"
     @column-resize-end="emit('column-resize-end', $event)"
   >
-    <template v-if="slots.caption" #caption><slot name="caption" /></template>
-    <template v-if="slots.empty" #empty><slot name="empty" /></template>
-    <template v-if="slots.error" #error><slot name="error" /></template>
-    <template v-if="slots.loading" #loading><slot name="loading" /></template>
-    <template v-if="slots.footer" #footer><slot name="footer" /></template>
+    <template v-for="name in passthroughSlots.filter((name) => slots[name])" #[name]><slot :name="name" /></template>
     <template #pagination="scope">
       <VfDataTablePagination
         v-bind="scope"

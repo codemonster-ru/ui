@@ -190,6 +190,8 @@ Set `reorderableColumns` on `VfDataTable`. Drag a header or focus it and press L
 Arrow. A drag previews the order and commits on release. Escape cancels the preview.
 Columns move within their start-pinned, unpinned, or end-pinned group. A column with
 `reorderable: false` cannot initiate a move. Other columns in the same group can pass it.
+Changed header and body cells slide to their new positions using the shared fast motion token.
+Reduced-motion preferences and tables with more than 200 rendered cells use an instant update.
 
 Use `defaultColumnOrder` for the initial order or `v-model:column-order` to own it.
 `column-reorder-end` reports the full key array, including hidden columns, once per completed

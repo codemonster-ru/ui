@@ -73,6 +73,33 @@ function pointer(target: EventTarget, type: string, clientX: number): void {
   target.dispatchEvent(event);
 }
 
+it('animates from the old cell positions and cancels pending motion when reordering is disabled', async () => {
+  const table = mount(VfDataTable, {
+    attachTo: document.body,
+    props: { columns: [{ key: 'name' }, { key: 'email' }], rows: [{ name: 'Ada' }], reorderableColumns: true },
+  });
+  try {
+    const active = { cancel: vi.fn() };
+    const animate = vi.fn(() => active);
+    const name = table.get<HTMLTableCellElement>(header('name'));
+    vi.spyOn(name.element, 'getBoundingClientRect').mockImplementation(
+      () => new DOMRect(name.element.cellIndex * 100, 0, 100, 30),
+    );
+    Object.defineProperty(name.element, 'animate', { value: animate });
+    await name.trigger('keydown', { key: 'ArrowRight' });
+    await nextTick();
+    expect(animate).toHaveBeenCalledWith([{ translate: '-100px' }, { translate: '0px' }], {
+      duration: 220,
+      easing: 'ease',
+    });
+    await table.setProps({ reorderableColumns: false });
+    expect(active.cancel).toHaveBeenCalledOnce();
+  } finally {
+    table.unmount();
+    vi.restoreAllMocks();
+  }
+});
+
 it('previews pointer order, cancels without committing, and defers controlled acceptance to the host', async () => {
   const initialOrder = ['name', 'hidden', 'email', 'status'];
   const table = mount(VfDataTable, {
