@@ -87,3 +87,5 @@ export type {
 } from './composables/breakpoints';
 export { useFocusTrap } from './composables/focus-trap';
 export type { UseFocusTrapOptions } from './composables/focus-trap';
+export { createVueForgeCore, VueForgeCore, VueForgeCore as default } from './components/theme-provider/vueforge-core';
+export type { VfVueForgeOptions } from './components/theme-provider/vueforge-core';
