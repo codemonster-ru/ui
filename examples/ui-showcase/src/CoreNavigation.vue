@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {
-  CmAccordion,
   CmBreadcrumbs,
   CmButton,
   CmMenuBar,
@@ -10,6 +9,7 @@ import {
   CmTableOfContents,
   CmTabs,
 } from '@codemonster-ru/ui-vue';
+import { VfAccordion } from '@codemonster-ru/ui-vue/historical';
 import { folderOpen, grid, layers } from '@codemonster-ru/ui-icons';
 import { defineComponent, h, ref, watchPostEffect, type PropType } from 'vue';
 import CoreMatrix from './CoreMatrix.vue';
@@ -372,13 +372,15 @@ const menuBarExamples = [
     </div>
     <div class="core-matrix-cell">
       <h4>Accordion · states</h4>
-      <CmAccordion
+      <VfAccordion
         v-for="item in [accordion[1], accordion[0], accordion[2]]"
         :id="'core-accordion-' + item.id"
         :key="item.id"
-        :items="[item]"
-        :default-open-items="item.id === 'getting-started' ? [item.id] : []"
-      />
+        :title="item.title"
+        :disabled="item.disabled"
+        :default-open="item.id === 'getting-started'"
+        >{{ item.content }}</VfAccordion
+      >
     </div>
     <div class="core-matrix-cell">
       <h4>Navigation menu and menu bar</h4>

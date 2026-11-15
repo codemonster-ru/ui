@@ -67,3 +67,14 @@ integration.
 The runtime synchronizes `aria-expanded` and `hidden` before dispatching its event. Repeated runtime
 initialization must not duplicate listeners. Disconnecting a controller removes its listeners but
 does not rewrite the last visible state.
+
+## Historical Vue disclosure
+
+`VfAccordion` from `@codemonster-ru/ui-vue/historical` presents one disclosure. It accepts `title`,
+`disabled`, `defaultOpen`, and `v-model:open`, and emits `openChange` with the next boolean. The
+optional `trigger` slot and the default content slot both receive `{ open }`.
+
+The panel keeps a stable accessibility target while closed. Its content unmounts after the close
+transition and does not receive focus during that transition. Programmatic close returns focus to
+the trigger when focus was inside the panel. The current grouped Accordion remains available as
+`CmAccordion`.
