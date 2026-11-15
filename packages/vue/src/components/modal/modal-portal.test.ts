@@ -2,6 +2,7 @@ import { mount, flushPromises } from '@vue/test-utils';
 import { renderToString } from '@vue/server-renderer';
 import { createSSRApp, h } from 'vue';
 import { expect, it, vi } from 'vitest';
+import VfCommandPalette from '../command-palette/VfCommandPalette.vue';
 import VfDialog from '../dialog/VfDialog.vue';
 import VfDrawer from '../drawer/VfDrawer.vue';
 
@@ -51,25 +52,31 @@ it.each([
   },
 );
 
-it('leaves initially open modal markup inline during SSR and defaults to body after mount', async () => {
-  const context: { teleports?: Record<string, string> } = {};
-  const html = await renderToString(
-    createSSRApp({ render: () => h(VfDialog, { id: 'initial', title: 'Initial', defaultOpen: true }) }),
-    context,
-  );
-  expect(html).toMatch(/<dialog[^>]*id="initial-dialog"[^>]* open/u);
-  expect(context.teleports?.body ?? '').not.toContain('<dialog');
+it.each([
+  [VfDialog, 'dialog'],
+  [VfCommandPalette, 'command-palette'],
+] as const)(
+  'leaves initially open %s markup inline during SSR and defaults to body after mount',
+  async (Modal, suffix) => {
+    const context: { teleports?: Record<string, string> } = {};
+    const html = await renderToString(
+      createSSRApp({ render: () => h(Modal, { id: 'initial', title: 'Initial', defaultOpen: true }) }),
+      context,
+    );
+    expect(html).toMatch(new RegExp(`<dialog[^>]*id="initial-${suffix}"[^>]* open`, 'u'));
+    expect(context.teleports?.body ?? '').not.toContain('<dialog');
 
-  const wrapper = mount(VfDialog, { attachTo: document.body, props: { id: 'after', title: 'After' } });
-  try {
-    await flushPromises();
-    expect(document.querySelector('#after-dialog')?.parentElement).toBe(document.body);
-    await wrapper.setProps({ teleportTo: false });
-    expect(document.querySelector('#after-dialog')?.parentElement).not.toBe(document.body);
-  } finally {
-    wrapper.unmount();
-  }
-});
+    const wrapper = mount(Modal, { attachTo: document.body, props: { id: 'after', title: 'After' } });
+    try {
+      await flushPromises();
+      expect(document.querySelector(`#after-${suffix}`)?.parentElement).toBe(document.body);
+      await wrapper.setProps({ teleportTo: false });
+      expect(document.querySelector(`#after-${suffix}`)?.parentElement).not.toBe(document.body);
+    } finally {
+      wrapper.unmount();
+    }
+  },
+);
 
 it('hydrates the server dialog in place before moving the same node to an authored target', async () => {
   const root = {

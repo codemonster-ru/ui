@@ -101,6 +101,7 @@ const modal = useCmModal(
   },
 );
 const { dialog, localOpen, onCancel, onClose, onKeydown: onModalKeydown, setOpen } = modal;
+defineExpose({ restoreAfterMove: modal.restoreAfterMove });
 const close = () => setOpen(false);
 watch(localOpen, (open) => {
   if (open) {

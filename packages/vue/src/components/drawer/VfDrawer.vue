@@ -15,7 +15,6 @@ const props = withDefaults(defineProps<VfDrawerProps>(), {
   closeOnEscape: true,
   focusDrawer: true,
   teleportTo: 'body',
-  disableTeleport: false,
   scrollLockTarget: undefined,
 });
 const emit = defineEmits<{ 'update:open': [open: boolean]; openChange: [open: boolean] }>();

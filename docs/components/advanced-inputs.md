@@ -180,6 +180,10 @@ optional plain-text `keywords`, and optional `disabled`. The collection may be e
 load. It accepts `open`, `query`, `loading`, `placeholder`, `emptyText`, `idleText`, `loadingText`,
 and `closeLabel`.
 
+The historical `VfCommandPalette` moves to `body` after mount. Pass `teleportTo` to use a selector
+or element in the same document. Use `disableTeleport`, `false`, or `null` to keep it inline.
+Server markup stays inline for hydration, and the open palette uses the native modal top layer.
+
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue';

@@ -8,7 +8,14 @@ it('submits the initial query and selects a caller-owned object without refilter
   const item = { title: 'An unfiltered command', section: 'Settings', snippet: 'Use [a] literally' };
   const wrapper = mount(VfCommandPalette, {
     attachTo: document.body,
-    props: { defaultOpen: true, defaultValue: '[a]', items: [item], closeOnSelect: false, closeOnEscape: false },
+    props: {
+      defaultOpen: true,
+      defaultValue: '[a]',
+      items: [item],
+      closeOnSelect: false,
+      closeOnEscape: false,
+      teleportTo: false,
+    },
   });
 
   try {
@@ -37,7 +44,7 @@ it('submits the initial query and selects a caller-owned object without refilter
 it('does not publish a rejected model value and passes scoped results actions', async () => {
   const item = { label: 'A command' };
   const wrapper = mount(VfCommandPalette, {
-    props: { modelValue: 'Held', defaultOpen: true, items: [item] },
+    props: { modelValue: 'Held', defaultOpen: true, items: [item], teleportTo: false },
     slots: {
       default: (scope: { query: string; select: (value: unknown) => void }) =>
         h('button', { type: 'button', onClick: () => scope.select(item) }, scope.query),
