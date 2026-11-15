@@ -1,0 +1,16 @@
+@media (prefers-reduced-motion: no-preference) {
+  :is(.cm-dropdown__menu, .cm-popover__panel, .cm-tooltip__content):not([hidden]) {
+    opacity: 1;
+    transition-duration: var(--cm-motion-duration-normal);
+    transition-property: opacity, translate, scale;
+    transition-timing-function: var(--cm-motion-ease-standard);
+  }
+
+  @starting-style {
+    :is(.cm-dropdown__menu, .cm-popover__panel, .cm-tooltip__content):not([hidden]) {
+      opacity: 0;
+      scale: 0.97;
+      translate: 0 var(--cm-space-1);
+    }
+  }
+}

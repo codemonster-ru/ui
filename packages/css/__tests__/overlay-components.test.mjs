@@ -3,6 +3,14 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { URL } from 'node:url';
 
+async function readBuiltStyles(slug) {
+  const entry = new URL(`../dist/components/${slug}.css`, import.meta.url);
+  const css = await readFile(entry, 'utf8');
+  const imports = [...css.matchAll(/^@import '(\.\.\/primitives\/[^']+)';/gmu)];
+  const primitives = await Promise.all(imports.map(([, file]) => readFile(new URL(file, entry), 'utf8')));
+  return [...primitives, css].join('\n');
+}
+
 for (const slug of ['dialog', 'drawer', 'dropdown', 'popover', 'tooltip']) {
   test(`styles ${slug} only through shared tokens and cm selectors`, async () => {
     const css = await readFile(new URL(`../src/components/${slug}.css`, import.meta.url), 'utf8');
@@ -29,11 +37,25 @@ test('preserves modal, focus, hidden, and logical-placement hooks', async () => 
   assert.doesNotMatch(`${dialog}${drawer}${popover}${tooltip}`, /(?:left|right):/u);
 });
 
+test('makes reveal motion available in each standalone anchored overlay stylesheet', async () => {
+  for (const [slug, part] of [
+    ['dropdown', 'menu'],
+    ['popover', 'panel'],
+    ['tooltip', 'content'],
+  ]) {
+    const css = await readBuiltStyles(slug);
+    assert.match(css, /@media \(prefers-reduced-motion: no-preference\) \{\s+:is\(/u);
+    assert.match(
+      css,
+      new RegExp(`@starting-style\\s*\\{\\s*:is\\([^)]*\\.cm-${slug}__${part}[^)]*\\):not\\(\\[hidden\\]\\)`, 'u'),
+    );
+    assert.match(css, /transition-property: opacity, translate, scale/u);
+  }
+});
+
 test('preserves the fd793696 overlay geometry through CodeMonster tokens', async () => {
   const [dialog, drawer, dropdown, popover, tooltip] = await Promise.all(
-    ['dialog', 'drawer', 'dropdown', 'popover', 'tooltip'].map((slug) =>
-      readFile(new URL(`../src/components/${slug}.css`, import.meta.url), 'utf8'),
-    ),
+    ['dialog', 'drawer', 'dropdown', 'popover', 'tooltip'].map(readBuiltStyles),
   );
 
   assert.match(dialog, /max-block-size: min\(85vh, calc\(var\(--cm-space-16\) \* 12\)\)/u);
