@@ -59,5 +59,8 @@ test('publishes the framework-independent runtime entry', async () => {
     'createCmThemeSwitchController',
     'createCmTooltipController',
     'dispatchCmEvent',
+    'measureDataTableColumnContent',
+    'measureDataTableResizeBoundary',
+    'resizedDataTableWidths',
   ]);
 });

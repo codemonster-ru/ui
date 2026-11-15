@@ -17,6 +17,64 @@ const rows = [
 ];
 
 describe('Vue data table components', () => {
+  it('resizes the adjacent pair through its labelled keyboard separator and reports final widths', async () => {
+    const wrapper = mount(CmDataTable, {
+      props: {
+        id: 'projects',
+        columns: [
+          { ...columns[0], minWidth: '90px' },
+          { ...columns[1], minWidth: '72px' },
+          { key: 'total', header: 'Total', resizable: false },
+        ],
+        rows,
+        resizableColumns: true,
+        defaultColumnWidths: { name: '120px', status: '80px', total: '150px' },
+      },
+    });
+    const headers = wrapper.findAll<HTMLTableCellElement>('th[data-cm-data-table-column]');
+    for (const [index, width] of [120, 80, 150].entries()) {
+      headers[index].element.getBoundingClientRect = () => ({ width }) as DOMRect;
+    }
+    const handles = wrapper.findAll('[role="separator"]');
+    expect(handles).toHaveLength(1);
+    expect(handles[0].attributes('aria-label')).toBe('Resize Name column');
+    expect(handles[0].attributes('aria-orientation')).toBe('vertical');
+    expect(headers[0].get('button').attributes('data-cm-data-table-sort')).toBe('name');
+
+    await handles[0].trigger('keydown', { key: 'ArrowRight' });
+    const expected = { name: '128px', status: '72px', total: '150px' };
+    expect(wrapper.emitted('update:columnWidths')).toEqual([[expected]]);
+    expect(wrapper.emitted('column-resize-end')).toEqual([[expected]]);
+    expect(headers[0].element.style.inlineSize).toBe('128px');
+    expect(headers[1].element.style.inlineSize).toBe('72px');
+    expect(handles[0].attributes('aria-valuenow')).toBe('128');
+    expect(handles[0].attributes('aria-valuemax')).toBe('128');
+    wrapper.unmount();
+  });
+
+  it('leaves controlled widths and their accessible value in place when the consumer declines resizing', async () => {
+    const wrapper = mount(CmDataTable, {
+      props: {
+        id: 'controlled-resize',
+        columns,
+        rows,
+        resizableColumns: true,
+        columnWidths: { name: '120px', status: '80px' },
+      },
+    });
+    const headers = wrapper.findAll<HTMLTableCellElement>('th[data-cm-data-table-column]');
+    for (const header of headers) {
+      header.element.getBoundingClientRect = () =>
+        ({ width: Number.parseFloat(header.element.style.inlineSize) }) as DOMRect;
+    }
+    const handle = wrapper.get('[role="separator"]');
+    await handle.trigger('keydown', { key: 'ArrowRight' });
+    expect(wrapper.emitted('update:columnWidths')).toEqual([[{ name: '128px', status: '72px' }]]);
+    expect(headers[0].element.style.inlineSize).toBe('120px');
+    expect(handle.attributes('aria-valuenow')).toBe('120');
+    wrapper.unmount();
+  });
+
   it('renders authored Table groups and consumer root attributes', () => {
     const wrapper = mount(CmTable, {
       attrs: { class: 'consumer', 'aria-label': 'Invoices' },

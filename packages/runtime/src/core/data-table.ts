@@ -3,6 +3,7 @@
  */
 
 export type CmDataTableSortDirection = 'ascending' | 'descending';
+export type CmDataTableColumnWidths = Record<string, string>;
 
 export interface CmDataTableSortState {
   readonly direction: CmDataTableSortDirection;

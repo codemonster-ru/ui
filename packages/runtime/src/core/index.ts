@@ -20,6 +20,7 @@ export {
   toggleAllSelection,
 } from './data-table.js';
 export type {
+  CmDataTableColumnWidths,
   CmDataTableSelectionState,
   CmDataTableSortDirection,
   CmDataTableSortLabel,

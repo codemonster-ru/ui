@@ -4,6 +4,7 @@ export type CmDataTableDensity = 'default' | 'compact';
 export type CmDataTableSortDirection = 'ascending' | 'descending';
 export type CmDataTableMode = 'client' | 'manual';
 export type CmDataTableCellValue = string | number | null;
+export type { CmDataTableColumnWidths } from '@codemonster-ru/ui-runtime/core';
 
 export interface CmDataTableColumn {
   key: string;
@@ -15,6 +16,7 @@ export interface CmDataTableColumn {
   minWidth?: string;
   maxWidth?: string;
   nowrap?: boolean;
+  resizable?: boolean;
   scope?: 'col' | 'row' | 'colgroup' | 'rowgroup';
 }
 
@@ -41,6 +43,9 @@ export interface CmDataTableProps {
   visibleColumnKeys?: readonly string[] | null;
   columnOrder?: readonly string[] | null;
   columnWidths?: Readonly<Record<string, string>>;
+  defaultColumnWidths?: Readonly<Record<string, string>>;
+  resizableColumns?: boolean;
+  resizeColumnLabelTemplate?: string;
   selectable?: boolean;
   rowSelectable?: (row: CmDataTableRow, rowIndex: number) => boolean;
   selectedRowIds?: readonly string[];
