@@ -2,19 +2,24 @@
 export function filterIcons({ target }) {
   if (!(target instanceof HTMLInputElement) || target.id !== 'icon-catalog-search') return;
   const catalog = target.closest('#icon-catalog');
-  const query = target.value.trim().toLowerCase();
+  const query = target.value.trim().toLowerCase().split(/\s+/u);
   const matches = new Set();
 
-  for (const entry of catalog.querySelectorAll('[data-icon-name]')) {
-    entry.hidden = !query
-      .split(/\s+/u)
-      .every((term) => `${entry.dataset.iconName} ${entry.dataset.iconSearch}`.toLowerCase().includes(term));
-    if (!entry.hidden) matches.add(entry.dataset.iconName);
+  for (const group of catalog.querySelectorAll('[data-icon-group]')) {
+    let matched = false;
+    for (const entry of group.querySelectorAll('[data-icon-name]')) {
+      const terms = entry.dataset.iconSearch.toLowerCase();
+      entry.hidden = !query.every((term) => terms.includes(term));
+      if (!entry.hidden) {
+        matches.add(entry.dataset.iconName);
+        matched = true;
+      }
+    }
+    group.querySelector('[data-icon-empty]').hidden = matched;
   }
 
   const count = catalog.querySelector('[data-icon-count]');
   count.textContent = `${matches.size} of ${count.dataset.total} icons`;
-  catalog.querySelector('[data-icon-empty]').hidden = matches.size > 0;
 }
 
 /** @param {Event} event */
@@ -26,8 +31,8 @@ export async function copyIcon({ target }) {
 
   try {
     await navigator.clipboard.writeText(iconName);
-    status.textContent = `Copied ${iconName}.`;
+    status.textContent = ` · Copied ${iconName}`;
   } catch {
-    status.textContent = `Could not copy ${iconName}.`;
+    status.textContent = ' · Copy failed';
   }
 }

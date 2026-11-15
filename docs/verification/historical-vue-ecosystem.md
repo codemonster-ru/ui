@@ -60,3 +60,27 @@ themes. Results and screenshots are in `/tmp/cm-layout-guide-evidence`.
 The current product and component names, top navigation, and contract inventory remain visible
 differences. The screenshots cover the first viewport; examples farther down the guide were
 checked through the listed interactions.
+
+## Vue and Vanilla Icons galleries
+
+Both galleries lead with the historical catalogue heading, search, family tabs, and four-weight
+grid. The gallery CSS is shared. Contract and operations examples follow the Vanilla gallery.
+Vue loads the gallery code, styles, and catalogue when the Icons route is visited.
+
+Chrome compared both builds with `d9879116` using the same RGB threshold as the Layouts check.
+
+| Viewport   | Theme | Vue before → after | Vanilla before → after |
+| ---------- | ----- | -----------------: | ---------------------: |
+| 390 × 844  | Light |     14.23% → 2.49% |         48.27% → 2.40% |
+| 390 × 844  | Dark  |     14.30% → 2.53% |         48.46% → 2.45% |
+| 1280 × 800 | Light |      1.27% → 0.58% |         42.47% → 0.52% |
+| 1280 × 800 | Dark  |      1.27% → 0.58% |         42.49% → 0.52% |
+
+Both adapters matched the historical rounded bounds of the title, search field, family heading,
+weight grid, and first Copy button. The top navigation and the three-pixel difference in tab-list
+height remain visible. All eight browser runs had zero JavaScript errors and zero horizontal page
+overflow. They verified 116 entries, four weights in both families, keyboard tab selection,
+unique Duotone SVG definition IDs, historical keyword search, group-specific empty states, and
+copy feedback with an isolated clipboard stub. A separate production navigation check verified
+that Vue Core loaded four eager scripts without the gallery chunk or catalogue-only data.
+Screenshots and reports are in `/tmp/cm-icons-guide-evidence`.
