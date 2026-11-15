@@ -24,6 +24,12 @@ export interface CmDropdownProps {
   placement?: CmDropdownPlacement;
   teleportTo?: string | HTMLElement | null | false;
   disableTeleport?: boolean;
+  triggerAsChild?: boolean;
   closeOnSelect?: boolean;
   variant?: CmDropdownVariant;
+}
+
+export interface VfDropdownProps extends Omit<CmDropdownProps, 'id' | 'label'> {
+  id?: string;
+  label?: string;
 }

@@ -35,6 +35,9 @@ migration, including behavioral or visual differences. Do not claim parity from 
 | DONE | Restored Colors page rhythm in the shared guide. Production Chrome matched hero, text, first palette and swatch geometry to `d9879116`; both adapters passed contrast calculation and code copy. |
 | DONE | Restored historical named Alert and Avatar icons, default Alert tone and role, warning alias and icon visibility (`dde06d37`). The opt-in entry passed 11 pinned-browser assertions and the main consumer import guards. |
 | DONE | Restored the lead Core theme and typography examples (`fa166db5`). Chrome observed all nine variants, Space activation, accessible state and persistence, and matched section geometry at both widths. |
+| DONE | Restored DataTable column resize (`ec5958dc`). Keyboard, pointer and autosize produced the same widths in both adapters, kept the table width fixed, and exposed the width on the accessible separator. Raw row keys, multi-sort, pinning and drag ordering remain separate. |
+| DONE | Restored historical Badge, Tag and ProgressSpinner options (`9ba8ada4`), routed NavMenu bindings (`d232e084`), and Stepper bindings and placement (`8ff4cecf`). Targeted packaged and browser checks passed for each slice. |
+| DONE | Restored Popover portal, placement, focus and close policies (`f784b486`), and authored Vue triggers in the historical Dropdown and Popover entry points. Pinned Chrome passed eight Popover behavior runs and eight paired fixture comparisons. The built example verified the body portal and focus restoration around one authored button. |
 | IN PROGRESS | Run package checks, lint, type checks, tests, browser behavior and accessibility checks, production builds, and fresh packed consumers. See the exact snapshots below. |
 | IN PROGRESS | The independent review verified dependency direction and reproduced native close and form reset integration defects. Those fixes were verified separately. Review the final committed candidate and reconcile remaining historical contract and visual gaps. |
 | TODO | Finish the acceptance report and verify that all assignment edits are committed and the tree is clean. |
@@ -95,6 +98,12 @@ The product name, mobile top bar and related copy remain visible differences. Se
   portal arrow's physical CSS rules and a test that sent a synthetic non-bubbling focus event.
   Both were corrected in `e3029077`. The isolated rerun with those two changes passed 810 tests;
   four pinned-browser LTR/RTL arrow captures matched exactly. Logs: `/private/tmp/cmui-tooltip-cold.rVDaue`.
+- `8ff4cecf`, fresh copy at `/private/tmp/cmui-verify.k73jZi`: lint, format, typecheck, documented
+  tests, 170 axe fixture cases, production builds, package installation with npm/pnpm/Yarn, and
+  the release audit passed. Cold parity lacked two NavMenu target mappings; the exact harness
+  fix is `f8990ccc`. The full runtime measured 72.64 KiB gzip after new overlay placement and
+  column resizing; aggregate budget now reflects the measured expansion. Retain all individual
+  import and pure-core limits.
 
 - `a9083071`, fresh copy at `/private/tmp/cmui-verify.Kvb8Dd`: installation, builds, typecheck,
   contracts, accessibility fixtures, package budgets and tree shaking passed. Cold workspace
@@ -115,7 +124,7 @@ Finish and verify each coherent slice before committing it; then select the next
 Record actual output and commands, including any check that cannot run, before advancing the
 corresponding status.
 
-Next actions: finish the in-progress DataTable resize, NavMenu integration, and display variants,
-then reconcile the next public gaps starting with Popover and custom Dropdown triggers. Run a
-fresh exact-candidate package and browser checkpoint before final independent acceptance.
-Distinguish the showcase viewport captures from the established 12-case fixture baseline.
+Next actions: finish the in-progress Tabs, Dialog and NavMenu adornment slices, then reconcile
+the next public gaps starting with Drawer and keyboard/slot coverage. Run a fresh exact-candidate
+package and browser checkpoint before final independent acceptance. Distinguish the showcase
+viewport captures from the established 12-case fixture baseline.

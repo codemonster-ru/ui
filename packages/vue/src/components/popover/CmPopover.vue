@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, shallowRef, useAttrs, watch, type PropType } from 'vue';
+import { computed, nextTick, ref, shallowRef, useAttrs, watch, type ComponentPublicInstance, type PropType } from 'vue';
 
 import { observeCmAnchoredPosition, type CmAnchoredStyle } from '../../internal/anchored-position';
+import { authoredTriggerElement, CmAuthoredTrigger, disclosureTriggerActions } from '../../internal/disclosure-trigger';
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
 import { cmFocusableSelector, popoverKeyAction, resolveDisclosureOpen } from '@codemonster-ru/ui-runtime/core';
@@ -17,6 +18,7 @@ const props = defineProps({
   disabled: Boolean,
   teleportTo: { type: [String, Object, Boolean] as PropType<string | HTMLElement | null | false>, default: null },
   disableTeleport: Boolean,
+  triggerAsChild: Boolean,
   closeOnOutsideClick: { type: Boolean, default: true },
   closeOnEscape: { type: Boolean, default: true },
   focusOnOpen: Boolean,
@@ -29,7 +31,7 @@ const props = defineProps({
 const emit = defineEmits<{ openChange: [open: boolean]; 'update:open': [open: boolean] }>();
 const attrs = useAttrs();
 const root = ref<HTMLElement>();
-const trigger = ref<HTMLButtonElement>();
+const trigger = ref<HTMLElement>();
 const panel = ref<HTMLElement>();
 const localOpen = ref(resolveDisclosureOpen(props.open ?? props.defaultOpen, props.disabled));
 const panelStyle = shallowRef<CmAnchoredStyle>();
@@ -103,6 +105,11 @@ function toggle(): void {
   }
 }
 
+const { activate, toggleFromSlot } = disclosureTriggerActions(toggle);
+function captureTrigger(element: Element | ComponentPublicInstance | null): void {
+  trigger.value = authoredTriggerElement(element);
+}
+
 function onKeydown(event: KeyboardEvent): void {
   if (event.defaultPrevented) return;
   const action = popoverKeyAction(event.key, {
@@ -165,7 +172,22 @@ useCmHydrated();
     :data-cm-popover-focus-on-open="props.focusOnOpen ? 'true' : undefined"
     @keydown="onKeydown"
   >
+    <CmAuthoredTrigger
+      v-if="props.triggerAsChild && $slots.trigger"
+      :id="`${props.id}-trigger`"
+      :panel-id="`${props.id}-panel`"
+      :label="props.label"
+      :open="localOpen"
+      :disabled="props.disabled"
+      :capture="captureTrigger"
+      :activate="activate"
+      trigger-class="cm-popover__trigger"
+      popup="dialog"
+    >
+      <slot name="trigger" :open="localOpen" :toggle="toggleFromSlot" />
+    </CmAuthoredTrigger>
     <button
+      v-else
       :id="`${props.id}-trigger`"
       ref="trigger"
       class="cm-popover__trigger"
@@ -175,9 +197,9 @@ useCmHydrated();
       :aria-expanded="localOpen"
       :aria-controls="`${props.id}-panel`"
       :disabled="props.disabled || undefined"
-      @click="toggle"
+      @click="activate"
     >
-      <slot name="trigger" :open="localOpen" :toggle="toggle">{{ props.label }}</slot>
+      <slot name="trigger" :open="localOpen" :toggle="toggleFromSlot">{{ props.label }}</slot>
     </button>
     <Teleport :to="teleportTarget ?? 'body'" :disabled="!teleportTarget">
       <div

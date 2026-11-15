@@ -2,6 +2,7 @@
 import { computed, nextTick, ref, shallowRef, useAttrs, watch, type ComponentPublicInstance, type PropType } from 'vue';
 
 import { observeCmAnchoredPosition, type CmAnchoredStyle } from '../../internal/anchored-position';
+import { authoredTriggerElement, CmAuthoredTrigger, disclosureTriggerActions } from '../../internal/disclosure-trigger';
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
 import { dropdownKeyAction, resolveDisclosureOpen } from '@codemonster-ru/ui-runtime/core';
@@ -37,6 +38,7 @@ const props = defineProps({
   },
   teleportTo: { type: [String, Object, Boolean] as PropType<string | HTMLElement | null | false>, default: null },
   disableTeleport: Boolean,
+  triggerAsChild: Boolean,
 });
 const emit = defineEmits<{
   openChange: [open: boolean];
@@ -49,7 +51,7 @@ const slots = defineSlots<{
   default?: (scope: CmDropdownContentScope) => unknown;
 }>();
 const root = ref<HTMLElement>();
-const trigger = ref<HTMLButtonElement>();
+const trigger = ref<HTMLElement>();
 const menu = shallowRef<ComponentPublicInstance>();
 const menuElement = computed(() => {
   const element: unknown = menu.value?.$el;
@@ -170,6 +172,11 @@ function toggle(event?: MouseEvent): void {
   setOpen(!localOpen.value);
 }
 
+const { activate, toggleFromSlot } = disclosureTriggerActions(toggle);
+function captureTrigger(element: Element | ComponentPublicInstance | null): void {
+  trigger.value = authoredTriggerElement(element);
+}
+
 function onDocumentClick(event: MouseEvent): void {
   const view = trigger.value?.ownerDocument.defaultView;
   if (
@@ -211,7 +218,23 @@ useCmHydrated();
     data-cm-controller="dropdown"
     :data-cm-dropdown-close-on-select="props.closeOnSelect ? undefined : 'false'"
   >
+    <CmAuthoredTrigger
+      v-if="props.triggerAsChild && slots.trigger"
+      :id="`${props.id}-trigger`"
+      :panel-id="`${props.id}-menu`"
+      :label="props.label"
+      :open="localOpen"
+      :disabled="props.disabled"
+      :capture="captureTrigger"
+      :activate="activate"
+      :on-trigger-keydown="onTriggerKeydown"
+      trigger-class="cm-dropdown__trigger"
+      popup="menu"
+    >
+      <slot name="trigger" :open="localOpen" :disabled="props.disabled" :toggle="toggleFromSlot" />
+    </CmAuthoredTrigger>
     <button
+      v-else
       :id="`${props.id}-trigger`"
       ref="trigger"
       class="cm-dropdown__trigger"
@@ -221,10 +244,12 @@ useCmHydrated();
       :aria-controls="`${props.id}-menu`"
       :aria-expanded="localOpen"
       :disabled="props.disabled || undefined"
-      @click="toggle"
+      @click="activate"
       @keydown="onTriggerKeydown"
     >
-      <slot name="trigger" :open="localOpen" :disabled="props.disabled" :toggle="toggle">{{ props.label }}</slot>
+      <slot name="trigger" :open="localOpen" :disabled="props.disabled" :toggle="toggleFromSlot">{{
+        props.label
+      }}</slot>
     </button>
     <Teleport :to="teleportTarget ?? 'body'" :disabled="!teleportTarget">
       <CmMenu

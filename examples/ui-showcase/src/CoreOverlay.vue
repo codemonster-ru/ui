@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { CmButton, CmDropdown, CmPopover, CmTooltip } from '@codemonster-ru/ui-vue';
+import { CmButton, CmDropdown, CmTooltip } from '@codemonster-ru/ui-vue';
+import { VfPopover } from '@codemonster-ru/ui-vue/historical';
 import { ref } from 'vue';
 import CoreMatrix from './CoreMatrix.vue';
 
@@ -62,21 +63,15 @@ const viewItems = [
     </div>
     <div class="core-matrix-cell">
       <h4>Popover · portaled content</h4>
-      <CmPopover
-        id="core-popover"
-        v-model:open="popoverOpen"
-        label="Open popover"
-        placement="bottom-end"
-        teleport-to="body"
-        focus-on-open
-      >
+      <VfPopover id="core-popover" v-model:open="popoverOpen" placement="bottom-end">
+        <template #trigger><CmButton variant="secondary">Open popover</CmButton></template>
         <template #default="{ close }">
           <div class="core-matrix-cell">
             <p>Compact content block.</p>
             <CmButton size="sm" data-autofocus @click="close">Apply</CmButton>
           </div>
         </template>
-      </CmPopover>
+      </VfPopover>
     </div>
   </CoreMatrix>
 </template>
