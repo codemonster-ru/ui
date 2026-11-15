@@ -30,9 +30,22 @@ weight combinations. Prefer `CmIcon` for static icon imports so production bundl
 unused geometry. When embedding the same duotone icon multiple times in Vanilla, scope its SVG
 definitions once per instance with `scopeCmIconIds` from `@codemonster-ru/ui-icons`.
 
-Badge and Tag differ only in how a tone reads. A tone fills a Badge, which suits a status; it
-outlines a Tag, which suits a category. Reach for Badge when the label reports what something *is
-doing*, and Tag when it reports what something *belongs to*.
+## Props and states
+
+Use Badge for a status such as “Published” and Tag for a category such as “Platform.”
+Badge uses a filled tone and Tag uses an outlined tone. Both carry their label through the
+default slot in Vue and text content in Vanilla.
+
+| Components | Vue props and slots |
+| --- | --- |
+| `CmBadge`, `CmTag` | `tone` defaults to `neutral`. The available tones are `neutral`, `primary`, `success`, `info`, `warning`, `help`, `danger`, and `contrast`. |
+| `CmAlert` | Uses the same tones and defaults to `info`. Use the `title` prop or slot, decorative `icon` slot, and default body slot. |
+| `CmAvatar` | Supply an `image` with `imageAlt`, a text `label`, or a default slot. `size` is `sm`, `md` (default), or `lg`, and `shape` is `square` (default) or `circle`. |
+| `CmDivider` | `orientation` accepts `horizontal` (default) and `vertical`. |
+| `CmSkeleton` | `minHeight` accepts a pixel number or simple CSS length. Set `radius` to `control`, `surface` (default), or `round`. Set `:animated="false"` for a stationary placeholder. |
+
+These presentation components use their props and markup to render state. None requires a
+Vanilla controller or exposes a custom state-change event.
 
 ## Vue
 

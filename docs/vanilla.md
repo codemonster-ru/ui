@@ -14,20 +14,59 @@ tarballs in your consumer application. Follow the [local build instructions](./g
 and pack only tokens, CSS, and runtime for a Vanilla integration. You can also
 [serve the standalone build](#browser-assets) and skip package installation in the consumer.
 
-```js
+## Quick start
+
+In a bundler-based app, create `src/ui.js` to load the shared styles and connect the Accordion
+controller. The optional fonts entry supplies Inter.
+
+```js file=/src/ui.js
 import '@codemonster-ru/ui-tokens/tokens.css';
 import '@codemonster-ru/ui-css/fonts.css';
 import '@codemonster-ru/ui-css/styles.css';
 import { CmRuntime, createCmAccordionController } from '@codemonster-ru/ui-runtime';
 
 const runtime = new CmRuntime().register('accordion', createCmAccordionController);
-runtime.start(document);
+const faq = document.getElementById('faq');
+if (faq) runtime.start(faq);
 ```
 
-Use an application bundler for these bare imports. Render the
-[Accordion markup](../contracts/accordion/cases/default.html) or other canonical HTML in
-your server template and register only the controllers it uses. A static page can use the
-stylesheet imports alone.
+Render this markup in your HTML document or server template. Point the script at your bundler's
+entry or its production output. The first answer starts open so its content is visible before
+enhancement.
+
+```html
+<section id="faq" aria-labelledby="faq-title">
+  <h2 id="faq-title">Billing FAQ</h2>
+  <div class="cm-accordion" data-cm-controller="accordion">
+    <section class="cm-accordion__item" data-cm-accordion-item="renewal">
+      <h3 class="cm-accordion__heading">
+        <button
+          class="cm-accordion__trigger"
+          id="faq-renewal-trigger"
+          type="button"
+          aria-expanded="true"
+          aria-controls="faq-renewal-panel"
+        >
+          When does my subscription renew?
+        </button>
+      </h3>
+      <div
+        class="cm-accordion__panel"
+        id="faq-renewal-panel"
+        role="region"
+        aria-labelledby="faq-renewal-trigger"
+      >
+        Your subscription renews on the first day of each month.
+      </div>
+    </section>
+  </div>
+</section>
+<script type="module" src="/src/ui.js"></script>
+```
+
+Use unique IDs for repeated instances. Look up other variants and components in the
+[component reference](./components/index.md) and register the controllers their markup needs.
+Static pages can use the stylesheet imports alone.
 
 Use native events for native controls. For controller events, listen at the component or its
 container. For example, an Accordion dispatches the bubbling `cm:open-change` event with
@@ -37,7 +76,10 @@ native submission or application validation behavior.
 
 ## Browser assets
 
-Run `npm run preview:vanilla` from the repository root to build and open the full Vanilla catalog. Browse Core, Colors, Layouts, and Icons on separate pages. Component variants are interactive within their section. The examples load as you scroll and share the theme selector.
+Run `npm run preview:vanilla` from the repository root to build and open the full catalog.
+Browse Core, Reference, Examples, Layouts, Colors, and Icons on separate pages. Reference
+pages include copyable Vue and Vanilla examples. Core shows variants, and Examples shows how
+the components work together in a release workspace. All pages share the theme selector.
 
 For assets to deploy, run `npm run build:vanilla` and serve the contents of
 `examples/vanilla/dist` over HTTP. Keep the `tokens` and `css` directories intact so
@@ -63,13 +105,32 @@ const runtime = createRuntime();
 runtime.start(document);
 ```
 
-For dynamic fragments, pass the inserted element to `runtime.start(element)` after insertion and
-`runtime.stop(element)` before removal. A DOM `DocumentFragment` is emptied when inserted, so
-pass a node that stays in the document. Use `const dispose = runtime.observe(container)`
-when the runtime should discover inserted fragments and clean up removed controllers. Call
-`dispose()` when the container is retired. The browser bundle includes Floater and has
-no bare imports. Build the assets once in this repository and serve them as static files in
-your application.
+The browser bundle includes Floater. Build the assets once in this repository and serve them
+as static files in your application.
+
+## Dynamic HTML
+
+For explicit lifecycle management, call `runtime.start(element)` after insertion and
+`runtime.stop(element)` before removal. Pass a node that stays in the document. A
+`DocumentFragment` is emptied when inserted.
+
+If your framework or template library replaces parts of the page, scope an observer to the
+container that survives those replacements. It starts existing controllers, discovers new
+roots, and cleans up removed ones. Return the disposer to the code that owns the container.
+
+```ts file=/observe-faq.ts
+import { CmRuntime, createCmAccordionController } from '@codemonster-ru/ui-runtime';
+
+const runtime = new CmRuntime().register('accordion', createCmAccordionController);
+
+export function observeFaq(container: HTMLElement): () => void {
+  return runtime.observe(container);
+}
+```
+
+Call the returned function when the container is retired. Keep Vue-owned subtrees outside
+the observed container. See [server rendering and hydration](./integration.md#server-rendering-and-hydration)
+for ownership boundaries on a mixed page.
 
 ## Browser comparison
 

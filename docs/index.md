@@ -12,26 +12,23 @@ adapters aligned without hiding their native composition models.
 ## Start here
 
 - [Install CodeMonster UI for Vue or Vanilla](./getting-started.md).
-- [Serve Vanilla HTML and JavaScript](./vanilla.md).
-- [Review the CodeMonster UI 1.1 release cohort](./codemonster-ui-1.1-release-notes.md).
-- [Configure design tokens and themes](./tokens/getting-started.md).
-- [Load the shared CSS](./css/getting-started.md) or review its [utility contract](./css/utilities.md).
+- [Run the Vue or Vanilla showcase locally](../README.md#preview-locally).
+- [Choose the stable 1.1 release or a local 2.0 build](./getting-started.md#choose-a-release).
 
 ## Components
 
-- [Button](./components/button.md), [Card](./components/card.md), and
-  [display components](./components/display.md).
-- [Forms](./components/forms.md) and [advanced inputs](./components/advanced-inputs.md).
-- [Fieldset](./components/fieldset.md), [IconButton](./components/icon-button.md), and
-  [progress indicators](./components/progress.md).
-- [Navigation](./components/navigation.md) and [Accordion](./components/accordion.md).
-- [Overlays](./components/overlays.md).
-- [Table and DataTable](./components/data-tables.md).
-- [Layout primitives](./components/layout-primitives.md).
-- [Page layouts and shell regions](./components/layouts.md).
+[Browse the component reference](./components/index.md) for Vue usage and the equivalent
+Vanilla HTML for every shared component. Start with [Button](./components/button.md),
+[forms](./components/forms.md), [overlays](./components/overlays.md), or
+[Table and DataTable](./components/data-tables.md).
 
-The [canonical catalog](../contracts/README.md) provides the Vanilla markup for every component.
-The shared browser runtime enhances interactive HTML, and Vue components own their interaction.
+## Integration
+
+- [Serve Vanilla assets and manage dynamic HTML](./vanilla.md).
+- [Integrate forms, overlays, and server-rendered pages](./integration.md).
+- [Configure design tokens and themes](./tokens/getting-started.md).
+- [Load shared CSS](./css/getting-started.md) and [generated utilities](./css/utilities.md).
+- [Migrate an existing VueForge app](./migrate-from-vueforge.md).
 
 ## Maintained recipes
 
@@ -41,6 +38,7 @@ The shared browser runtime enhances interactive HTML, and Vue components own the
   [Theme switch](./recipes/theme-switch.md).
 - [Auth layout](./recipes/auth-layout.md), [Error layout](./recipes/error-layout.md), and
   [Skeleton gate](./recipes/skeleton-gate.md).
+- [Code Block](./recipes/code-block.md) and [Playground](./recipes/playground.md).
 
 ## Architecture and support
 

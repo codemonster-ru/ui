@@ -11,26 +11,26 @@ Current version: `@codemonster-ru/ui-css@2.0.0-dev.0` — in development, not pu
 
 ## Installation
 
-```bash
-npm install @codemonster-ru/ui-css@^2.0.0-dev.0
-```
+For 2.0, [pack and install the matching CSS and Tokens archives](../../docs/getting-started.md#install-a-local-20-build).
 
 ## Quick start
 
 ```css
+@import '@codemonster-ru/ui-tokens/tokens.css';
 @import '@codemonster-ru/ui-css/styles.css';
 ```
 
 Use the narrower entry when component and primitive styles are not needed:
 
 ```css
+@import '@codemonster-ru/ui-tokens/tokens.css';
 @import '@codemonster-ru/ui-css/foundation.css';
 ```
 
 The stylesheet includes a predictable document reset, token-backed document colors and typography,
 keyboard-visible focus rings for native controls and `.cm-focus-ring`, and reduced-motion and
-forced-colors foundations. Load `@codemonster-ru/ui-tokens/tokens.css` before it; the token package
-is installed as a dependency. The `.cm-control` primitive provides shared control geometry, sizes,
+forced-colors foundations. Use the optional `@codemonster-ru/ui-css/fonts.css` entry to load Inter.
+The `.cm-control` primitive provides shared control geometry, sizes,
 and visual interaction states without owning component semantics. `.cm-surface` and its visual
 modifiers provide shared borders and elevation without owning component layout.
 

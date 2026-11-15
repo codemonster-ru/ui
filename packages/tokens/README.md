@@ -47,9 +47,7 @@ console.log(
 
 ## Installation
 
-```bash
-npm install @codemonster-ru/ui-tokens@^2.0.0-dev.0
-```
+For 2.0, [pack the Tokens workspace and install its local archive](../../docs/getting-started.md#install-a-local-20-build).
 
 Import the generated properties once in the application stylesheet:
 

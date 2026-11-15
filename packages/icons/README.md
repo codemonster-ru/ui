@@ -52,9 +52,7 @@ const backName = icons.arrowLeft;
 
 ## Installation
 
-```bash
-npm install @codemonster-ru/ui-icons@^2.0.0-dev.0
-```
+For 2.0, [pack the Icons workspace and install its local archive](../../docs/getting-started.md#install-a-local-20-build).
 
 The Vue adapter takes the geometry as a prop, so install this alongside `@codemonster-ru/ui-vue`.
 
