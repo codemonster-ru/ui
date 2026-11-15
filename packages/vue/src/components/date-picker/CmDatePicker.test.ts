@@ -14,6 +14,61 @@ afterEach(() => {
 });
 
 describe('CmDatePicker', () => {
+  it('keeps the calendar portal inside an enclosing dialog and the named value inside its form', async () => {
+    const dialog = document.createElement('dialog');
+    dialog.open = true;
+    const form = document.createElement('form');
+    dialog.append(form);
+    document.body.append(dialog);
+    const wrapper = mount(CmDatePicker, {
+      attachTo: form,
+      props: { id: 'launch-date', modelValue: '2026-08-13', placement: 'bottom-end', teleportTo: 'body' },
+      attrs: { name: 'launch_date' },
+    });
+
+    const trigger = wrapper.get('button.cm-date-picker');
+    const calendar = wrapper.get('.cm-date-picker__calendar').element;
+    await trigger.trigger('keydown', { key: 'ArrowDown' });
+    expect(calendar.parentElement).toBe(dialog);
+    expect(trigger.attributes('aria-controls')).toBe(calendar.id);
+    expect(trigger.attributes('data-cm-date-picker-placement')).toBe('bottom-end');
+    expect(document.activeElement?.getAttribute('data-cm-date-picker-value')).toBe('2026-08-13');
+
+    document.activeElement?.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+    await nextTick();
+    expect(document.activeElement?.getAttribute('data-cm-date-picker-value')).toBe('2026-08-14');
+    calendar.querySelector<HTMLButtonElement>('[tabindex="0"]')?.click();
+    await nextTick();
+    await nextTick();
+    expect(new FormData(form).get('launch_date')).toBe('2026-08-14');
+    expect(calendar.parentElement).toBe(wrapper.element);
+    expect(document.activeElement).toBe(trigger.element);
+    wrapper.unmount();
+  });
+
+  it('can keep a custom portal inline and still closes on outside focus', async () => {
+    const target = document.createElement('aside');
+    const outside = document.createElement('button');
+    document.body.append(target, outside);
+    const wrapper = mount(CmDatePicker, {
+      attachTo: document.body,
+      props: { id: 'launch-date', teleportTo: target, disableTeleport: true },
+    });
+    const trigger = wrapper.get('button.cm-date-picker');
+    const calendar = wrapper.get('.cm-date-picker__calendar').element;
+    await trigger.trigger('click');
+    expect(calendar.parentElement).toBe(wrapper.element);
+
+    await wrapper.setProps({ disableTeleport: false });
+    expect(calendar.parentElement).toBe(target);
+    outside.focus();
+    await nextTick();
+    expect(calendar.hasAttribute('hidden')).toBe(true);
+    expect(calendar.parentElement).toBe(wrapper.element);
+    expect(document.activeElement).toBe(outside);
+    wrapper.unmount();
+  });
+
   it('renders the selected date through the component-owned trigger', () => {
     const wrapper = mount(CmDatePicker, {
       props: { id: 'launch-date', modelValue: '2026-08-13' },

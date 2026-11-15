@@ -93,6 +93,12 @@ The calendar limits selectable days according to `min` and `max`. The trigger an
 `required` through `aria-required`. Validate the range and required state in the application
 because the hidden input does not participate in native constraint validation.
 
+Choose `placement="bottom-end"` to align the calendar with the end of the trigger. Use
+`teleport-to="body"` to move the calendar outside a clipped container. Only the calendar
+moves, and the named value remains in the original form. In a native dialog, a body target places
+the calendar in that dialog. Vanilla uses `data-cm-date-picker-placement` and
+`data-cm-date-picker-teleport-to` on the combobox.
+
 Use `locale` to choose a locale for the date and calendar labels, `displayFormat` to format
 the trigger value with `yyyy`, `yy`, `MM`, `M`, `dd`, or `d`, and `firstDayOfWeek` to
 set the first column (0 for Sunday through 6 for Saturday). Current defaults are

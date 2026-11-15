@@ -1,10 +1,17 @@
 <script setup lang="ts" generic="Multiple extends boolean = false, Range extends boolean = false">
+import { autoUpdate, computePosition, flip, offset, shift } from '@codemonster-ru/floater.js';
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useAttrs, watch, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
 import { assertCm, warnCm } from '../../internal/warn';
-import type { CmDatePickerLabels, CmDatePickerSize, CmDatePickerValue } from './date-picker.types';
+import type {
+  CmDatePickerLabels,
+  CmDatePickerPlacement,
+  CmDatePickerProps,
+  CmDatePickerSize,
+  CmDatePickerValue,
+} from './date-picker.types';
 import {
   boundCalendarDate,
   buildCalendarGrid,
@@ -65,6 +72,13 @@ const props = defineProps({
   readonly: Boolean,
   required: Boolean,
   clearable: Boolean,
+  placement: {
+    type: String as PropType<CmDatePickerPlacement>,
+    default: 'bottom-start',
+    validator: (value: string) => value === 'bottom-start' || value === 'bottom-end',
+  },
+  teleportTo: { type: [String, Object, Boolean] as PropType<CmDatePickerProps['teleportTo']>, default: null },
+  disableTeleport: Boolean,
   clearLabel: { type: String, default: 'Clear date' },
   previousMonthLabel: { type: String, default: 'Previous month' },
   nextMonthLabel: { type: String, default: 'Next month' },
@@ -99,6 +113,24 @@ const authoredDates = currentDates.value.slice();
 const firstDate = computed(() => currentDates.value[0] ?? '');
 const formValues = computed(() => (selectionMode.value === 'single' ? [firstDate.value] : currentDates.value));
 const isOpen = ref(false);
+const calendarPosition = ref<{ inset: string; left: string; top: string }>();
+const placement = computed(() => (props.placement === 'bottom-end' ? 'bottom-end' : 'bottom-start'));
+const portal = computed(() => (props.disableTeleport ? null : (props.teleportTo ?? null)));
+const teleportTarget = computed(() => {
+  const root = rootRef.value;
+  const destination = portal.value;
+  if (!isOpen.value || !root || !destination) return null;
+  try {
+    const target =
+      typeof destination === 'string'
+        ? ((destination === 'body' ? root.closest('dialog[open]') : null) ??
+          root.ownerDocument.querySelector(destination))
+        : destination;
+    return target?.isConnected && !root.contains(target) ? target : null;
+  } catch {
+    return null;
+  }
+});
 const visibleMonth = ref(dayValue(firstDate.value) || formatCalendarValue(new Date(), precision.value));
 const focusedDate = ref(visibleMonth.value);
 const yearStart = ref(calendarYearRangeStart(visibleMonth.value));
@@ -216,7 +248,17 @@ const classes = computed(() =>
   ),
 );
 const triggerAttrs = computed(() =>
-  omitCmOwnedAttrs(attrs, ['id', 'name', 'value', 'disabled', 'required', 'aria-invalid', 'aria-expanded']),
+  omitCmOwnedAttrs(attrs, [
+    'id',
+    'name',
+    'value',
+    'disabled',
+    'required',
+    'aria-invalid',
+    'aria-expanded',
+    'data-cm-date-picker-placement',
+    'data-cm-date-picker-teleport-to',
+  ]),
 );
 
 function setOpen(open: boolean, restoreFocus = false): void {
@@ -379,7 +421,8 @@ watch(isOpen, (open, _, onCleanup) => {
   if (!open || !root) return;
   const document = root.ownerDocument;
   const dismissOutside = (event: Event) => {
-    if (!event.composedPath().includes(root)) setOpen(false);
+    const path = event.composedPath();
+    if (!path.includes(root) && (!calendarRef.value || !path.includes(calendarRef.value))) setOpen(false);
   };
   document.addEventListener('click', dismissOutside, true);
   document.addEventListener('focusin', dismissOutside);
@@ -388,6 +431,35 @@ watch(isOpen, (open, _, onCleanup) => {
     document.removeEventListener('focusin', dismissOutside);
   });
 });
+
+watch(
+  [isOpen, calendarRef, triggerRef, teleportTarget, placement],
+  ([open, calendar, trigger, target, preferredPlacement], _, onCleanup) => {
+    if (!open || !calendar || !trigger) return;
+    let active = true;
+    const place = (): void => {
+      void computePosition(trigger, calendar, {
+        placement: preferredPlacement,
+        strategy: target ? 'fixed' : 'absolute',
+        middleware: [
+          offset(2),
+          flip({ placements: [preferredPlacement, preferredPlacement === 'bottom-end' ? 'top-end' : 'top-start'] }),
+          shift(),
+        ],
+      }).then(({ x, y }) => {
+        if (active) calendarPosition.value = { inset: 'auto', left: `${x}px`, top: `${y}px` };
+      });
+    };
+    const stop = autoUpdate(trigger, place, calendar);
+    place();
+    onCleanup(() => {
+      active = false;
+      stop();
+      calendarPosition.value = undefined;
+    });
+  },
+  { flush: 'post' },
+);
 
 watch([() => props.disabled, () => props.readonly], ([disabled, readonly]) => {
   if (disabled || readonly) setOpen(false);
@@ -462,6 +534,8 @@ useCmHydrated();
       :data-cm-date-picker-precision="precision === 'day' ? undefined : precision"
       :data-cm-date-picker-show-time="hasTime || undefined"
       :data-cm-date-picker-minute-step="hasTime ? minuteStep : undefined"
+      :data-cm-date-picker-placement="placement === 'bottom-end' ? placement : undefined"
+      :data-cm-date-picker-teleport-to="typeof portal === 'string' ? portal : undefined"
       :data-cm-date-picker-name="selectionMode === 'single' ? undefined : (name ?? undefined)"
       :data-cm-locale="typeof props.locale === 'string' ? props.locale : undefined"
       :data-cm-display-format="props.displayFormat"
@@ -516,146 +590,150 @@ useCmHydrated();
         </svg>
       </span>
     </button>
-    <div
-      :id="calendarId"
-      ref="calendarRef"
-      class="cm-date-picker__calendar"
-      role="dialog"
-      :aria-label="props.labels.calendar ?? 'Choose date'"
-      :tabindex="isOpen ? -1 : undefined"
-      :hidden="!isOpen"
-      @keydown="onCalendarKeydown"
-    >
-      <header class="cm-date-picker__header">
-        <button
-          class="cm-date-picker__navigation"
-          type="button"
-          :aria-label="navigationLabels[0]"
-          :disabled="isOpen && adjacentPeriod(-1) === null ? true : undefined"
-          data-cm-date-picker-previous
-          @click="changePeriod(-1)"
-        >
-          <svg
-            class="cm-date-picker__navigation-icon"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            focusable="false"
-          >
-            <polyline points="15 5.75 8.75 12 15 18.25" />
-          </svg>
-        </button>
-        <span :id="monthId" class="cm-date-picker__month" aria-live="polite" data-cm-date-picker-month>{{
-          isOpen ? calendarGridTitle(visibleMonth, precision, yearStart, props.locale) : ''
-        }}</span>
-        <button
-          class="cm-date-picker__navigation"
-          type="button"
-          :aria-label="navigationLabels[1]"
-          :disabled="isOpen && adjacentPeriod(1) === null ? true : undefined"
-          data-cm-date-picker-next
-          @click="changePeriod(1)"
-        >
-          <svg
-            class="cm-date-picker__navigation-icon"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            focusable="false"
-          >
-            <polyline points="9 5.75 15.25 12 9 18.25" />
-          </svg>
-        </button>
-      </header>
+    <Teleport :to="teleportTarget ?? 'body'" :disabled="!teleportTarget">
       <div
-        class="cm-date-picker__grid"
-        :class="{ 'cm-date-picker__grid--period': precision !== 'day' }"
-        role="grid"
-        :aria-labelledby="monthId"
-        :aria-multiselectable="selectionMode !== 'single' || undefined"
+        :id="calendarId"
+        ref="calendarRef"
+        class="cm-date-picker__calendar"
+        role="dialog"
+        :aria-label="props.labels.calendar ?? 'Choose date'"
+        :tabindex="isOpen ? -1 : undefined"
+        :hidden="!isOpen"
+        :data-cm-date-picker-portaled="teleportTarget ? '' : undefined"
+        v-bind="calendarPosition ? { style: calendarPosition } : {}"
+        @keydown="onCalendarKeydown"
       >
-        <div v-if="precision === 'day'" class="cm-date-picker__weekdays" role="row">
-          <span v-for="(label, index) in weekdays" :key="index" class="cm-date-picker__weekday" role="columnheader">
-            {{ label }}
-          </span>
-        </div>
-        <div class="cm-date-picker__days" role="rowgroup" data-cm-date-picker-days>
-          <div v-for="(week, index) in isOpen ? weeks : []" :key="index" class="cm-date-picker__week" role="row">
-            <button
-              v-for="day in week"
-              :key="day.value"
-              class="cm-date-picker__day"
-              :class="{
-                'cm-date-picker__day--outside': day.outside,
-                'cm-date-picker__day--today': day.today,
-                'cm-date-picker__day--selected': day.selected,
-                'cm-date-picker__day--in-range': day.inRange,
-                'cm-date-picker__day--range-start': day.rangeStart,
-                'cm-date-picker__day--range-end': day.rangeEnd,
-              }"
-              type="button"
-              role="gridcell"
-              :aria-label="day.accessibleLabel"
-              :aria-selected="day.selected || day.inRange"
-              :aria-current="day.today ? 'date' : undefined"
-              :tabindex="!day.disabled && day.value === focusedDate ? 0 : -1"
-              :disabled="day.disabled || undefined"
-              :data-cm-date-picker-value="day.value"
-              @click="selectDay(day.value, day.disabled)"
-              @focus="focusedDate = day.value"
-              @keydown="onDayKeydown($event, day.value)"
+        <header class="cm-date-picker__header">
+          <button
+            class="cm-date-picker__navigation"
+            type="button"
+            :aria-label="navigationLabels[0]"
+            :disabled="isOpen && adjacentPeriod(-1) === null ? true : undefined"
+            data-cm-date-picker-previous
+            @click="changePeriod(-1)"
+          >
+            <svg
+              class="cm-date-picker__navigation-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              focusable="false"
             >
-              {{ day.label }}
-            </button>
+              <polyline points="15 5.75 8.75 12 15 18.25" />
+            </svg>
+          </button>
+          <span :id="monthId" class="cm-date-picker__month" aria-live="polite" data-cm-date-picker-month>{{
+            isOpen ? calendarGridTitle(visibleMonth, precision, yearStart, props.locale) : ''
+          }}</span>
+          <button
+            class="cm-date-picker__navigation"
+            type="button"
+            :aria-label="navigationLabels[1]"
+            :disabled="isOpen && adjacentPeriod(1) === null ? true : undefined"
+            data-cm-date-picker-next
+            @click="changePeriod(1)"
+          >
+            <svg
+              class="cm-date-picker__navigation-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              focusable="false"
+            >
+              <polyline points="9 5.75 15.25 12 9 18.25" />
+            </svg>
+          </button>
+        </header>
+        <div
+          class="cm-date-picker__grid"
+          :class="{ 'cm-date-picker__grid--period': precision !== 'day' }"
+          role="grid"
+          :aria-labelledby="monthId"
+          :aria-multiselectable="selectionMode !== 'single' || undefined"
+        >
+          <div v-if="precision === 'day'" class="cm-date-picker__weekdays" role="row">
+            <span v-for="(label, index) in weekdays" :key="index" class="cm-date-picker__weekday" role="columnheader">
+              {{ label }}
+            </span>
+          </div>
+          <div class="cm-date-picker__days" role="rowgroup" data-cm-date-picker-days>
+            <div v-for="(week, index) in isOpen ? weeks : []" :key="index" class="cm-date-picker__week" role="row">
+              <button
+                v-for="day in week"
+                :key="day.value"
+                class="cm-date-picker__day"
+                :class="{
+                  'cm-date-picker__day--outside': day.outside,
+                  'cm-date-picker__day--today': day.today,
+                  'cm-date-picker__day--selected': day.selected,
+                  'cm-date-picker__day--in-range': day.inRange,
+                  'cm-date-picker__day--range-start': day.rangeStart,
+                  'cm-date-picker__day--range-end': day.rangeEnd,
+                }"
+                type="button"
+                role="gridcell"
+                :aria-label="day.accessibleLabel"
+                :aria-selected="day.selected || day.inRange"
+                :aria-current="day.today ? 'date' : undefined"
+                :tabindex="!day.disabled && day.value === focusedDate ? 0 : -1"
+                :disabled="day.disabled || undefined"
+                :data-cm-date-picker-value="day.value"
+                @click="selectDay(day.value, day.disabled)"
+                @focus="focusedDate = day.value"
+                @keydown="onDayKeydown($event, day.value)"
+              >
+                {{ day.label }}
+              </button>
+            </div>
+          </div>
+        </div>
+        <div v-if="hasTime" class="cm-date-picker__time" data-cm-date-picker-time>
+          <span :id="timeLabelId" class="cm-date-picker__time-label">{{ props.labels.time ?? 'Time' }}</span>
+          <div class="cm-date-picker__time-controls" role="group" :aria-labelledby="timeLabelId">
+            <select
+              class="cm-date-picker__time-select"
+              :aria-label="props.labels.hour ?? 'Hour'"
+              :disabled="isOpen && draftTime === null ? true : undefined"
+              :value="hour"
+              data-cm-date-picker-hour
+              @change="updateHour(Number(($event.target as HTMLSelectElement).value))"
+            >
+              <option
+                v-for="number in isOpen ? 24 : 0"
+                :key="number"
+                :value="number - 1"
+                :disabled="!hours.has(number - 1)"
+              >
+                {{ String(number - 1).padStart(2, '0') }}
+              </option>
+            </select>
+            <span aria-hidden="true">:</span>
+            <select
+              class="cm-date-picker__time-select"
+              :aria-label="props.labels.minute ?? 'Minute'"
+              :disabled="isOpen && draftTime === null ? true : undefined"
+              :value="minute"
+              data-cm-date-picker-minute
+              @change="hour !== undefined && updateTime(hour * 60 + Number(($event.target as HTMLSelectElement).value))"
+            >
+              <option
+                v-for="choice in isOpen ? minuteChoices : []"
+                :key="choice"
+                :value="choice"
+                :disabled="!minutes.has(choice)"
+              >
+                {{ String(choice).padStart(2, '0') }}
+              </option>
+            </select>
           </div>
         </div>
       </div>
-      <div v-if="hasTime" class="cm-date-picker__time" data-cm-date-picker-time>
-        <span :id="timeLabelId" class="cm-date-picker__time-label">{{ props.labels.time ?? 'Time' }}</span>
-        <div class="cm-date-picker__time-controls" role="group" :aria-labelledby="timeLabelId">
-          <select
-            class="cm-date-picker__time-select"
-            :aria-label="props.labels.hour ?? 'Hour'"
-            :disabled="isOpen && draftTime === null ? true : undefined"
-            :value="hour"
-            data-cm-date-picker-hour
-            @change="updateHour(Number(($event.target as HTMLSelectElement).value))"
-          >
-            <option
-              v-for="number in isOpen ? 24 : 0"
-              :key="number"
-              :value="number - 1"
-              :disabled="!hours.has(number - 1)"
-            >
-              {{ String(number - 1).padStart(2, '0') }}
-            </option>
-          </select>
-          <span aria-hidden="true">:</span>
-          <select
-            class="cm-date-picker__time-select"
-            :aria-label="props.labels.minute ?? 'Minute'"
-            :disabled="isOpen && draftTime === null ? true : undefined"
-            :value="minute"
-            data-cm-date-picker-minute
-            @change="hour !== undefined && updateTime(hour * 60 + Number(($event.target as HTMLSelectElement).value))"
-          >
-            <option
-              v-for="choice in isOpen ? minuteChoices : []"
-              :key="choice"
-              :value="choice"
-              :disabled="!minutes.has(choice)"
-            >
-              {{ String(choice).padStart(2, '0') }}
-            </option>
-          </select>
-        </div>
-      </div>
-    </div>
+    </Teleport>
   </div>
 </template>

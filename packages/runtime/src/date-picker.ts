@@ -114,11 +114,13 @@ export class CmDatePickerController implements CmController {
   }
 
   connect(): void {
-    this.#root.addEventListener('click', this.#handleClick);
-    this.#root.addEventListener('keydown', this.#handleKeydown);
-    this.#root.addEventListener('mousedown', this.#handleMouseDown);
-    this.#root.addEventListener('focusin', this.#handleDayFocus);
-    if (this.#hasTime) this.#root.addEventListener('change', this.#handleTimeChange);
+    for (const element of [this.#trigger, this.#clear, this.#calendar]) {
+      element?.addEventListener('click', this.#handleClick);
+      element?.addEventListener('keydown', this.#handleKeydown);
+    }
+    this.#clear?.addEventListener('mousedown', this.#handleMouseDown);
+    this.#calendar.addEventListener('focusin', this.#handleDayFocus);
+    if (this.#hasTime) this.#calendar.addEventListener('change', this.#handleTimeChange);
     this.#root.ownerDocument.addEventListener('click', this.#dismissOutside, true);
     this.#root.ownerDocument.addEventListener('focusin', this.#dismissOutside);
     if (this.#mode === 'single') {
@@ -146,11 +148,13 @@ export class CmDatePickerController implements CmController {
   }
 
   disconnect(): void {
-    this.#root.removeEventListener('click', this.#handleClick);
-    this.#root.removeEventListener('keydown', this.#handleKeydown);
-    this.#root.removeEventListener('mousedown', this.#handleMouseDown);
-    this.#root.removeEventListener('focusin', this.#handleDayFocus);
-    this.#root.removeEventListener('change', this.#handleTimeChange);
+    for (const element of [this.#trigger, this.#clear, this.#calendar]) {
+      element?.removeEventListener('click', this.#handleClick);
+      element?.removeEventListener('keydown', this.#handleKeydown);
+    }
+    this.#clear?.removeEventListener('mousedown', this.#handleMouseDown);
+    this.#calendar.removeEventListener('focusin', this.#handleDayFocus);
+    this.#calendar.removeEventListener('change', this.#handleTimeChange);
     this.#root.ownerDocument.removeEventListener('click', this.#dismissOutside, true);
     this.#root.ownerDocument.removeEventListener('focusin', this.#dismissOutside);
     this.#releasePlacement();
@@ -254,7 +258,10 @@ export class CmDatePickerController implements CmController {
   };
 
   readonly #dismissOutside = (event: Event): void => {
-    if (!this.#calendar.hidden && !event.composedPath().includes(this.#root)) this.#setOpen(false, false);
+    const path = event.composedPath();
+    if (!this.#calendar.hidden && !path.includes(this.#root) && !path.includes(this.#calendar)) {
+      this.#setOpen(false, false);
+    }
   };
 
   readonly #handleDayFocus = (event: Event): void => {
@@ -580,25 +587,65 @@ export class CmDatePickerController implements CmController {
 
   #holdPlacement(): void {
     if (this.#stopAutoUpdate) return;
+    const calendar = this.#calendar;
+    const placement = this.#trigger.dataset.cmDatePickerPlacement === 'bottom-end' ? 'bottom-end' : 'bottom-start';
+    const target = this.#portalTarget();
+    const { inset, left, top } = calendar.style;
+    const origin = target ? calendar.ownerDocument.createComment('date-picker') : null;
+    if (target && origin) {
+      calendar.before(origin);
+      target.append(calendar);
+      calendar.setAttribute('data-cm-date-picker-portaled', '');
+    }
+    let active = true;
     const place = (): void => {
-      void computePosition(this.#trigger, this.#calendar, {
-        placement: 'bottom-start',
-        middleware: [offset(2), flip(), shift()],
+      void computePosition(this.#trigger, calendar, {
+        placement,
+        strategy: target ? 'fixed' : 'absolute',
+        middleware: [
+          offset(2),
+          flip({ placements: [placement, placement === 'bottom-end' ? 'top-end' : 'top-start'] }),
+          shift(),
+        ],
       }).then(({ x, y }) => {
-        if (this.#calendar.hidden || !this.#stopAutoUpdate) return;
-        this.#calendar.style.insetInlineStart = `${x}px`;
-        this.#calendar.style.insetBlockStart = `${y}px`;
+        if (!active) return;
+        calendar.style.inset = 'auto';
+        calendar.style.left = `${x}px`;
+        calendar.style.top = `${y}px`;
       });
     };
-    this.#stopAutoUpdate = autoUpdate(this.#trigger, place, this.#calendar);
+    const stop = autoUpdate(this.#trigger, place, calendar);
+    this.#stopAutoUpdate = () => {
+      active = false;
+      stop();
+      calendar.style.inset = inset;
+      calendar.style.left = left;
+      calendar.style.top = top;
+      if (origin) {
+        calendar.removeAttribute('data-cm-date-picker-portaled');
+        if (origin.parentNode) origin.replaceWith(calendar);
+        else calendar.remove();
+      }
+    };
     place();
+  }
+
+  #portalTarget(): Element | null {
+    const destination = this.#trigger.dataset.cmDatePickerTeleportTo;
+    if (!destination) return null;
+    try {
+      const target =
+        (destination === 'body' ? this.#root.closest('dialog[open]') : null) ??
+        this.#root.ownerDocument.querySelector(destination);
+      return target && !this.#root.contains(target) ? target : null;
+    } catch {
+      return null;
+    }
   }
 
   #releasePlacement(): void {
     this.#stopAutoUpdate?.();
     this.#stopAutoUpdate = null;
-    this.#calendar.style.removeProperty('inset-inline-start');
-    this.#calendar.style.removeProperty('inset-block-start');
   }
 }
 

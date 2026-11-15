@@ -233,6 +233,12 @@
   display: none;
 }
 
+.cm-date-picker__calendar[data-cm-date-picker-portaled] {
+  position: fixed;
+  z-index: calc(var(--cm-z-index-sticky, 10) + 5);
+  inset: 0 auto auto 0;
+}
+
 .cm-date-picker__header {
   display: grid;
   grid-template-columns: auto 1fr auto;
