@@ -29,6 +29,7 @@ const yearRangeSize = 12;
 const periodColumns = 3;
 
 const isoPattern = /^(\d{4})-(\d{2})-(\d{2})$/u;
+const isoTimePattern = /^(\d{4}-\d{2}-\d{2})T([01]\d|2[0-3]):([0-5]\d)$/u;
 const displayFormatter = new Intl.DateTimeFormat('en-US', { day: '2-digit', month: '2-digit', year: '2-digit' });
 const monthFormatter = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' });
 const weekdayFormatter = new Intl.DateTimeFormat('en-US', { weekday: 'short' });
@@ -81,7 +82,8 @@ export function formatDisplayDate(
   format?: string,
   precision: CmCalendarPrecision = 'day',
 ): string {
-  const date = parseCalendarValue(value, precision);
+  const time = precision === 'day' ? calendarTimeValue(value) : null;
+  const date = parseCalendarValue(time === null ? value : value.slice(0, 10), precision);
   if (date === null) return value;
   if (format) {
     const [year, month, day] = formatIsoDate(date).split('-');
@@ -92,8 +94,27 @@ export function formatDisplayDate(
       M: String(Number(month)),
       dd: day,
       d: String(Number(day)),
+      HH: String(Math.floor((time ?? 0) / 60)).padStart(2, '0'),
+      H: String(Math.floor((time ?? 0) / 60)),
+      mm: String((time ?? 0) % 60).padStart(2, '0'),
+      m: String((time ?? 0) % 60),
     };
-    return format.replace(/yyyy|yy|MM|M|dd|d/g, (token) => tokens[token]);
+    return format.replace(/yyyy|yy|MM|M|dd|d|HH|H|mm|m/g, (token) => tokens[token]);
+  }
+  if (time !== null) {
+    // Interpret the supplied wall time without local DST shifts or an implicit timezone conversion.
+    const zoneless = new Date(0);
+    zoneless.setUTCFullYear(date.getFullYear(), date.getMonth(), date.getDate());
+    zoneless.setUTCHours(Math.floor(time / 60), time % 60, 0, 0);
+    return new Intl.DateTimeFormat(locale ?? 'en-US', {
+      day: '2-digit',
+      month: '2-digit',
+      year: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hourCycle: 'h23',
+      timeZone: 'UTC',
+    }).format(zoneless);
   }
   const formatter =
     locale === undefined && precision === 'day'
@@ -248,6 +269,106 @@ export function selectCalendarDate(
   if (mode !== 'multiple') return [value];
   if (selected.includes(value)) return selected.filter((date) => date !== value);
   return [...selected, value];
+}
+
+export interface CmCalendarTimeOptions {
+  min?: string;
+  max?: string;
+  minuteStep: number;
+}
+
+export function calendarTimeValue(value: string): number | null {
+  const match = isoTimePattern.exec(value);
+  return match && parseIsoDate(match[1]) ? Number(match[2]) * 60 + Number(match[3]) : null;
+}
+
+export function calendarMinuteStep(value: number): number {
+  return Math.min(60, Math.max(1, Math.trunc(value) || 1));
+}
+
+export function formatCalendarDateTime(day: string, minutes: number): string {
+  const hours = String(Math.floor(minutes / 60)).padStart(2, '0');
+  const minute = String(minutes % 60).padStart(2, '0');
+  return `${day}T${hours}:${minute}`;
+}
+
+export function normalizeCalendarDateTime(value: string): string | null {
+  if (calendarTimeValue(value) !== null) return value;
+  return parseIsoDate(value) ? formatCalendarDateTime(value, 0) : null;
+}
+
+function timeWindow(day: string, { min, max }: CmCalendarTimeOptions): [number, number] | null {
+  const first = min?.slice(0, 10);
+  const last = max?.slice(0, 10);
+  if ((first && day < first) || (last && day > last)) return null;
+  return [
+    min && day === first ? (calendarTimeValue(min) ?? 0) : 0,
+    max && day === last ? (calendarTimeValue(max) ?? 1439) : 1439,
+  ];
+}
+
+export function calendarDateHasTime(day: string, options: CmCalendarTimeOptions): boolean {
+  const window = timeWindow(day, options);
+  if (!window) return false;
+  const [start, end] = window;
+  const step = calendarMinuteStep(options.minuteStep);
+  const minute = start % 60;
+  const next = Math.ceil(minute / step) * step;
+  return start - minute + Math.min(next, 60) <= end;
+}
+
+export function calendarNearestAvailableDay(day: string, options: CmCalendarTimeOptions): string {
+  const candidates = [day, calendarKeyTarget(day, 'ArrowRight'), calendarKeyTarget(day, 'ArrowLeft')];
+  return (
+    candidates.find((value) => value !== null && parseIsoDate(value) !== null && calendarDateHasTime(value, options)) ??
+    day
+  );
+}
+
+export function calendarTimesForDay(day: string, options: CmCalendarTimeOptions): number[] {
+  const window = timeWindow(day, options);
+  if (!window) return [];
+  const [start, end] = window;
+  const step = calendarMinuteStep(options.minuteStep);
+  const times: number[] = [];
+  for (let hour = Math.floor(start / 60); hour <= Math.floor(end / 60); hour += 1) {
+    for (let minute = 0; minute < 60; minute += step) {
+      const value = hour * 60 + minute;
+      if (value >= start && value <= end) times.push(value);
+    }
+  }
+  return times;
+}
+
+export function nearestCalendarTime(times: readonly number[], preferred: number): number | null {
+  let closest: number | null = null;
+  for (const time of times) {
+    if (closest === null || Math.abs(time - preferred) < Math.abs(closest - preferred)) closest = time;
+  }
+  return closest;
+}
+
+export function selectCalendarDateTime(
+  selected: readonly string[],
+  value: string,
+  mode: CmCalendarSelectionMode,
+): string[] {
+  if (mode === 'multiple' && selected.some((date) => date.slice(0, 10) === value.slice(0, 10))) {
+    return selected.filter((date) => date.slice(0, 10) !== value.slice(0, 10));
+  }
+  return selectCalendarDate(selected, value, mode);
+}
+
+export function updateCalendarDateTime(
+  selected: readonly string[],
+  value: string,
+  mode: CmCalendarSelectionMode,
+): string[] | null {
+  if (mode === 'single') return [value];
+  const index = selected.findIndex((date) => date.slice(0, 10) === value.slice(0, 10));
+  if (index < 0) return null;
+  const updated = selected.map((date, position) => (index === position ? value : date));
+  return mode === 'range' ? updated.sort() : updated;
 }
 
 interface CalendarItemsOptions {

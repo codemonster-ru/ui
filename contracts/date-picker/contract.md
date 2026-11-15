@@ -44,4 +44,12 @@ fields serialize as `YYYY-MM` or `YYYY` respectively. Month mode shows one year 
 time. Year mode shows a 12-year block initially aligned to the decade of the selection.
 Up and Down move by three choices. Page Up and Page Down move through years in month
 mode and through 12-year blocks in year mode. Home and End move to the first and last
-choice in the visible period. Time-of-day selection remains outside this contract.
+choice in the visible period.
+
+Date and time mode uses timezone-free `YYYY-MM-DDTHH:mm` values. Date bounds
+include the full day. Date-time bounds include only their stated limits. `minuteStep`
+selects the available minute values in every hour and defaults to one. A day is
+disabled if it has no available time. An initial date without time is treated as
+midnight. Changing a day, hour, or minute updates the selected value without
+closing the calendar. Multiple and range modes apply time edits to the active
+day and continue submitting one value per selected entry.

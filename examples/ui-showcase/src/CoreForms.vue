@@ -42,6 +42,7 @@ const releaseDates = ref(['2026-08-13', '2026-08-20']);
 const releaseWindow = ref(['2026-08-13', '2026-08-20']);
 const billingMonth = ref('2026-08');
 const licenseYear = ref('2026');
+const releaseTime = ref('2026-08-13T09:30');
 const fieldsetPlan = ref('pro');
 const floatingVariants = ['in', 'on', 'over'] as const;
 const floatingStates = [
@@ -199,6 +200,15 @@ const states = [
       </CmField>
       <p>
         Model: <code>{{ licenseYear || 'empty' }}</code>
+      </p>
+    </div>
+    <div class="core-matrix-cell">
+      <h4>Date and time</h4>
+      <CmField v-slot="{ controlId }" control-id="core-release-time" label="Release date and time">
+        <CmDatePicker :id="controlId" v-model="releaseTime" show-time :minute-step="15" clearable />
+      </CmField>
+      <p>
+        Model: <code>{{ releaseTime || 'empty' }}</code>
       </p>
     </div>
     <div class="core-matrix-cell">

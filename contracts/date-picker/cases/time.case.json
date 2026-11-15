@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "date-picker-time",
+  "description": "Choose a release date and time with a 15-minute interval and bounds.",
+  "props": {
+    "value": "2026-08-13T09:30",
+    "min": "2026-08-13T09:15",
+    "max": "2026-08-14T10:30",
+    "showTime": true,
+    "minuteStep": 15,
+    "displayFormat": "dd.MM.yyyy HH:mm",
+    "clearable": true
+  },
+  "attributes": { "id": "release-time", "name": "release_time", "aria-label": "Release date and time" },
+  "slots": {}
+}

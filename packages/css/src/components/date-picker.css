@@ -407,3 +407,38 @@
   color: var(--cm-color-text-disabled);
   cursor: not-allowed;
 }
+
+.cm-date-picker__time {
+  display: grid;
+  gap: var(--cm-space-1);
+  padding-block-start: var(--cm-space-2);
+  border-block-start: var(--cm-border-width) solid var(--cm-color-border-divider);
+}
+
+.cm-date-picker__time-label {
+  color: var(--cm-color-text-muted);
+  font-size: var(--cm-text-caption-font-size);
+  font-weight: var(--cm-text-caption-font-weight);
+  line-height: var(--cm-text-caption-line-height);
+}
+
+.cm-date-picker__time-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--cm-space-2);
+}
+
+.cm-date-picker__time-select {
+  min-block-size: var(--cm-control-height-md);
+  flex: 1 1 0;
+  padding-inline: var(--cm-space-2);
+  border: var(--cm-border-width) solid var(--cm-color-border-interactive);
+  border-radius: var(--cm-radius-control);
+  background: var(--cm-color-background-surface);
+  color: var(--cm-color-text-primary);
+  font: inherit;
+}
+
+.cm-date-picker__time-select:disabled {
+  color: var(--cm-color-text-disabled);
+}

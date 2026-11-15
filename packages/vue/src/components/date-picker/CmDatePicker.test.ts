@@ -295,4 +295,81 @@ describe('CmDatePicker', () => {
     expect(trigger.attributes('aria-expanded')).toBe('false');
     wrapper.unmount();
   });
+
+  it('preserves a timezone-free date and time and enforces minute steps and bounds', async () => {
+    const form = document.createElement('form');
+    document.body.append(form);
+    const wrapper = mount(CmDatePicker, {
+      attachTo: form,
+      props: {
+        id: 'release-time',
+        modelValue: '2026-08-13T09:30',
+        showTime: true,
+        minuteStep: 15,
+        min: '2026-08-13T09:15',
+        max: '2026-08-14T10:30',
+        displayFormat: 'dd.MM.yyyy HH:mm',
+      },
+      attrs: { name: 'release_time' },
+    });
+    const trigger = wrapper.get('button.cm-date-picker');
+    await trigger.trigger('click');
+    const hour = wrapper.get<HTMLSelectElement>('[data-cm-date-picker-hour]');
+    const minute = wrapper.get<HTMLSelectElement>('[data-cm-date-picker-minute]');
+    expect(hour.element.value).toBe('9');
+    expect(minute.element.value).toBe('30');
+    expect(hour.get('option[value="8"]').attributes('disabled')).toBe('');
+    expect(minute.get('option[value="0"]').attributes('disabled')).toBe('');
+    await hour.setValue('10');
+    await minute.setValue('45');
+    expect(new FormData(form).get('release_time')).toBe('2026-08-13T10:45');
+    await wrapper.get('[data-cm-date-picker-value="2026-08-14"]').trigger('click');
+    expect(wrapper.emitted('update:modelValue')?.slice(-1)[0]).toEqual(['2026-08-14T10:30']);
+    expect(minute.get('option[value="45"]').attributes('disabled')).toBe('');
+    expect(new FormData(form).get('release_time')).toBe('2026-08-14T10:30');
+    expect(trigger.attributes('aria-expanded')).toBe('true');
+    expect(trigger.text()).toBe('14.08.2026 10:30');
+    await minute.trigger('keydown', { key: 'Escape' });
+    expect(document.activeElement).toBe(trigger.element);
+    wrapper.unmount();
+  });
+
+  it('changes only the active date and time in a multiple selection', async () => {
+    const wrapper = mount(CmDatePicker, {
+      props: {
+        id: 'release-times',
+        multiple: true,
+        modelValue: ['2026-08-13T09:30', '2026-08-14T16:00'],
+        showTime: true,
+        minuteStep: 15,
+      },
+    });
+    await wrapper.get('button.cm-date-picker').trigger('click');
+    await wrapper.get('[data-cm-date-picker-minute]').setValue('45');
+    expect(wrapper.emitted('update:modelValue')).toEqual([[['2026-08-13T09:45', '2026-08-14T16:00']]]);
+    await wrapper.get('[data-cm-date-picker-value="2026-08-13"]').trigger('click');
+    expect(wrapper.emitted('update:modelValue')?.slice(-1)[0]).toEqual([['2026-08-14T16:00']]);
+    wrapper.unmount();
+  });
+
+  it('focuses the nearest eligible day when the authored day has no aligned time', async () => {
+    const wrapper = mount(CmDatePicker, {
+      attachTo: document.body,
+      props: {
+        id: 'release-time',
+        modelValue: '2026-08-13T23:59',
+        min: '2026-08-13T23:59',
+        max: '2026-08-14T01:00',
+        minuteStep: 60,
+        showTime: true,
+      },
+    });
+    await wrapper.get('button.cm-date-picker').trigger('click');
+    expect(wrapper.get('[data-cm-date-picker-value="2026-08-13"]').attributes('disabled')).toBe('');
+    const next = wrapper.get('[data-cm-date-picker-value="2026-08-14"]');
+    expect(document.activeElement).toBe(next.element);
+    await next.trigger('click');
+    expect(wrapper.emitted('update:modelValue')).toEqual([['2026-08-14T01:00']]);
+    wrapper.unmount();
+  });
 });
