@@ -44,6 +44,10 @@ The restored product revision `084d19ea0244e86813875fc4a744f9878e8d285b` passed 
 and pinned Chrome. Both 48-image stored comparisons reported zero changed, missing or unexpected
 images. The paired visual and behavior checks also passed. [Hosted verification](https://github.com/codemonster-ru/ui/actions/runs/43716556197/job/132819264193)
 
+The follow-up product revision `e4ff3dea14ea7bc3a47a60abc9ae1a7be9377f25` reused that runner
+image, Chrome version, and stored fixture set. Both strict comparisons again passed for all
+96 screenshots, along with paired adapter visuals and behavior. [Follow-up hosted verification](https://github.com/codemonster-ru/ui/actions/runs/43729547790/job/132858739350)
+
 To verify a later candidate, publish an authorized verification ref at its SHA and dispatch
 `ci.yml` on that ref. The `visual` job should report that SHA, the runner image, the Chrome version,
 and both strict comparisons against the existing stored PNGs. Repository write access is required
