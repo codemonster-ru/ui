@@ -24,8 +24,17 @@ migration, including behavioral or visual differences. Do not claim parity from 
 | IN PROGRESS | Vanilla table of contents (`7f5c3bbe`), GroupBox (`f6781197`), native Input clear/reset (`217155af`), and disabled selection form submission (`27ccb81b`) passed targeted interaction and form checks. Add remaining portable contracts. |
 | IN PROGRESS | Build the exact historical reference in isolation, compare both themes and viewports against the current showcases, and investigate visual differences. |
 | DONE | The shared showcase shell and native composition demos built and passed the Chrome interaction check. It exercised mobile navigation, keyboard theme toggling and persistence in both adapters, and Vue confirmation focus restoration, GroupBox and SkeletonGate. |
-| TODO | Run package checks, lint, type checks, tests, browser behavior and accessibility checks, production builds, and fresh packed consumers. |
-| TODO | Review independently as Vue consumer, server-rendered Vanilla consumer, and future adapter maintainer. Address actionable findings and rerun affected checks. |
+| DONE | Restored DatePicker keyboard, locale, multiple/range selection, native reset, month/year precision, and timezone-free minute selection in both adapters (`5b3f5403`, `454f9d0b`, `b86bd276`, `9fa2361a`, `e53dc22f`). Chrome exercised selection, pagination, focus, clock bounds and value serialization. Portal and placement are in progress. |
+| DONE | Restored top/bottom Drawer, native open/close synchronization, ProgressBar stripes and height, and Field floating labels (`f6bfddf7`, `55a5f7c2`, `0916b9cc`, `3c3057c9`). Chrome exercised both adapters, including backdrop modality, Escape, native dialog form close, reduced motion and label focus. |
+| DONE | Restored NavMenu and MenuBar pills plus MenuBar roving focus (`823edcaa`). Their paired light/dark browser fixture screenshots matched exactly; both adapters passed the expanded keyboard and selection scenarios. |
+| DONE | Restored Dropdown pills and scoped actions (`2a104970`), IconButton tones and name-based icons (`4d3850a1`), historical Input and Select (`79bd0800`, `4334b223`), and authored Tooltip triggers, delays and portals (`f26a5679`). Chrome checked canonical contracts, Select portal geometry, resize, and native dialog focus, and Tooltip focus and Escape in both adapters. Dropdown collision and portal behavior remain in progress. |
+| DONE | Restored CommandPalette host-ranked results, query submission, scoped content and historical result-object selection (`7cc28fec`). Pinned Chrome passed eight scenario runs across both adapters; a production mobile check exercised literal match highlighting, selecting a result with the keyboard, and restoring opener focus. Authored palette Teleport destination remains outside this implementation. |
+| DONE | The icons catalogue is a neutral metadata entry (`be8ee84f`) and both showcases use it (`c4928bb1`). A fresh Vue consumer and the gallery browser check verified its metadata, all 116 icons, keyword search and unique SVG definitions. Loading Core does not fetch the icon catalogue. |
+| DONE | Vanilla Layouts and both Icons galleries restored historical top-of-page geometry and order (`25825971`, `446f94f5`). See [layout and icon measurements](historical-vue-ecosystem.md) for viewport comparisons and browser interaction results. |
+| DONE | Restored Colors page rhythm in the shared guide. Production Chrome matched hero, text, first palette and swatch geometry to `d9879116`; both adapters passed contrast calculation and code copy. |
+| DONE | Restored historical named Alert and Avatar icons, default Alert tone and role, warning alias and icon visibility (`dde06d37`). The opt-in entry passed 11 pinned-browser assertions and the main consumer import guards. |
+| IN PROGRESS | Run package checks, lint, type checks, tests, browser behavior and accessibility checks, production builds, and fresh packed consumers. See the exact snapshots below. |
+| IN PROGRESS | The independent review verified dependency direction and reproduced native close and form reset integration defects. Those fixes were verified separately. Review the final committed candidate and reconcile remaining historical contract and visual gaps. |
 | TODO | Finish the acceptance report and verify that all assignment edits are committed and the tree is clean. |
 
 ## Resume point
@@ -51,6 +60,56 @@ visual review. The revised comparison reported no uncaught JavaScript errors.
 Local screenshots and reports are in `/private/tmp/cmui-acceptance.Uyf8RO` under `initial` and
 `refined`. The reference is an isolated archive at `/private/tmp/cmui-d9879116.h4bqCs`.
 
+The `palettes` capture followed the shared Colors rewrite (`08865a87`). At the same threshold, the
+mean changed-pixel rate across 16 frames was 12.52% for Vue and 31.63% for Vanilla. All frames
+still differed from the historical capture. The current Colors pages matched each other in
+mobile hero and palette geometry, group order and all 12 displayed contrast ratios. Code copying
+worked on both pages. These checks do not establish exact historical visuals or general WCAG
+conformance.
+
+The built `colors-built` capture matched the historical geometry of the hero, typography, and
+first palette at both sizes and in both themes. Changed-pixel ratios were 3.62–3.72% at 390 px
+and 0.89–0.95% at 1280 px across both adapters, down from 22.84–22.95% and 6.42–6.51%.
+The product name, mobile top bar and related copy remain visible differences. See
+`/private/tmp/cmui-acceptance.Uyf8RO/{colors-before,colors-built}`.
+
+## Verification checkpoints
+
+- In pinned Chrome for Testing `151.0.7922.138`, all 96 fixture screenshots were byte-identical
+  between the original `49574d25` and restored `4d3850a1` archives. Both local captures still
+  fail the stored-baseline check: 44 of 48 changed per adapter at threshold 4, or
+  520 of 559,172 pixels per adapter (0.093%). Independent text-mask recapture placed every
+  above-threshold difference inside glyph paint, with unchanged screenshot dimensions. The
+  hosted `macos-26` result and exact render-stack cause remain unverified; baseline images
+  were left intact. Evidence: `/private/tmp/cmui-original-pinned.L9JYfo` and
+  `/private/tmp/cmui-ci-visual.1xCWmT`. The 122 browser behavior runs at `4d3850a1` passed.
+- `90815175`, fresh copy at `/private/tmp/cmui-verify.MEtWOJ`: all 20 executed checks passed,
+  including lint, format, typecheck, cold tests, contracts, accessibility fixtures, tree
+  shaking, both production showcases, and packed npm, pnpm and Yarn consumers. The release
+  audit returned zero production findings and 20 low/moderate development findings. This
+  snapshot precedes the latest showcase and overlay slices.
+
+- `a9083071`, fresh copy at `/private/tmp/cmui-verify.Kvb8Dd`: installation, builds, typecheck,
+  contracts, accessibility fixtures, package budgets and tree shaking passed. Cold workspace
+  verification exposed canonical DataTable, dependency order, and export inventory defects.
+  Registry-backed npm, pnpm and Yarn tarball consumers passed after the intentionally offline
+  install could not resolve metadata in their empty consumer caches. The release audit found zero
+  production vulnerabilities and no high or critical development findings; 19 low/moderate
+  development findings were reported. The initial failures and reruns are retained in the logs.
+- `3936ebf5` plus the five exact cold gate changes later committed in `c7207dfd`: clean install and
+  all cold workspace tests passed, including 189 built Vue tests. Log:
+  `/tmp/cm-layout-cold.c1hsdL/cold-verification.log`.
+- `3c3057c9`, fresh copy at `/private/tmp/cmui-verify.hJF9nl`: full lint, cold workspace tests,
+  contracts, package checks and builds passed. The typecheck reported an index export from an
+  in-progress MenuBar change; its type is present in `823edcaa`. Format check reported only
+  `CmDataTable.vue`. Re-run from a coherent committed candidate after these corrections.
+
 Finish and verify each coherent slice before committing it; then select the next unfinished row.
 Record actual output and commands, including any check that cannot run, before advancing the
 corresponding status.
+
+Next actions: finish the Core lead sections, complete the
+DatePicker portal and Dropdown placement slices, and reconcile remaining public gaps from the
+Vue and Vanilla traces. Then run a fresh exact-candidate package and browser checkpoint before
+requesting independent acceptance. When interpreting pixels distinguish the full-page captures
+from the established 12-case fixture baseline.
