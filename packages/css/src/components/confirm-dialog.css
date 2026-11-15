@@ -1,0 +1,14 @@
+@import './button.css';
+@import './dialog.css';
+
+.cm-confirm-dialog__actions {
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--cm-space-3);
+}
+
+.cm-confirm-dialog .cm-dialog__body:empty {
+  display: none;
+}

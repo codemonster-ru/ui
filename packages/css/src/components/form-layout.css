@@ -1,0 +1,60 @@
+@import './field.css';
+
+.cm-form-layout {
+  --cm-form-layout-label-width: minmax(10rem, 25%);
+
+  container: cm-form-layout / inline-size;
+  display: grid;
+  gap: var(--cm-space-3);
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.cm-form-layout--horizontal > .cm-field,
+.cm-form-layout--responsive > .cm-field {
+  min-inline-size: 0;
+}
+
+.cm-form-layout--horizontal > .cm-field {
+  grid-template-columns: var(--cm-form-layout-label-width) minmax(0, 1fr);
+  align-items: start;
+  column-gap: var(--cm-space-3);
+}
+
+.cm-form-layout--horizontal > .cm-field > .cm-field__label {
+  place-self: start end;
+  padding-block-start: calc(var(--cm-space-1) * 1.25);
+  overflow-wrap: anywhere;
+  text-align: end;
+}
+
+.cm-form-layout--horizontal > .cm-field > :is(.cm-field__control, .cm-field__description, .cm-field__error) {
+  grid-column: 2;
+}
+
+.cm-form-layout--horizontal > .cm-field > .cm-field__control {
+  grid-row: 1;
+}
+
+@container cm-form-layout (width >= 768px) {
+  .cm-form-layout--responsive > .cm-field {
+    grid-template-columns: var(--cm-form-layout-label-width) minmax(0, 1fr);
+    align-items: start;
+    column-gap: var(--cm-space-3);
+  }
+
+  .cm-form-layout--responsive > .cm-field > .cm-field__label {
+    place-self: start end;
+    padding-block-start: calc(var(--cm-space-1) * 1.25);
+    overflow-wrap: anywhere;
+    text-align: end;
+  }
+
+  .cm-form-layout--responsive > .cm-field > :is(.cm-field__control, .cm-field__description, .cm-field__error) {
+    grid-column: 2;
+  }
+
+  .cm-form-layout--responsive > .cm-field > .cm-field__control {
+    grid-row: 1;
+  }
+}

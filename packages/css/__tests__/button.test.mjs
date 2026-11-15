@@ -6,7 +6,20 @@ import { URL } from 'node:url';
 const css = await readFile(new URL('../dist/components/button.css', import.meta.url), 'utf8');
 
 test('styles every Button variant and size from shared tokens', () => {
-  for (const modifier of ['primary', 'secondary', 'danger', 'ghost', 'sm', 'lg']) {
+  for (const modifier of [
+    'primary',
+    'secondary',
+    'success',
+    'info',
+    'warn',
+    'help',
+    'danger',
+    'contrast',
+    'ghost',
+    'block',
+    'sm',
+    'lg',
+  ]) {
     assert.match(css, new RegExp(`\\.cm-button--${modifier}(?:[\\s:{])`));
   }
 

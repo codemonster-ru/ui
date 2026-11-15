@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, useAttrs, type PropType } from 'vue';
+import { computed, resolveDynamicComponent, useAttrs, type Component, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { assertCm, warnCm } from '../../internal/warn';
@@ -10,6 +10,7 @@ defineOptions({ inheritAttrs: false });
 const props = defineProps({
   items: { type: Array as PropType<readonly CmBreadcrumbItem[]>, required: true },
   ariaLabel: { type: String, default: 'Breadcrumb' },
+  component: { type: [String, Object, Function] as PropType<string | Component>, default: undefined },
 });
 const attrs = useAttrs();
 const classes = computed(() => mergeCmClasses('cm-breadcrumbs', attrs.class));
@@ -42,15 +43,32 @@ const hasCurrent = computed(() => normalizedItems.value.some(({ current }) => cu
 function current(item: CmBreadcrumbItem, index: number): boolean {
   return Boolean(item.current) || (!hasCurrent.value && index === normalizedItems.value.length - 1);
 }
+
+function itemLink(item: CmBreadcrumbItem) {
+  return item.to === undefined ? 'a' : (props.component ?? resolveDynamicComponent('RouterLink'));
+}
+
+function itemLinkAttrs(item: CmBreadcrumbItem) {
+  return {
+    ...(item.to === undefined ? { href: item.href } : { to: item.to }),
+    target: item.target,
+    rel: item.rel ?? (item.target === '_blank' ? 'noopener noreferrer' : undefined),
+  };
+}
 </script>
 
 <template>
   <nav v-bind="rootAttrs" :class="classes" :aria-label="props.ariaLabel">
     <ol class="cm-breadcrumbs__list">
       <li v-for="(item, index) in normalizedItems" :key="`${item.label}-${index}`" class="cm-breadcrumbs__item">
-        <a v-if="!item.disabled && !current(item, index) && item.href" class="cm-breadcrumbs__link" :href="item.href">
+        <component
+          :is="itemLink(item)"
+          v-if="!item.disabled && !current(item, index) && (item.href || item.to)"
+          v-bind="itemLinkAttrs(item)"
+          class="cm-breadcrumbs__link"
+        >
           {{ item.label }}
-        </a>
+        </component>
         <span
           v-else
           class="cm-breadcrumbs__current"
@@ -60,7 +78,7 @@ function current(item: CmBreadcrumbItem, index: number): boolean {
           {{ item.label }}
         </span>
         <span v-if="index < normalizedItems.length - 1" class="cm-breadcrumbs__separator" aria-hidden="true">
-          <slot name="separator">/</slot>
+          <slot name="separator" :item="item" :index="index">/</slot>
         </span>
       </li>
     </ol>

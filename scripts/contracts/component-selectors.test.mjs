@@ -59,6 +59,7 @@ test('keeps Button selectors aligned with its manifest and canonical HTML', () =
     'cm-button',
     ...manifest.props.variant.values.map((value) => `cm-button--${value}`),
     ...manifest.props.size.values.map((value) => `cm-button--${value}`),
+    'cm-button--block',
     'cm-button__label',
     'cm-button__leading',
     'cm-button__trailing',

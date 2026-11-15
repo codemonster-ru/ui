@@ -1,3 +1,5 @@
+export { createAsyncWithSkeleton } from './async';
+export type { CreateAsyncWithSkeletonOptions } from './async';
 export { default as CmAccordion } from './components/accordion/CmAccordion.vue';
 export type { CmAccordionItem, CmAccordionOpenChange, CmAccordionProps } from './components/accordion/accordion.types';
 export { default as CmAlert } from './components/alert/CmAlert.vue';
@@ -9,7 +11,15 @@ export type { CmBadgeProps, CmBadgeTone } from './components/badge/badge.types';
 export { default as CmBreadcrumbs } from './components/breadcrumbs/CmBreadcrumbs.vue';
 export type { CmBreadcrumbItem, CmBreadcrumbsProps } from './components/breadcrumbs/breadcrumbs.types';
 export { default as CmButton } from './components/button/CmButton.vue';
-export type { CmButtonProps, CmButtonSize, CmButtonType, CmButtonVariant } from './components/button/button.types';
+export { default as VfButton } from './components/button/CmButton.vue';
+export type {
+  CmButtonProps,
+  CmButtonSize,
+  CmButtonType,
+  CmButtonVariant,
+  CmButtonSize as VfControlSize,
+  CmButtonVariant as VfButtonVariant,
+} from './components/button/button.types';
 export { default as CmCard } from './components/card/CmCard.vue';
 export type { CmCardElement, CmCardProps } from './components/card/card.types';
 export { default as CmCheckbox } from './components/checkbox/CmCheckbox.vue';
@@ -18,6 +28,12 @@ export { default as CmColumnChooser } from './components/column-chooser/CmColumn
 export type { CmColumnChooserColumn, CmColumnChooserProps } from './components/column-chooser/column-chooser.types';
 export { default as CmCommandPalette } from './components/command-palette/CmCommandPalette.vue';
 export type { CmCommandPaletteItem, CmCommandPaletteProps } from './components/command-palette/command-palette.types';
+export { default as CmConfirmDialog } from './components/confirm-dialog/CmConfirmDialog.vue';
+export { default as VfConfirmDialog } from './components/confirm-dialog/CmConfirmDialog.vue';
+export type {
+  CmConfirmDialogInitialFocus,
+  CmConfirmDialogInitialFocus as VfConfirmDialogInitialFocus,
+} from './components/confirm-dialog/confirm-dialog.types';
 export { default as CmContainer } from './components/container/CmContainer.vue';
 export type { CmContainerElement, CmContainerProps, CmContainerSize } from './components/container/container.types';
 export { default as CmDataTable } from './components/data-table/CmDataTable.vue';
@@ -45,8 +61,16 @@ export { default as CmField } from './components/field/CmField.vue';
 export type { CmFieldDefaultSlotProps, CmFieldProps } from './components/field/field.types';
 export { default as CmFieldset } from './components/fieldset/CmFieldset.vue';
 export type { CmFieldsetDefaultSlotProps, CmFieldsetProps } from './components/fieldset/fieldset.types';
+export { default as CmFormLayout } from './components/form-layout/CmFormLayout.vue';
+export { default as VfFormLayout } from './components/form-layout/CmFormLayout.vue';
+export type {
+  CmFormLayoutMode,
+  CmFormLayoutMode as VfFormLayoutMode,
+} from './components/form-layout/form-layout.types';
 export { default as CmGrid } from './components/grid/CmGrid.vue';
 export type { CmGridElement, CmGridProps } from './components/grid/grid.types';
+export { default as CmGroupBox } from './components/group-box/CmGroupBox.vue';
+export { default as VfGroupBox } from './components/group-box/CmGroupBox.vue';
 export { default as CmIcon } from './components/icon/CmIcon.vue';
 export { default as VueIconify } from './components/icon/VueIconify.vue';
 export type { CmIconFamily, CmIconGeometry, CmIconVariant, VueIconifyProps } from './components/icon/icon.types';
@@ -66,6 +90,8 @@ export type { CmLinkProps, CmLinkTone, CmLinkUnderline } from './components/link
 export { default as CmMenuBar } from './components/menu-bar/CmMenuBar.vue';
 export type { CmMenuBarItem, CmMenuBarProps } from './components/menu-bar/menu-bar.types';
 export { default as CmMenu } from './components/menu/CmMenu.vue';
+export { default as VfMenu } from './components/menu/VfMenu.vue';
+export { default as VfMenuItem } from './components/menu/VfMenuItem.vue';
 export type { CmMenuItem, CmMenuItemTone, CmMenuProps } from './components/menu/menu.types';
 export { default as CmNavMenu } from './components/nav-menu/CmNavMenu.vue';
 export type {
@@ -74,6 +100,14 @@ export type {
   CmNavMenuProps,
   CmNavMenuVariant,
 } from './components/nav-menu/nav-menu.types';
+export { default as CmPageHeader } from './components/page-header/CmPageHeader.vue';
+export { default as VfPageHeader } from './components/page-header/CmPageHeader.vue';
+export type {
+  CmPageHeaderHeadingLevel,
+  CmPageHeaderHeadingLevel as VfPageHeaderHeadingLevel,
+} from './components/page-header/page-header.types';
+export { default as CmPanel } from './components/panel/CmPanel.vue';
+export { default as VfPanel } from './components/panel/CmPanel.vue';
 export { default as CmPopover } from './components/popover/CmPopover.vue';
 export type { CmPopoverPlacement, CmPopoverProps } from './components/popover/popover.types';
 export { default as CmProgressBar } from './components/progress-bar/CmProgressBar.vue';
@@ -92,6 +126,8 @@ export { default as CmSection } from './components/section/CmSection.vue';
 export type { CmSectionElement, CmSectionProps } from './components/section/section.types';
 export { default as CmSkeleton } from './components/skeleton/CmSkeleton.vue';
 export type { CmSkeletonProps, CmSkeletonRadius } from './components/skeleton/skeleton.types';
+export { default as CmSkeletonGate } from './components/skeleton-gate/CmSkeletonGate.vue';
+export { default as VfSkeletonGate } from './components/skeleton-gate/CmSkeletonGate.vue';
 export { default as CmStack } from './components/stack/CmStack.vue';
 export type { CmStackElement, CmStackProps } from './components/stack/stack.types';
 export { default as CmStepper } from './components/stepper/CmStepper.vue';

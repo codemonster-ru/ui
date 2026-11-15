@@ -2,13 +2,12 @@
 import { computed, useAttrs, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
-import type { CmButtonSize, CmButtonType, CmButtonVariant } from './button.types';
+import { buttonVariants, type CmButtonSize, type CmButtonType, type CmButtonVariant } from './button.types';
 
 defineOptions({
   inheritAttrs: false,
 });
 
-const variants: readonly CmButtonVariant[] = ['primary', 'secondary', 'danger', 'ghost'];
 const sizes: readonly CmButtonSize[] = ['sm', 'md', 'lg'];
 const types: readonly CmButtonType[] = ['button', 'submit', 'reset'];
 
@@ -16,7 +15,7 @@ const props = defineProps({
   variant: {
     type: String as PropType<CmButtonVariant>,
     default: 'primary',
-    validator: (value: string) => ['primary', 'secondary', 'danger', 'ghost'].includes(value),
+    validator: (value: CmButtonVariant) => buttonVariants.includes(value),
   },
   size: {
     type: String as PropType<CmButtonSize>,
@@ -32,6 +31,7 @@ const props = defineProps({
     type: String,
     default: null,
   },
+  block: Boolean,
   disabled: Boolean,
   loading: Boolean,
 });
@@ -40,11 +40,17 @@ const attrs = useAttrs();
 
 const isLink = computed(() => Boolean(props.href));
 const isDisabled = computed(() => props.disabled || props.loading);
-const variant = computed(() => (variants.includes(props.variant) ? props.variant : 'primary'));
+const variant = computed(() => (buttonVariants.includes(props.variant) ? props.variant : 'primary'));
 const size = computed(() => (sizes.includes(props.size) ? props.size : 'md'));
 const type = computed(() => (types.includes(props.type) ? props.type : 'button'));
 const classes = computed(() =>
-  mergeCmClasses('cm-button', `cm-button--${variant.value}`, `cm-button--${size.value}`, attrs.class),
+  mergeCmClasses(
+    'cm-button',
+    `cm-button--${variant.value}`,
+    `cm-button--${size.value}`,
+    props.block ? 'cm-button--block' : undefined,
+    attrs.class,
+  ),
 );
 const rootAttrs = computed(() =>
   omitCmOwnedAttrs(attrs, [

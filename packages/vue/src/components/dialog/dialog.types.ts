@@ -7,6 +7,9 @@ export interface CmDialogProps {
   open?: boolean;
   closeLabel?: string;
   dismissible?: boolean;
+  closable?: boolean;
+  closeOnOverlayClick?: boolean;
+  focusDialog?: boolean;
   size?: CmDialogSize;
   dividers?: boolean;
 }

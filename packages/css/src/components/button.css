@@ -45,6 +45,10 @@
   font-size: var(--cm-control-font-size-lg);
 }
 
+.cm-button--block {
+  inline-size: 100%;
+}
+
 .cm-button--primary {
   background: var(--cm-color-interactive-primary-background);
   color: var(--cm-color-interactive-primary-foreground);
@@ -56,9 +60,49 @@
   color: var(--cm-color-text-primary);
 }
 
+.cm-button--success {
+  --cm-button-hover-background: var(--cm-color-status-success-hover-background);
+  --cm-button-active-background: var(--cm-color-status-success-active-background);
+
+  background: var(--cm-color-status-success-solid-background);
+  color: var(--cm-color-status-success-solid-foreground);
+}
+
+.cm-button--info {
+  --cm-button-hover-background: var(--cm-color-status-info-hover-background);
+  --cm-button-active-background: var(--cm-color-status-info-active-background);
+
+  background: var(--cm-color-status-info-solid-background);
+  color: var(--cm-color-status-info-solid-foreground);
+}
+
+.cm-button--warn {
+  --cm-button-hover-background: var(--cm-color-status-warning-hover-background);
+  --cm-button-active-background: var(--cm-color-status-warning-active-background);
+
+  background: var(--cm-color-status-warning-solid-background);
+  color: var(--cm-color-status-warning-solid-foreground);
+}
+
+.cm-button--help {
+  --cm-button-hover-background: var(--cm-color-status-help-hover-background);
+  --cm-button-active-background: var(--cm-color-status-help-active-background);
+
+  background: var(--cm-color-status-help-solid-background);
+  color: var(--cm-color-status-help-solid-foreground);
+}
+
 .cm-button--danger {
   background: var(--cm-color-status-danger-solid-background);
   color: var(--cm-color-status-danger-solid-foreground);
+}
+
+.cm-button--contrast {
+  --cm-button-hover-background: var(--cm-color-background-inverse-hover);
+  --cm-button-active-background: var(--cm-color-background-inverse-active);
+
+  background: var(--cm-color-background-inverse);
+  color: var(--cm-color-text-inverse);
 }
 
 .cm-button--ghost {
@@ -81,6 +125,20 @@
 
 .cm-button--primary:active:not(:disabled, [aria-disabled='true']) {
   background: var(--cm-color-interactive-primary-active-background);
+}
+
+:is(.cm-button--success, .cm-button--info, .cm-button--warn, .cm-button--help, .cm-button--contrast):hover:not(
+    :disabled,
+    [aria-disabled='true']
+  ) {
+  background: var(--cm-button-hover-background);
+}
+
+:is(.cm-button--success, .cm-button--info, .cm-button--warn, .cm-button--help, .cm-button--contrast):active:not(
+    :disabled,
+    [aria-disabled='true']
+  ) {
+  background: var(--cm-button-active-background);
 }
 
 .cm-button--secondary:hover:not(:disabled, [aria-disabled='true']),
