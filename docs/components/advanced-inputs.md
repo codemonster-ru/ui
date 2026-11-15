@@ -156,6 +156,17 @@ and keep the browser's keyboard and assistive technology behavior.
 
 An uncanceled reset of the associated form restores the initial selection. Vue requests
 the initial selection through its model event when the caller supplies another value.
+
+### Historical DatePicker
+
+Import `VfDatePicker` from `@codemonster-ru/ui-vue/historical`. It keeps the historical runtime
+Intl locale, Monday week start, and body portal defaults. It can generate the trigger ID.
+`v-model` reports an ISO scalar, or an array in multiple or range mode. `locale`,
+`displayFormat`, `firstDayOfWeek`, and `teleportTo` override the defaults. For matching server
+and browser output across different runtime locales, pass the same `locale` explicitly.
+
+The wrapper uses the native DatePicker's immediate selection display and native hour and minute
+selects. To connect it to Field, pass the scoped `controlId` as the trigger `id`.
 Vanilla restores the authored fields and updates the trigger text. Set `form` to associate
 a picker outside the form.
 
