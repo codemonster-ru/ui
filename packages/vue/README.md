@@ -57,8 +57,9 @@ import { VfDrawer, VfPopover } from '@codemonster-ru/ui-vue/historical';
 Import the shared tokens and stylesheet before rendering either entry. The native Dialog and Drawer
 use the browser's modal stack; custom legacy Teleport destinations and scroll-lock targets are
 separate migration concerns. The [historical Vue theme plugin](../../docs/recipes/vue-theme-plugin.md)
-sets app-level defaults for `VfThemeProvider`. The preset engine, automatic component CSS, old
-component subpaths, and CommonJS imports remain part of the archived VueForge packages. See the
+sets app-level defaults for `VfThemeProvider`. Node `require()` supports both entries on the Node
+versions above and shares the ESM instances. The preset engine, automatic component CSS, and old
+component subpaths remain part of the archived VueForge packages. See the
 [historical contract trace](../../docs/verification/historical-vue-core.md) and
 [layout migration notes](../layouts/README.md) for exact supported behavior and remaining differences.
 

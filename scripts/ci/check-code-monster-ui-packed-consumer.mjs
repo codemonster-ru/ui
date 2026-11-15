@@ -214,6 +214,42 @@ function writeConsumer(tarballs) {
       '',
     ].join('\n'),
   );
+  writeFileSync(
+    join(consumerDirectory, 'src/ssr.cjs'),
+    [
+      "const assert = require('node:assert/strict');",
+      "const { renderToString } = require('@vue/server-renderer');",
+      "const { h } = require('vue');",
+      "const { CmButton } = require('@codemonster-ru/ui-vue');",
+      "const { VueIconify, default: VueForgeCore } = require('@codemonster-ru/ui-vue/historical');",
+      "const { CmAuthLayout } = require('@codemonster-ru/ui-layouts');",
+      '',
+      'async function verify() {',
+      "  const html = await renderToString(h(CmAuthLayout, { title: 'From CommonJS' }, () =>",
+      "    h(CmButton, null, () => h(VueIconify, { icon: 'moon' }))));",
+      '  assert.match(html, /From CommonJS[\\s\\S]*cm-button[\\s\\S]*<svg/u);',
+      "  assert.equal(CmButton, (await import('@codemonster-ru/ui-vue')).CmButton);",
+      "  assert.equal(VueIconify, (await import('@codemonster-ru/ui-vue/historical')).VueIconify);",
+      "  assert.equal(VueForgeCore, (await import('@codemonster-ru/ui-vue/historical')).default);",
+      "  assert.equal(CmAuthLayout, (await import('@codemonster-ru/ui-layouts')).CmAuthLayout);",
+      "  console.log('[ui-packed-consumer] CommonJS SSR and shared export identity passed.');",
+      '}',
+      'void verify();',
+      '',
+    ].join('\n'),
+  );
+  writeFileSync(
+    join(consumerDirectory, 'src/require.cts'),
+    [
+      "import vueAdapter = require('@codemonster-ru/ui-vue');",
+      "import historicalAdapter = require('@codemonster-ru/ui-vue/historical');",
+      "import layoutsAdapter = require('@codemonster-ru/ui-layouts');",
+      '',
+      "const options: historicalAdapter.VfVueForgeOptions = { defaultTheme: 'light' };",
+      'void [vueAdapter.CmButton, historicalAdapter.createVueForgeCore(options), layoutsAdapter.CmAuthLayout];',
+      '',
+    ].join('\n'),
+  );
 }
 
 try {
@@ -244,8 +280,17 @@ try {
   console.log(`[ui-packed-consumer] Using ${manager} ${version}.`);
   install(version);
   run(join(consumerDirectory, 'node_modules/.bin/tsc'), ['--noEmit']);
+  run(join(consumerDirectory, 'node_modules/.bin/tsc'), [
+    '--module',
+    'NodeNext',
+    '--strict',
+    '--skipLibCheck',
+    '--noEmit',
+    'src/require.cts',
+  ]);
   run(join(consumerDirectory, 'node_modules/.bin/vite'), ['build']);
   run(process.execPath, ['src/ssr.mjs']);
+  run(process.execPath, ['src/ssr.cjs']);
 
   const cssAssets = readdirSync(join(consumerDirectory, 'dist/assets')).filter((fileName) => fileName.endsWith('.css'));
   assert.equal(cssAssets.length, 1, 'Vite must emit one complete consumer stylesheet.');
