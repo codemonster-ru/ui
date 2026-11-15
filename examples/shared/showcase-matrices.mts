@@ -53,7 +53,7 @@ const legacyOptions: Record<string, Record<string, string[]>> = {
   'admin-layout/default': { sidebarCollapsed: ['true'], mobileSidebarOpen: ['true'] },
   'nav-menu/default': { variant: ['inline'], expandMode: ['single'] },
   'dialog/default': { size: sizes, dismissible: ['false'] },
-  'drawer/default': { size: [...sizes, 'full'], side: ['start', 'end'], rounded: ['true'], dividers: ['true'] },
+  'drawer/default': { size: [...sizes, 'full'], side: ['start', 'end', 'top', 'bottom'], rounded: ['true'], dividers: ['true'] },
   'tooltip/default': { placement: ['top', 'bottom', 'start', 'end'], delay: ['none', 'short', 'long'] },
   'popover/default': { placement: ['top', 'bottom-start', 'bottom-end'], disabled: ['true'] },
   'select/default': { invalid: ['true'], disabled: ['true'] },

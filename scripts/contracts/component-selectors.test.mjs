@@ -359,6 +359,8 @@ for (const [slug, approved] of [
       'cm-drawer--sm',
       'cm-drawer--md',
       'cm-drawer--lg',
+      'cm-drawer--top',
+      'cm-drawer--bottom',
       'cm-drawer--full',
       'cm-drawer--dividers',
       'cm-drawer--rounded',

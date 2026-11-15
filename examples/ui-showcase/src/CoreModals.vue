@@ -15,6 +15,8 @@ const sizes = ['sm', 'md', 'lg'] as const;
 const drawers = [
   { label: 'left', side: 'start', size: 'md' },
   { label: 'right', side: 'end', size: 'md' },
+  { label: 'top', side: 'top', size: 'md' },
+  { label: 'bottom', side: 'bottom', size: 'md' },
   { label: 'fullscreen', side: 'start', size: 'full' },
 ] as const;
 const commands = [

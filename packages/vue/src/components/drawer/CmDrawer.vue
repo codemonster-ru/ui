@@ -8,6 +8,7 @@ import { useCmModal } from '../modal/use-modal';
 import type { CmDrawerSide, CmDrawerSize } from './drawer.types';
 
 defineOptions({ inheritAttrs: false });
+const sides: readonly CmDrawerSide[] = ['start', 'end', 'top', 'bottom'];
 const props = defineProps({
   id: { type: String, required: true },
   title: { type: String, required: true },
@@ -16,7 +17,7 @@ const props = defineProps({
   side: {
     type: String as PropType<CmDrawerSide>,
     default: 'end',
-    validator: (value: string) => ['start', 'end'].includes(value),
+    validator: (value: string) => ['start', 'end', 'top', 'bottom'].includes(value),
   },
   closeLabel: { type: String, default: 'Close' },
   dismissible: { type: Boolean, default: true },
@@ -34,7 +35,7 @@ assertCm(
   [props.id, props.title, props.closeLabel].every((value) => value.trim() !== ''),
   'Drawer id, title, and closeLabel must be non-empty strings.',
 );
-const side = computed(() => (['start', 'end'].includes(props.side) ? props.side : 'end'));
+const side = computed(() => (sides.includes(props.side) ? props.side : 'end'));
 const size = computed(() => (['sm', 'md', 'lg', 'full'].includes(props.size) ? props.size : 'md'));
 const modal = useCmModal(
   () => props.open,

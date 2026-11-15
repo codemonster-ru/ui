@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "drawer-bottom",
+  "description": "Full-width drawer at the bottom edge.",
+  "props": {
+    "id": "filters-bottom",
+    "title": "Filters",
+    "side": "bottom",
+    "rounded": true,
+    "open": true
+  },
+  "slots": {
+    "default": "Filter controls."
+  }
+}

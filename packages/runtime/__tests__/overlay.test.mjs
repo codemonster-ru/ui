@@ -52,6 +52,32 @@ test('dialog ignores user dismissal while locked', () => {
   assert.equal(root.open, true);
 });
 
+test('promotes an initially open server-rendered drawer into the native modal stack', (context) => {
+  const dom = new JSDOM(modalHtml('drawer').replace('<dialog', '<dialog open'));
+  const { document } = dom.window;
+  const root = document.querySelector('dialog');
+  const matches = root.matches.bind(root);
+  const runtime = new CmRuntime().register('drawer', createCmDrawerController);
+  let shown = 0;
+  root.matches = (selector) => (selector === ':modal' ? shown > 0 : matches(selector));
+  root.showModal = () => {
+    assert.equal(root.open, false, 'SSR open is a non-modal state until promoted');
+    root.open = true;
+    shown += 1;
+  };
+  context.after(() => {
+    runtime.stop();
+    dom.window.close();
+  });
+  runtime.start(document);
+  runtime.stop();
+  runtime.start(document);
+
+  assert.equal(shown, 1);
+  assert.equal(root.open, true);
+  assert.equal(root.dataset.cmDrawerState, 'open');
+});
+
 test('repeated open requests preserve the opener and current focus', (context) => {
   const dom = new JSDOM(`<button id="opener">Open</button>${modalHtml('dialog')}`);
   const { document, CustomEvent } = dom.window;
