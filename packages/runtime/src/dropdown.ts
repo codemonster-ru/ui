@@ -43,7 +43,9 @@ export class CmDropdownController implements CmController {
   }
 
   readonly #handleClick = (event: Event): void => {
-    if (event.target === this.#trigger && !this.#trigger.disabled) this.#setOpen(this.#menu.hidden, false);
+    const NodeConstructor = this.#root.ownerDocument.defaultView?.Node;
+    if (!NodeConstructor || !(event.target instanceof NodeConstructor) || event.defaultPrevented) return;
+    if (this.#trigger.contains(event.target) && !this.#trigger.disabled) this.#setOpen(this.#menu.hidden, false);
   };
 
   readonly #handleKeydown = (event: Event): void => {
@@ -70,13 +72,13 @@ export class CmDropdownController implements CmController {
 
   readonly #handleSelect = (event: Event): void => {
     const detail = (event as CustomEvent<MenuSelectDetail>).detail;
-    if (!detail?.value) return;
+    if (!detail?.value || event.target !== this.#menu) return;
     dispatchCmEvent(this.#root, 'dropdown-select', detail);
-    this.#setOpen(false, true);
+    if (this.#root.getAttribute('data-cm-dropdown-close-on-select') !== 'false') this.#setOpen(false, true);
   };
 
-  readonly #handleCloseRequest = (): void => {
-    this.#setOpen(false, true);
+  readonly #handleCloseRequest = (event: Event): void => {
+    if (event.target === this.#menu) this.#setOpen(false, true);
   };
 
   readonly #handleDocumentClick = (event: Event): void => {

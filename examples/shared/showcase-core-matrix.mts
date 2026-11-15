@@ -22,7 +22,7 @@ const releaseTabs = [
 const examples: Record<string, readonly string[]> = {
   tooltip: ['top', 'bottom', 'start', 'end'],
   popover: ['default', 'composed'],
-  dropdown: ['default', 'composed'],
+  dropdown: ['default', 'composed', 'pills'],
   card: ['regions', 'compact'],
   avatar: ['image', 'label'],
   badge: ['default', 'danger'],
@@ -69,7 +69,7 @@ export function renderCoreMatrix(slug: string, read: (id: string) => string | un
       const ids = new Set([...source.matchAll(/\bid="([^"]+)"/gu)].map((match) => match[1]));
       const prefix = `matrix-${id}-`;
       const closedSource =
-        id === 'dropdown-composed'
+        slug === 'dropdown' && (name === 'composed' || name === 'pills')
           ? source
               .replace(' cm-dropdown--open', '')
               .replace('aria-expanded="true"', 'aria-expanded="false"')

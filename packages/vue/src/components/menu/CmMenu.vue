@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, useAttrs, type PropType } from 'vue';
+import { computed, useAttrs, useSlots, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
@@ -19,6 +19,7 @@ const emit = defineEmits<{
   select: [value: string];
 }>();
 const attrs = useAttrs();
+const slots = useSlots();
 const normalizedItems = computed(() => {
   assertCm(props.items.length > 0, 'Menu requires items.');
   const ids = new Set<string>();
@@ -74,13 +75,31 @@ function activate(event: MouseEvent, item: CmMenuItem): void {
 }
 
 function move(event: KeyboardEvent): void {
+  const root = event.currentTarget as HTMLElement;
+  const item = (event.target as Element).closest<HTMLElement>('[role="menuitem"]');
+  if (item && item.closest('[role="menu"]') !== root) return;
   if (isMenuCloseKey(event.key)) {
     event.preventDefault();
     emit('closeRequest');
     return;
   }
-  const root = event.currentTarget as HTMLElement;
-  const currentId = (event.target as HTMLElement).closest<HTMLElement>('[data-cm-menu-item]')?.dataset.cmMenuValue;
+  if (!item) return;
+  if (slots.default) {
+    const items = [
+      ...root.querySelectorAll<HTMLElement>('[role="menuitem"]:not(:disabled, [aria-disabled="true"])'),
+    ].filter((candidate) => candidate.closest('[role="menu"]') === root);
+    const next = nextMenuItem(
+      items.map((_, index) => ({ id: String(index) })),
+      String(items.indexOf(item)),
+      event.key,
+    );
+    if (next !== null) {
+      event.preventDefault();
+      items[Number(next)]?.focus();
+    }
+    return;
+  }
+  const currentId = item.dataset.cmMenuValue;
   if (currentId === undefined) return;
 
   const nextId = nextMenuItem(normalizedItems.value, currentId, event.key);
@@ -97,27 +116,30 @@ useCmHydrated();
 
 <template>
   <div v-bind="rootAttrs" :class="classes" role="menu" :aria-label="label" data-cm-controller="menu" @keydown="move">
-    <component
-      :is="item.href ? 'a' : 'button'"
-      v-for="item in normalizedItems"
-      :key="item.id"
-      :class="itemClasses(item)"
-      :type="item.href ? undefined : 'button'"
-      :href="item.href && !item.disabled ? item.href : undefined"
-      :target="item.href ? item.target : undefined"
-      :rel="item.href ? itemRel(item) : undefined"
-      role="menuitem"
-      :tabindex="item.id === tabStopId ? 0 : -1"
-      data-cm-menu-item
-      :data-cm-menu-value="item.id"
-      :disabled="!item.href && item.disabled ? true : undefined"
-      :aria-disabled="item.href && item.disabled ? 'true' : undefined"
-      :aria-current="item.active ? 'true' : undefined"
-      @click="activate($event, item)"
-    >
-      <span class="cm-menu__item-label">
-        <slot :name="itemSlotName(item.id)" :item="item">{{ item.label }}</slot>
-      </span>
-    </component>
+    <slot v-if="slots.default" />
+    <template v-else>
+      <component
+        :is="item.href ? 'a' : 'button'"
+        v-for="item in normalizedItems"
+        :key="item.id"
+        :class="itemClasses(item)"
+        :type="item.href ? undefined : 'button'"
+        :href="item.href && !item.disabled ? item.href : undefined"
+        :target="item.href ? item.target : undefined"
+        :rel="item.href ? itemRel(item) : undefined"
+        role="menuitem"
+        :tabindex="item.id === tabStopId ? 0 : -1"
+        data-cm-menu-item
+        :data-cm-menu-value="item.id"
+        :disabled="!item.href && item.disabled ? true : undefined"
+        :aria-disabled="item.href && item.disabled ? 'true' : undefined"
+        :aria-current="item.active ? 'true' : undefined"
+        @click="activate($event, item)"
+      >
+        <span class="cm-menu__item-label">
+          <slot :name="itemSlotName(item.id)" :item="item">{{ item.label }}</slot>
+        </span>
+      </component>
+    </template>
   </div>
 </template>

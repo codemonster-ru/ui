@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "dropdown-scoped",
+  "description": "Authored native actions inside the owned Dropdown menu.",
+  "props": { "id": "quick-actions", "label": "Quick actions" },
+  "slots": {
+    "default": "<button class=\"cm-menu__item\" type=\"button\" role=\"menuitem\" tabindex=\"0\" data-cm-menu-item data-cm-menu-value=\"edit\"><strong>Edit</strong></button><button class=\"cm-menu__item\" type=\"button\" role=\"menuitem\" tabindex=\"-1\" data-cm-menu-item data-cm-menu-value=\"rename\"><strong>Rename</strong></button>"
+  }
+}

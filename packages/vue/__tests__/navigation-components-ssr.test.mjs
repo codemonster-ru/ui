@@ -4,7 +4,7 @@ import { dirname, resolve } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { renderToString } from '@vue/server-renderer';
-import { createSSRApp, h } from 'vue';
+import { createSSRApp, createStaticVNode, h } from 'vue';
 import { compareSignificantDom } from '../../../scripts/contracts/significant-dom.mjs';
 import { CmBreadcrumbs, CmDropdown, CmLink, CmMenu, CmTabs } from '../dist/index.js';
 
@@ -40,7 +40,10 @@ for (const [slug, component] of Object.entries(components)) {
         delete props.value;
       }
       const slots = Object.fromEntries(
-        Object.entries(definition.slots).map(([name, content]) => [name, () => slotContent(content)]),
+        Object.entries(definition.slots).map(([name, content]) => [
+          name,
+          () => (slug === 'dropdown' && name === 'default' ? createStaticVNode(content, 2) : slotContent(content)),
+        ]),
       );
       const actual = await renderToString(createSSRApp({ render: () => h(component, props, slots) }));
       const comparison = compareSignificantDom(expected, actual);

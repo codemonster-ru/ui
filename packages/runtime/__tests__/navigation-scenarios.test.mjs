@@ -35,7 +35,7 @@ for (const [slug, registrations] of Object.entries(factories)) {
       const dom = new JSDOM(html);
       const root = dom.window.document.querySelector(`.cm-${slug}`);
       const events = new Map();
-      for (const name of ['cm:tabs-value-change', 'cm:menu-select', 'cm:dropdown-open-change']) {
+      for (const name of ['cm:tabs-value-change', 'cm:menu-select', 'cm:dropdown-open-change', 'cm:dropdown-select']) {
         root.addEventListener(name, () => events.set(name, (events.get(name) ?? 0) + 1));
       }
       const runtime = new CmRuntime();
@@ -76,6 +76,7 @@ function resolveTarget(root, slug, name) {
   }
   const selectors = {
     trigger: '.cm-dropdown__trigger',
+    'trigger-content': '.cm-dropdown__trigger > span',
     menu: '.cm-dropdown__menu',
     'tab-first': '.cm-tabs__tab:nth-of-type(1)',
     'tab-second': '.cm-tabs__tab:nth-of-type(2)',

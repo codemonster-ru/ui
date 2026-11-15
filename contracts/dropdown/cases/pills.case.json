@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "dropdown-pills",
+  "description": "Pills Dropdown with an active action, a disabled action, and selection that leaves the panel open.",
+  "props": {
+    "id": "view-options",
+    "label": "View options",
+    "variant": "pills",
+    "defaultOpen": true,
+    "closeOnSelect": false,
+    "items": [
+      { "id": "list", "label": "List", "active": true },
+      { "id": "board", "label": "Board", "disabled": true },
+      { "id": "grid", "label": "Grid" }
+    ]
+  },
+  "slots": {
+    "trigger": "<span aria-hidden=\"true\">•••</span>"
+  }
+}
