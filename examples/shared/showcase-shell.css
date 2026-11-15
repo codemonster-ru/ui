@@ -77,6 +77,48 @@ body {
   outline-offset: calc(-1 * var(--cm-focus-ring-width));
 }
 
+.showcase-navigation--scrollable {
+  position: relative;
+  overflow: visible;
+}
+
+.showcase-navigation__viewport {
+  overflow: auto hidden;
+  scrollbar-width: none;
+  scroll-padding-inline: var(--cm-space-6);
+}
+
+.showcase-navigation__scroll {
+  position: absolute;
+  z-index: 1;
+  inset-block: 0;
+  display: grid;
+  inline-size: var(--cm-space-6);
+  min-block-size: var(--cm-space-6);
+  place-items: center;
+  padding: 0;
+  border: 0;
+  color: var(--cm-color-text-secondary);
+  background: var(--cm-color-background-surface);
+  cursor: pointer;
+}
+
+.showcase-navigation__scroll--start {
+  inset-inline-start: 0;
+}
+
+.showcase-navigation__scroll--end {
+  inset-inline-end: 0;
+}
+
+:is(.showcase-navigation__scroll--start:dir(ltr), .showcase-navigation__scroll--end:dir(rtl)) .cm-icon {
+  scale: -1 1;
+}
+
+.showcase-navigation__scroll:focus-visible {
+  outline-offset: calc(-1 * var(--cm-focus-ring-width));
+}
+
 .showcase-theme {
   flex: none;
   margin-inline-start: auto;

@@ -8,7 +8,7 @@ export const colorHero = {
   eyebrow: 'CodeMonster UI color system · semantic palette',
   title: 'Perceptual materials, semantic decisions',
   description:
-    'Primitive OKLCH scales feed semantic roles. Components consume only the canonical CodeMonster UI semantic token layer.',
+    'Primitive OKLCH scales feed semantic roles. Components consume only the canonical UI semantic token layer.',
 };
 
 export const families = new Map<string, { variable: string; step: string }[]>();
