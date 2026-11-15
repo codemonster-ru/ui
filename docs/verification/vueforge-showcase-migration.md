@@ -1,35 +1,33 @@
 # VueForge showcase migration
 
-Reference: `fd793696f50d3be0fcd3788f0f8f751c63869963`.
+The showcase reference is `fd793696f50d3be0fcd3788f0f8f751c63869963`. The component
+restoration traces compare the public contracts with `d9879116`.
 
 Core, Colors, Layouts, and Icons have separate URLs in both showcases. The two
-implementations share the case inventory and property matrices. The open Core
-matrices render the same canonical HTML in both showcases. The optional
+implementations share a case inventory and property matrices. The optional
 **Contract examples** mount Vue components in the Vue showcase and use canonical
 HTML with the browser runtime in Vanilla.
 
-## Historic features outside the current API
+## Historical component mapping
 
-| Reference examples                                                                                     | Current equivalent or missing capability                                                                                                  |
-| ------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| CodeBlock and executable Playground                                                                    | Neither package is part of CodeMonster UI.                                                                                                |
-| ConfirmDialog, ErrorLayout, AuthLayout, FormLayout, GroupBox, PageHeader, Panel, and SkeletonGate      | These are application compositions. The current recipes cover them using composition primitives where applicable.                         |
-| DatePicker time, multiple dates, ranges, and month or year selection                                   | The current picker accepts a single calendar date and supports limits, clearing, and native form submission.                              |
-| Floating Field labels and the in, on, and over variants                                                | The current Field contract exposes label, description, error, and control relationships.                                                  |
-| DataTable pinned columns, drag reordering, resizing, expandable detail rows, and custom cell renderers | The current examples cover sorting, pagination, selection, visible columns, density, stripes, dividers, and sticky headers.               |
-| Success, info, warn, help, and contrast Button and IconButton variants                                 | The current controls have primary, secondary, danger, and ghost variants. Semantic status colors are demonstrated on feedback components. |
-| ProgressBar custom height and animated stripes                                                         | The current bar has determinate and indeterminate modes, tones, and optional numeric text.                                                |
-| Drawer top and bottom placement                                                                        | The current Drawer supports logical start and end, including full size.                                                                   |
-| VueForge icon registry and theme provider APIs                                                         | The current examples use shared icon geometry and the token theme contract.                                                               |
+| Reference examples                                                                                | Current showcase and package support                                                                                                                                                                                                                                   |
+| ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| CodeBlock and executable Playground                                                               | The Vue showcase uses the maintained VueForge packages. Vanilla has a standalone code example and an iframe playground recipe for authored HTML, CSS, and JavaScript.                                                                                                  |
+| ConfirmDialog, AuthLayout, ErrorLayout, FormLayout, GroupBox, PageHeader, Panel, and SkeletonGate | Vue exports these from `ui-vue` and `ui-layouts`. Vanilla uses shared HTML and CSS, with runtime enhancement where appropriate. The confirmation recipe uses the Dialog controller and application-owned async state.                                                  |
+| DatePicker time, multiple dates, ranges, and month or year selection                              | Vue and Vanilla support these modes, accessible calendar navigation and ISO form submission. `VfDatePicker` restores the historical locale, Monday start and body portal defaults.                                                                                     |
+| Floating Field labels                                                                             | Shared Field styles support `in`, `on`, and `over`. The DatePicker examples follow focus, open and filled state, including when the calendar is portaled.                                                                                                              |
+| DataTable                                                                                         | Both adapters support native rows, sizing, pinning and detail disclosure. `VfDataTable` adds historical key models, ordered sorting, numbered paging, and pointer or keyboard column reordering. Vanilla applications own the authored column order and query results. |
+| Button, IconButton, and ProgressBar variants                                                      | Both showcases present the semantic Button and IconButton variants plus custom ProgressBar height and animated stripes.                                                                                                                                                |
+| Drawer placement                                                                                  | Both adapters support top and bottom drawers alongside the logical start and end placements.                                                                                                                                                                           |
+| Icon registry and theme provider                                                                  | `VueIconify` and the VueForge theme options plugin are available through the opt-in historical entry. Shared icon geometry, token CSS, and theme selection also work independently of Vue.                                                                             |
 
 NavMenu, MenuBar, and Dropdown expose their historical pills appearance in both showcases.
-Dropdown supports the scoped trigger and action content. Existing trigger buttons need to move
-their contents into the trigger slot because the adapter supplies the native button. The
-Dropdown positions its menu in place. Historical Teleport and viewport collision positioning
-remain migration differences.
+The Vue Dropdown can bind an existing native button through `triggerAsChild` or `VfDropdown`.
+It supports an optional portal and viewport collision positioning. Vanilla keeps authored Dropdown
+markup inline and enhances its positioning and disclosure through the runtime.
 
-This inventory describes API differences. It does not certify that every
-historical composition or interaction with an equivalent API has been ported.
+The detailed [Vue core](historical-vue-core.md), [Vue ecosystem](historical-vue-ecosystem.md),
+and [Vanilla](historical-vanilla.md) traces record compatibility gaps and verification evidence.
 
 ## Restored references
 
@@ -65,7 +63,7 @@ Core includes recipes for panels, collapsible invoice details, loading and
 ready states, responsive settings, a page header, and deletion confirmation.
 Sign-in and deletion operate on demonstration state. The historical Annabel
 and VueForge logos are used in the layout previews. The region switches use
-showcase styles for options outside the current layout API. Shell previews follow the historical viewport cutoff. Setup retains a 320 px
+showcase styles. Shell previews follow the historical viewport cutoff. Setup retains a 320 px
 preview and shows step progress at narrow widths. AdminShell uses the expanded
 Commerce tree and numbered warehouse pagination.
 
