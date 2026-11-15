@@ -18,10 +18,11 @@ function scrollEdges(viewport: HTMLElement): CmTabScrollEdges {
   return { start: displacement > 1, end: maximum - displacement > 1 };
 }
 
-export function observeTabScroll(
+export function observeHorizontalScroll(
   viewport: HTMLElement,
   onChange: (edges: CmTabScrollEdges) => void,
   onLayout?: () => void,
+  itemSelector = tabSelector,
 ): () => void {
   let previous: CmTabScrollEdges | undefined;
   function refresh(): void {
@@ -39,7 +40,7 @@ export function observeTabScroll(
   const view = viewport.ownerDocument.defaultView;
   const resize = view?.ResizeObserver ? new view.ResizeObserver(layout) : undefined;
   resize?.observe(viewport);
-  for (const tab of viewport.querySelectorAll(tabSelector)) resize?.observe(tab);
+  for (const item of viewport.querySelectorAll(itemSelector)) resize?.observe(item);
   view?.addEventListener('resize', layout);
   viewport.addEventListener('scroll', refresh, { passive: true });
   layout();
@@ -58,15 +59,26 @@ export function tabIndicatorGeometry(viewport: HTMLElement): { left: number; wid
   return tab.width ? { left: tab.left - list.left + viewport.scrollLeft, width: tab.width } : null;
 }
 
-export function scrollTabList(viewport: HTMLElement, edge: CmTabScrollEdge, invoker: HTMLElement): void {
+export function focusHorizontalEdge(viewport: HTMLElement, edge: CmTabScrollEdge, itemSelector: string): void {
+  const items = viewport.querySelectorAll<HTMLElement>(itemSelector);
+  (edge === 'start' ? items[0] : items[items.length - 1])?.focus({ preventScroll: true });
+}
+
+export function scrollHorizontalList(
+  viewport: HTMLElement,
+  edge: CmTabScrollEdge,
+  invoker: HTMLElement,
+  itemSelector = `${tabSelector}:not(:disabled)`,
+  step = viewport.clientWidth * 0.75,
+): void {
   const isRtl = rtl(viewport);
   const direction = (edge === 'start' ? -1 : 1) * (isRtl ? -1 : 1);
-  const step = viewport.clientWidth * 0.75;
   const displacement = isRtl ? -viewport.scrollLeft : viewport.scrollLeft;
   const remaining = edge === 'start' ? displacement : viewport.scrollWidth - viewport.clientWidth - displacement;
   const reduce = viewport.ownerDocument.defaultView?.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
   viewport.scrollBy({ left: direction * step, behavior: reduce ? 'instant' : 'smooth' });
   if (remaining > step + 1 || invoker !== viewport.ownerDocument.activeElement) return;
-  const tabs = viewport.querySelectorAll<HTMLElement>(`${tabSelector}:not(:disabled)`);
-  (edge === 'start' ? tabs[0] : tabs[tabs.length - 1])?.focus({ preventScroll: true });
+  focusHorizontalEdge(viewport, edge, itemSelector);
 }
+
+export { observeHorizontalScroll as observeTabScroll, scrollHorizontalList as scrollTabList };

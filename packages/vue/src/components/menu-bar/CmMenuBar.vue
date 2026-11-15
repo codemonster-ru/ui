@@ -12,6 +12,7 @@ const props = defineProps({
   items: { type: Array as PropType<readonly CmMenuBarItem[]>, required: true },
   openPath: { type: Array as PropType<readonly string[] | null>, default: null },
   submenuTarget: { type: Object as PropType<HTMLElement>, default: undefined },
+  listId: { type: String, default: undefined },
   modelValue: { type: String as PropType<string | null>, default: undefined },
   defaultValue: { type: String as PropType<string | null>, default: null },
   variant: {
@@ -147,6 +148,14 @@ function topItem(item: HTMLElement): HTMLElement | undefined {
   return top === undefined ? item : branchItem(top);
 }
 
+watch(openPath, (path) => {
+  const root = menu.value;
+  const focused = (root?.getRootNode() as Document | ShadowRoot | undefined)?.activeElement;
+  if (!(focused instanceof HTMLElement) || focused.closest('.cm-menu-bar') !== root) return;
+  const hidden = ancestorsOf(itemValue(focused)).find((value, index) => path[index] !== value);
+  if (hidden !== undefined) branchItem(hidden)?.focus();
+});
+
 watch(
   [openPath, pendingFocus],
   ([path, request]) => {
@@ -243,7 +252,7 @@ useCmHydrated();
     @focusout="onFocusOut"
     @keydown="onKeydown"
   >
-    <ul class="cm-menu-bar__list" role="menubar">
+    <ul :id="props.listId" class="cm-menu-bar__list" role="menubar">
       <CmMenuBarNode
         v-for="item in props.items"
         :key="item.value"
@@ -251,6 +260,7 @@ useCmHydrated();
         :depth="0"
         :open-path="openPath"
         :active-value="activeValue"
+        :active-branch="props.submenuTarget && activeValue ? ancestorsOf(activeValue)[0] : undefined"
         :tabbable-value="tabbableValue"
         :link-component="props.linkComponent"
         :submenu-target="props.submenuTarget"
@@ -258,5 +268,6 @@ useCmHydrated();
         @select="onSelect"
       />
     </ul>
+    <slot name="scrollControls" />
   </nav>
 </template>

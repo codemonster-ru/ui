@@ -27,8 +27,11 @@ server-rendered pages with authored open branches. Wider viewports use the inlin
 
 `VfMenuBar` switches enabled branches on mouse hover after the first branch opens. Leaving
 the bar closes it after 120 ms, and moving back into the bar or a submenu cancels the timer.
-Above 640 px, top-level panels float in a layer inside the navigation landmark. Each opener
-references its panel by ID, and keyboard navigation follows the logical branch hierarchy.
+Once mounted, an overflowing bar scrolls in one row. The available edge controls support
+keyboard activation and native horizontal touch panning. Top-level panels live outside the
+scroll viewport within the navigation landmark. Above 640 px they float, and at compact widths
+they expand below the row. Each opener references its panel by ID, and keyboard navigation
+follows the logical branch hierarchy.
 In both adapters, submenus reveal over 320 ms from a slight downward shift and reduced scale
-when motion is enabled. Closing hides the submenu immediately. The historical horizontal scroll
-controls remain separate.
+when motion is enabled. Closing releases focus and interaction immediately while the submenu
+finishes its exit on browsers that support discrete transitions and CSS inertness.

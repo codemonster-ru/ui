@@ -12,6 +12,7 @@ const props = defineProps({
   depth: { type: Number, required: true },
   openPath: { type: Array as PropType<readonly string[]>, required: true },
   activeValue: { type: String as PropType<string | null>, default: null },
+  activeBranch: { type: String, default: undefined },
   tabbableValue: { type: String as PropType<string | null>, default: null },
   linkComponent: { type: [String, Object, Function] as PropType<string | Component>, default: undefined },
   submenuTarget: { type: Object as PropType<HTMLElement>, default: undefined },
@@ -35,6 +36,7 @@ const itemClasses = computed(() => [
   hasChildren.value ? 'cm-menu-bar__item--branch' : undefined,
   props.depth === 0 ? 'cm-menu-bar__item--top' : undefined,
   hasChildren.value && isOpen.value ? 'cm-menu-bar__item--open' : undefined,
+  hasChildren.value && props.activeBranch === props.item.value ? 'cm-menu-bar__item--ancestor-active' : undefined,
   isActive.value ? 'cm-menu-bar__item--active' : undefined,
 ]);
 const depthStyle = computed(() => ({ '--cm-menu-bar-depth': String(props.depth) }));
@@ -81,6 +83,7 @@ function select(event: MouseEvent): void {
           :depth="props.depth"
           :open-path="props.openPath"
           :active-value="activeValue"
+          :active-branch="props.activeBranch"
           :tabbable-value="tabbableValue"
           :link-component="props.linkComponent"
           :submenu-target="props.submenuTarget"
