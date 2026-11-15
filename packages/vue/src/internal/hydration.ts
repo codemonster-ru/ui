@@ -1,7 +1,14 @@
 import { cmFrameworkOwnership } from '@codemonster-ru/ui-runtime/core';
-import { getCurrentInstance, onBeforeUnmount, onMounted } from 'vue';
+import { getCurrentInstance, onBeforeMount, onBeforeUnmount, onMounted } from 'vue';
 
 const { attribute, claimEvent } = cmFrameworkOwnership;
+
+function claim(element: Element): void {
+  if (element.hasAttribute(attribute)) return;
+  element.setAttribute(attribute, '');
+  const EventConstructor = element.ownerDocument.defaultView?.Event;
+  if (EventConstructor) element.dispatchEvent(new EventConstructor(claimEvent));
+}
 
 /**
  * Claims this component's root element for Vue.
@@ -26,13 +33,20 @@ export function useCmHydrated(): void {
 
   onMounted(() => {
     const element = root();
-    if (!element) return;
-    element.setAttribute(attribute, '');
-    const EventConstructor = element.ownerDocument.defaultView?.Event;
-    if (EventConstructor) element.dispatchEvent(new EventConstructor(claimEvent));
+    if (element) claim(element);
   });
 
   onBeforeUnmount(() => {
     root()?.removeAttribute(attribute);
   });
+}
+
+/** Lets the controller restore browser-measured attributes before Vue compares the SSR root. */
+export function useCmHydratedBeforeMount(): void {
+  const instance = getCurrentInstance();
+  onBeforeMount(() => {
+    const element: unknown = instance?.vnode.el;
+    if (element instanceof Element) claim(element);
+  });
+  useCmHydrated();
 }

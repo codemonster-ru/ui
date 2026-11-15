@@ -2,7 +2,7 @@
 import { computed, ref, useAttrs, useId, watch, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
-import { useCmHydrated } from '../../internal/hydration';
+import { useCmHydratedBeforeMount } from '../../internal/hydration';
 import { assertCm, warnCm } from '../../internal/warn';
 import { nextTabsValue, resolveTabsValue } from '@codemonster-ru/ui-runtime/core';
 import {
@@ -169,7 +169,7 @@ function measureIndicator(): void {
   indicator.value = tablist.value ? tabIndicatorGeometry(tablist.value) : null;
 }
 
-useCmHydrated();
+useCmHydratedBeforeMount();
 </script>
 
 <template>

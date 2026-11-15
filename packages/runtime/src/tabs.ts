@@ -38,6 +38,7 @@ export class CmTabsController implements CmController {
   #entries: TabEntry[] = [];
   #scrollList: HTMLElement | null = null;
   #indicator: HTMLElement | null = null;
+  #indicatorStyle: string | null = null;
   #scrollButtons: [CmTabScrollEdge, HTMLButtonElement][] = [];
   #stopScroll?: () => void;
 
@@ -55,6 +56,7 @@ export class CmTabsController implements CmController {
     if (active !== null) this.#synchronize(active);
     this.#scrollList = this.#root.querySelector(':scope > .cm-tabs__list');
     this.#indicator = this.#scrollList?.querySelector(':scope > .cm-tabs__indicator') ?? null;
+    this.#indicatorStyle = this.#indicator?.getAttribute('style') ?? null;
     this.#scrollButtons = (['start', 'end'] as const).flatMap((edge) => {
       const button = this.#root.querySelector<HTMLButtonElement>(`:scope > button[data-cm-tabs-scroll="${edge}"]`);
       return button ? [[edge, button]] : [];
@@ -79,7 +81,11 @@ export class CmTabsController implements CmController {
     this.#stopScroll = undefined;
     for (const [, button] of this.#scrollButtons) button.hidden = true;
     this.#scrollButtons = [];
-    if (this.#indicator) this.#indicator.hidden = true;
+    if (this.#indicator) {
+      this.#indicator.hidden = true;
+      if (this.#indicatorStyle === null) this.#indicator.removeAttribute('style');
+      else this.#indicator.setAttribute('style', this.#indicatorStyle);
+    }
     this.#indicator = null;
     this.#scrollList = null;
     this.#entries = [];
