@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { renderToString } from '@vue/server-renderer';
-import { h } from 'vue';
+import { h, ref } from 'vue';
 
 test('publishes the Vue component adapter entries', async () => {
   const entry = await import('@codemonster-ru/ui-vue');
@@ -135,6 +135,7 @@ test('publishes the opt-in historical icon and Vue components', async () => {
     'useDisclosure',
     'useEscapeKey',
     'useFloating',
+    'useFocusTrap',
     'useId',
     'useScrollLock',
     'useTableOfContents',
@@ -189,13 +190,15 @@ test('publishes the opt-in historical icon and Vue components', async () => {
   assert.match(contents, /href="\/appendix">Appendix/u);
 });
 
-test('renders a component using the historical scroll lock without a browser', async () => {
-  const { useScrollLock } = await import('@codemonster-ru/ui-vue/historical');
+test('renders a component using the historical focus trap and scroll lock without a browser', async () => {
+  const { useFocusTrap, useScrollLock } = await import('@codemonster-ru/ui-vue/historical');
   const component = {
     setup() {
+      const target = ref(null);
+      useFocusTrap(target);
       const { unlock } = useScrollLock(true);
       unlock();
-      return () => h('main', 'Server rendered');
+      return () => h('main', { ref: target }, 'Server rendered');
     },
   };
 
