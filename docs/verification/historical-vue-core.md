@@ -75,6 +75,9 @@ separate package contracts.
 
 ## Evidence and next executable tasks
 
+- The opt-in `useScrollLock` hook passed DOM-free SSR, reactive target and scope cleanup tests.
+  Chrome verified overlapping body and custom element locks, wheel suppression, and inline
+  restoration after the last release, including the body's native 15 px scrollbar gap.
 - Vue behavior for the restored composition group is in
   `packages/vue/src/components/historical-compositions.test.ts`. Existing package suites for
   forms, navigation, data tables, overlays, layout primitives and advanced inputs cover the

@@ -134,6 +134,7 @@ test('publishes the opt-in historical icon and Vue components', async () => {
     'useDisclosure',
     'useEscapeKey',
     'useId',
+    'useScrollLock',
     'useTableOfContents',
   ]);
   assert.match(await renderToString(h(entry.VfMenu, null, () => 'Actions')), /role="menu"[\s\S]*Actions/u);
@@ -184,6 +185,19 @@ test('publishes the opt-in historical icon and Vue components', async () => {
   assert.match(contents, /data-cm-toc-scroll-offset="64"/u);
   assert.match(contents, /href="#intro" aria-current="location">Intro/u);
   assert.match(contents, /href="\/appendix">Appendix/u);
+});
+
+test('renders a component using the historical scroll lock without a browser', async () => {
+  const { useScrollLock } = await import('@codemonster-ru/ui-vue/historical');
+  const component = {
+    setup() {
+      const { unlock } = useScrollLock(true);
+      unlock();
+      return () => h('main', 'Server rendered');
+    },
+  };
+
+  assert.equal(await renderToString(h(component)), '<main>Server rendered</main>');
 });
 
 test('server-renders historical overlays around a single authored trigger', async () => {
