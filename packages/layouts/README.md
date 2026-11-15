@@ -17,9 +17,8 @@ npm install vue@^3.5.0 @codemonster-ru/ui-layouts@^2.0.0-dev.0 @codemonster-ru/u
 
 ## Quick start
 
-The package exports `CmAdminLayout`, `CmAdminShell`, `CmAppShell`, `CmDocumentLayout`, and
-`CmSetupLayout`. See the [layout guide](../../docs/components/layouts.md) for Vue examples and
-canonical HTML.
+The package exports application shells, authentication and error pages, and semantic page regions.
+See the [layout guide](../../docs/components/layouts.md) for Vue examples and canonical HTML.
 
 ## What belongs here
 

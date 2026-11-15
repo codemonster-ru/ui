@@ -32,11 +32,13 @@
 @import './components/icon.css';
 @import './components/input.css';
 @import './components/inline.css';
+@import './components/layout-areas.css';
 @import './components/link.css';
 @import './components/menu-bar.css';
 @import './components/menu.css';
 @import './components/nav-menu.css';
 @import './components/page-header.css';
+@import './components/page-layouts.css';
 @import './components/panel.css';
 @import './components/popover.css';
 @import './components/progress-bar.css';

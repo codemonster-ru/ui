@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, useAttrs, useId, type PropType } from 'vue';
+import { computed, mergeProps, useAttrs, useId, type PropType } from 'vue';
 import {
   resolveCmIcon,
   scopeCmIconIds,
@@ -45,20 +45,29 @@ const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['class', 'aria-label']
 const label = computed(
   () => props.label || (typeof attrs['aria-label'] === 'string' ? attrs['aria-label'] : undefined),
 );
-const style = computed(() => ({
-  '--cm-icon-size': typeof props.size === 'number' ? `${props.size}px` : props.size,
-  '--cm-icon-scale': props.inset ? 1 - Math.min(Math.max(props.inset, -0.25), 0.49) * 2 : undefined,
-  '--vf-icon-secondary-color': props.secondaryColor,
-  '--vf-icon-secondary-opacity': props.secondaryOpacity,
-}));
+const style = computed(() => {
+  if (
+    props.size === undefined &&
+    !props.inset &&
+    props.secondaryColor === undefined &&
+    props.secondaryOpacity === undefined
+  )
+    return undefined;
+
+  return {
+    '--cm-icon-size': typeof props.size === 'number' ? `${props.size}px` : props.size,
+    '--cm-icon-scale': props.inset ? 1 - Math.min(Math.max(props.inset, -0.25), 0.49) * 2 : undefined,
+    '--vf-icon-secondary-color': props.secondaryColor,
+    '--vf-icon-secondary-opacity': props.secondaryOpacity,
+  };
+});
 </script>
 
 <template>
   <svg
     v-if="rendering"
-    v-bind="rootAttrs"
+    v-bind="style ? mergeProps(rootAttrs, { style }) : rootAttrs"
     :class="classes"
-    :style="style"
     xmlns="http://www.w3.org/2000/svg"
     :viewBox="rendering.viewBox"
     :role="label ? 'img' : undefined"

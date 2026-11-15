@@ -28,6 +28,7 @@ adapters aligned without hiding their native composition models.
 - [Overlays](./components/overlays.md).
 - [Table and DataTable](./components/data-tables.md).
 - [Layout primitives](./components/layout-primitives.md).
+- [Page layouts and shell regions](./components/layouts.md).
 
 The [canonical catalog](../contracts/README.md) provides the Vanilla markup for every component.
 The shared browser runtime enhances interactive HTML, and Vue components own their interaction.

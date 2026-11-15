@@ -11,8 +11,10 @@ Razor side living inside the existing `Codemonster\Ui` package under a `Layouts`
 is not a component and does not belong in `ui-vue`; giving it a separate package is what makes the
 two nameable apart.
 
-Five layouts are carried forward: `AdminLayout`, `AdminShell`, `SetupLayout`, `AppShell`, and
-`DocumentLayout`. Five shell-area wrappers are dropped.
+The initial release carried `AdminLayout`, `AdminShell`, `SetupLayout`, `AppShell`, and
+`DocumentLayout`. The historical restoration added `AuthLayout`, `ErrorLayout`, the five standalone
+shell regions, and native Vue scopes for the restored stateful shells. Shared HTML, CSS, and state
+attributes support the Vanilla equivalents. See the [historical contract inventory](../verification/historical-vue-ecosystem.md).
 
 ## What changed since the previous decision
 
@@ -46,20 +48,11 @@ attributes in the canonical DOM, and a controller in `ui-runtime` reads and writ
 same state declaratively. This is how Tabs and Accordion already work across both adapters, so
 layouts do not need a mechanism of their own.
 
-## The five dropped
+## Standalone regions
 
-`VfHeaderArea`, `VfSidebarArea`, `VfContentArea`, `VfAsideArea`, and `VfFooterArea` are not carried
-forward. Each is between 19 and 30 lines of `<component :is="as" :class="…"><slot /></component>`;
-three have no structure beyond that. Publishing five components that each render one element would
-add public surface without adding capability.
-
-They remain named, as regions of the layouts that contain them: their classes are part of each
-layout's canonical DOM and its contract. What disappears is the standalone component, not the name.
-
-The migration map calls this `drop`. It previously called it `manual`, which was misleading —
-`manual` means the application takes the responsibility over, and there is no successor here to take
-over. The capability entries already said `superseded` with "No standalone replacement", so the
-category name had been the only thing out of step.
+`CmHeaderArea`, `CmSidebarArea`, `CmContentArea`, `CmAsideArea`, and `CmFooterArea` restore the
+historical standalone regions so consumers can continue composing a shell from semantic landmarks.
+Each uses the shared `layout-areas.css` and a documented Vanilla HTML structure.
 
 ## The two formerly deferred, now carried across
 

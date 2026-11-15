@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "name": "AuthLayout",
+  "slug": "auth-layout",
+  "description": "A centered sign-in page with optional branding and account links.",
+  "props": {
+    "as": {
+      "type": "string",
+      "required": false,
+      "default": "main"
+    },
+    "title": {
+      "type": "nullable-string",
+      "required": false,
+      "default": null
+    },
+    "description": {
+      "type": "nullable-string",
+      "required": false,
+      "default": null
+    },
+    "fillViewport": {
+      "type": "boolean",
+      "required": false,
+      "default": true
+    },
+    "centered": {
+      "type": "boolean",
+      "required": false,
+      "default": true
+    },
+    "surface": {
+      "type": "boolean",
+      "required": false,
+      "default": true
+    }
+  },
+  "slots": {
+    "brand": {
+      "required": false
+    },
+    "title": {
+      "required": false
+    },
+    "description": {
+      "required": false
+    },
+    "default": {
+      "required": false
+    },
+    "footer": {
+      "required": false
+    }
+  },
+  "events": {},
+  "states": ["default"]
+}

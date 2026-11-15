@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "sidebar-area-default",
+  "description": "A sidebar region with a padded interior.",
+  "props": {},
+  "slots": {
+    "default": "Navigation"
+  }
+}

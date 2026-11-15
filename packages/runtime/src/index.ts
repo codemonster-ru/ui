@@ -27,6 +27,8 @@ export { CmDrawerController, createCmDrawerController } from './drawer.js';
 export type { ModalOpenChangeDetail } from './modal.js';
 export { CmDropdownController, createCmDropdownController } from './dropdown.js';
 export type { DropdownOpenChangeDetail } from './dropdown.js';
+export { CmGroupBoxController, createCmGroupBoxController } from './group-box.js';
+export type { GroupBoxCollapsedChangeDetail } from './group-box.js';
 export { CmMenuController, createCmMenuController } from './menu.js';
 export type { MenuSelectDetail } from './menu.js';
 export { CmPopoverController, createCmPopoverController } from './popover.js';

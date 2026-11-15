@@ -6,8 +6,29 @@ import { fileURLToPath } from 'node:url';
 import { renderToString } from '@vue/server-renderer';
 import { createSSRApp, h } from 'vue';
 import { compareSignificantDom } from '../../../scripts/contracts/significant-dom.mjs';
-import { CmAdminLayout, CmAdminShell, CmAppShell, CmDocumentLayout, CmSetupLayout } from '../../layouts/dist/index.js';
-import { CmColumnChooser, CmMenuBar, CmNavMenu, CmStepper, CmTableOfContents, CmThemeSwitch } from '../dist/index.js';
+import {
+  CmAdminLayout,
+  CmAdminShell,
+  CmAppShell,
+  CmAsideArea,
+  CmAuthLayout,
+  CmContentArea,
+  CmDocumentLayout,
+  CmErrorLayout,
+  CmFooterArea,
+  CmHeaderArea,
+  CmSetupLayout,
+  CmSidebarArea,
+} from '../../layouts/dist/index.js';
+import {
+  CmColumnChooser,
+  CmGroupBox,
+  CmMenuBar,
+  CmNavMenu,
+  CmStepper,
+  CmTableOfContents,
+  CmThemeSwitch,
+} from '../dist/index.js';
 
 const packageDirectory = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -21,11 +42,19 @@ const components = {
   'admin-layout': CmAdminLayout,
   'admin-shell': CmAdminShell,
   'app-shell': CmAppShell,
+  'aside-area': CmAsideArea,
+  'auth-layout': CmAuthLayout,
+  'content-area': CmContentArea,
   'document-layout': CmDocumentLayout,
+  'error-layout': CmErrorLayout,
+  'footer-area': CmFooterArea,
+  'header-area': CmHeaderArea,
   'column-chooser': CmColumnChooser,
+  'group-box': CmGroupBox,
   'menu-bar': CmMenuBar,
   'nav-menu': CmNavMenu,
   'setup-layout': CmSetupLayout,
+  'sidebar-area': CmSidebarArea,
   stepper: CmStepper,
   'table-of-contents': CmTableOfContents,
   'theme-switch': CmThemeSwitch,
@@ -39,6 +68,9 @@ const components = {
 function slotContent(content) {
   if (content === '<button type="button" data-cm-sidebar-toggle aria-expanded="true">Collapse</button>') {
     return h('button', { 'aria-expanded': 'true', 'data-cm-sidebar-toggle': '', type: 'button' }, 'Collapse');
+  }
+  if (content === '<label>Reference <input name="reference" value="PO-123" required></label>') {
+    return h('label', ['Reference ', h('input', { name: 'reference', value: 'PO-123', required: true })]);
   }
   return content;
 }

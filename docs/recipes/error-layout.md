@@ -1,8 +1,8 @@
 # Error page recipe
 
-This recipe replaces `VfErrorLayout` with a semantic error document composed from Container, Stack,
-Section, Inline, and Button. Error copy and recovery routes are application decisions, so the
-composition remains a recipe rather than a cross-platform component.
+This recipe gives an application owner control of an error page using Container, Stack, Section,
+Inline, and Button. Choose the published `CmErrorLayout` for the established status code,
+message, and recovery actions frame. See the [layout guide](../components/layouts.md).
 
 Load the shared token and component stylesheets once at the application entry point. The
 `error-page` rules below belong to the application.

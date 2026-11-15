@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "aside-area-default",
+  "description": "A complementary region with a padded interior.",
+  "props": {},
+  "slots": {
+    "default": "Details"
+  }
+}

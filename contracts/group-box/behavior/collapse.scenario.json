@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "group-box-collapse",
+  "case": "group-box-default",
+  "steps": [
+    { "expect": "formValue", "target": "form", "name": "reference", "value": "PO-123" },
+    { "action": "click", "target": "trigger" },
+    { "expect": "visible", "target": "content", "value": false },
+    { "expect": "attribute", "target": "trigger", "name": "aria-expanded", "value": "false" },
+    { "expect": "formValue", "target": "form", "name": "reference", "value": null },
+    { "expect": "eventCount", "target": "root", "name": "group-box-collapsed-change", "count": 1 },
+    { "action": "press", "target": "trigger", "key": "Enter" },
+    { "expect": "visible", "target": "content", "value": true },
+    { "expect": "formValue", "target": "form", "name": "reference", "value": "PO-123" },
+    { "expect": "eventCount", "target": "root", "name": "group-box-collapsed-change", "count": 2 }
+  ]
+}

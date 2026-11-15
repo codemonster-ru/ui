@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "name": "ErrorLayout",
+  "slug": "error-layout",
+  "description": "A centered error page with an optional code, explanation and recovery actions.",
+  "props": {
+    "as": {
+      "type": "string",
+      "required": false,
+      "default": "section"
+    },
+    "code": {
+      "type": "nullable",
+      "required": false,
+      "default": null
+    },
+    "title": {
+      "type": "nullable-string",
+      "required": false,
+      "default": null
+    },
+    "description": {
+      "type": "nullable-string",
+      "required": false,
+      "default": null
+    },
+    "fillViewport": {
+      "type": "boolean",
+      "required": false,
+      "default": true
+    },
+    "centered": {
+      "type": "boolean",
+      "required": false,
+      "default": true
+    },
+    "surface": {
+      "type": "boolean",
+      "required": false,
+      "default": true
+    }
+  },
+  "slots": {
+    "code": {
+      "required": false
+    },
+    "title": {
+      "required": false
+    },
+    "description": {
+      "required": false
+    },
+    "actions": {
+      "required": false
+    }
+  },
+  "events": {},
+  "states": ["default"]
+}

@@ -70,6 +70,7 @@ export function initializeBehavior(root: HTMLElement, slug: string) {
     'setup-layout-back',
     'dialog-open-change',
     'drawer-open-change',
+    'group-box-collapsed-change',
     'popover-open-change',
     'dropdown-open-change',
     'column-chooser-visible-columns-change',

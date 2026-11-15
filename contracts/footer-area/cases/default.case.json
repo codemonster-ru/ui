@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "footer-area-default",
+  "description": "A semantic footer region.",
+  "props": {},
+  "slots": {
+    "default": "Support"
+  }
+}

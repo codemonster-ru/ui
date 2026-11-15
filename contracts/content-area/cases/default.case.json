@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "content-area-default",
+  "description": "A main landmark with optional inset spacing.",
+  "props": {},
+  "slots": {
+    "default": "Application content"
+  }
+}

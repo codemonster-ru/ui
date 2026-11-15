@@ -50,6 +50,11 @@ describe('Vue icon rendering', () => {
     expect(wrapper.attributes('aria-label')).toBe('GitHub');
   });
 
+  it('omits unused style attributes in server-rendered canonical SVG', async () => {
+    const html = await renderToString(h(CmIcon, { icon: arrowLeft }));
+    expect(html).not.toContain('style=');
+  });
+
   it('generates unique yet deterministic IDs for server-rendered duotone references', async () => {
     const render = () =>
       renderToString(

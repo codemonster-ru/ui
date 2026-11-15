@@ -2,6 +2,7 @@
 import { chevronDown } from '@codemonster-ru/ui-icons';
 import { computed, ref, useId } from 'vue';
 
+import { useCmHydrated } from '../../internal/hydration';
 import CmButton from '../button/CmButton.vue';
 import CmIcon from '../icon/CmIcon.vue';
 
@@ -40,10 +41,14 @@ function toggle(): void {
   emit('update:collapsed', collapsed);
   emit('collapsedChange', collapsed);
 }
+
+useCmHydrated();
 </script>
 
 <template>
   <fieldset
+    :data-cm-controller="canCollapse ? 'group-box' : undefined"
+    :disabled="isCollapsed || undefined"
     class="cm-group-box"
     :class="{
       'cm-group-box--titled': hasTitle,
