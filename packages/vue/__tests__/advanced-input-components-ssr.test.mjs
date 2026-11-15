@@ -5,6 +5,7 @@ import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { renderToString } from '@vue/server-renderer';
 import { createSSRApp, h } from 'vue';
+import { JSDOM } from 'jsdom';
 import { compareSignificantDom } from '../../../scripts/contracts/significant-dom.mjs';
 import { CmCommandPalette, CmDatePicker, CmSelect } from '../dist/index.js';
 
@@ -54,4 +55,27 @@ test('escapes advanced-input option, command, and attribute values during SSR', 
   assert.match(actual, /&lt;Unsafe&gt;/u);
   assert.match(actual, /&quot;&gt;&lt;script&gt;/u);
   assert.doesNotMatch(actual, /<script>/u);
+});
+
+test('omits a disabled Select from form data rendered on the server', async (context) => {
+  const actual = await renderToString(
+    createSSRApp({
+      render: () =>
+        h(
+          'form',
+          h(CmSelect, {
+            id: 'frequency',
+            name: 'frequency',
+            modelValue: 'daily',
+            options: [{ value: 'daily', label: 'Daily' }],
+            disabled: true,
+          }),
+        ),
+    }),
+  );
+  const { window } = new JSDOM(actual);
+  context.after(() => window.close());
+  const form = window.document.querySelector('form');
+
+  assert.equal(new window.FormData(form).has('frequency'), false);
 });
