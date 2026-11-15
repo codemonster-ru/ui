@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="Row extends object = CmDataTableRow">
 import { chevronDown } from '@codemonster-ru/ui-icons';
 import {
   measureDataTableColumnContent,
@@ -42,6 +42,7 @@ import type {
   CmDataTableDensity,
   CmDataTableMode,
   CmDataTableRow,
+  CmDataTableRowKeyResolver,
   CmDataTableSort,
   CmDataTableSortDirection,
 } from './data-table.types';
@@ -53,7 +54,8 @@ const collator = new Intl.Collator('en', { numeric: true, sensitivity: 'base' })
 const props = defineProps({
   id: { type: String, required: true },
   columns: { type: Array as PropType<readonly CmDataTableColumn[]>, required: true },
-  rows: { type: Array as PropType<readonly CmDataTableRow[]>, default: () => [] },
+  rows: { type: Array as PropType<readonly Row[]>, default: () => [] },
+  rowKey: { type: [String, Function] as PropType<CmDataTableRowKeyResolver<Row>>, default: undefined },
   caption: { type: String, default: '' },
   density: {
     type: String as PropType<CmDataTableDensity>,
@@ -71,7 +73,7 @@ const props = defineProps({
   resizeColumnLabelTemplate: { type: String, default: 'Resize {column} column' },
   selectable: Boolean,
   rowSelectable: {
-    type: Function as PropType<(row: CmDataTableRow, rowIndex: number) => boolean>,
+    type: Function as PropType<(row: Row, rowIndex: number) => boolean>,
     default: undefined,
   },
   selectedRowIds: { type: Array as PropType<readonly string[]>, default: () => [] },
@@ -135,32 +137,40 @@ const emit = defineEmits<{
   'column-resize-end': [columnWidths: CmDataTableColumnWidths];
   'update:sort': [sort: CmDataTableSort | null];
 }>();
-defineSlots<{
+const slots = defineSlots<{
   caption?: () => unknown;
   empty?: () => unknown;
   error?: () => unknown;
   loading?: () => unknown;
   footer?: () => unknown;
-  'expanded-row'?: (props: { row: CmDataTableRow; rowKey: string; rowIndex: number }) => unknown;
-  [slot: `header-${string}`]: ((props: { column: CmDataTableColumn }) => unknown) | undefined;
-  [slot: `cell-${string}`]:
-    | ((props: {
-        row: CmDataTableRow;
-        column: CmDataTableColumn;
-        value: CmDataTableCellValue;
-        rowIndex: number;
-      }) => unknown)
+  'expanded-row'?: (props: { row: Row; rowKey: string; rowIndex: number }) => unknown;
+  [slot: `header${string}`]: ((props: { column: CmDataTableColumn }) => unknown) | undefined;
+  [slot: `cell${string}`]:
+    | ((props: { row: Row; column: CmDataTableColumn; value: CmDataTableCellValue; rowIndex: number }) => unknown)
     | undefined;
 }>();
 const attrs = useAttrs();
+const rawRows = computed(() => props.rowKey !== undefined);
+
+function columnSlot<Region extends 'header' | 'cell'>(region: Region, key: string): `${Region}${string}` {
+  const name = `${region}-${key}` as const;
+  if (slots[name] || !idPattern.test(key)) return name;
+  return `${region}${key
+    .split('-')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join('')}`;
+}
 
 const normalizedColumns = computed(() => {
   assertCm(props.columns.length > 0, 'DataTable requires columns.');
   const keys = new Set<string>();
   const columns: CmDataTableColumn[] = [];
   for (const column of props.columns) {
+    const validKey = rawRows.value
+      ? column.key.split('.').every((part) => part.trim() !== '')
+      : idPattern.test(column.key);
     if (
-      !idPattern.test(column.key) ||
+      !validKey ||
       !column.header.trim() ||
       (column.align !== undefined && !['start', 'center', 'end'].includes(column.align)) ||
       (column.verticalAlign !== undefined && !['top', 'middle', 'bottom', 'baseline'].includes(column.verticalAlign)) ||
@@ -177,31 +187,74 @@ const normalizedColumns = computed(() => {
   return columns;
 });
 
+function rowField(row: object, path: string): unknown {
+  return path.split('.').reduce<unknown>((value, key) => {
+    if (value === null || typeof value !== 'object' || !Object.prototype.hasOwnProperty.call(value, key)) {
+      return undefined;
+    }
+    return (value as Record<string, unknown>)[key];
+  }, row);
+}
+
+function isCellValue(value: unknown): value is CmDataTableCellValue {
+  return value === null || typeof value === 'string' || (typeof value === 'number' && Number.isFinite(value));
+}
+
+function rawRowId(row: Row, sourceIndex: number, key: CmDataTableRowKeyResolver<Row>): string | undefined {
+  const value = typeof key === 'function' ? key(row, sourceIndex) : rowField(row, key);
+  if (typeof key === 'string' && value === undefined) return String(sourceIndex);
+  if (typeof value === 'string' && value.trim()) return value;
+  if (typeof value === 'number' && Number.isFinite(value)) return String(value);
+  return undefined;
+}
+
 const normalizedRows = computed(() => {
   const ids = new Set<string>();
   const keys = new Set(normalizedColumns.value.map(({ key }) => key));
-  const rows: CmDataTableRow[] = [];
-  for (const row of props.rows) {
+  const rows: (CmDataTableRow & { record: Row })[] = [];
+  const rowKey = props.rowKey;
+  for (const [sourceIndex, record] of props.rows.entries()) {
+    if (record === null || typeof record !== 'object') {
+      warnCm(`Invalid DataTable row at source index ${sourceIndex}. The row is not rendered.`);
+      continue;
+    }
+    if (rowKey !== undefined) {
+      const id = rawRowId(record, sourceIndex, rowKey);
+      if (id === undefined || ids.has(id)) {
+        warnCm(`Invalid DataTable row key at source index ${sourceIndex}. The row is not rendered.`);
+        continue;
+      }
+      const cells = Object.fromEntries(
+        [...keys].map((key): [string, CmDataTableCellValue] => {
+          const value = rowField(record, key);
+          return [key, isCellValue(value) ? value : null];
+        }),
+      );
+      ids.add(id);
+      rows.push({ id, cells, record });
+      continue;
+    }
+
+    const row = record as CmDataTableRow;
     if (
+      typeof row.id !== 'string' ||
       !idPattern.test(row.id) ||
+      row.cells === null ||
+      typeof row.cells !== 'object' ||
+      Array.isArray(row.cells) ||
       ids.has(row.id) ||
       (row.selectable !== undefined && typeof row.selectable !== 'boolean')
     ) {
       warnCm(`Invalid DataTable row: ${row.id}. The row is not rendered.`);
       continue;
     }
-    const invalidCell = Object.entries(row.cells).find(
-      ([key, value]) =>
-        !keys.has(key) ||
-        (!['string', 'number'].includes(typeof value) && value !== null) ||
-        (typeof value === 'number' && !Number.isFinite(value)),
-    );
+    const invalidCell = Object.entries(row.cells).find(([key, value]) => !keys.has(key) || !isCellValue(value));
     if (invalidCell) {
       warnCm(`Invalid DataTable cell: ${row.id}.${invalidCell[0]}. The row is not rendered.`);
       continue;
     }
     ids.add(row.id);
-    rows.push(row);
+    rows.push({ id: row.id, cells: row.cells, selectable: row.selectable, record });
   }
   return rows;
 });
@@ -422,7 +475,7 @@ const renderedRowIds = computed(() => renderedRows.value.map(({ id }) => id));
 const selectedIds = computed(() => new Set(localSelectedRowIds.value));
 const enabledRowIds = computed(() =>
   renderedRows.value.flatMap((row, index) =>
-    row.selectable !== false && (props.rowSelectable?.(row, index) ?? true) ? [row.id] : [],
+    row.selectable !== false && (props.rowSelectable?.(row.record, index) ?? true) ? [row.id] : [],
   ),
 );
 const enabledIds = computed(() => new Set(enabledRowIds.value));
@@ -599,6 +652,11 @@ function rowLabel(id: string): string {
     .join(' ');
 }
 
+function expandedContentId(id: string): string {
+  const token = rawRows.value ? Array.from(id, (character) => character.codePointAt(0)?.toString(16)).join('-') : id;
+  return `${props.id}-expanded-${token}`;
+}
+
 function sortLabel(column: CmDataTableColumn): string {
   const template = {
     ascending: props.sortAscendingLabelTemplate,
@@ -716,11 +774,11 @@ useCmHydrated();
                 :data-cm-data-table-clear-sort-label-template="props.clearSortLabelTemplate"
                 @click="changeSort(column)"
               >
-                <slot :name="`header-${column.key}`" :column="column">{{ column.header }}</slot>
+                <slot :name="columnSlot('header', column.key)" :column="column">{{ column.header }}</slot>
                 <span class="cm-data-table__sort-indicator" aria-hidden="true"></span>
               </button>
               <template v-else>
-                <slot :name="`header-${column.key}`" :column="column">{{ column.header }}</slot>
+                <slot :name="columnSlot('header', column.key)" :column="column">{{ column.header }}</slot>
               </template>
               <span
                 v-if="canResize(column, index)"
@@ -791,7 +849,7 @@ useCmHydrated();
                       )
                     "
                     :aria-expanded="expandedRowKeys.has(row.id)"
-                    :aria-controls="expandedRowKeys.has(row.id) ? `${props.id}-expanded-${row.id}` : undefined"
+                    :aria-controls="expandedRowKeys.has(row.id) ? expandedContentId(row.id) : undefined"
                     @click="toggleExpandedRow(row.id)"
                   >
                     <CmIcon :icon="chevronDown" />
@@ -799,8 +857,8 @@ useCmHydrated();
                 </td>
                 <td v-for="column in visibleColumns" :key="column.key" v-bind="cellAttrs(column)">
                   <slot
-                    :name="`cell-${column.key}`"
-                    :row="row"
+                    :name="columnSlot('cell', column.key)"
+                    :row="row.record"
                     :column="column"
                     :value="row.cells[column.key] ?? null"
                     :row-index="rowIndex"
@@ -811,11 +869,11 @@ useCmHydrated();
               </tr>
               <tr
                 v-if="$slots['expanded-row'] && expandedRowKeys.has(row.id)"
-                :id="`${props.id}-expanded-${row.id}`"
+                :id="expandedContentId(row.id)"
                 class="cm-data-table__expanded-row"
               >
                 <td :colspan="columnCount + 1">
-                  <slot name="expanded-row" :row="row" :row-key="row.id" :row-index="rowIndex" />
+                  <slot name="expanded-row" :row="row.record" :row-key="row.id" :row-index="rowIndex" />
                 </td>
               </tr>
             </template>

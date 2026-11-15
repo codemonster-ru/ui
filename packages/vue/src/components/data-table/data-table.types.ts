@@ -5,6 +5,8 @@ export type CmDataTableSortDirection = 'ascending' | 'descending';
 export type CmDataTableMode = 'client' | 'manual';
 export type CmDataTableCellValue = string | number | null;
 export type CmDataTableColumnPin = 'start' | 'end';
+export type CmDataTableRowKeyResolver<Row extends object = CmDataTableRow> =
+  string | ((row: Row, sourceIndex: number) => string | number);
 export type { CmDataTableColumnWidths } from '@codemonster-ru/ui-runtime/core';
 
 export interface CmDataTableColumn {
@@ -33,10 +35,11 @@ export interface CmDataTableSort {
   direction: CmDataTableSortDirection;
 }
 
-export interface CmDataTableProps {
+export interface CmDataTableProps<Row extends object = CmDataTableRow> {
   id: string;
   columns: readonly CmDataTableColumn[];
-  rows?: readonly CmDataTableRow[];
+  rows?: readonly Row[];
+  rowKey?: CmDataTableRowKeyResolver<Row>;
   caption?: string;
   density?: CmDataTableDensity;
   striped?: boolean;
@@ -49,7 +52,7 @@ export interface CmDataTableProps {
   resizableColumns?: boolean;
   resizeColumnLabelTemplate?: string;
   selectable?: boolean;
-  rowSelectable?: (row: CmDataTableRow, rowIndex: number) => boolean;
+  rowSelectable?: (row: Row, rowIndex: number) => boolean;
   selectedRowIds?: readonly string[];
   expandedRowKeys?: readonly string[] | null;
   defaultExpandedRowKeys?: readonly string[];

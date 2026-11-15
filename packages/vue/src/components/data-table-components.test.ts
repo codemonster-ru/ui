@@ -174,7 +174,7 @@ describe('Vue data table components', () => {
   });
 
   it('preserves selection across pages and applies the row predicate to visible rows', async () => {
-    const wrapper = mount(CmDataTable, {
+    const wrapper = mount(CmDataTable<CmDataTableRow>, {
       props: {
         id: 'projects',
         columns,
@@ -254,7 +254,7 @@ describe('Vue data table components', () => {
   });
 
   it('expands a controlled detail row only after the caller accepts the update', async () => {
-    const wrapper = mount(CmDataTable, {
+    const wrapper = mount(CmDataTable<CmDataTableRow>, {
       props: { id: 'projects', columns, rows, expandedRowKeys: [], selectable: true },
       slots: {
         'expanded-row': ({ row, rowKey, rowIndex }: { row: CmDataTableRow; rowKey: string; rowIndex: number }) =>
@@ -321,7 +321,7 @@ describe('Vue data table components', () => {
   });
 
   it('composes scoped cell and heading slots inside a native table', async () => {
-    const wrapper = mount(CmDataTable, {
+    const wrapper = mount(CmDataTable<CmDataTableRow>, {
       props: { id: 'projects', columns, rows },
       slots: {
         caption: 'Project catalogue',

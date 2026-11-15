@@ -51,6 +51,7 @@ export type {
   CmDataTableDensity,
   CmDataTableProps,
   CmDataTableRow,
+  CmDataTableRowKeyResolver,
   CmDataTableSort,
   CmDataTableSortDirection,
 } from './components/data-table/data-table.types';
