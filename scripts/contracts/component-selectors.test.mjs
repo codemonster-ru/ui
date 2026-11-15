@@ -436,6 +436,8 @@ for (const [slug, approved] of [
       'cm-switch--md',
       'cm-switch--lg',
       'cm-switch--invalid',
+      'cm-switch--static',
+      'cm-switch--thumb-contrast-inverse',
       'cm-switch__input',
       'cm-switch__control',
       'cm-switch__thumb',

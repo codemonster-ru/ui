@@ -1,4 +1,5 @@
 export type CmSwitchSize = 'sm' | 'md' | 'lg';
+export type CmSwitchThumbContrast = 'auto' | 'inverse';
 
 export interface CmSwitchProps {
   modelValue?: boolean;
@@ -8,4 +9,6 @@ export interface CmSwitchProps {
   invalid?: boolean;
   disabled?: boolean;
   required?: boolean;
+  static?: boolean;
+  thumbContrast?: CmSwitchThumbContrast;
 }

@@ -11,8 +11,9 @@ packages. VueForge remains installable and maintained during migration. Its pack
 only after replacement packages, migration tooling, documentation, and real consumer validation are
 complete.
 
-New CodeMonster UI packages do not expose VueForge names, selectors, custom properties, or wrapper
-APIs solely for backward compatibility.
+CodeMonster UI retains its own package identities, selectors and custom properties. Its Vue
+adapter can expose a historical name when a native Vue implementation supports the corresponding
+public contract. Such exports do not change package entry points or introduce duplicate CSS.
 
 ## Why a new package line
 
@@ -102,7 +103,9 @@ migration state, not a permanent compatibility architecture.
 
 - Do not ship duplicate `.vf-*` selectors in `ui-css`.
 - Do not emit both `--vf-*` and `--cm-*` variables from new token packages.
-- Do not export `Vf*` aliases from platform adapters.
+- In the Vue adapter, restore a `Vf*` export only after verifying its contract. See the
+  [historical restoration queue](../verification/historical-restoration.md) and its traceability
+  records for scope and differences.
 - Do not make new adapters depend on VueForge packages.
 - Do not preserve obsolete API shapes that conflict with canonical HTML or accessibility.
 - Add a migration transform only when the change is deterministic and safe.

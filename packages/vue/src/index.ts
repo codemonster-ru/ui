@@ -145,12 +145,16 @@ export type {
   CmStepperProps,
 } from './components/stepper/stepper.types';
 export { default as CmSwitch } from './components/switch/CmSwitch.vue';
-export type { CmSwitchProps, CmSwitchSize } from './components/switch/switch.types';
+export type { CmSwitchProps, CmSwitchSize, CmSwitchThumbContrast } from './components/switch/switch.types';
 export { default as CmTable } from './components/table/CmTable.vue';
 export type { CmTableDensity, CmTableProps } from './components/table/table.types';
 export { default as CmTag } from './components/tag/CmTag.vue';
 export type { CmTagProps, CmTagTone } from './components/tag/tag.types';
+export { default as CmThemeProvider, default as VfThemeProvider } from './components/theme-provider/CmThemeProvider.vue';
+export { useCmTheme, useCmTheme as useTheme } from './components/theme-provider/use-theme';
+export type { CmThemeContext, CmThemeProviderProps } from './components/theme-provider/use-theme';
 export { default as CmThemeSwitch } from './components/theme-switch/CmThemeSwitch.vue';
+export { default as VfThemeSwitch } from './components/theme-switch/VfThemeSwitch.vue';
 export type { CmThemeSwitchOption } from './components/theme-switch/theme-switch.types';
 export { default as CmTableOfContents } from './components/table-of-contents/CmTableOfContents.vue';
 export type {

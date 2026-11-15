@@ -43,8 +43,12 @@ export function readCmThemeCookie(header: string | null | undefined, name = cmTh
     if (separator === -1) continue;
     if (part.slice(0, separator).trim() !== name) continue;
 
-    const value = decodeURIComponent(part.slice(separator + 1).trim());
-    return isCmThemeMode(value) ? value : null;
+    try {
+      const value = decodeURIComponent(part.slice(separator + 1).trim());
+      return isCmThemeMode(value) ? value : null;
+    } catch {
+      return null;
+    }
   }
 
   return null;

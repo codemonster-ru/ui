@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, useAttrs, type PropType } from 'vue';
+import { computed, inject, useAttrs, type PropType } from 'vue';
 import {
   cmThemeAttribute,
   cmThemeCookieName,
@@ -10,6 +10,7 @@ import {
 
 import { useCmHydrated } from '../../internal/hydration';
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
+import { cmThemeContextKey } from '../theme-provider/use-theme';
 import type { CmThemeSwitchOption } from './theme-switch.types';
 
 defineOptions({ inheritAttrs: false });
@@ -38,7 +39,10 @@ useCmHydrated();
 const attrs = useAttrs();
 const classes = computed(() => mergeCmClasses('cm-theme-switch', attrs.class));
 const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['class', 'data-cm-controller']));
-const mode = computed<CmThemeMode>(() => (isCmThemeMode(props.modelValue) ? props.modelValue : 'system'));
+const theme = inject(cmThemeContextKey, null);
+const mode = computed<CmThemeMode>(() =>
+  isCmThemeMode(props.modelValue) ? props.modelValue : (theme?.theme.value ?? 'system'),
+);
 
 /**
  * Writes the same attribute and cookie the controller writes, so a page that renders this component
@@ -48,16 +52,17 @@ const mode = computed<CmThemeMode>(() => (isCmThemeMode(props.modelValue) ? prop
 function select(value: string): void {
   if (!isCmThemeMode(value)) return;
 
-  const root = document.documentElement;
-  root.setAttribute(cmThemeAttribute, value);
-
-  try {
-    document.cookie = serializeCmThemeCookie(value, {
-      name: props.cookieName,
-      secure: document.location.protocol === 'https:',
-    });
-  } catch {
-    // Cookies can be unavailable in privacy-restricted contexts.
+  if (theme) theme.setTheme(value);
+  else {
+    document.documentElement.setAttribute(cmThemeAttribute, value);
+    try {
+      document.cookie = serializeCmThemeCookie(value, {
+        name: props.cookieName,
+        secure: document.location.protocol === 'https:',
+      });
+    } catch {
+      // Cookies can be unavailable in privacy-restricted contexts.
+    }
   }
 
   emit('update:modelValue', value);

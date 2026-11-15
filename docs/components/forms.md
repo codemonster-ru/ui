@@ -170,7 +170,7 @@ components.
 toggle. Native radios carry the semantics and the keyboard behaviour, so the control works inside a
 form with no JavaScript at all.
 
-Choosing a mode writes `data-cm-theme` on the document root and a `cm-theme` cookie. The attribute is
+Choosing a mode writes `data-cm-theme` on the document root and, by default, a `cm-theme` cookie. The attribute is
 written verbatim, `system` included, because the stylesheet resolves that case through a
 `prefers-color-scheme` query; the cookie is what lets the server render the right theme on the first
 paint. See [the theme subsystem](../architecture/theme-subsystem.md) for why the preference lives in
@@ -195,8 +195,22 @@ On the server, read the cookie and stamp the root before anything renders:
 Vanilla markup: [theme-switch HTML](../../contracts/theme-switch/cases/default.html).
 
 `name` renames the radio group, `legend` labels it, and `cookieName` changes where the preference is
-stored. Nothing about `VfThemeSwitch`'s `size`, `variant`, `buttonVariant`, or `thumbContrast`
-carries over.
+stored when there is no provider. `VfThemeSwitch` restores the two-position Vue control as a
+separate export. Inside a provider, use `variant="button"` for an icon or labeled button, or
+the default switch with optional `static` and `thumb-contrast="inverse"` styling. The static
+style keeps the track neutral as the thumb moves; the switch remains operable.
+
+Wrap an application in `CmThemeProvider` to share state across Vue components. `useCmTheme()`
+returns the `theme` and `resolvedTheme` refs, `setTheme(mode)`, and `toggleTheme()`.
+An uncontrolled `CmThemeSwitch` reads and updates that state. Use one provider for the document.
+On the server, supply `defaultTheme` from the request and set the root `data-cm-theme` attribute
+before render. The provider does not touch the browser during server rendering; once mounted it
+keeps system mode in sync with the browser's media query.
+
+For existing `VfThemeProvider` and `useTheme` integrations, the Vue root exports both names. The
+provider uses the shared cookie by default; pass a `storage-key` to retain an existing
+`localStorage` preference. Pass `attribute` to reflect the resolved light or dark theme onto an
+additional root attribute while `data-cm-theme` retains the selected mode.
 
 ## Native form and accessibility rules
 
