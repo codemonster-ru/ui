@@ -9,9 +9,10 @@ const props = defineProps({
   caption: { type: String, default: '' },
   density: {
     type: String as PropType<CmTableDensity>,
-    default: 'default',
+    default: undefined,
     validator: (value: string) => ['default', 'compact'].includes(value),
   },
+  compact: Boolean,
   striped: Boolean,
   columnDividers: Boolean,
   stickyHeader: Boolean,
@@ -21,7 +22,7 @@ const rootClasses = computed(() => mergeCmClasses('cm-table-wrap', attrs.class))
 const tableClasses = computed(() =>
   mergeCmClasses(
     'cm-table',
-    props.density === 'compact' ? 'cm-table--compact' : undefined,
+    props.density === 'compact' || (props.density === undefined && props.compact) ? 'cm-table--compact' : undefined,
     props.striped ? 'cm-table--striped' : undefined,
     props.columnDividers ? 'cm-table--column-dividers' : undefined,
     props.stickyHeader ? 'cm-table--sticky-header' : undefined,

@@ -18,6 +18,7 @@ and `<tfoot>` respectively; absent groups are omitted. Slot authors remain respo
 ## Presentation
 
 `density="compact"`, `striped`, `columnDividers`, and `stickyHeader` add stable modifier classes.
+The Vue `VfTable` export retains the `compact` boolean. An explicit `density` takes precedence.
 Sticky headers operate inside the horizontal scroll region and require authored header cells.
 Presentation never changes table semantics, source order, or keyboard behavior.
 
