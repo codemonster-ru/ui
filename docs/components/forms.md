@@ -217,10 +217,16 @@ On the server, supply `defaultTheme` from the request and set the root `data-cm-
 before render. The provider does not touch the browser during server rendering; once mounted it
 keeps system mode in sync with the browser's media query.
 
-For existing `VfThemeProvider` and `useTheme` integrations, the Vue root exports both names. The
-provider uses the shared cookie by default; pass a `storage-key` to retain an existing
-`localStorage` preference. Pass `attribute` to reflect the resolved light or dark theme onto an
-additional root attribute while `data-cm-theme` retains the selected mode.
+`VfThemeProvider` and `useTheme()` are available from the Vue root. `VfThemeProvider` defaults to
+the historical `vf-theme` key in `localStorage` and reflects the resolved light or dark theme on
+`data-vf-theme`. An explicit `attribute` adds another resolved attribute. The shared
+`data-cm-theme` attribute retains the selected mode, including `system`. Both composable names and
+both switch components can use either provider. Use one provider to own the document theme.
+
+`CmThemeProvider` uses the shared cookie by default. When migrating to it, pass
+`storage-key="vf-theme"` to retain the historic storage key and `attribute="data-vf-theme"` if
+your styles still use the historic selector. The cookie and local storage are independent. Server
+rendering takes its initial mode from `defaultTheme`; browser preferences are read after hydration.
 
 ## Native form and accessibility rules
 
