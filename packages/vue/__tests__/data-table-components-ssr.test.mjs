@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { renderToString } from '@vue/server-renderer';
 import { createSSRApp, h } from 'vue';
 import { compareSignificantDom } from '../../../scripts/contracts/significant-dom.mjs';
+import { VfDataTable } from '../dist/historical.js';
 import { CmDataTable, CmTable } from '../dist/index.js';
 
 const packageDirectory = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -17,6 +18,32 @@ function tableSlot(content) {
   if (content.startsWith('<strong>')) return h('strong', content.replace(/<\/?strong>/gu, ''));
   return h('tr', cells);
 }
+
+test('server-renders the historical page window, custom labels and current page', async () => {
+  const html = await renderToString(
+    h(VfDataTable, {
+      columns: [{ key: 'name' }],
+      rows: [{ name: 'Server page' }],
+      pagination: true,
+      paginationMode: 'manual',
+      totalRows: 200,
+      page: 10,
+      labels: {
+        paginationSummary: (first, last, total) => `${first}–${last} of ${total}`,
+        pageSummary: (page, count) => `Current page ${page} / ${count}`,
+        goToPage: (page) => `Jump to ${page}`,
+      },
+    }),
+  );
+
+  assert.match(html, /<button[^>]*aria-current="page"[^>]*aria-label="Current page 10 \/ 20"[^>]*>10<\/button>/u);
+  assert.deepEqual(
+    [...html.matchAll(/aria-label="Jump to (\d+)"/gu)].map((match) => match[1]),
+    ['1', '9', '11', '20'],
+  );
+  assert.equal([...html.matchAll(/class="cm-data-table__pagination-ellipsis" aria-hidden="true"/gu)].length, 2);
+  assert.match(html, />91–91 of 200<\/span>/u);
+});
 
 for (const [slug, component] of Object.entries({ 'data-table': CmDataTable, table: CmTable })) {
   const casesDirectory = resolve(packageDirectory, `../../contracts/${slug}/cases`);

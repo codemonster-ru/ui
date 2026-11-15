@@ -58,6 +58,9 @@ Vue owns interaction directly. Server-rendered Vanilla HTML markup uses the shar
 The initial HTML remains a readable native table without JavaScript. Controlled Vue props are
 authoritative on rerender, while Vanilla applications are authoritative when replacing server markup.
 
+Vue also supports custom contents in the pagination region. The `pagination` slot receives
+`page`, `pageCount`, `pageSize`, `pageSizeOptions`, `totalRows`, and `renderedRowCount`.
+
 For row details in Vanilla, place a native `button type="button"` with `data-cm-data-table-expand`,
 `aria-expanded`, and `aria-controls` in the data row. Give the details `tr` the corresponding ID
 and `cm-data-table__expanded-row`, with both rows in the same table body. Mark collapsed details

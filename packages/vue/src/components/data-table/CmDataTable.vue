@@ -144,6 +144,14 @@ const emit = defineEmits<{
   'update:sortList': [sort: CmDataTableSort[]];
 }>();
 type ExpandedRowSlot = (props: { row: Row; rowKey: string; rowIndex: number }) => unknown;
+type PaginationSlot = (props: {
+  page: number;
+  pageCount: number;
+  pageSize: number;
+  pageSizeOptions: readonly number[];
+  totalRows: number | null;
+  renderedRowCount: number;
+}) => unknown;
 
 const slots = defineSlots<{
   caption?: () => unknown;
@@ -151,6 +159,7 @@ const slots = defineSlots<{
   error?: () => unknown;
   loading?: () => unknown;
   footer?: () => unknown;
+  pagination?: PaginationSlot;
   'expanded-row'?: ExpandedRowSlot;
   expandedRow?: ExpandedRowSlot;
   [slot: `header${string}`]: ((props: { column: CmDataTableColumn }) => unknown) | undefined;
@@ -958,41 +967,51 @@ useCmHydrated();
     </div>
     <span v-if="skeletonLoading" class="cm-data-table__loading-status" role="status">{{ props.loadingText }}</span>
     <nav v-if="showPagination" class="cm-data-table__pagination" :aria-label="props.paginationLabel">
-      <label v-if="normalizedPageSizeOptions.length > 0" class="cm-data-table__page-size">
-        <span>{{ props.rowsPerPageLabel }}</span>
-        <select
-          data-cm-data-table-page-size-control
-          @change="changePageSize(Number(($event.target as HTMLSelectElement).value))"
-        >
-          <option
-            v-for="option in normalizedPageSizeOptions"
-            :key="option"
-            :value="option"
-            :selected="option === localPageSize"
+      <slot
+        name="pagination"
+        :page="localPage"
+        :page-count="resolvedPageCount"
+        :page-size="localPageSize"
+        :page-size-options="normalizedPageSizeOptions"
+        :total-rows="safeTotalRows"
+        :rendered-row-count="renderedRows.length"
+      >
+        <label v-if="normalizedPageSizeOptions.length > 0" class="cm-data-table__page-size">
+          <span>{{ props.rowsPerPageLabel }}</span>
+          <select
+            data-cm-data-table-page-size-control
+            @change="changePageSize(Number(($event.target as HTMLSelectElement).value))"
           >
-            {{ option }}
-          </option>
-        </select>
-      </label>
-      <span
-        v-if="safeTotalRows !== null"
-        class="cm-data-table__pagination-summary"
-        aria-live="polite"
-        :data-cm-data-table-pagination-summary-template="props.paginationSummaryTemplate"
-        :data-cm-data-table-empty-pagination-summary="props.emptyPaginationSummaryText"
-      >
-        {{ paginationSummary }}
-      </span>
-      <!-- prettier-ignore -->
-      <button class="cm-data-table__page-button" type="button" :aria-label="props.previousPageLabel" data-cm-data-table-page-action="previous" :disabled="localPage <= 1" @click="changePage(localPage - 1)">{{ props.previousPageText }}</button>
-      <span
-        class="cm-data-table__page-summary"
-        aria-live="polite"
-        :data-cm-data-table-page-summary-template="props.pageSummaryTemplate"
-        >{{ pageSummary }}</span
-      >
-      <!-- prettier-ignore -->
-      <button class="cm-data-table__page-button" type="button" :aria-label="props.nextPageLabel" data-cm-data-table-page-action="next" :disabled="localPage >= resolvedPageCount" @click="changePage(localPage + 1)">{{ props.nextPageText }}</button>
+            <option
+              v-for="option in normalizedPageSizeOptions"
+              :key="option"
+              :value="option"
+              :selected="option === localPageSize"
+            >
+              {{ option }}
+            </option>
+          </select>
+        </label>
+        <span
+          v-if="safeTotalRows !== null"
+          class="cm-data-table__pagination-summary"
+          aria-live="polite"
+          :data-cm-data-table-pagination-summary-template="props.paginationSummaryTemplate"
+          :data-cm-data-table-empty-pagination-summary="props.emptyPaginationSummaryText"
+        >
+          {{ paginationSummary }}
+        </span>
+        <!-- prettier-ignore -->
+        <button class="cm-data-table__page-button" type="button" :aria-label="props.previousPageLabel" data-cm-data-table-page-action="previous" :disabled="localPage <= 1" @click="changePage(localPage - 1)">{{ props.previousPageText }}</button>
+        <span
+          class="cm-data-table__page-summary"
+          aria-live="polite"
+          :data-cm-data-table-page-summary-template="props.pageSummaryTemplate"
+          >{{ pageSummary }}</span
+        >
+        <!-- prettier-ignore -->
+        <button class="cm-data-table__page-button" type="button" :aria-label="props.nextPageLabel" data-cm-data-table-page-action="next" :disabled="localPage >= resolvedPageCount" @click="changePage(localPage + 1)">{{ props.nextPageText }}</button>
+      </slot>
     </nav>
   </div>
 </template>
