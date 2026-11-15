@@ -1,4 +1,4 @@
-import { attachCmAnchoredPosition } from './anchored-position.js';
+import { attachCmAnchoredPosition, resolveCmAnchoredTarget } from './anchored-position.js';
 import {
   boundCalendarDate,
   buildCalendarGrid,
@@ -614,16 +614,7 @@ export class CmDatePickerController implements CmController {
   }
 
   #portalTarget(): Element | null {
-    const destination = this.#trigger.dataset.cmDatePickerTeleportTo;
-    if (!destination) return null;
-    try {
-      const target =
-        (destination === 'body' ? this.#root.closest('dialog[open]') : null) ??
-        this.#root.ownerDocument.querySelector(destination);
-      return target && !this.#root.contains(target) ? target : null;
-    } catch {
-      return null;
-    }
+    return resolveCmAnchoredTarget(this.#root, this.#trigger.dataset.cmDatePickerTeleportTo);
   }
 
   #releasePlacement(): void {

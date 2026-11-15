@@ -4,6 +4,22 @@ import { expect, it } from 'vitest';
 
 import CmSelect from './CmSelect.vue';
 
+it('keeps the listbox inline when the portal destination is invalid or belongs to the select', async () => {
+  const wrapper = mount(CmSelect, {
+    attachTo: document.body,
+    props: { id: 'fallback', options: [{ value: 'daily', label: 'Daily' }], teleportTo: '[' },
+  });
+  try {
+    await wrapper.get('[role="combobox"]').trigger('click');
+    const listbox = wrapper.get('#fallback-listbox');
+    expect(listbox.element.parentElement).toBe(wrapper.element);
+    await wrapper.setProps({ teleportTo: '#fallback-listbox' });
+    expect(wrapper.get('#fallback-listbox').element).toBe(listbox.element);
+  } finally {
+    wrapper.unmount();
+  }
+});
+
 it('positions an open portal in the containing dialog and retains keyboard ownership', async () => {
   const dialog = document.createElement('dialog');
   dialog.open = true;

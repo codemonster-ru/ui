@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { resolveCmAnchoredTarget } from '@codemonster-ru/ui-runtime/anchored-position';
 import { autoUpdate, computePosition, flip, offset, shift } from '@codemonster-ru/floater.js';
 import {
   Comment,
@@ -74,21 +75,7 @@ const rootAttrs = computed(() =>
   omitCmOwnedAttrs(attrs, ['data-cm-controller', 'data-cm-tooltip-open-delay', 'data-cm-tooltip-teleport-to']),
 );
 const portal = computed(() => (!props.disableTeleport ? props.teleportTo || null : null));
-const teleportTarget = computed(() => {
-  const element = root.value;
-  if (!visible.value || !portal.value || !element) return null;
-
-  try {
-    const target =
-      typeof portal.value === 'string'
-        ? ((portal.value === 'body' ? element.closest('dialog[open]') : null) ??
-          element.ownerDocument.querySelector(portal.value))
-        : portal.value;
-    return target?.isConnected && !element.contains(target) ? target : null;
-  } catch {
-    return null;
-  }
-});
+const teleportTarget = computed(() => (visible.value ? resolveCmAnchoredTarget(root.value, portal.value) : null));
 
 function triggerChildren(children: VNode[]): VNode[] {
   return children.flatMap((child) => {

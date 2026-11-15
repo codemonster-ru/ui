@@ -22,7 +22,11 @@ import {
   toggleColumnVisibility,
 } from '@codemonster-ru/ui-runtime/core';
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
-import { observeCmAnchoredPosition, type CmAnchoredStyle } from '@codemonster-ru/ui-runtime/anchored-position';
+import {
+  observeCmAnchoredPosition,
+  resolveCmAnchoredTarget,
+  type CmAnchoredStyle,
+} from '@codemonster-ru/ui-runtime/anchored-position';
 import { authoredTriggerElement, CmAuthoredTrigger } from '../../internal/disclosure-trigger';
 import { assertCm } from '../../internal/warn';
 import type { CmColumnChooserColumn, CmColumnChooserTriggerScope } from './column-chooser.types';
@@ -77,20 +81,7 @@ watchEffect(() => {
 const panelId = computed(() => `${props.id}-panel`);
 const classes = computed(() => mergeCmClasses('cm-popover', 'cm-column-chooser', attrs.class));
 const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['class', 'data-cm-controller']));
-const teleportTarget = computed(() => {
-  const anchor = trigger.value;
-  const requested = props.teleportTo;
-  if (!isOpen.value || !anchor || !requested) return null;
-  try {
-    const target =
-      typeof requested === 'string'
-        ? ((requested === 'body' ? anchor.closest('dialog') : null) ?? anchor.ownerDocument.querySelector(requested))
-        : requested;
-    return target?.isConnected && !root.value?.contains(target) ? target : null;
-  } catch {
-    return null;
-  }
-});
+const teleportTarget = computed(() => (isOpen.value ? resolveCmAnchoredTarget(root.value, props.teleportTo) : null));
 
 function columnLabel(column: CmColumnChooserColumn): string {
   return column.header?.trim() || column.key;

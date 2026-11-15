@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, shallowRef, useAttrs, watch, type ComponentPublicInstance, type PropType } from 'vue';
 
-import { observeCmAnchoredPosition, type CmAnchoredStyle } from '@codemonster-ru/ui-runtime/anchored-position';
+import {
+  observeCmAnchoredPosition,
+  resolveCmAnchoredTarget,
+  type CmAnchoredStyle,
+} from '@codemonster-ru/ui-runtime/anchored-position';
 import { authoredTriggerElement, CmAuthoredTrigger, disclosureTriggerActions } from '../../internal/disclosure-trigger';
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
@@ -56,20 +60,9 @@ const rootAttrs = computed(() =>
     'data-cm-popover-focus-on-open',
   ]),
 );
-const teleportTarget = computed(() => {
-  const anchor = trigger.value;
-  const requested = props.teleportTo;
-  if (!localOpen.value || props.disableTeleport || !requested || !anchor) return null;
-  try {
-    const target =
-      typeof requested === 'string'
-        ? ((requested === 'body' ? anchor.closest('dialog') : null) ?? anchor.ownerDocument.querySelector(requested))
-        : requested;
-    return target?.isConnected && !root.value?.contains(target) ? target : null;
-  } catch {
-    return null;
-  }
-});
+const teleportTarget = computed(() =>
+  localOpen.value ? resolveCmAnchoredTarget(root.value, props.disableTeleport ? null : props.teleportTo) : null,
+);
 watch(
   () => [props.open, props.disabled] as const,
   ([open, disabled]) => (localOpen.value = resolveDisclosureOpen(open ?? localOpen.value, disabled)),
