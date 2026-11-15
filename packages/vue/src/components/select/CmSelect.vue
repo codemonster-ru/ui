@@ -162,7 +162,7 @@ useCmHydrated();
 
 <template>
   <div class="cm-select-wrap" data-cm-controller="select">
-    <input v-if="name" type="hidden" :name="name" :value="currentValue" />
+    <input v-if="name" type="hidden" :name="name" :value="currentValue" :disabled="props.disabled || undefined" />
     <button
       :id="props.id"
       ref="triggerRef"

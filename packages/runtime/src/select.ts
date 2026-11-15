@@ -39,6 +39,7 @@ export class CmSelectController implements CmController {
     this.#root.addEventListener('keydown', this.#handleKeydown);
     this.#root.addEventListener('mousedown', this.#handleMouseDown);
     this.#root.ownerDocument.addEventListener('click', this.#handleDocumentClick);
+    if (this.#input && this.#trigger.disabled) this.#input.disabled = true;
     this.#synchronize(this.#trigger.getAttribute('aria-expanded') === 'true');
   }
 

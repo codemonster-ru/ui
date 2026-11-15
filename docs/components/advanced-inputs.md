@@ -1,9 +1,8 @@
 # Advanced input components
 
-`DatePicker` deliberately preserves the native browser control, form submission, keyboard
-editing, and constraint validation. `Select` is component-owned: both adapters author the same
-trigger, listbox, and hidden input. `CommandPalette` is a modal searchable command list with shared
-Vue and progressive-enhancement behavior.
+`DatePicker` and `Select` use component-owned triggers and panels with a hidden input for named
+form values. `CommandPalette` is a modal searchable command list with shared Vue and
+progressive-enhancement behavior.
 
 Load the token and complete component stylesheets described in the [Button guide](./button.md).
 Individual styles are available from the `select.css`, `date-picker.css`, and
@@ -59,14 +58,18 @@ submits that value through the hidden input, but the value cannot be changed.
 component-owned control sits outside constraint validation. Refusing an empty submission is the
 application's responsibility.
 
+Disabled Select values are omitted from form submissions. In server-rendered HTML, put
+`disabled` on both the trigger and the named hidden input.
+
 ## DatePicker
 
-DatePicker renders `<input type="date">`. `value`, `min`, and `max` are empty or real calendar dates
-in `YYYY-MM-DD` syntax. It accepts the same sizes and state props as Input, including `readonly`,
+DatePicker opens a calendar from a labelled trigger. The model, `min`, and `max` use
+`YYYY-MM-DD` syntax. It accepts the same sizes and state props as Input, including `readonly`,
 plus `clearable` and localized `clearLabel`.
 
 ```vue
 <CmDatePicker
+  id="launch-date"
   v-model="launchDate"
   name="launch_date"
   aria-label="Launch date"
@@ -79,12 +82,14 @@ plus `clearable` and localized `clearLabel`.
 
 Vanilla markup: [date-picker HTML](../../contracts/date-picker/cases/default.html).
 
-The browser owns calendar UI and localized presentation, so its popup appearance can differ by
-platform. The successful form value remains ISO `YYYY-MM-DD`. The portable contract does not add a
-custom calendar, multiple/range or month/year/time modes, display formatting, first-day policy, or
-calendar labels. Register the existing `createCmInputController` in Vanilla HTML to enhance the clear
-action; the date input and submission remain native without it. Validate submitted dates again on
-the server.
+Register `createCmDatePickerController` in Vanilla HTML to open the calendar, choose a date, or
+clear the value. The named hidden input submits the selected ISO date. A readonly value still
+submits. Put `disabled` on the trigger and the hidden input to omit disabled values from
+submission even before enhancement.
+
+The calendar limits selectable days according to `min` and `max`. The trigger announces
+`required` through `aria-required`. Validate the range and required state in the application
+because the hidden input does not participate in native constraint validation.
 
 ## CommandPalette
 
@@ -159,7 +164,7 @@ renderers, fuzzy highlighting, unmatched-query submission, and dialog sizing or 
 ## Accessibility and security
 
 - Give Select and DatePicker an accessible label directly or compose them with Field.
-- Keep native required and range validation unless an equivalent accessible flow is tested.
+- Provide accessible required and range validation for component-owned hidden fields.
 - Treat submitted Select and DatePicker values as untrusted even when options and constraints were
   rendered by the server.
 - Command labels, keywords, and queries are escaped strings. Pass only trusted authored markup to
