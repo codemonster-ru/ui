@@ -17,6 +17,8 @@ const triggerSelector = '.cm-accordion__trigger';
 
 function accordionItems(root: Element): AccordionItem[] {
   return [...root.querySelectorAll<HTMLElement>(itemSelector)].flatMap((item) => {
+    const owner = item.closest('[data-cm-controller~="accordion"]');
+    if (owner && owner !== root) return [];
     const id = item.dataset.cmAccordionItem;
     const trigger = item.querySelector<HTMLButtonElement>(triggerSelector);
     const panelId = trigger?.getAttribute('aria-controls');

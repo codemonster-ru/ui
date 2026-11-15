@@ -101,6 +101,28 @@ test('repeated open requests preserve the opener and current focus', (context) =
   assert.equal(document.activeElement, opener);
 });
 
+test('bubbling dialog requests apply only to the enclosing dialog', (context) => {
+  const nested = modalHtml('dialog');
+  const dom = new JSDOM(modalHtml('dialog').replace('</dialog>', `${nested}</dialog>`));
+  const { document, CustomEvent } = dom.window;
+  const [outer, inner] = document.querySelectorAll('dialog');
+  const opener = outer.querySelector('.action');
+  const runtime = new CmRuntime().register('dialog', createCmDialogController);
+  context.after(() => {
+    runtime.stop();
+    dom.window.close();
+  });
+  runtime.start(document);
+  outer.dispatchEvent(new CustomEvent('cm:dialog-open-request', { bubbles: true }));
+  opener.focus();
+  inner.dispatchEvent(new CustomEvent('cm:dialog-open-request', { bubbles: true }));
+  inner.querySelector('.action').dispatchEvent(new CustomEvent('cm:dialog-close-request', { bubbles: true }));
+
+  assert.equal(inner.open, false);
+  assert.equal(outer.open, true);
+  assert.equal(document.activeElement, opener);
+});
+
 test('reports a native close once and ignores delayed close after reopening', (context) => {
   const dom = new JSDOM(`<button id="opener">Open</button>${modalHtml('dialog')}`);
   const { document, CustomEvent, Event } = dom.window;
@@ -186,6 +208,26 @@ test('popover toggles, focuses panel content, and dismisses outside', () => {
   assert.deepEqual(states, [true, false]);
 });
 
+test('popover initial focus skips hidden form inputs', (context) => {
+  const dom = new JSDOM(popoverHtml());
+  const { document } = dom.window;
+  const root = document.querySelector('.cm-popover');
+  const trigger = root.querySelector('.cm-popover__trigger');
+  const panel = root.querySelector('.cm-popover__panel');
+  const action = panel.querySelector('button');
+  panel.insertAdjacentHTML('afterbegin', '<input type="hidden" data-autofocus tabindex="0">');
+  const runtime = new CmRuntime().register('popover', createCmPopoverController);
+  context.after(() => {
+    runtime.stop();
+    dom.window.close();
+  });
+  runtime.start(document);
+
+  trigger.focus();
+  press(dom, trigger, 'ArrowDown');
+  assert.equal(document.activeElement, action);
+});
+
 test('tooltip follows focus, blur, and Escape without moving focus', async () => {
   const dom = new JSDOM(tooltipHtml());
   const root = dom.window.document.querySelector('.cm-tooltip');
@@ -202,6 +244,40 @@ test('tooltip follows focus, blur, and Escape without moving focus', async () =>
   trigger.blur();
   await tick();
   assert.equal(content.hidden, true);
+});
+
+test('a portaled tooltip stays open during pointer handoff and can dismiss without taking focus', (context) => {
+  const dom = new JSDOM(`${tooltipHtml()}<button id="outside">Other control</button>`);
+  const { document, MouseEvent, KeyboardEvent } = dom.window;
+  const root = document.querySelector('.cm-tooltip');
+  const content = root.querySelector('.cm-tooltip__content');
+  const outside = document.querySelector('#outside');
+  root.setAttribute('data-cm-tooltip-teleport-to', 'body');
+  const runtime = new CmRuntime().register('tooltip', createCmTooltipController);
+  context.after(() => {
+    runtime.stop();
+    dom.window.close();
+  });
+  runtime.start(document);
+  outside.focus();
+
+  root.dispatchEvent(new MouseEvent('pointerenter'));
+  assert.equal(content.parentElement, document.body);
+  root.dispatchEvent(new MouseEvent('pointerleave', { relatedTarget: content }));
+  content.dispatchEvent(new MouseEvent('pointerenter', { relatedTarget: root }));
+  assert.equal(content.hidden, false);
+
+  const escape = () => new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'Escape' });
+  assert.equal(outside.dispatchEvent(escape()), true);
+  assert.equal(content.hidden, true);
+  assert.equal(document.activeElement, outside);
+
+  content.dispatchEvent(new MouseEvent('pointerleave', { relatedTarget: outside }));
+  root.dispatchEvent(new MouseEvent('pointerenter'));
+  assert.equal(content.hidden, false);
+  runtime.stop();
+  assert.equal(outside.dispatchEvent(escape()), true);
+  assert.equal(content.hidden, false);
 });
 
 test('tooltip enhances an authored link with a delayed portal and returns its panel on disconnect', async () => {

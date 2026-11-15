@@ -1,7 +1,15 @@
 import { autoUpdate, computePosition, flip, offset, shift } from '@codemonster-ru/floater.js';
 import { releaseCmOverlayFocus } from './overlay-focus.js';
 
-type CmAnchoredPlacement = 'top' | 'bottom-start' | 'bottom-end';
+const oppositePlacement = {
+  bottom: 'top',
+  'bottom-end': 'top-end',
+  'bottom-start': 'top-start',
+  left: 'right',
+  right: 'left',
+  top: 'bottom',
+} as const;
+type CmAnchoredPlacement = keyof typeof oppositePlacement;
 const arrowX = '--cm-floating-arrow-x';
 const arrowY = '--cm-floating-arrow-y';
 const arrowAngle = '--cm-floating-arrow-angle';
@@ -52,7 +60,7 @@ export function observeCmAnchoredPosition(
   placement: CmAnchoredPlacement,
   gap: number,
   inlineContainer: HTMLElement | null | undefined,
-  apply: (style: CmAnchoredStyle) => void,
+  apply: (style: CmAnchoredStyle, resolvedPlacement: string) => void,
 ): () => void {
   let active = true;
   const update = (): void => {
@@ -60,16 +68,7 @@ export function observeCmAnchoredPosition(
     void computePosition(anchor, panel, {
       placement,
       strategy: 'fixed',
-      middleware: [
-        offset(gap),
-        flip({
-          placements: [
-            placement,
-            placement === 'top' ? 'bottom' : placement === 'bottom-end' ? 'top-end' : 'top-start',
-          ],
-        }),
-        shift(),
-      ],
+      middleware: [offset(gap), flip({ placements: [placement, oppositePlacement[placement]] }), shift()],
     }).then(({ x, y, placement: resolvedPlacement }) => {
       if (!active) return;
       const arrow: Partial<CmAnchoredStyle> = {};
@@ -85,7 +84,7 @@ export function observeCmAnchoredPosition(
         x += inlineContainer.scrollLeft - bounds.left - inlineContainer.clientLeft;
         y += inlineContainer.scrollTop - bounds.top - inlineContainer.clientTop;
       }
-      apply({ inset: 'auto', left: `${x}px`, top: `${y}px`, ...arrow });
+      apply({ inset: 'auto', left: `${x}px`, top: `${y}px`, ...arrow }, resolvedPlacement);
     });
   };
   const stop = autoUpdate(anchor, update, panel);

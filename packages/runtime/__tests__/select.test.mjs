@@ -33,7 +33,8 @@ function mount() {
     clear: document.querySelector('[data-cm-select-clear]'),
     input: document.querySelector('input[type="hidden"]'),
     options: [...document.querySelectorAll('.cm-select__option')],
-    key: (target, key) => target.dispatchEvent(new dom.window.KeyboardEvent('keydown', { key, bubbles: true })),
+    key: (target, key) =>
+      target.dispatchEvent(new dom.window.KeyboardEvent('keydown', { key, bubbles: true, cancelable: true })),
   };
 }
 
@@ -117,6 +118,28 @@ test('clears the value and reports the change', () => {
   assert.equal(trigger.dataset.cmFilled, undefined);
   assert.equal(clear.hidden, true);
   assert.deepEqual(changes, ['']);
+});
+
+test('leaves Enter and Space on the clear button to native activation', (context) => {
+  const { dom, trigger, options, clear, listbox, input, key } = mount();
+  context.after(() => dom.window.close());
+  trigger.click();
+  options[0].click();
+  clear.focus();
+
+  assert.equal(key(clear, 'Enter'), true);
+  assert.equal(key(clear, ' '), true);
+  assert.equal(listbox.hidden, true);
+  clear.click();
+  assert.equal(input.value, '');
+});
+
+test('keyboard opening skips an initially selected option that is disabled', (context) => {
+  const { dom, document, trigger, options, key } = mount();
+  context.after(() => dom.window.close());
+  options[2].setAttribute('aria-selected', 'true');
+  key(trigger, 'ArrowDown');
+  assert.equal(document.activeElement, options[0]);
 });
 
 test('submits the committed value through the hidden input', () => {

@@ -111,6 +111,33 @@ test('leaves activation keys and unrelated targets to native browser behavior', 
   assert.equal(triggers[0].getAttribute('aria-expanded'), 'false');
 });
 
+test('keeps nested disclosure state and keyboard focus within each Accordion', (context) => {
+  const { dom, root, triggers, panels } = accordion();
+  context.after(() => dom.window.close());
+  triggers[0].setAttribute('aria-expanded', 'true');
+  panels[0].innerHTML = `
+    <div class="cm-accordion" data-cm-controller="accordion">
+      ${item('personal')}
+      ${item('team')}
+    </div>
+  `;
+  const inner = panels[0].firstElementChild;
+  const [first, second] = inner.querySelectorAll('.cm-accordion__trigger');
+  const changes = [];
+  root.addEventListener('cm:open-change', (event) => changes.push([event.target, event.detail.openItems]));
+  new CmRuntime().register('accordion', createCmAccordionController).start(root);
+
+  first.click();
+  assert.equal(first.getAttribute('aria-expanded'), 'true');
+  assert.equal(triggers[0].getAttribute('aria-expanded'), 'true');
+  assert.deepEqual(changes, [[inner, ['personal']]]);
+
+  press(dom, second, 'ArrowDown');
+  assert.equal(dom.window.document.activeElement, first);
+  press(dom, triggers[0], 'ArrowDown');
+  assert.equal(dom.window.document.activeElement, triggers[1]);
+});
+
 function accordion(rootAttributes = '') {
   const dom = new JSDOM(`
     <div class="cm-accordion" data-cm-controller="accordion" ${rootAttributes}>

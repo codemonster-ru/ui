@@ -4,9 +4,10 @@ export function observeFormReset(
   reset: () => void,
   resolveForm: () => HTMLFormElement | null = () => control.form,
 ): () => void {
-  const document = control.ownerDocument;
-  const view = document.defaultView;
+  const view = control.ownerDocument.defaultView;
   if (!view) return () => {};
+  const root = control.getRootNode();
+  const eventRoot = root instanceof view.ShadowRoot ? root : control.ownerDocument;
   const pending = new Set<number>();
 
   const schedule = (event: Event): void => {
@@ -20,9 +21,9 @@ export function observeFormReset(
     pending.add(timer);
   };
 
-  document.addEventListener('reset', schedule, true);
+  eventRoot.addEventListener('reset', schedule, true);
   return () => {
-    document.removeEventListener('reset', schedule, true);
+    eventRoot.removeEventListener('reset', schedule, true);
     for (const timer of pending) view.clearTimeout(timer);
     pending.clear();
   };
