@@ -8,6 +8,7 @@ import {
 } from './core/shell.js';
 import { dispatchCmEvent } from './events.js';
 import type { CmController, CmControllerFactory } from './runtime.js';
+import { belongsToShell, findShellControl } from './shell-ownership.js';
 
 export interface AdminLayoutStateChangeDetail {
   mobileSidebarOpen: boolean;
@@ -47,7 +48,7 @@ export class CmAdminLayoutController implements CmController {
     this.#root.setAttribute(cmShellAttributes.sidebarCollapsed, String(next.sidebarCollapsed));
     this.#root.setAttribute(cmShellAttributes.mobileSidebarOpen, String(next.mobileSidebarOpen));
 
-    const toggle = this.#root.querySelector<HTMLElement>('[data-cm-mobile-sidebar-toggle]');
+    const toggle = findShellControl(this.#root, '[data-cm-mobile-sidebar-toggle]');
     if (toggle) {
       toggle.setAttribute('aria-expanded', String(next.mobileSidebarOpen));
       const labels = {
@@ -62,24 +63,23 @@ export class CmAdminLayoutController implements CmController {
 
   readonly #handleClick = (event: Event): void => {
     const Element_ = this.#root.ownerDocument.defaultView?.Element;
-    if (!Element_ || !(event.target instanceof Element_)) return;
+    if (!Element_ || !(event.target instanceof Element_) || event.defaultPrevented) return;
+    if (!belongsToShell(this.#root, event.target)) return;
+    const target = event.target.closest(
+      '[data-cm-sidebar-toggle], [data-cm-mobile-sidebar-toggle], [data-cm-mobile-sidebar-close]',
+    );
+    if (!target || !belongsToShell(this.#root, target)) return;
 
-    if (event.target.closest('[data-cm-sidebar-toggle]')) {
-      this.#commit(toggleShellSidebar(this.#state));
-      return;
-    }
-
-    if (
-      event.target.closest('[data-cm-mobile-sidebar-toggle]') ||
-      event.target.closest('[data-cm-mobile-sidebar-close]')
-    ) {
-      this.#commit(toggleShellMobileSidebar(this.#state));
-    }
+    const state = this.#state;
+    this.#commit(
+      target.hasAttribute('data-cm-sidebar-toggle') ? toggleShellSidebar(state) : toggleShellMobileSidebar(state),
+    );
   };
 
   readonly #handleKeydown = (event: Event): void => {
-    const KeyboardEvent_ = this.#root.ownerDocument.defaultView?.KeyboardEvent;
-    if (!KeyboardEvent_ || !(event instanceof KeyboardEvent_) || event.key !== 'Escape') return;
+    const view = this.#root.ownerDocument.defaultView;
+    if (!view || !(event instanceof view.KeyboardEvent) || event.key !== 'Escape' || event.defaultPrevented) return;
+    if (!(event.target instanceof view.Element) || !belongsToShell(this.#root, event.target)) return;
 
     const next = shellEscapeState(this.#state);
     if (next === null) return;

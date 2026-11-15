@@ -1,6 +1,7 @@
 import { cmShellAttributes, toggleShellSidebar, type CmShellState } from './core/shell.js';
 import { dispatchCmEvent } from './events.js';
 import type { CmController, CmControllerFactory } from './runtime.js';
+import { belongsToShell, findShellControl } from './shell-ownership.js';
 
 export interface AppShellStateChangeDetail {
   sidebarCollapsed: boolean;
@@ -38,13 +39,14 @@ export class CmAppShellController implements CmController {
   readonly #handleClick = (event: Event): void => {
     const view = this.#root.ownerDocument.defaultView;
     const origin = view && event.target instanceof view.Element ? event.target : null;
-    const target = origin?.closest('[data-cm-sidebar-toggle]') ?? null;
-    if (!target || !this.#root.contains(target)) return;
+    if (event.defaultPrevented || !origin || !belongsToShell(this.#root, origin)) return;
+    const target = origin.closest('[data-cm-sidebar-toggle]');
+    if (!target || !belongsToShell(this.#root, target)) return;
 
     const next = toggleShellSidebar(this.#state);
     this.#root.setAttribute(cmShellAttributes.sidebarCollapsed, String(next.sidebarCollapsed));
 
-    const toggle = this.#root.querySelector('[data-cm-sidebar-toggle]');
+    const toggle = findShellControl(this.#root, '[data-cm-sidebar-toggle]');
     toggle?.setAttribute('aria-expanded', String(!next.sidebarCollapsed));
 
     dispatchCmEvent<AppShellStateChangeDetail>(this.#root, 'app-shell-state-change', {
