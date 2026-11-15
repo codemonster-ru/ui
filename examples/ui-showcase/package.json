@@ -18,6 +18,7 @@
     "@codemonster-ru/ui-tokens": "file:../../packages/tokens",
     "@codemonster-ru/ui-utilities": "file:../../packages/utilities",
     "@codemonster-ru/ui-vue": "file:../../packages/vue",
+    "@codemonster-ru/vueforge-codeblock": "4.0.1",
     "vue": "^3.5.20"
   },
   "devDependencies": {
