@@ -155,14 +155,21 @@ describe('Vue overlay components', () => {
 
   it('shows Tooltip after its finite delay and hides it with Escape', async () => {
     vi.useFakeTimers();
-    const wrapper = mount(CmTooltip, { props: { id: 'save', label: 'Save', content: 'Save changes' } });
-    const trigger = wrapper.get('.cm-tooltip__trigger');
-    await trigger.trigger('focus');
+    const wrapper = mount(CmTooltip, {
+      attachTo: document.body,
+      props: { id: 'save', label: 'Save', content: 'Save changes' },
+    });
+    const trigger = wrapper.get<HTMLButtonElement>('button.cm-tooltip__trigger');
+    trigger.element.focus();
     expect(wrapper.get('[role="tooltip"]').attributes('hidden')).toBe('');
-    await vi.advanceTimersByTimeAsync(300);
+    await vi.advanceTimersByTimeAsync(299);
+    expect(wrapper.get('[role="tooltip"]').attributes('hidden')).toBe('');
+    await vi.advanceTimersByTimeAsync(1);
     expect(wrapper.get('[role="tooltip"]').attributes('hidden')).toBeUndefined();
     await trigger.trigger('keydown', { key: 'Escape' });
     expect(wrapper.get('[role="tooltip"]').attributes('hidden')).toBe('');
+    expect(document.activeElement).toBe(trigger.element);
+    wrapper.unmount();
   });
 
   it('renders trusted Tooltip trigger and non-interactive rich content', () => {
