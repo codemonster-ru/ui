@@ -5,18 +5,43 @@ description: 'Serve CodeMonster UI assets directly from server templates'
 
 # Vanilla HTML and JavaScript
 
+## npm packages
+
+Use `@codemonster-ru/ui-tokens` and `@codemonster-ru/ui-css` for server-authored HTML. Install
+`@codemonster-ru/ui-runtime` as well if your markup uses interactive controllers. These
+examples use the v2 package exports. Until v2 is published, install the built workspace
+tarballs in your consumer application.
+
+```js
+import '@codemonster-ru/ui-tokens/tokens.css';
+import '@codemonster-ru/ui-css/fonts.css';
+import '@codemonster-ru/ui-css/styles.css';
+import { CmRuntime, createCmAccordionController } from '@codemonster-ru/ui-runtime';
+
+const runtime = new CmRuntime().register('accordion', createCmAccordionController);
+runtime.start(document);
+```
+
+Use an application bundler for these bare imports. Render the
+[Accordion markup](../contracts/accordion/cases/default.html) or other canonical HTML in
+your server template and register only the controllers it uses. A static page can use the
+stylesheet imports alone.
+
+## Browser assets
+
 Run `npm run preview:vanilla` from the repository root to build and open the full Vanilla catalog. Browse Core, Colors, Layouts, and Icons on separate pages. Component variants are interactive within their section. The examples load as you scroll and share the theme selector.
 
 For assets to deploy, run `npm run build:vanilla` and serve the contents of
 `examples/vanilla/dist` over HTTP. Keep the `tokens` and `css` directories intact so
-their relative imports resolve. Open `index.html` for the catalog or
-`accordion-example.html` for the minimal integration example.
+their relative imports resolve. Open `index.html` for the catalog, `accordion-example.html`
+for minimal integration, or `confirm-dialog-example.html` for a confirmation flow.
 
 Render the [canonical component HTML](../contracts/README.md) in your templates with unique IDs
 and the initial state. Load the CSS entries and your own module:
 
 ```html
 <link rel="stylesheet" href="/ui/tokens/tokens.css" />
+<link rel="stylesheet" href="/ui/css/fonts.css" />
 <link rel="stylesheet" href="/ui/css/styles.css" />
 <script type="module" src="/js/ui.js"></script>
 ```
@@ -29,7 +54,9 @@ runtime.start(document);
 ```
 
 For dynamic fragments, call `runtime.start(fragment)` after insertion and
-`runtime.stop(fragment)` before removal. The browser bundle includes Floater and has
+`runtime.stop(fragment)` before removal. Use `const dispose = runtime.observe(container)`
+when the runtime should discover inserted fragments and clean up removed controllers. Call
+`dispose()` when the container is retired. The browser bundle includes Floater and has
 no bare imports. Build the assets once in this repository and serve them as static files in
 your application.
 
