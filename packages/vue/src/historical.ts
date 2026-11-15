@@ -53,3 +53,5 @@ export type { UseTableOfContentsOptions } from './components/table-of-contents/u
 export { default as VfTag } from './components/tag/CmTag.vue';
 export type { CmTagProps as VfTagProps } from './components/tag/tag.types';
 export { default as VfTextarea } from './components/textarea/VfTextarea.vue';
+export { useClickOutside, useEscapeKey } from './composables/document-events';
+export type { UseClickOutsideOptions, UseEscapeKeyOptions } from './composables/document-events';

@@ -130,7 +130,9 @@ test('publishes the opt-in historical icon and Vue components', async () => {
     'VfTag',
     'VfTextarea',
     'VueIconify',
+    'useClickOutside',
     'useDisclosure',
+    'useEscapeKey',
     'useId',
     'useTableOfContents',
   ]);
