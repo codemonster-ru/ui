@@ -1,3 +1,5 @@
+import { cmFrameworkOwnership } from './core/ownership.js';
+
 export interface CmController {
   connect(): void;
   disconnect(): void;
@@ -16,7 +18,7 @@ const controllerSelector = `[${controllerAttribute}]`;
 // A framework adapter renders the same controller hook so its markup matches the canonical DOM,
 // but it owns that element's state declaratively. It marks the element once it has taken over, and
 // the runtime leaves those alone rather than writing the same attributes imperatively behind it.
-const hydratedAttribute = 'data-cm-hydrated';
+const { attribute: hydratedAttribute, claimEvent } = cmFrameworkOwnership;
 
 function controllerNames(element: Element): Set<string> {
   if (element.hasAttribute(hydratedAttribute)) return new Set();
@@ -69,6 +71,7 @@ export class CmRuntime {
 
       const controller = factory(element);
       controller.connect();
+      if (!controllers) element.addEventListener(claimEvent, this.#handleFrameworkClaim);
       const nextControllers = controllers ?? new Map<string, CmController>();
       nextControllers.set(name, controller);
       this.#controllersByElement.set(element, nextControllers);
@@ -79,6 +82,12 @@ export class CmRuntime {
       this.#observedElements.add(element);
     }
   }
+
+  readonly #handleFrameworkClaim = (event: Event): void => {
+    const element = event.currentTarget as Element | null;
+    if (event.target !== element || !element?.hasAttribute(hydratedAttribute)) return;
+    this.#disconnectWhere((connection) => connection.element === element);
+  };
 
   observe(root: ParentNode = document): () => void {
     const currentDisposer = this.#observerDisposers.get(root);
@@ -165,6 +174,7 @@ export class CmRuntime {
       const controllers = this.#controllersByElement.get(connection.element);
       controllers?.delete(connection.name);
       if (controllers?.size === 0) {
+        connection.element.removeEventListener(claimEvent, this.#handleFrameworkClaim);
         this.#controllersByElement.delete(connection.element);
         this.#observedElements.delete(connection.element);
       }

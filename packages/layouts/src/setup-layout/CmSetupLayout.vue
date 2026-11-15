@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed, getCurrentInstance, useAttrs, useSlots } from 'vue';
+import { computed, getCurrentInstance, useAttrs, useSlots, useTemplateRef } from 'vue';
 
 import { shouldEnterAdvance } from '@codemonster-ru/ui-runtime/core';
 import type { CmSetupLayoutProps } from './setup-layout.types';
+import { useLayoutOwnership } from '../use-layout-ownership';
 
 defineOptions({ inheritAttrs: false });
 const props = withDefaults(defineProps<CmSetupLayoutProps>(), {
@@ -18,6 +19,7 @@ const emit = defineEmits<{ next: [event: KeyboardEvent]; back: [event: KeyboardE
 const attrs = useAttrs();
 const slots = useSlots();
 const instance = getCurrentInstance();
+useLayoutOwnership(useTemplateRef<HTMLElement>('root'));
 
 const asidePosition = computed(() => (props.asidePosition === 'left' ? 'left' : 'right'));
 const classes = computed(() => [
@@ -73,7 +75,14 @@ function onKeydown(event: KeyboardEvent): void {
 </script>
 
 <template>
-  <component :is="props.as" v-bind="attrs" :class="classes" data-cm-controller="setup-layout" @keydown="onKeydown">
+  <component
+    :is="props.as"
+    ref="root"
+    v-bind="attrs"
+    :class="classes"
+    data-cm-controller="setup-layout"
+    @keydown="onKeydown"
+  >
     <div class="cm-setup-layout__panel">
       <div v-if="$slots.brand" class="cm-setup-layout__brand"><slot name="brand" /></div>
       <div v-if="$slots.toolbar" class="cm-setup-layout__toolbar"><slot name="toolbar" /></div>

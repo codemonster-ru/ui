@@ -81,6 +81,7 @@ export { menuBarKeyAction } from './menu-bar.js';
 export type { CmMenuBarAction, CmMenuBarContext, CmMenuBarDirection } from './menu-bar.js';
 export { isMenuCloseKey, menuTabStopId, nextMenuItem } from './menu.js';
 export type { CmMenuCoreItem } from './menu.js';
+export { cmFrameworkOwnership } from './ownership.js';
 export { nextRovingIndex } from './roving.js';
 export type { CmRovingDirection, CmRovingOptions, CmRovingOrientation } from './roving.js';
 export {

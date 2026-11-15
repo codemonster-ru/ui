@@ -1,6 +1,8 @@
 import { CmRuntime, createCmTabsController } from '@codemonster-ru/ui-runtime';
+import { renderToString } from '@vue/server-renderer';
 import { mount } from '@vue/test-utils';
 import { afterEach, describe, expect, it } from 'vitest';
+import { createSSRApp, h, nextTick } from 'vue';
 import CmTabs from './CmTabs.vue';
 
 /**
@@ -82,5 +84,39 @@ describe('CmTabs under a running CmRuntime', () => {
 
     runtime.stop();
     wrapper.unmount();
+  });
+
+  it('takes over SSR tabs immediately when the runtime started before hydration', async () => {
+    const container = document.createElement('div');
+    document.body.append(container);
+    const changes: string[] = [];
+    const view = {
+      render: () =>
+        h(
+          CmTabs,
+          { id: 'account', items, modelValue: 'overview', onValueChange: (value: string) => changes.push(value) },
+          { panelOverview: () => 'Overview panel', panelMembers: () => 'Members panel' },
+        ),
+    };
+    container.innerHTML = await renderToString(createSSRApp(view));
+    expect(container.firstElementChild?.hasAttribute('data-cm-hydrated')).toBe(false);
+    const runtime = startRuntime();
+    const app = createSSRApp(view);
+    app.mount(container);
+
+    try {
+      const tabs = [...container.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+      tabs[1]?.click();
+      await nextTick();
+      expect(changes).toEqual(['members']);
+      expect(tabs.map((tab) => tab.getAttribute('aria-selected'))).toEqual(['true', 'false']);
+      expect([...container.querySelectorAll<HTMLElement>('[role="tabpanel"]')].map((panel) => panel.hidden)).toEqual([
+        false,
+        true,
+      ]);
+    } finally {
+      app.unmount();
+      runtime.stop();
+    }
   });
 });

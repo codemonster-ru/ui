@@ -1,6 +1,7 @@
+import { cmFrameworkOwnership } from '@codemonster-ru/ui-runtime/core';
 import { getCurrentInstance, onBeforeUnmount, onMounted } from 'vue';
 
-const hydratedAttribute = 'data-cm-hydrated';
+const { attribute, claimEvent } = cmFrameworkOwnership;
 
 /**
  * Claims this component's root element for Vue.
@@ -24,10 +25,14 @@ export function useCmHydrated(): void {
   };
 
   onMounted(() => {
-    root()?.setAttribute(hydratedAttribute, '');
+    const element = root();
+    if (!element) return;
+    element.setAttribute(attribute, '');
+    const EventConstructor = element.ownerDocument.defaultView?.Event;
+    if (EventConstructor) element.dispatchEvent(new EventConstructor(claimEvent));
   });
 
   onBeforeUnmount(() => {
-    root()?.removeAttribute(hydratedAttribute);
+    root()?.removeAttribute(attribute);
   });
 }
