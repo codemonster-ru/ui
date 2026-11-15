@@ -114,6 +114,10 @@
     animation: cm-drawer-enter var(--cm-motion-duration-normal) var(--cm-motion-ease-standard);
   }
 
+  :is(.cm-dialog, .cm-drawer):modal:has(.cm-dropdown, .cm-menu-bar, .cm-popover, .cm-tooltip) {
+    animation-name: cm-backdrop-enter;
+  }
+
   :is(.cm-dialog, .cm-drawer):modal::backdrop {
     animation: cm-backdrop-enter var(--cm-motion-duration-fast) var(--cm-motion-ease-standard);
   }
