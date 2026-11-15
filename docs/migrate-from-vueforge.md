@@ -12,19 +12,17 @@ Review the behavior and visual differences for each component you move. [Vue con
 
 All package names in the table use the `@codemonster-ru` scope.
 
-| VueForge at `d9879116`                                                                                 | CodeMonster UI entry or retained package                                                                                                          |
-| ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `vueforge-core@2.4.0`                                                                                  | Use named components from `ui-vue` and restored APIs from `ui-vue/historical`. Load shared CSS explicitly.                                        |
-| `vueforge-layouts@2.1.2`                                                                               | Use `ui-layouts` for shells, page layouts, semantic regions, and layout breakpoints. Shared styles come from `ui-css`.                            |
-| `vueforge-icons@3.2.0`                                                                                 | Use named geometry from `ui-icons` with `CmIcon`. Use `VueIconify` from `ui-vue/historical` for name strings and `ui-icons/catalog` for metadata. |
-| `vueforge-theme@2.0.1`                                                                                 | Use the shared CSS and typed token APIs from `ui-tokens`. Vue providers and the Vanilla theme controller own preference state.                    |
-| `vueforge-codeblock@4.0.1`                                                                             | Keep the archived Vue CodeBlock package for source highlighting. The Vanilla code block recipe presents authored code with optional copying.      |
-| `vueforge-playground@3.0.1`, `vueforge-playground-core@2.1.0`, `vueforge-playground-vite-plugin@1.0.0` | Keep the archived packages for Vue previews and Vite integration. The Vanilla playground previews authored HTML, CSS, and JavaScript.             |
+| VueForge at `d9879116`                                                                                 | CodeMonster UI entry or retained package                                                                                                              |
+| ------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `vueforge-core@2.4.0`                                                                                  | Use named components from `ui-vue` or `ui-vue/historical`. Component subpaths are available under `ui-vue/historical/`.                               |
+| `vueforge-layouts@2.1.2`                                                                               | Use `ui-layouts` for shells, page layouts, semantic regions, and layout breakpoints. Component subpaths are available under `ui-layouts/historical/`. |
+| `vueforge-icons@3.2.0`                                                                                 | Use named geometry from `ui-icons` with `CmIcon`. Use `VueIconify` from `ui-vue/historical` for name strings and `ui-icons/catalog` for metadata.     |
+| `vueforge-theme@2.0.1`                                                                                 | Use the shared CSS and typed token APIs from `ui-tokens`. Vue providers and the Vanilla theme controller own preference state.                        |
+| `vueforge-codeblock@4.0.1`                                                                             | Keep the archived Vue CodeBlock package for source highlighting. The Vanilla code block recipe presents authored code with optional copying.          |
+| `vueforge-playground@3.0.1`, `vueforge-playground-core@2.1.0`, `vueforge-playground-vite-plugin@1.0.0` | Keep the archived packages for Vue previews and Vite integration. The Vanilla playground previews authored HTML, CSS, and JavaScript.                 |
 
-Replace an import such as `@codemonster-ru/vueforge-core/button` with a named Vue import. The old
-subpath loaded its own CSS in the browser and had a CSS-free Node entry. For migrated pages, replace
-the old `vueforge-core/styles.css` and `vueforge-layouts/styles.css` imports with the shared stack
-in the application entry.
+For root or aggregate imports, replace the old `vueforge-core/styles.css` and
+`vueforge-layouts/styles.css` imports with the shared stack in the application entry.
 
 ```ts
 import '@codemonster-ru/ui-tokens/tokens.css';
@@ -43,6 +41,27 @@ own package and stylesheet contracts. [Shared CSS entries](./css/getting-started
 Update application selectors and overrides to the shared `.cm-*` and `--cm-*` names even when a Vue
 component still uses a `Vf*` name. Check the component's canonical HTML for selectors and state
 attributes. [Canonical HTML catalog](../contracts/README.md).
+
+### Component subpaths
+
+Add `historical/` before the old component slug when changing package names. This covers the
+45 Core component subpaths, `async`, and all 17 Layouts component subpaths at `d9879116`.
+Vue keeps the named exports. Layouts keeps the default and named exports.
+
+```ts
+import { VfButton } from '@codemonster-ru/ui-vue/historical/button';
+import { VfDataTable } from '@codemonster-ru/ui-vue/historical/data-table';
+import VfContainer from '@codemonster-ru/ui-layouts/historical/container';
+```
+
+Browser bundlers that select the `browser` condition load shared tokens, fonts, and foundation,
+plus the styles for the imported components and their built-in controls. Use this approach for
+browser builds with automatic styles, or use the explicit stack above for app-wide CSS. Import
+styles for any additional components authored in slots. For Node SSR, the same deep imports
+load CSS-free modules. Serve the client build's CSS alongside the server-rendered HTML.
+
+Use the current packages for foundation and theme APIs. For local design tokens use `ui-tokens`.
+The Vue theme provider and breakpoint alternatives are described below.
 
 ## Vue components and composables
 

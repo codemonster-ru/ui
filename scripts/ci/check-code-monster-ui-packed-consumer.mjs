@@ -6,6 +6,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, 
 import { tmpdir } from 'node:os';
 import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { historicalComponentEntries } from '../build/historical-component-entries.mjs';
 import { discoverCodeMonsterUiWorkspaces } from './code-monster-ui-workspaces.mjs';
 
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
@@ -182,6 +183,7 @@ function writeConsumer(tarballs) {
   writeFileSync(
     join(consumerDirectory, 'src/ssr.mjs'),
     [
+      "import { deepStrictEqual, rejects, strictEqual } from 'node:assert/strict';",
       "import { renderToString } from '@vue/server-renderer';",
       "import { createSSRApp, h } from 'vue';",
       "import { CmButton, CmIcon } from '@codemonster-ru/ui-vue';",
@@ -206,6 +208,34 @@ function writeConsumer(tarballs) {
       "assert(iconCatalog.arrowLeft.title === 'Arrow Left', 'Portable catalogue labels are incomplete.');",
       "assert(typeof new CmRuntime().start === 'function', 'Runtime import is not side-effect free.');",
       "assert(cmLightThemePreset.mode === 'light', 'Token runtime export is invalid.');",
+      '',
+      'const namespaces = {',
+      "  vue: await import('@codemonster-ru/ui-vue'),",
+      "  historical: await import('@codemonster-ru/ui-vue/historical'),",
+      "  layouts: await import('@codemonster-ru/ui-layouts'),",
+      '};',
+      'const entries = [',
+      ...['vue', 'layouts'].flatMap((adapter) =>
+        historicalComponentEntries('@codemonster-ru/ui-' + adapter).map(
+          ({ slug, moduleName, names, defaultName }) =>
+            '  ' +
+            JSON.stringify([
+              '@codemonster-ru/ui-' + adapter + '/historical/' + slug,
+              moduleName === 'historical' ? 'historical' : adapter,
+              names.split(', '),
+              defaultName ?? null,
+            ]) +
+            ',',
+        ),
+      ),
+      '];',
+      'for (const [path, namespace, names, defaultName] of entries) {',
+      '  const entry = await import(path);',
+      "  deepStrictEqual(Object.keys(entry).sort(), (defaultName ? [...names, 'default'] : names).sort(), path);",
+      '  for (const name of names) strictEqual(entry[name], namespaces[namespace][name], path);',
+      '  if (defaultName) strictEqual(entry.default, namespaces[namespace][defaultName], path);',
+      '}',
+      "await rejects(import('@codemonster-ru/ui-vue/historical/shared-styles'), { code: 'ERR_MODULE_NOT_FOUND' });",
       "console.log('[ui-packed-consumer] Node SSR and runtime imports passed.');",
       '',
       'function assert(condition, message) {',
@@ -223,12 +253,14 @@ function writeConsumer(tarballs) {
       "const { CmButton } = require('@codemonster-ru/ui-vue');",
       "const { VueIconify, default: VueForgeCore } = require('@codemonster-ru/ui-vue/historical');",
       "const { CmAuthLayout } = require('@codemonster-ru/ui-layouts');",
+      "const { VfButton } = require('@codemonster-ru/ui-vue/historical/button');",
       '',
       'async function verify() {',
       "  const html = await renderToString(h(CmAuthLayout, { title: 'From CommonJS' }, () =>",
       "    h(CmButton, null, () => h(VueIconify, { icon: 'moon' }))));",
       '  assert.match(html, /From CommonJS[\\s\\S]*cm-button[\\s\\S]*<svg/u);',
       "  assert.equal(CmButton, (await import('@codemonster-ru/ui-vue')).CmButton);",
+      '  assert.equal(VfButton, CmButton);',
       "  assert.equal(VueIconify, (await import('@codemonster-ru/ui-vue/historical')).VueIconify);",
       "  assert.equal(VueForgeCore, (await import('@codemonster-ru/ui-vue/historical')).default);",
       "  assert.equal(CmAuthLayout, (await import('@codemonster-ru/ui-layouts')).CmAuthLayout);",
@@ -244,9 +276,39 @@ function writeConsumer(tarballs) {
       "import vueAdapter = require('@codemonster-ru/ui-vue');",
       "import historicalAdapter = require('@codemonster-ru/ui-vue/historical');",
       "import layoutsAdapter = require('@codemonster-ru/ui-layouts');",
+      "import historicalButton = require('@codemonster-ru/ui-vue/historical/button');",
       '',
       "const options: historicalAdapter.VfVueForgeOptions = { defaultTheme: 'light' };",
-      'void [vueAdapter.CmButton, historicalAdapter.createVueForgeCore(options), layoutsAdapter.CmAuthLayout];',
+      'void [vueAdapter.CmButton, historicalAdapter.createVueForgeCore(options), layoutsAdapter.CmAuthLayout, historicalButton.VfButton];',
+      '',
+    ].join('\n'),
+  );
+  writeFileSync(
+    join(consumerDirectory, 'styled.html'),
+    '<main id="app"></main><script type="module" src="/src/styled.ts"></script>\n',
+  );
+  writeFileSync(
+    join(consumerDirectory, 'vite-styled.config.mjs'),
+    "export default { build: { outDir: 'dist-styled', rollupOptions: { input: 'styled.html' } } };\n",
+  );
+  writeFileSync(
+    join(consumerDirectory, 'src/styled.ts'),
+    [
+      "import { createApp, h } from 'vue';",
+      "import { VfButton } from '@codemonster-ru/ui-vue/historical/button';",
+      "import { VfDataTable } from '@codemonster-ru/ui-vue/historical/data-table';",
+      "import Container, { VfContainer } from '@codemonster-ru/ui-layouts/historical/container';",
+      "import type { VfNavMenuProps } from '@codemonster-ru/ui-vue/historical/nav-menu';",
+      "import type { VfAdminLayoutProps } from '@codemonster-ru/ui-layouts/historical/admin-layout';",
+      'const menu: Pick<VfNavMenuProps, "items"> = { items: [] };',
+      'const layout: Pick<VfAdminLayoutProps, "sidebarCollapsed"> = { sidebarCollapsed: false };',
+      'void [menu, layout];',
+      "if (Container !== VfContainer) throw new Error('The historical Container default must match its named export.');",
+      'createApp({ render: () => h(Container, null, () => [',
+      "  h(VfButton, null, () => 'Styled without a manual import'),",
+      "  h(VfDataTable, { columns: [{ key: 'name', header: 'Name' }], rows: [{ name: 'Ada' }] },",
+      "    { 'expanded-row': () => 'Additional detail' }),",
+      "]) }).mount('#app');",
       '',
     ].join('\n'),
   );
@@ -289,6 +351,7 @@ try {
     'src/require.cts',
   ]);
   run(join(consumerDirectory, 'node_modules/.bin/vite'), ['build']);
+  run(join(consumerDirectory, 'node_modules/.bin/vite'), ['build', '--config', 'vite-styled.config.mjs']);
   run(process.execPath, ['src/ssr.mjs']);
   run(process.execPath, ['src/ssr.cjs']);
 
@@ -299,6 +362,20 @@ try {
   assert.match(outputCss, /\.cm-stack/u);
   assert.match(outputCss, /\.cm-auth-layout/u);
   assert.match(outputCss, /\.cm-grid-cols-2/u);
+  const styledAssets = readdirSync(join(consumerDirectory, 'dist-styled/assets')).filter((fileName) =>
+    fileName.endsWith('.css'),
+  );
+  assert.equal(styledAssets.length, 1, 'Historical browser imports must bundle one shared stylesheet.');
+  const historicalCss = readFileSync(join(consumerDirectory, 'dist-styled/assets', styledAssets[0]), 'utf8');
+  for (const selector of ['button', 'data-table', 'container', 'icon-button', 'icon', 'skeleton']) {
+    assert.match(historicalCss, new RegExp('\\.cm-' + selector + '(?=[\\s{.,:>])', 'u'));
+  }
+  assert.equal(
+    [...historicalCss.matchAll(/--cm-control-height-md:/gu)].length,
+    1,
+    'Shared tokens must be bundled once.',
+  );
+  assert.doesNotMatch(historicalCss, /\.cm-command-palette/u);
   for (const name of expectedNames) {
     const installedManifest = JSON.parse(readFileSync(join(consumerDirectory, 'node_modules', name, 'package.json')));
     assert.equal(installedManifest.name, name);

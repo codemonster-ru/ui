@@ -3,10 +3,12 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
+import { historicalComponentEntries, historicalComponentPattern } from '../build/historical-component-entries.mjs';
 import { codeMonsterUiNodeEngine, codeMonsterUiNpmPackages } from './code-monster-ui-package-catalog.mjs';
 import { validateCodeMonsterUiNpmPackageContract } from './code-monster-ui-package-contracts.mjs';
 
 const tokensContract = codeMonsterUiNpmPackages.find(({ directory }) => directory === 'tokens');
+const layoutsContract = codeMonsterUiNpmPackages.find(({ directory }) => directory === 'layouts');
 
 function createPackage(context, manifestOverrides = {}) {
   const packageDirectory = mkdtempSync(join(tmpdir(), 'codemonster-ui-package-contract-'));
@@ -54,6 +56,24 @@ test('accepts a built CodeMonster UI package contract', (context) => {
   const { manifest, packageDirectory } = createPackage(context);
 
   assert.deepEqual(validateCodeMonsterUiNpmPackageContract(tokensContract, packageDirectory, manifest), []);
+});
+
+test('checks every registered historical wildcard target after build', (context) => {
+  const { manifest, packageDirectory } = createPackage(context, {
+    name: layoutsContract.name,
+    peerDependencies: { vue: '^3.5.0' },
+    exports: { '.': './dist/index.js', [historicalComponentPattern]: './dist/components/*.js' },
+  });
+  mkdirSync(join(packageDirectory, 'dist/components'));
+  for (const { slug } of historicalComponentEntries(layoutsContract.name)) {
+    writeFileSync(join(packageDirectory, `dist/components/${slug}.js`), 'export {};\n');
+  }
+
+  assert.deepEqual(validateCodeMonsterUiNpmPackageContract(layoutsContract, packageDirectory, manifest), []);
+  rmSync(join(packageDirectory, 'dist/components/stack.js'));
+  const errors = validateCodeMonsterUiNpmPackageContract(layoutsContract, packageDirectory, manifest);
+  assert.equal(errors.length, 1);
+  assert.match(errors[0], /\(stack\) target is missing after build: .\/dist\/components\/stack\.js/u);
 });
 
 test('rejects missing exports, invalid package dependencies, and VueForge imports', (context) => {

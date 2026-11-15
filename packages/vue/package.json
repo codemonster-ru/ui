@@ -22,7 +22,10 @@
   "files": [
     "dist"
   ],
-  "sideEffects": false,
+  "sideEffects": [
+    "./dist/historical-entries/browser/*.js",
+    "./dist/historical-entries/shared-styles.js"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -33,10 +36,16 @@
       "types": "./dist/historical.d.ts",
       "import": "./dist/historical.js",
       "module-sync": "./dist/historical.js"
+    },
+    "./historical/*": {
+      "types": "./dist/historical-entries/node/*.d.ts",
+      "browser": "./dist/historical-entries/browser/*.js",
+      "import": "./dist/historical-entries/node/*.js",
+      "module-sync": "./dist/historical-entries/node/*.js"
     }
   },
   "scripts": {
-    "build": "vite build",
+    "build": "vite build && node ../../scripts/build/build-historical-component-entries.mjs",
     "check": "npm run lint && npm run typecheck && npm run test",
     "format": "prettier --ignore-path ../../.prettierignore --write .",
     "format:check": "prettier --ignore-path ../../.prettierignore --check .",

@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import ts from 'typescript';
 import { compileTemplate, parse as parseSfc } from '@vue/compiler-sfc';
+import { historicalComponentEntries, historicalComponentPattern } from '../build/historical-component-entries.mjs';
 import { isDocumentationScriptLanguage } from './documentation-fences.mjs';
 
 const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -231,7 +232,13 @@ function packageExportExists(manifest, exportKey) {
     return exportKey === '.';
   }
 
-  return Object.hasOwn(manifest.exports, exportKey);
+  return (
+    Object.hasOwn(manifest.exports, exportKey) ||
+    (Object.hasOwn(manifest.exports, historicalComponentPattern) &&
+      historicalComponentEntries(manifest.name).some(
+        ({ slug }) => historicalComponentPattern.replace('*', slug) === exportKey,
+      ))
+  );
 }
 
 function checkPublicPackageSpecifier(specifier, filePath, line) {

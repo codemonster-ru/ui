@@ -45,5 +45,5 @@ To also override the canvas when `system` resolves to dark, apply the same decla
 
 The plugin rejects a legacy `theme` option and points to the stylesheet migration. The current
 provider uses the shared theme configuration in the document. Applications that still need the
-VueForge preset engine or automatic component CSS can continue to use their archived
-`@codemonster-ru/vueforge-core` package until they migrate those features.
+VueForge preset engine can continue to use their archived `@codemonster-ru/vueforge-core` package.
+Browser bundlers can load styles when importing [historical component subpaths](../migrate-from-vueforge.md#component-subpaths).
