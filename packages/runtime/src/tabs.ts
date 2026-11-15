@@ -7,20 +7,28 @@ export interface TabsValueChangeDetail {
 }
 
 interface TabEntry {
-  panel: HTMLElement;
   tab: HTMLButtonElement;
   value: string;
 }
 
 const tabSelector = '.cm-tabs__tab[role="tab"]';
 
+function panelFor(root: Element, tab: HTMLButtonElement): HTMLElement | null {
+  const panelId = tab.getAttribute('aria-controls');
+  const panel = panelId ? root.ownerDocument.getElementById(panelId) : null;
+  return panel?.getAttribute('role') === 'tabpanel' && (root.contains(panel) || tab.hasAttribute('data-cm-tab-value'))
+    ? panel
+    : null;
+}
+
 function entries(root: Element): TabEntry[] {
   return [...root.querySelectorAll<HTMLButtonElement>(tabSelector)].flatMap((tab) => {
-    const panelId = tab.getAttribute('aria-controls');
-    const panel = panelId ? root.ownerDocument.getElementById(panelId) : null;
-    const value = panelId?.match(/-panel-([a-z][a-z0-9]*(?:-[a-z0-9]+)*)$/u)?.[1];
-    if (!panel || !value || !root.contains(panel)) return [];
-    return [{ panel, tab, value }];
+    const owner = tab.closest('[data-cm-controller~="tabs"]');
+    if (owner && owner !== root) return [];
+    const explicit = tab.dataset.cmTabValue;
+    if (explicit) return [{ tab, value: explicit }];
+    const value = panelFor(root, tab)?.id.match(/-panel-([a-z][a-z0-9]*(?:-[a-z0-9]+)*)$/u)?.[1];
+    return value ? [{ tab, value }] : [];
   });
 }
 
@@ -95,7 +103,8 @@ export class CmTabsController implements CmController {
       const active = !entry.tab.disabled && entry.value === value;
       entry.tab.setAttribute('aria-selected', String(active));
       entry.tab.tabIndex = active ? 0 : -1;
-      entry.panel.hidden = !active;
+      const panel = panelFor(this.#root, entry.tab);
+      if (panel) panel.hidden = !active;
     }
   }
 }

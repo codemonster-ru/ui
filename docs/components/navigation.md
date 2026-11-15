@@ -18,11 +18,13 @@ Individual styles are also available from the `link.css`, `breadcrumbs.css`, `ta
 - `Breadcrumbs` requires ordered `items` with `label` and optional `href`, `disabled`, and
   `current`. At most one item is current; otherwise the last item is inferred. `ariaLabel`
   defaults to `Breadcrumb`, and the `separator` slot replaces the visual `/`.
-- `Tabs` requires a stable `id` and items with unique kebab-case `value`, non-empty `label`, optional
-  `content`, and `disabled`. Vue binds the active value with `v-model`; Vanilla HTML receives `value`.
-  `defaultValue` initializes uncontrolled state. Per-item
-  `tab{UpperCamelValue}`/`panel{UpperCamelValue}` slots provide trusted rich content inside owned
-  panels. Invalid or missing values fall back to the first enabled tab.
+- `Tabs` accepts items with unique kebab-case `value`, non-empty `label`, optional `content`,
+  and `disabled`. Vue generates a stable prefix if `id` is omitted and binds the active tab with
+  `v-model`. Set `defaultValue` for an initial uncontrolled selection. The per-item slots
+  `tab{UpperCamelValue}` and `panel{UpperCamelValue}` retain their content across selection changes.
+  Use the shared `tab` slot with `{ item, isActive, index }` or the shared active `panel` slot with
+  `{ activeValue }`. An item can also provide an external `panelId` and an explicit `tabId`.
+  Historical Vue consumers can use `VfTabs` and its `change` event.
 - `Menu` requires items with unique kebab-case `id`, `label`, and optional `href`, `target`, `rel`,
   `disabled`, `active`, and `tone` (`default` or `danger`). A blank target is secured like Link.
   `item{UpperCamelId}` slots add trusted rich content without a standalone item component. It

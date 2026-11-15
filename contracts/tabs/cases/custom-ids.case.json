@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "tabs-custom-ids",
+  "description": "Tabs with explicit relationship IDs and shared active panel content.",
+  "props": {
+    "id": "custom-tabs",
+    "defaultValue": "details",
+    "items": [
+      {
+        "value": "overview",
+        "label": "Overview",
+        "content": "Overview.",
+        "tabId": "account:overview-tab",
+        "panelId": "account:overview-panel"
+      },
+      {
+        "value": "details",
+        "label": "Details",
+        "tabId": "account:details-tab",
+        "panelId": "account:details-panel"
+      }
+    ]
+  },
+  "slots": {
+    "tabDetails": "<span>Details <small>new</small></span>",
+    "panel": "<p>Rich <strong>details</strong>.</p>"
+  }
+}

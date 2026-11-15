@@ -4,7 +4,7 @@
   "slug": "tabs",
   "description": "Automatically activated horizontal tabs with related panels.",
   "props": {
-    "id": { "type": "string", "required": true },
+    "id": { "type": "string", "required": false },
     "items": { "type": "collection", "required": true, "valueContract": "tab-item" },
     "value": {
       "type": "nullable",
@@ -20,6 +20,16 @@
     }
   },
   "slots": {
+    "tab": {
+      "required": false,
+      "description": "Shared fallback inside a tab button, with item, isActive and index.",
+      "scopeContract": "tab-item-indexed-state"
+    },
+    "panel": {
+      "required": false,
+      "description": "Shared fallback for the active panel, with activeValue.",
+      "scopeContract": "tab-active-value"
+    },
     "tab{UpperCamelValue}": {
       "required": false,
       "description": "Trusted content inside an item tab.",
@@ -32,6 +42,7 @@
     }
   },
   "events": {
+    "change": { "description": "Vue historical name for an enabled tab activation.", "payloadContract": "tab-value" },
     "valueChange": { "description": "Reports the selected enabled tab value.", "payloadContract": "tab-value" }
   },
   "states": ["default", "selected", "disabled"]
