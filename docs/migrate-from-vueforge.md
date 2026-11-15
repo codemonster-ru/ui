@@ -34,9 +34,11 @@ import '@codemonster-ru/ui-css/styles.css';
 
 For a smaller stylesheet, use `@codemonster-ru/ui-css/foundation.css` and the component CSS
 entries you use, such as `@codemonster-ru/ui-css/button.css`. The old layout breakpoint stylesheet
-maps to `@codemonster-ru/ui-tokens/breakpoints.css`. Core, Layouts, and Icons consumers using the
-old `require` entries can keep their pinned packages while moving to the current ESM entries.
-CodeBlock and Playground keep their own `critical.css` and component styles. [Shared CSS entries](./css/getting-started.md#public-entries).
+maps to `@codemonster-ru/ui-tokens/breakpoints.css`. Node CommonJS applications can `require()`
+`ui-vue`, `ui-vue/historical`, and `ui-layouts` on the supported Node versions. These entries
+load the same server-safe modules as ESM imports. The engine requirement is newer than the old
+VueForge Node 18 requirement. The archived Icons, CodeBlock, and Playground entries retain their
+own package and stylesheet contracts. [Shared CSS entries](./css/getting-started.md#public-entries).
 
 Update application selectors and overrides to the shared `.cm-*` and `--cm-*` names even when a Vue
 component still uses a `Vf*` name. Check the component's canonical HTML for selectors and state
@@ -93,7 +95,7 @@ Import `VueForgeCore` as a default or named export from `ui-vue/historical`, or 
 precedence. Move the old `theme` option to stylesheet overrides or keep the archived package for
 its runtime preset engine. [Theme plugin recipe](./recipes/vue-theme-plugin.md).
 
-The current layout entry supports named ESM imports. Keep the archived layouts package if you still
+The current layout entry supports named imports and Node `require()`. Keep the archived layouts package if you still
 use `app.use(VueForgeLayouts)` or its layout preset configuration. [Archived layout consumer](../packages/layouts/README.md#documentation).
 
 ## Standalone Vanilla pages
