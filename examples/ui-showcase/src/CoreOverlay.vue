@@ -36,6 +36,13 @@ const viewItems = [
         class="core-tooltip-sample"
       />
     </div>
+    <div class="core-matrix-cell">
+      <h4>Tooltip · custom trigger</h4>
+      <CmTooltip id="core-tooltip-custom" placement="bottom" :open-delay="120" teleport-to="body">
+        <CmButton variant="secondary">Keyboard shortcuts</CmButton>
+        <template #content>Press <kbd>?</kbd> for keyboard shortcuts.</template>
+      </CmTooltip>
+    </div>
     <div v-for="entry in menus" :key="entry.id" class="core-matrix-cell">
       <h4>Dropdown · {{ entry.placement }}</h4>
       <CmDropdown v-bind="entry" :items="entry.placement === 'bottom-start' ? items : actionItems" />

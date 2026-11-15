@@ -185,4 +185,11 @@ export type { CmTabItem, CmTabsProps } from './components/tabs/tabs.types';
 export { default as CmTextarea } from './components/textarea/CmTextarea.vue';
 export type { CmTextareaProps, CmTextareaSize } from './components/textarea/textarea.types';
 export { default as CmTooltip } from './components/tooltip/CmTooltip.vue';
-export type { CmTooltipDelay, CmTooltipPlacement, CmTooltipProps } from './components/tooltip/tooltip.types';
+export { default as VfTooltip } from './components/tooltip/VfTooltip.vue';
+export type {
+  CmTooltipDelay,
+  CmTooltipPlacement,
+  CmTooltipProps,
+  VfTooltipPlacement,
+  VfTooltipProps,
+} from './components/tooltip/tooltip.types';

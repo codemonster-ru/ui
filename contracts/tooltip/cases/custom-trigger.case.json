@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "tooltip-custom-trigger",
+  "description": "An authored button and rich tooltip body with a custom delay and a body portal.",
+  "props": { "id": "core-tooltip-custom", "placement": "bottom", "openDelay": 120, "teleportTo": "body" },
+  "slots": {
+    "default": "<button class=\"cm-button cm-button--secondary cm-button--md\" type=\"button\"><span class=\"cm-button__label\">Keyboard shortcuts</span></button>",
+    "content": "Press <kbd>?</kbd> for keyboard shortcuts."
+  }
+}

@@ -25,6 +25,12 @@ function slotContent(content) {
     ],
     '<span aria-hidden="true">×</span>': () => h('span', { 'aria-hidden': 'true' }, '×'),
     'Archive <strong>this project</strong>': () => ['Archive ', h('strong', 'this project')],
+    '<button class="cm-button cm-button--secondary cm-button--md" type="button"><span class="cm-button__label">Keyboard shortcuts</span></button>':
+      () =>
+        h('button', { class: 'cm-button cm-button--secondary cm-button--md', type: 'button' }, [
+          h('span', { class: 'cm-button__label' }, 'Keyboard shortcuts'),
+        ]),
+    'Press <kbd>?</kbd> for keyboard shortcuts.': () => ['Press ', h('kbd', '?'), ' for keyboard shortcuts.'],
   };
   return richContent[content]?.() ?? content;
 }

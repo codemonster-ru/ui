@@ -80,6 +80,9 @@ export type CmTooltipDelay = 'none' | 'short' | 'long';
 /** Tooltip open delays in milliseconds, named so both adapters cannot drift apart on the numbers. */
 export const cmTooltipDelays = Object.freeze({ long: 700, none: 0, short: 300 });
 
-export function resolveTooltipDelay(delay: CmTooltipDelay): number {
+export function resolveTooltipDelay(delay: CmTooltipDelay, openDelay?: number): number {
+  if (openDelay !== undefined && Number.isFinite(openDelay) && openDelay >= 0) {
+    return Math.min(openDelay, 2_147_483_647);
+  }
   return cmTooltipDelays[delay] ?? cmTooltipDelays.short;
 }

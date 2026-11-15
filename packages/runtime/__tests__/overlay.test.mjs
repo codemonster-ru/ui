@@ -203,6 +203,47 @@ test('tooltip follows focus, blur, and Escape without moving focus', async () =>
   assert.equal(content.hidden, true);
 });
 
+test('tooltip enhances an authored link with a delayed portal and returns its panel on disconnect', async () => {
+  const dom = new JSDOM(`
+    <span class="cm-tooltip cm-tooltip--bottom cm-tooltip--delay-long" data-cm-controller="tooltip"
+      data-cm-tooltip-open-delay="12" data-cm-tooltip-teleport-to="#target">
+      <a class="cm-tooltip__trigger" data-cm-tooltip-custom-trigger aria-describedby="shortcut-tip" href="#shortcuts">
+        Shortcuts
+      </a>
+      <span id="shortcut-tip" class="cm-tooltip__content" role="tooltip" hidden>Press ?</span>
+    </span><aside id="target"></aside>
+  `);
+  const document = dom.window.document;
+  const root = document.querySelector('.cm-tooltip');
+  const trigger = root.querySelector('a');
+  const content = root.querySelector('[role="tooltip"]');
+  const target = document.getElementById('target');
+  const runtime = new CmRuntime().register('tooltip', createCmTooltipController);
+  runtime.start(document);
+
+  trigger.focus();
+  assert.equal(content.hidden, true);
+  await delay(20);
+  assert.equal(content.hidden, false);
+  assert.equal(content.parentElement, target);
+  assert.equal(content.hasAttribute('data-cm-tooltip-floating'), true);
+  assert.equal(document.activeElement, trigger);
+
+  root.dispatchEvent(new dom.window.Event('pointerenter'));
+  trigger.blur();
+  assert.equal(content.hidden, false);
+  root.dispatchEvent(new dom.window.Event('pointerleave'));
+  assert.equal(content.hidden, true);
+  assert.equal(content.parentElement, root);
+
+  trigger.focus();
+  await delay(20);
+  assert.equal(content.parentElement, target);
+  runtime.stop();
+  assert.equal(content.parentElement, root);
+  assert.equal(content.hasAttribute('data-cm-tooltip-floating'), false);
+});
+
 function modalHtml(name) {
   return `
     <dialog class="cm-${name}" data-cm-controller="${name}" data-cm-${name}-state="closed">

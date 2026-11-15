@@ -71,6 +71,7 @@ test('publishes the Vue component adapter entries', async () => {
     'VfSkeletonGate',
     'VfThemeProvider',
     'VfThemeSwitch',
+    'VfTooltip',
     'createAsyncWithSkeleton',
     'useCmTheme',
     'useTheme',
