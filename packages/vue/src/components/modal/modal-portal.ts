@@ -6,7 +6,10 @@ export interface VfModalPortalProps {
   disableTeleport?: boolean;
 }
 
-export function useVfModalPortal(destination: () => VfModalPortalProps['teleportTo'], disabled: () => boolean) {
+export function useVfModalPortal(
+  destination: () => VfModalPortalProps['teleportTo'],
+  disabled: () => boolean | undefined,
+) {
   const modal = useTemplateRef<
     Pick<CmModalBinding, 'restoreAfterMove'> & { $el: HTMLDialogElement; modalOpen?: boolean }
   >('modal');

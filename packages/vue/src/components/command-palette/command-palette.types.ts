@@ -1,3 +1,5 @@
+import type { VfModalPortalProps } from '../modal/modal-portal';
+
 export interface CmCommandPaletteItem {
   id: string;
   label: string;
@@ -28,7 +30,7 @@ export interface CmCommandPaletteProps {
   maxHeight?: string | number;
 }
 
-export interface VfCommandPaletteProps {
+export interface VfCommandPaletteProps extends VfModalPortalProps {
   id?: string;
   open?: boolean;
   defaultOpen?: boolean;
