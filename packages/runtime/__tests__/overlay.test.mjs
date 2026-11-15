@@ -52,6 +52,61 @@ test('dialog ignores user dismissal while locked', () => {
   assert.equal(root.open, true);
 });
 
+test('repeated open requests preserve the opener and current focus', (context) => {
+  const dom = new JSDOM(`<button id="opener">Open</button>${modalHtml('dialog')}`);
+  const { document, CustomEvent } = dom.window;
+  const root = document.querySelector('dialog');
+  const opener = document.querySelector('#opener');
+  const action = root.querySelector('.action');
+  const runtime = new CmRuntime().register('dialog', createCmDialogController);
+  context.after(() => {
+    runtime.stop();
+    dom.window.close();
+  });
+  runtime.start(document);
+
+  opener.focus();
+  root.dispatchEvent(new CustomEvent('cm:dialog-open-request'));
+  action.focus();
+  root.dispatchEvent(new CustomEvent('cm:dialog-open-request'));
+  assert.equal(document.activeElement, action);
+
+  root.dispatchEvent(new CustomEvent('cm:dialog-close-request'));
+  assert.equal(document.activeElement, opener);
+});
+
+test('modal focus skips disabled, hidden, inert and negative-tabindex descendants', (context) => {
+  const dom = new JSDOM(`
+    <dialog data-cm-controller="dialog">
+      <button data-cm-dialog-close autofocus disabled>Close</button>
+      <div hidden><button autofocus>Hidden</button></div>
+      <div inert><button data-autofocus>Inert</button></div>
+      <input type="hidden">
+      <button id="first">First</button>
+      <fieldset disabled><button>Disabled by fieldset</button></fieldset>
+      <button id="last">Last</button>
+      <button tabindex="-1">Programmatic only</button>
+      <div aria-hidden="true"><button>Hidden from assistive technology</button></div>
+    </dialog>`);
+  const { document, CustomEvent } = dom.window;
+  const root = document.querySelector('dialog');
+  const first = document.querySelector('#first');
+  const last = document.querySelector('#last');
+  const runtime = new CmRuntime().register('dialog', createCmDialogController);
+  context.after(() => {
+    runtime.stop();
+    dom.window.close();
+  });
+  runtime.start(document);
+
+  root.dispatchEvent(new CustomEvent('cm:dialog-open-request'));
+  assert.equal(document.activeElement, first);
+  press(dom, first, 'Tab', { shiftKey: true });
+  assert.equal(document.activeElement, last);
+  press(dom, last, 'Tab');
+  assert.equal(document.activeElement, first);
+});
+
 test('popover toggles, focuses panel content, and dismisses outside', () => {
   const dom = new JSDOM(`${popoverHtml()}<button id="outside">Outside</button>`);
   const root = dom.window.document.querySelector('.cm-popover');
@@ -112,8 +167,8 @@ function tooltipHtml() {
     </span>`;
 }
 
-function press(dom, target, key) {
-  target.dispatchEvent(new dom.window.KeyboardEvent('keydown', { bubbles: true, cancelable: true, key }));
+function press(dom, target, key, options = {}) {
+  target.dispatchEvent(new dom.window.KeyboardEvent('keydown', { bubbles: true, cancelable: true, key, ...options }));
 }
 
 function tick() {
