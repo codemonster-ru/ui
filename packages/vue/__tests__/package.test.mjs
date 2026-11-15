@@ -91,10 +91,10 @@ test('publishes the Vue component adapter entries', async () => {
   assert.equal(entry.CmSkeleton.__name, 'CmSkeleton');
 });
 
-test('publishes the opt-in historical icon, button, and slot menu entry', async () => {
+test('publishes the opt-in historical icon and Vue components', async () => {
   const entry = await import('@codemonster-ru/ui-vue/historical');
 
-  assert.deepEqual(Object.keys(entry), ['VfIconButton', 'VfMenu', 'VfMenuItem', 'VueIconify']);
+  assert.deepEqual(Object.keys(entry), ['VfIconButton', 'VfInput', 'VfMenu', 'VfMenuItem', 'VfSelect', 'VueIconify']);
   assert.match(await renderToString(h(entry.VfMenu, null, () => 'Actions')), /role="menu"[\s\S]*Actions/u);
   assert.match(await renderToString(h(entry.VueIconify)), /<svg[^>]+aria-hidden="true"/u);
   const button = await renderToString(
@@ -102,4 +102,17 @@ test('publishes the opt-in historical icon, button, and slot menu entry', async 
   );
   assert.match(button, /<button[^>]*class="[^"]*cm-icon-button--warn/u);
   assert.match(button, /aria-label="Settings"[\s\S]*<svg/u);
+  const select = await renderToString(
+    h(entry.VfSelect, {
+      'aria-label': 'Frequency',
+      leadingIcon: 'gear',
+      placement: 'bottom-end',
+      options: [{ value: 'weekly', label: 'Weekly' }],
+    }),
+  );
+  const listboxId = /aria-controls="([^"]+)"/u.exec(select)?.[1];
+  assert.ok(listboxId);
+  assert.ok(select.includes(`id="${listboxId}"`));
+  assert.match(select, /cm-select__icon--leading[\s\S]*<svg/u);
+  assert.match(select, /data-cm-placement="bottom-end"/u);
 });

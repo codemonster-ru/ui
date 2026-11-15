@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, ref, useAttrs, watch, type PropType } from 'vue';
+import { autoUpdate, computePosition, flip, offset, shift } from '@codemonster-ru/floater.js';
+import { computed, nextTick, onMounted, ref, shallowRef, useAttrs, watch, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
 import { selectClosedKeyAction, selectOpenKeyAction } from '@codemonster-ru/ui-runtime/core';
 import { assertCm, warnCm } from '../../internal/warn';
-import type { CmSelectOption, CmSelectSize } from './select.types';
+import type { CmSelectOption, CmSelectPlacement, CmSelectSize } from './select.types';
 
 defineOptions({ inheritAttrs: false });
 const props = defineProps({
@@ -23,6 +24,12 @@ const props = defineProps({
   required: Boolean,
   clearable: Boolean,
   clearLabel: { type: String, default: 'Clear selection' },
+  placement: {
+    type: String as PropType<CmSelectPlacement>,
+    default: 'bottom-start',
+  },
+  teleportTo: { type: [String, Object, Boolean] as PropType<string | HTMLElement | null | false>, default: null },
+  disableTeleport: Boolean,
 });
 const emit = defineEmits<{ valueChange: [value: string]; 'update:modelValue': [value: string] }>();
 const attrs = useAttrs();
@@ -33,6 +40,9 @@ const triggerRef = ref<HTMLButtonElement | null>(null);
 const listboxRef = ref<HTMLElement | null>(null);
 const currentValue = ref(props.modelValue);
 const isOpen = ref(false);
+const mounted = ref(false);
+const portalWidth = ref<number>();
+const positionStyle = shallowRef<{ inset: string; left: string; top: string }>();
 
 watch(
   () => props.modelValue,
@@ -64,6 +74,21 @@ const selectedOption = computed(() =>
 const displayLabel = computed(() => selectedOption.value?.label ?? props.placeholder ?? '');
 const hasClear = computed(() => props.clearable && !props.disabled);
 const name = computed(() => (typeof attrs.name === 'string' ? attrs.name : null));
+const teleportTarget = computed(() => {
+  if (!mounted.value || props.disableTeleport || !props.teleportTo) return null;
+  if (typeof props.teleportTo !== 'string') return props.teleportTo;
+  // A body portal escapes a native modal's inert background, so keep it inside the dialog.
+  return (
+    (props.teleportTo === 'body' ? triggerRef.value?.closest('dialog') : null) ??
+    triggerRef.value?.ownerDocument.querySelector(props.teleportTo) ??
+    null
+  );
+});
+const listboxStyle = computed(() =>
+  teleportTarget.value
+    ? { ...positionStyle.value, position: 'fixed' as const, minWidth: `${portalWidth.value ?? 0}px` }
+    : positionStyle.value,
+);
 
 const classes = computed(() =>
   mergeCmClasses(
@@ -107,7 +132,19 @@ function clearValue(): void {
 }
 
 function onTriggerKeydown(event: KeyboardEvent): void {
-  if (props.disabled || isOpen.value) return;
+  if (props.disabled) return;
+  if (isOpen.value) {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      event.stopPropagation();
+      setOpen(false, true);
+    } else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      const options = enabledOptions();
+      (event.key === 'ArrowUp' ? options[options.length - 1] : options[0])?.focus();
+    }
+    return;
+  }
 
   const action = selectClosedKeyAction(event.key);
   if (!action || action.type !== 'open') return;
@@ -134,6 +171,7 @@ function onListboxKeydown(event: KeyboardEvent): void {
 
   event.preventDefault();
   if (action.type === 'close') {
+    event.stopPropagation();
     setOpen(false, true);
     return;
   }
@@ -147,14 +185,49 @@ function onDocumentClick(event: MouseEvent): void {
   setOpen(false);
 }
 
-watch(isOpen, (open) => {
-  if (typeof document === 'undefined') return;
-  if (open) document.addEventListener('click', onDocumentClick);
-  else document.removeEventListener('click', onDocumentClick);
-});
+watch(
+  [isOpen, teleportTarget, () => props.placement, listboxRef, triggerRef],
+  ([open, target, placement, listbox, trigger], _, onCleanup) => {
+    if (!open || !trigger || !listbox) return;
+    const document = trigger.ownerDocument;
+    let active = true;
+    const place = (): void => {
+      if (target) portalWidth.value = trigger.offsetWidth;
+      void computePosition(trigger, listbox, {
+        placement,
+        strategy: target ? 'fixed' : 'absolute',
+        middleware: [
+          offset(2),
+          flip({ placements: [placement, placement === 'bottom-end' ? 'top-end' : 'top-start'] }),
+          shift(),
+        ],
+      }).then(({ x, y }) => {
+        if (active) {
+          positionStyle.value = { inset: 'auto', left: `${x}px`, top: `${y}px` };
+        }
+      });
+    };
+    document.addEventListener('click', onDocumentClick);
+    const stop = autoUpdate(trigger, place, listbox);
+    place();
+    onCleanup(() => {
+      active = false;
+      stop();
+      positionStyle.value = undefined;
+      document.removeEventListener('click', onDocumentClick);
+    });
+  },
+  { flush: 'post' },
+);
 
-onBeforeUnmount(() => {
-  if (typeof document !== 'undefined') document.removeEventListener('click', onDocumentClick);
+watch(
+  () => props.disabled,
+  (disabled) => {
+    if (disabled) setOpen(false);
+  },
+);
+onMounted(() => {
+  mounted.value = true;
 });
 
 useCmHydrated();
@@ -226,30 +299,34 @@ useCmHydrated();
         </svg>
       </span>
     </button>
-    <div
-      :id="listboxId"
-      ref="listboxRef"
-      class="cm-select__listbox"
-      role="listbox"
-      :aria-labelledby="props.id"
-      :hidden="!isOpen"
-      @keydown="onListboxKeydown"
-    >
-      <button
-        v-for="option in normalizedOptions"
-        :key="option.value"
-        class="cm-select__option"
-        :class="option.value === currentValue && currentValue !== '' ? 'cm-select__option--selected' : undefined"
-        type="button"
-        role="option"
-        tabindex="-1"
-        :aria-selected="option.value === currentValue && currentValue !== ''"
-        :aria-disabled="option.disabled || undefined"
-        :data-cm-select-value="option.value"
-        @click="selectOption(option)"
+    <Teleport :to="teleportTarget ?? 'body'" :disabled="!teleportTarget">
+      <div
+        :id="listboxId"
+        ref="listboxRef"
+        class="cm-select__listbox"
+        v-bind="listboxStyle ? { style: listboxStyle } : {}"
+        :data-cm-placement="props.placement === 'bottom-end' ? 'bottom-end' : undefined"
+        role="listbox"
+        :aria-labelledby="props.id"
+        :hidden="!isOpen"
+        @keydown="onListboxKeydown"
       >
-        {{ option.label }}
-      </button>
-    </div>
+        <button
+          v-for="option in normalizedOptions"
+          :key="option.value"
+          class="cm-select__option"
+          :class="option.value === currentValue && currentValue !== '' ? 'cm-select__option--selected' : undefined"
+          type="button"
+          role="option"
+          tabindex="-1"
+          :aria-selected="option.value === currentValue && currentValue !== ''"
+          :aria-disabled="option.disabled || undefined"
+          :data-cm-select-value="option.value"
+          @click="selectOption(option)"
+        >
+          {{ option.label }}
+        </button>
+      </div>
+    </Teleport>
   </div>
 </template>

@@ -143,7 +143,7 @@ export type {
 export { default as CmRadio } from './components/radio/CmRadio.vue';
 export type { CmRadioProps, CmRadioSize } from './components/radio/radio.types';
 export { default as CmSelect } from './components/select/CmSelect.vue';
-export type { CmSelectOption, CmSelectProps, CmSelectSize } from './components/select/select.types';
+export type { CmSelectOption, CmSelectPlacement, CmSelectProps, CmSelectSize } from './components/select/select.types';
 export { default as CmSection } from './components/section/CmSection.vue';
 export type { CmSectionElement, CmSectionProps } from './components/section/section.types';
 export { default as CmSkeleton } from './components/skeleton/CmSkeleton.vue';

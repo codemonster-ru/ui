@@ -190,24 +190,37 @@ export class CmSelectController implements CmController {
 
   #holdPlacement(): void {
     if (this.#stopAutoUpdate) return;
+    const placement = this.#listbox.dataset.cmPlacement === 'bottom-end' ? 'bottom-end' : 'bottom-start';
+    let active = true;
     const place = (): void => {
       void computePosition(this.#trigger, this.#listbox, {
-        placement: 'bottom-start',
-        middleware: [offset(2), flip(), shift()],
+        placement,
+        middleware: [
+          offset(2),
+          flip({ placements: [placement, placement === 'bottom-end' ? 'top-end' : 'top-start'] }),
+          shift(),
+        ],
       }).then(({ x, y }) => {
-        this.#listbox.style.insetInlineStart = `${x}px`;
-        this.#listbox.style.insetBlockStart = `${y}px`;
+        if (!active) return;
+        this.#listbox.style.inset = 'auto';
+        this.#listbox.style.left = `${x}px`;
+        this.#listbox.style.top = `${y}px`;
       });
     };
-    this.#stopAutoUpdate = autoUpdate(this.#trigger, place, this.#listbox);
+    const stop = autoUpdate(this.#trigger, place, this.#listbox);
+    this.#stopAutoUpdate = () => {
+      active = false;
+      stop();
+    };
     place();
   }
 
   #releasePlacement(): void {
     this.#stopAutoUpdate?.();
     this.#stopAutoUpdate = null;
-    this.#listbox.style.removeProperty('inset-inline-start');
-    this.#listbox.style.removeProperty('inset-block-start');
+    this.#listbox.style.removeProperty('inset');
+    this.#listbox.style.removeProperty('left');
+    this.#listbox.style.removeProperty('top');
   }
 }
 
