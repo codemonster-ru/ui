@@ -9,3 +9,10 @@ export interface CmRadioProps {
   disabled?: boolean;
   required?: boolean;
 }
+
+export type VfRadioValue = string | number | boolean;
+
+export interface VfRadioProps extends Omit<CmRadioProps, 'modelValue' | 'value'> {
+  modelValue?: VfRadioValue;
+  value: VfRadioValue;
+}

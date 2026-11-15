@@ -30,6 +30,10 @@ native DOM property directly; Vanilla consumers register the shared Checkbox con
 after server rendering. The browser then exposes the mixed state to assistive technology. It is a
 visual state, not a third submitted value, and degrades to unchecked when enhancement is absent.
 
+`VfCheckbox` from `@codemonster-ru/ui-vue/historical` emits a checked boolean for both
+`update:modelValue` and `change`. Its input also renders `aria-checked`, including `mixed` for an
+indeterminate value. `CmCheckbox` emits the native `Event` for `change`.
+
 ## Validation and submission
 
 `disabled` and `required` map directly to native attributes. `invalid` adds
