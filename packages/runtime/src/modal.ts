@@ -1,5 +1,6 @@
 import { cmFocusableSelector } from './core/disclosure.js';
 import { dispatchCmEvent } from './events.js';
+import { enterCmNativeModal } from './native-modal.js';
 import type { CmController } from './runtime.js';
 
 export interface ModalOpenChangeDetail {
@@ -20,6 +21,7 @@ export class CmModalController implements CmController {
   readonly #options: ModalControllerOptions;
   #isOpen = false;
   #returnFocus: HTMLElement | null = null;
+  #releaseScroll?: () => void;
 
   constructor(root: Element, options: ModalControllerOptions) {
     const DialogConstructor = root.ownerDocument.defaultView?.HTMLDialogElement;
@@ -35,7 +37,7 @@ export class CmModalController implements CmController {
 
   connect(): void {
     const open = this.#dialog.open;
-    if (open) this.#enterModal();
+    if (open) this.#releaseScroll = enterCmNativeModal(this.#dialog, this.#releaseScroll);
     this.#synchronize(open);
     this.#dialog.addEventListener('click', this.#handleClick);
     this.#dialog.addEventListener('keydown', this.#handleKeydown);
@@ -54,6 +56,8 @@ export class CmModalController implements CmController {
     this.#dialog.removeEventListener(`cm:${this.#options.eventName}-open-request`, this.#handleOpenRequest);
     this.#dialog.removeEventListener(`cm:${this.#options.eventName}-close-request`, this.#handleCloseRequest);
     this.#returnFocus = null;
+    this.#releaseScroll?.();
+    this.#releaseScroll = undefined;
   }
 
   setOpen(open: boolean, restoreFocus = true): void {
@@ -61,7 +65,7 @@ export class CmModalController implements CmController {
       if (this.#dialog.open) return;
       const active = this.#dialog.ownerDocument.activeElement;
       this.#returnFocus = active instanceof this.#dialog.ownerDocument.defaultView!.HTMLElement ? active : null;
-      this.#enterModal();
+      this.#releaseScroll = enterCmNativeModal(this.#dialog, this.#releaseScroll);
       this.#synchronize(true);
       this.#focusInitial();
     } else {
@@ -71,6 +75,8 @@ export class CmModalController implements CmController {
       this.#synchronize(false);
       if (restoreFocus && this.#returnFocus?.isConnected) this.#returnFocus.focus();
       this.#returnFocus = null;
+      this.#releaseScroll?.();
+      this.#releaseScroll = undefined;
     }
     dispatchCmEvent<ModalOpenChangeDetail>(this.#dialog, `${this.#options.eventName}-open-change`, { open });
   }
@@ -125,15 +131,6 @@ export class CmModalController implements CmController {
 
   #isDismissible(): boolean {
     return this.#dialog.getAttribute(`data-cm-${this.#options.eventName}-dismissible`) !== 'false';
-  }
-
-  #enterModal(): void {
-    const dialog = this.#dialog;
-    if (!dialog.isConnected || typeof dialog.showModal !== 'function' || dialog.matches(':modal')) return;
-
-    // The server can render open markup, but only showModal enters the browser's modal stack.
-    if (dialog.open) dialog.removeAttribute('open');
-    dialog.showModal();
   }
 
   #focusInitial(): void {

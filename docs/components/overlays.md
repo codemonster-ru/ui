@@ -115,6 +115,8 @@ it must survive navigation; runtime state is intentionally page-local.
 - Dialog and Drawer use native `<dialog>`, move focus inside when opened, contain Tab focus,
   and restore the invoking focus when known. Use `closeOnEscape` and `closeOnOverlayClick` for
   separate dismissal policies. `dismissible=false` locks user dismissal.
+- Native modal overlays keep the document's scroll position and existing scrollbar space while
+  open. Content within each modal can scroll. Document scrolling resumes after the last modal closes.
 - Drawer supports logical `start` and `end`, physical `left` and `right`, and full-width `top`
   and `bottom` placements. Use `side` in Vue and the corresponding `cm-drawer--*` class in Vanilla.
   Size controls the minimum height of a top or bottom drawer within the available viewport.

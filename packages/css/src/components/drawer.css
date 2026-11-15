@@ -1,3 +1,5 @@
+@import '../primitives/modal-scroll.css';
+
 .cm-drawer,
 .cm-drawer--md,
 .cm-drawer--open {
