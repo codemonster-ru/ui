@@ -1,3 +1,4 @@
+import { cmFocusableSelector } from './core/disclosure.js';
 import { dispatchCmEvent } from './events.js';
 import type { CmController } from './runtime.js';
 
@@ -11,15 +12,6 @@ export interface ModalControllerOptions {
   eventName: string;
   stateAttribute: string;
 }
-
-const focusableSelector = [
-  'a[href]',
-  'button:not([disabled])',
-  'input:not([disabled])',
-  'select:not([disabled])',
-  'textarea:not([disabled])',
-  '[tabindex]:not([tabindex="-1"])',
-].join(',');
 
 export class CmModalController implements CmController {
   readonly #dialog: HTMLDialogElement;
@@ -58,7 +50,8 @@ export class CmModalController implements CmController {
   }
 
   setOpen(open: boolean, restoreFocus = true): void {
-    const changed = this.#dialog.open !== open;
+    if (this.#dialog.open === open) return;
+
     if (open) {
       const active = this.#dialog.ownerDocument.activeElement;
       this.#returnFocus = active instanceof this.#dialog.ownerDocument.defaultView!.HTMLElement ? active : null;
@@ -73,9 +66,7 @@ export class CmModalController implements CmController {
       if (restoreFocus && this.#returnFocus?.isConnected) this.#returnFocus.focus();
       this.#returnFocus = null;
     }
-    if (changed) {
-      dispatchCmEvent<ModalOpenChangeDetail>(this.#dialog, `${this.#options.eventName}-open-change`, { open });
-    }
+    dispatchCmEvent<ModalOpenChangeDetail>(this.#dialog, `${this.#options.eventName}-open-change`, { open });
   }
 
   readonly #handleClick = (event: Event): void => {
@@ -93,9 +84,7 @@ export class CmModalController implements CmController {
       return;
     }
     if (event.key !== 'Tab' || !this.#dialog.open) return;
-    const focusable = [...this.#dialog.querySelectorAll<HTMLElement>(focusableSelector)].filter(
-      (element) => !element.hidden && element.getAttribute('aria-hidden') !== 'true',
-    );
+    const focusable = this.#availableFocusCandidates(cmFocusableSelector).filter((element) => element.tabIndex >= 0);
     if (focusable.length === 0) {
       event.preventDefault();
       this.#dialog.focus();
@@ -126,10 +115,19 @@ export class CmModalController implements CmController {
 
   #focusInitial(): void {
     (
-      this.#dialog.querySelector<HTMLElement>('[autofocus]') ??
-      this.#dialog.querySelector<HTMLElement>(focusableSelector) ??
+      this.#availableFocusCandidates('[autofocus]')[0] ??
+      this.#availableFocusCandidates('[data-autofocus]')[0] ??
+      this.#availableFocusCandidates(cmFocusableSelector).find((element) => element.tabIndex >= 0) ??
       this.#dialog
     ).focus();
+  }
+
+  #availableFocusCandidates(selector: string): HTMLElement[] {
+    return [...this.#dialog.querySelectorAll<HTMLElement>(selector)].filter(
+      (element) =>
+        !element.matches(':disabled, input[type="hidden"]') &&
+        !element.closest('[hidden], [inert], [aria-hidden="true"]'),
+    );
   }
 
   #synchronize(open: boolean): void {

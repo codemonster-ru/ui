@@ -1,7 +1,13 @@
+import { cmFocusableSelector } from '@codemonster-ru/ui-runtime/core';
 import { nextTick, onMounted, ref, watch, type Ref } from 'vue';
 
-const focusableSelector =
-  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+function availableFocusCandidates(dialog: HTMLDialogElement, selector: string): HTMLElement[] {
+  return [...dialog.querySelectorAll<HTMLElement>(selector)].filter(
+    (element) =>
+      !element.matches(':disabled, input[type="hidden"]') &&
+      !element.closest('[hidden], [inert], [aria-hidden="true"]'),
+  );
+}
 
 export interface CmModalBinding {
   dialog: Ref<HTMLDialogElement | undefined>;
@@ -48,9 +54,9 @@ export function useCmModal(open: () => boolean, emitOpen: (open: boolean) => voi
       void nextTick(() => {
         if (!localOpen.value) return;
         (
-          element.querySelector<HTMLElement>('[autofocus]') ??
-          element.querySelector<HTMLElement>('[data-autofocus]') ??
-          element.querySelector<HTMLElement>(focusableSelector) ??
+          availableFocusCandidates(element, '[autofocus]')[0] ??
+          availableFocusCandidates(element, '[data-autofocus]')[0] ??
+          availableFocusCandidates(element, cmFocusableSelector).find((candidate) => candidate.tabIndex >= 0) ??
           element
         ).focus();
       });
@@ -75,7 +81,9 @@ export function useCmModal(open: () => boolean, emitOpen: (open: boolean) => voi
     }
     const element = dialog.value;
     if (event.key !== 'Tab' || !element || !localOpen.value) return;
-    const focusable = [...element.querySelectorAll<HTMLElement>(focusableSelector)];
+    const focusable = availableFocusCandidates(element, cmFocusableSelector).filter(
+      (candidate) => candidate.tabIndex >= 0,
+    );
     const first = focusable[0];
     const last = focusable[focusable.length - 1];
     if (!first || !last) {
