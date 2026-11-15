@@ -43,3 +43,127 @@
 .cm-field__error {
   color: var(--cm-color-status-danger-subtle-foreground);
 }
+
+.cm-field--floating:has(> .cm-field__control :is(.cm-input, .cm-textarea, .cm-select)) {
+  --cm-field-float-reserve: 0px;
+  --cm-field-float-height: var(--cm-control-height-md);
+  --cm-field-float-inline: var(--cm-space-3);
+  --cm-field-float-active: var(--cm-space-1);
+  --cm-field-float-translate: 0%;
+  --cm-field-float-background: transparent;
+
+  position: relative;
+  padding-block-start: var(--cm-field-float-reserve);
+}
+
+.cm-field--floating-on:has(> .cm-field__control :is(.cm-input, .cm-textarea, .cm-select)) {
+  --cm-field-float-reserve: 0.375rem;
+  --cm-field-float-active: 0px;
+  --cm-field-float-translate: -50%;
+  --cm-field-float-background: var(--cm-color-background-surface);
+}
+
+.cm-field--floating-over:has(> .cm-field__control :is(.cm-input, .cm-textarea, .cm-select)) {
+  --cm-field-float-reserve: 0.6875rem;
+  --cm-field-float-active: -0.0625rem;
+  --cm-field-float-translate: -100%;
+}
+
+.cm-field--floating:has(> .cm-field__control :is(.cm-input--sm, .cm-textarea--sm, .cm-select--sm)) {
+  --cm-field-float-height: var(--cm-control-height-sm);
+  --cm-field-float-inline: var(--cm-space-2);
+}
+
+.cm-field--floating:has(> .cm-field__control :is(.cm-input--lg, .cm-textarea--lg, .cm-select--lg)) {
+  --cm-field-float-height: var(--cm-control-height-lg);
+  --cm-field-float-inline: 0.875rem;
+}
+
+.cm-field--floating:has(> .cm-field__control :is(.cm-input, .cm-textarea, .cm-select)) > .cm-field__control {
+  grid-area: 1 / 1;
+}
+
+.cm-field--floating:has(> .cm-field__control .cm-textarea) {
+  --cm-field-float-resting: calc(var(--cm-field-float-height) / 2);
+}
+
+.cm-field--floating:has(> .cm-field__control :is(.cm-input, .cm-textarea, .cm-select)) > .cm-field__label {
+  position: absolute;
+  z-index: 1;
+  grid-area: 1 / 1;
+  inset-block-start: var(--cm-field-float-resting, 50%);
+  inset-inline-start: calc(var(--cm-field-float-inline) + var(--cm-border-width));
+  max-inline-size: calc(100% - (var(--cm-field-float-inline) + var(--cm-space-2)) * 2);
+  overflow: hidden;
+  color: var(--cm-color-text-placeholder);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transform: translateY(-50%);
+  transition:
+    inset-block-start var(--cm-motion-duration-fast) var(--cm-motion-ease-standard),
+    transform var(--cm-motion-duration-fast) var(--cm-motion-ease-standard);
+}
+
+/* Native text controls track their live value through :placeholder-shown. The Select
+ * trigger updates data-cm-filled in both adapters. Unsupported controls retain the top label. */
+.cm-field--floating:has(> .cm-field__control :is(.cm-input, .cm-textarea, .cm-select)):where(
+    :focus-within,
+    :has(
+      > .cm-field__control :is(.cm-input, .cm-textarea):not(:placeholder-shown),
+      > .cm-field__control .cm-select[data-cm-filled='true']
+    )
+  )
+  > .cm-field__label {
+  inset-block-start: var(--cm-field-float-active);
+  background: var(--cm-field-float-background);
+  font-size: var(--cm-text-caption-font-size);
+  transform: translateY(var(--cm-field-float-translate));
+}
+
+.cm-field--floating-on:has(> .cm-field__control :is(.cm-input, .cm-textarea, .cm-select)) > .cm-field__label {
+  padding-inline: var(--cm-space-1);
+  border-radius: var(--cm-radius-control-tight);
+}
+
+.cm-field--floating.cm-field--invalid:has(> .cm-field__control :is(.cm-input, .cm-textarea, .cm-select))
+  > .cm-field__label {
+  color: var(--cm-color-status-danger-subtle-foreground);
+}
+
+.cm-field--floating:focus-within:not(.cm-field--invalid):has(
+    > .cm-field__control :is(.cm-input, .cm-textarea, .cm-select)
+  )
+  > .cm-field__label {
+  color: var(--cm-color-interactive-primary-subtle-foreground);
+}
+
+.cm-field--floating:not(:focus-within) > .cm-field__control :is(.cm-input, .cm-textarea)::placeholder,
+.cm-field--floating:not(:focus-within) > .cm-field__control .cm-select:not([data-cm-filled]) .cm-select__value {
+  color: transparent;
+}
+
+.cm-field--floating-in > .cm-field__control :is(.cm-input, .cm-select) {
+  padding-block: 1.3125rem 0.1875rem;
+}
+
+.cm-field--floating-in > .cm-field__control :is(.cm-input--sm, .cm-select--sm) {
+  padding-block: 1rem 0.125rem;
+}
+
+.cm-field--floating-in > .cm-field__control :is(.cm-input--lg, .cm-select--lg) {
+  padding-block: 1.625rem 0.375rem;
+}
+
+.cm-field--floating-in > .cm-field__control .cm-textarea {
+  padding-block-start: 1.625rem;
+}
+
+.cm-field--floating-in > .cm-field__control .cm-textarea--sm {
+  padding-block-start: 1.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cm-field--floating:has(> .cm-field__control :is(.cm-input, .cm-textarea, .cm-select)) > .cm-field__label {
+    transition: none;
+  }
+}

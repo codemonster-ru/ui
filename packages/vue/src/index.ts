@@ -63,7 +63,13 @@ export type { CmDropdownPlacement, CmDropdownProps } from './components/dropdown
 export { default as CmDrawer } from './components/drawer/CmDrawer.vue';
 export type { CmDrawerProps, CmDrawerSide, CmDrawerSize } from './components/drawer/drawer.types';
 export { default as CmField } from './components/field/CmField.vue';
-export type { CmFieldDefaultSlotProps, CmFieldProps } from './components/field/field.types';
+export { default as VfField } from './components/field/CmField.vue';
+export type {
+  CmFieldDefaultSlotProps,
+  CmFieldFloatingVariant,
+  CmFieldLabelPlacement,
+  CmFieldProps,
+} from './components/field/field.types';
 export { default as CmFieldset } from './components/fieldset/CmFieldset.vue';
 export type { CmFieldsetDefaultSlotProps, CmFieldsetProps } from './components/fieldset/fieldset.types';
 export { default as CmFormLayout } from './components/form-layout/CmFormLayout.vue';

@@ -6,8 +6,8 @@
   "props": {
     "controlId": {
       "type": "string",
-      "required": true,
-      "description": "Stable id of the single control labelled by this field."
+      "required": false,
+      "description": "Stable id of the single control labelled by this field. The Vue adapter generates an SSR-safe id when omitted."
     },
     "label": {
       "type": "nullable",
@@ -38,6 +38,18 @@
       "required": false,
       "default": false,
       "description": "Displays a visual required marker; native control state remains explicit."
+    },
+    "labelPlacement": {
+      "type": "enum",
+      "required": false,
+      "default": "top",
+      "values": ["top", "floating"]
+    },
+    "floatingVariant": {
+      "type": "enum",
+      "required": false,
+      "default": "in",
+      "values": ["in", "on", "over"]
     }
   },
   "slots": {
@@ -59,6 +71,6 @@
     }
   },
   "events": {},
-  "states": ["default", "required", "invalid"],
+  "states": ["default", "required", "invalid", "floating"],
   "relatedComponents": ["Input"]
 }

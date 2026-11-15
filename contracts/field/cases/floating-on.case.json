@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "field-floating-on",
+  "description": "Native input with the on floating label.",
+  "props": {
+    "controlId": "field-floating-on",
+    "label": "Workspace name",
+    "labelPlacement": "floating",
+    "floatingVariant": "on"
+  },
+  "slots": {
+    "default": "<input class=\"cm-input cm-input--md\" type=\"text\" id=\"field-floating-on\" placeholder=\" \" value=\"\" />"
+  }
+}

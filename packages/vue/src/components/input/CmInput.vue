@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, useAttrs, useSlots, watch, type PropType } from 'vue';
+import { computed, inject, nextTick, ref, useAttrs, useSlots, watch, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
 import { resolveInputClearable, resolvePasswordReveal } from '@codemonster-ru/ui-runtime/core';
+import { cmFloatingFieldKey } from '../field/floating-field';
 import type { CmInputSize, CmInputType } from './input.types';
 
 defineOptions({ inheritAttrs: false });
@@ -37,6 +38,7 @@ const emit = defineEmits<{
   'update:modelValue': [value: string];
 }>();
 const attrs = useAttrs();
+const floatingLabel = inject(cmFloatingFieldKey, null);
 const slots = useSlots();
 const inputRef = ref<HTMLInputElement | null>(null);
 const currentValue = ref(props.modelValue);
@@ -65,9 +67,10 @@ const hasWrapper = computed(() => hasLeading.value || hasTrailing.value || hasPa
 const classes = computed(() =>
   mergeCmClasses('cm-input', `cm-input--${size.value}`, props.invalid ? 'cm-input--invalid' : undefined, attrs.class),
 );
-const rootAttrs = computed(() =>
-  omitCmOwnedAttrs(attrs, ['value', 'type', 'disabled', 'readonly', 'required', 'aria-invalid', 'onInput']),
-);
+const rootAttrs = computed(() => ({
+  ...omitCmOwnedAttrs(attrs, ['value', 'type', 'disabled', 'readonly', 'required', 'aria-invalid', 'onInput']),
+  ...(floatingLabel?.value && !attrs.placeholder ? { placeholder: ' ' } : {}),
+}));
 
 function updateValue(event: Event): void {
   currentValue.value = (event.target as HTMLInputElement).value;

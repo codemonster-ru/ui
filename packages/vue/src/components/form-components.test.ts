@@ -3,11 +3,38 @@ import { defineComponent, h } from 'vue';
 import { describe, expect, it, vi } from 'vitest';
 
 import CmCheckbox from './checkbox/CmCheckbox.vue';
+import CmField from './field/CmField.vue';
+import type { CmFieldDefaultSlotProps } from './field/field.types';
+import CmInput from './input/CmInput.vue';
 import CmRadio from './radio/CmRadio.vue';
 import CmSwitch from './switch/CmSwitch.vue';
 import CmTextarea from './textarea/CmTextarea.vue';
 
 describe('Vue form controls', () => {
+  it('connects the generated label id and supplies the floating placeholder without replacing an authored hint', () => {
+    const wrapper = mount(CmField, {
+      props: { label: 'Workspace', description: 'Shown to members', labelPlacement: 'floating', floatingVariant: 'on' },
+      slots: {
+        default: ({ controlId, describedBy }: CmFieldDefaultSlotProps) =>
+          h(CmInput, { id: controlId, 'aria-describedby': describedBy }),
+      },
+    });
+    const input = wrapper.get('input');
+    expect(wrapper.classes()).toContain('cm-field--floating-on');
+    expect(input.attributes('id')).toMatch(/^cm-field-/u);
+    expect(wrapper.get('label').attributes('for')).toBe(input.attributes('id'));
+    expect(input.attributes('aria-describedby')).toBe(wrapper.get('p').attributes('id'));
+    expect(input.attributes('placeholder')).toBe(' ');
+
+    const textarea = mount(CmField, {
+      props: { label: 'Notes', labelPlacement: 'floating' },
+      slots: {
+        default: ({ controlId }: CmFieldDefaultSlotProps) => h(CmTextarea, { id: controlId, placeholder: 'Add notes' }),
+      },
+    });
+    expect(textarea.get('textarea').attributes('placeholder')).toBe('Add notes');
+  });
+
   it('forwards checkbox form attributes and emits its native checked state', async () => {
     const wrapper = mount(CmCheckbox, {
       attrs: { class: 'consumer', name: 'topics' },
