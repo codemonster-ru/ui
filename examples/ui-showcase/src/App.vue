@@ -1,27 +1,27 @@
 <script setup lang="ts">
-import coreSamples from '../../shared/showcase-core-recipes.html?raw';
-import { mountCoreRecipes, mountCoreMatrices } from '../../shared/showcase-core-recipes.js';
-import { coreComponentTitle, coreRecipesFor } from '../../shared/showcase-core-matrix.mts';
 import showcaseGroups from '../../shared/showcase-groups.json';
-import historicalLogo from '../../shared/vueforge-logo-icon.svg';
-import { layoutSamples, renderLayoutRecipes } from '../../shared/showcase-layout-samples.mts';
-import { mountLayoutRecipes } from '../../shared/showcase-layout-recipes.js';
-import { copyIcon, filterIcons } from '../../shared/showcase-icon-catalog.js';
-import { createRuntime } from '../../vanilla/runtime.mjs';
+import CoreFeedback from './CoreFeedback.vue';
+import CoreForms from './CoreForms.vue';
+import CoreMatrix from './CoreMatrix.vue';
+import CoreModals from './CoreModals.vue';
+import CoreNavigation from './CoreNavigation.vue';
+import CoreOverlay from './CoreOverlay.vue';
+import CoreSurfaces from './CoreSurfaces.vue';
+import CoreTheme from './CoreTheme.vue';
 import ContractExamples from './ContractExamples.vue';
-import themeSamples from '../../shared/showcase-theme-samples.html?raw';
-import colors from '../../shared/showcase-colors.html?raw';
-import { iconIntro, renderColorScales, renderIconCatalog, renderOperations } from '../../shared/showcase-reference.mts';
+import IconsShowcase from './IconsShowcase.vue';
+import ColorsShowcase from './ColorsShowcase.vue';
+import { iconIntro, renderOperations } from '../../shared/showcase-reference.mts';
 import { actionMatrices, buttonMatrices } from '../../shared/showcase-matrices.mts';
 import type { CmButtonProps, CmIconButtonProps, CmLinkProps } from '@codemonster-ru/ui-vue';
-import typography from '../../shared/showcase-typography.html?raw';
-import { onMounted, onUnmounted, ref } from 'vue';
+import typography from './core-typography.html?raw';
+import { computed, nextTick, onMounted, onUnmounted, ref, type Component } from 'vue';
 import { CmRuntime, createCmTabsController } from '@codemonster-ru/ui-runtime';
-import { fillContrastTable, mountOperations } from '../../shared/showcase-reference.js';
-import { gear } from '@codemonster-ru/ui-icons';
+import { mountOperations } from '../../shared/showcase-reference.js';
+import { gear, moon, sun } from '@codemonster-ru/ui-icons';
 import { followShowcaseTheme, saveShowcaseTheme, readShowcaseTheme } from '../../shared/showcase-theme.js';
 import LayoutShowcase from './LayoutShowcase.vue';
-import { CmButton, CmIcon, CmIconButton, CmLink, CmThemeSwitch } from '@codemonster-ru/ui-vue';
+import { CmButton, CmIcon, CmIconButton, CmLink } from '@codemonster-ru/ui-vue';
 
 const pages = [
   { id: 'core', label: 'Core' },
@@ -29,28 +29,38 @@ const pages = [
   { id: 'layouts', label: 'Layouts' },
   { id: 'icons', label: 'Icons' },
 ];
-const coreContent = ref<HTMLElement | null>(null);
-const matrixRuntime = createRuntime();
-const coreGroups = showcaseGroups.filter(({ id }) => id !== 'layouts' && id !== 'icons');
-const layoutRecipes = ref<HTMLElement | null>(null);
-let unmountRecipes: (() => void) | undefined;
+const coreDescriptions: Record<string, string> = {
+  actions: 'Use buttons for actions and links for navigation to another location or resource.',
+  overlay: 'Attach contextual help, menus, and compact interactive content to a trigger.',
+  surfaces: 'Structure related content, data, and controls on bounded surfaces.',
+  feedback: 'Communicate status, identity, progress, and loading state without interrupting the task.',
+  forms: 'Collect, label, validate, and arrange user input with consistent control geometry.',
+  navigation: 'Move between destinations, peer views, document sections, and progressive steps.',
+  modals: 'Focus attention on modal tasks, confirmations, drawers, and keyboard-first commands.',
+};
+const coreSections = {
+  overlay: CoreOverlay as Component,
+  surfaces: CoreSurfaces as Component,
+  feedback: CoreFeedback as Component,
+  forms: CoreForms as Component,
+  navigation: CoreNavigation as Component,
+  modals: CoreModals as Component,
+};
+const coreGroups = showcaseGroups.filter(({ id }) => id in coreDescriptions);
 const referenceContent = ref<HTMLElement | null>(null);
 const referenceRuntime = new CmRuntime().register('tabs', createCmTabsController);
-onMounted(() => {
-  if (currentPage === 'core' && coreContent.value) {
-    mountCoreRecipes(coreContent.value);
-    mountCoreMatrices(coreContent.value, matrixRuntime);
-  }
-  if (layoutRecipes.value) unmountRecipes = mountLayoutRecipes(layoutRecipes.value);
+const showIconExamples = ref(false);
+async function openIconExamples(event: Event) {
+  if (!(event.currentTarget instanceof HTMLDetailsElement) || !event.currentTarget.open || showIconExamples.value)
+    return;
+  showIconExamples.value = true;
+  await nextTick();
   if (!referenceContent.value) return;
-  fillContrastTable(referenceContent.value);
   mountOperations(referenceContent.value);
   referenceRuntime.start(referenceContent.value);
-});
+}
 onUnmounted(() => {
-  unmountRecipes?.();
   referenceRuntime.stop();
-  matrixRuntime.stop();
 });
 
 const currentPage = pages.find(({ id }) => location.pathname.split('/')[1] === id)?.id ?? 'core';
@@ -65,178 +75,150 @@ const linkExamples = actionMatrices.link as Record<
 
 const iconButtonExamples = actionMatrices['icon-button'] as Record<string, CmIconButtonProps[]>;
 
-const themeMode = ref(readShowcaseTheme());
+const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
+const prefersDark = ref(systemDark.matches);
+const defaultTheme = 'system';
+const themeMode = ref(readShowcaseTheme(defaultTheme));
+const resolvedTheme = computed(() =>
+  themeMode.value === 'system' ? (prefersDark.value ? 'dark' : 'light') : themeMode.value,
+);
+function syncSystemTheme(event: MediaQueryListEvent) {
+  prefersDark.value = event.matches;
+}
+function selectTheme(mode: typeof themeMode.value) {
+  themeMode.value = mode;
+  saveShowcaseTheme(mode);
+}
+function toggleTheme() {
+  selectTheme(resolvedTheme.value === 'dark' ? 'light' : 'dark');
+}
 let stopTheme: (() => void) | undefined;
 onMounted(() => {
+  systemDark.addEventListener('change', syncSystemTheme);
   stopTheme = followShowcaseTheme((mode) => {
     themeMode.value = mode;
-  });
+  }, defaultTheme);
 });
-onUnmounted(() => stopTheme?.());
+onUnmounted(() => {
+  systemDark.removeEventListener('change', syncSystemTheme);
+  stopTheme?.();
+});
 </script>
 
 <template>
-  <header class="showcase-topbar">
-    <span class="showcase-brand">CodeMonster UI · Vue</span>
-    <nav class="showcase-navigation" aria-label="Showcase sections">
-      <a
-        v-for="page in pages"
-        :key="page.id"
-        class="cm-link"
-        :href="`/${page.id}/`"
-        :aria-current="currentPage === page.id ? 'page' : undefined"
-        >{{ page.label }}</a
-      >
-    </nav>
-    <CmThemeSwitch v-model="themeMode" @theme-change="saveShowcaseTheme" name="showcase-theme" />
+  <header class="showcase-topbar vue-showcase-topbar">
+    <div class="vue-showcase-header">
+      <a class="vue-showcase-brand" href="/core/">CodeMonster UI · Vue</a>
+      <nav class="vue-showcase-navigation" aria-label="Showcase sections">
+        <ul>
+          <li v-for="page in pages" :key="page.id">
+            <a :href="`/${page.id}/`" :aria-current="currentPage === page.id ? 'page' : undefined">
+              {{ page.label }}
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <CmIconButton class="vue-showcase-theme" label="Toggle color theme" variant="secondary" @click="toggleTheme">
+        <CmIcon :icon="resolvedTheme === 'dark' ? moon : sun" />
+      </CmIconButton>
+    </div>
   </header>
-  <main ref="coreContent" class="showcase-content" :class="{ 'showcase-core': currentPage === 'core' }">
+  <main
+    class="showcase-content showcase-core"
+    :class="{
+      'showcase-layouts': currentPage === 'layouts',
+    }"
+  >
     <template v-if="currentPage === 'core'">
-      <template v-for="{ id, title, description, components, matrix, recipeAfter } in coreGroups" :key="id">
-        <section v-if="id === 'actions'" id="typography" class="showcase-group">
-          <header>
-            <h2>Typography</h2>
-            <p>Review heading and body styles.</p>
-          </header>
-          <!-- eslint-disable-next-line vue/no-v-html -- Repository-owned showcase markup. -->
-          <div v-html="typography" />
-        </section>
+      <CoreTheme :mode="themeMode" :resolved="resolvedTheme" @select="selectTheme" @toggle="toggleTheme" />
+      <section id="typography" class="showcase-group">
+        <header>
+          <h2>Typography</h2>
+          <p>Review the heading, body, content, and prose styles shared by VueForge interfaces.</p>
+        </header>
+        <!-- eslint-disable-next-line vue/no-v-html -- Repository-owned showcase markup. -->
+        <div v-html="typography" />
+      </section>
+      <template v-for="{ id, title, components } in coreGroups" :key="id">
         <section :id="id" class="showcase-group">
           <header>
             <h2>{{ title }}</h2>
-            <p>{{ description }}</p>
+            <p>{{ coreDescriptions[id] }}</p>
           </header>
-          <component
-            :is="matrix ? 'section' : 'div'"
-            :class="matrix ? 'showcase-panel core-group-matrix' : 'showcase-grid'"
-            :aria-labelledby="matrix ? id + '-matrix-title' : undefined"
-          >
-            <h3 v-if="matrix" :id="id + '-matrix-title'">{{ matrix }}</h3>
-            <!-- eslint-disable-next-line vue/no-v-html -- Repository-owned showcase markup. -->
-            <div v-if="!recipeAfter" class="showcase-grid-fragment" v-html="coreRecipesFor(coreSamples, id)" />
-            <template v-for="slug in components" :key="slug">
-              <section
-                :id="'demo-' + slug"
-                class="core-component"
-                :class="
-                  matrix
-                    ? 'core-group-cell'
-                    : ['showcase-panel', { 'showcase-panel--wide': ['button', 'table', 'data-table'].includes(slug) }]
-                "
-              >
-                <component :is="matrix ? 'h4' : 'h3'" :class="{ 'showcase-label': matrix }">{{
-                  coreComponentTitle(slug)
-                }}</component>
-                <CmThemeSwitch v-if="slug === 'theme-switch'" v-model="themeMode" @theme-change="saveShowcaseTheme" />
-                <template v-else-if="slug === 'button'">
-                  <section
-                    v-for="(sizes, matrixTitle) in buttonExamples"
-                    :key="matrixTitle"
-                    class="core-button-section"
-                  >
-                    <h4>Button · {{ matrixTitle }}</h4>
-                    <div class="core-button-matrix">
-                      <div v-for="(examples, size) in sizes" :key="size" class="showcase-matrix">
-                        <p class="showcase-label">{{ size }}</p>
-                        <div class="showcase-matrix-row">
-                          <CmButton v-for="{ label: text, ...props } in examples" :key="text" v-bind="props">{{
-                            text
-                          }}</CmButton>
-                        </div>
-                      </div>
-                    </div>
-                  </section>
-                </template>
-                <template v-else-if="slug === 'icon-button'">
-                  <div v-for="(examples, label) in iconButtonExamples" :key="label" class="showcase-matrix">
-                    <p class="showcase-label">{{ label }}</p>
+          <CoreMatrix v-if="id === 'actions'" title="Actions visual QA matrix">
+            <div class="core-matrix-wide core-matrix-cell">
+              <section v-for="(sizes, matrixTitle) in buttonExamples" :key="matrixTitle" class="core-button-section">
+                <h4>Button · {{ matrixTitle }}</h4>
+                <div class="core-button-matrix">
+                  <div v-for="(examples, size) in sizes" :key="size" class="showcase-matrix">
+                    <p class="showcase-label">{{ size }}</p>
                     <div class="showcase-matrix-row">
-                      <CmIconButton v-for="props in examples" :key="props.label" v-bind="props"
-                        ><CmIcon :icon="gear"
-                      /></CmIconButton>
+                      <CmButton v-for="{ label: text, ...props } in examples" :key="text" v-bind="props">{{
+                        text
+                      }}</CmButton>
                     </div>
                   </div>
-                </template>
-                <template v-else-if="slug === 'link'">
-                  <div v-for="(examples, label) in linkExamples" :key="label" class="showcase-matrix">
-                    <p class="showcase-label">{{ label }}</p>
-                    <div class="showcase-matrix-row">
-                      <CmLink
-                        v-for="{ label: text, external, ...props } in examples"
-                        :key="text"
-                        :href="external ? 'https://example.com' : '#demo-link'"
-                        :target="external ? '_blank' : undefined"
-                        :rel="external ? 'noopener noreferrer' : undefined"
-                        v-bind="props"
-                        >{{ text }}</CmLink
-                      >
-                    </div>
-                  </div>
-                </template>
-                <ContractExamples :slug="slug" />
+                </div>
               </section>
-              <!-- eslint-disable-next-line vue/no-v-html -- Repository-owned showcase markup. -->
-              <div
-                v-if="slug === recipeAfter"
-                class="showcase-grid-fragment"
-                v-html="coreRecipesFor(coreSamples, id)"
-              />
-            </template>
-            <!-- eslint-disable-next-line vue/no-v-html -- Repository-owned showcase markup. -->
-            <div v-if="id === 'theme'" class="showcase-grid-fragment" v-html="themeSamples" />
-          </component>
+            </div>
+            <section class="core-matrix-wide core-matrix-cell">
+              <h4>Icon button · variants by size</h4>
+              <div class="core-matrix-grid">
+                <div v-for="(examples, label) in iconButtonExamples" :key="label" class="showcase-matrix">
+                  <p class="showcase-label">{{ label.replace('Variants · ', '') }}</p>
+                  <div class="showcase-matrix-row">
+                    <CmIconButton v-for="props in examples" :key="props.label" v-bind="props"
+                      ><CmIcon :icon="gear"
+                    /></CmIconButton>
+                  </div>
+                </div>
+              </div>
+            </section>
+            <section class="core-matrix-wide core-matrix-cell">
+              <h4>Link · tone and underline states</h4>
+              <div class="core-matrix-grid core-matrix-grid--two">
+                <div v-for="(examples, label) in linkExamples" :key="label" class="showcase-matrix">
+                  <p class="showcase-label">{{ label }}</p>
+                  <div class="core-link-samples">
+                    <CmLink
+                      v-for="{ label: text, external, ...props } in examples"
+                      :key="text"
+                      :href="external ? 'https://example.com' : '#actions'"
+                      :target="external ? '_blank' : undefined"
+                      :rel="external ? 'noopener noreferrer' : undefined"
+                      v-bind="props"
+                      >{{ text }}</CmLink
+                    >
+                  </div>
+                </div>
+              </div>
+            </section>
+          </CoreMatrix>
+          <component :is="coreSections[id as keyof typeof coreSections]" v-else />
+          <details class="core-contracts">
+            <summary>Contract examples</summary>
+            <ContractExamples v-for="slug in components" :key="slug" :slug="slug" show-title />
+          </details>
         </section>
       </template>
     </template>
-    <!-- eslint-disable-next-line vue/no-v-html -- Static showcase markup bundled from the repository. -->
-    <div v-else-if="currentPage === 'colors'" ref="referenceContent" v-html="colors + renderColorScales()" />
-    <section v-else-if="currentPage === 'layouts'" id="layouts" class="showcase-group">
-      <header>
-        <h2>Layouts</h2>
-        <p>Review layout primitives and full-page shells.</p>
-      </header>
-      <div class="showcase-grid">
-        <section
-          v-for="(sample, slug) in layoutSamples"
-          :id="'demo-' + slug"
-          :key="slug"
-          class="ui-showcase__demo showcase-panel showcase-panel--wide"
-        >
-          <h3>{{ slug.charAt(0).toUpperCase() + slug.slice(1) }}</h3>
-          <!-- eslint-disable-next-line vue/no-v-html -- Static showcase markup bundled from the repository. -->
-          <div v-html="sample" />
-          <ContractExamples :slug="slug" />
-        </section>
-        <!-- eslint-disable-next-line vue/no-v-html -- Static showcase markup bundled from the repository. -->
-        <div
-          ref="layoutRecipes"
-          class="layout-recipes"
-          v-html="renderLayoutRecipes().replace('/vueforge-logo-icon.svg', historicalLogo)"
-        />
-        <LayoutShowcase />
-      </div>
-    </section>
-    <section v-else id="icons" class="showcase-group">
-      <header>
-        <h2>Icons</h2>
-        <p>Review icon geometry and accessible labels.</p>
-      </header>
-      <div class="showcase-grid">
-        <section id="demo-icon" class="showcase-panel">
-          <h3 class="showcase-icon-intro-heading">Icon</h3>
-          <p class="showcase-icon-intro-note">{{ iconIntro.description }}</p>
+    <ColorsShowcase v-else-if="currentPage === 'colors'" />
+    <LayoutShowcase v-else-if="currentPage === 'layouts'" />
+    <template v-else>
+      <IconsShowcase />
+      <details class="icon-showcase-extras" @toggle="openIconExamples">
+        <summary>Icon component and operations examples</summary>
+        <section v-if="showIconExamples" id="demo-icon" class="showcase-panel">
+          <h3>Icon</h3>
+          <p>{{ iconIntro.description }}</p>
           <div class="showcase-matrix-row">
             <CmIcon v-for="sample in iconIntro.samples" :key="sample.label" v-bind="sample" />
           </div>
           <ContractExamples slug="icon" />
         </section>
-      </div>
-      <div
-        ref="referenceContent"
-        @input="filterIcons"
-        @click="copyIcon"
-        v-html="renderIconCatalog() + renderOperations()"
-      />
-    </section>
+        <!-- eslint-disable-next-line vue/no-v-html -- Repository-owned shared operations examples. -->
+        <div v-if="showIconExamples" ref="referenceContent" v-html="renderOperations()" />
+      </details>
+    </template>
   </main>
 </template>
