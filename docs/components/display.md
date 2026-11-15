@@ -51,6 +51,25 @@ import { CmAlert, CmAvatar, CmBadge, CmDivider, CmSkeleton, CmTag } from '@codem
 </template>
 ```
 
+### Historical Vue names
+
+Import `VfAlert` and `VfAvatar` from `@codemonster-ru/ui-vue/historical` to use named icons.
+`VfAlert` defaults to the primary tone and `role="alert"`, and accepts `warn` for the warning
+tone. The `icon` slot overrides a named `icon` prop or the tone's default icon. Set `hideIcon`
+to hide all leading icon content. The `title` slot can replace the `title` prop.
+`VfAvatar` uses its named icon after `image` and `label`, before the default slot.
+
+```vue
+<script setup lang="ts">
+import { VfAlert, VfAvatar } from '@codemonster-ru/ui-vue/historical';
+</script>
+
+<template>
+  <VfAlert tone="warn" title="Review required" icon="alert-circle"> Check the highlighted fields. </VfAlert>
+  <VfAvatar icon="user" shape="circle" />
+</template>
+```
+
 ## Vanilla HTML
 
 Use the canonical HTML for [alert](../../contracts/alert/contract.md), [avatar](../../contracts/avatar/contract.md), [badge](../../contracts/badge/contract.md), [divider](../../contracts/divider/contract.md), [skeleton](../../contracts/skeleton/contract.md), [tag](../../contracts/tag/cases/default.html) in Vanilla.
