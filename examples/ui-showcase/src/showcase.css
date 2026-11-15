@@ -659,35 +659,6 @@
   cursor: pointer;
 }
 
-.core-floating-field {
-  position: relative;
-  padding-block-start: var(--cm-space-2);
-}
-
-.core-floating-field .cm-field__label {
-  position: absolute;
-  z-index: 1;
-  inset-block-start: 0;
-  inset-inline-start: var(--cm-space-3);
-  padding-inline: var(--cm-space-1);
-  background: var(--cm-color-background-surface);
-  font-size: var(--cm-text-caption-font-size);
-  pointer-events: none;
-}
-
-.core-floating-field[data-placement='in'] :is(.cm-input, .cm-textarea, .cm-select) {
-  padding-block-start: var(--cm-space-4);
-}
-
-.core-floating-field[data-placement='in'] .cm-field__label {
-  inset-block-start: var(--cm-space-3);
-  background: transparent;
-}
-
-.core-floating-field[data-placement='over'] .cm-field__label {
-  inset-block-start: calc(-1 * var(--cm-space-1));
-}
-
 .core-pinned-table .cm-table {
   min-inline-size: 44rem;
 }

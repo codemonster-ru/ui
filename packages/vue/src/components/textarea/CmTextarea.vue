@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, useAttrs, type PropType } from 'vue';
+import { computed, inject, useAttrs, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
+import { cmFloatingFieldKey } from '../field/floating-field';
 import type { CmTextareaSize } from './textarea.types';
 
 defineOptions({ inheritAttrs: false });
@@ -24,6 +25,7 @@ const emit = defineEmits<{
   'update:modelValue': [value: string];
 }>();
 const attrs = useAttrs();
+const floatingLabel = inject(cmFloatingFieldKey, null);
 const size = computed(() => (sizes.includes(props.size) ? props.size : 'md'));
 const classes = computed(() =>
   mergeCmClasses(
@@ -33,9 +35,10 @@ const classes = computed(() =>
     attrs.class,
   ),
 );
-const rootAttrs = computed(() =>
-  omitCmOwnedAttrs(attrs, ['value', 'disabled', 'readonly', 'required', 'aria-invalid', 'onInput']),
-);
+const rootAttrs = computed(() => ({
+  ...omitCmOwnedAttrs(attrs, ['value', 'disabled', 'readonly', 'required', 'aria-invalid', 'onInput']),
+  ...(floatingLabel?.value && !attrs.placeholder ? { placeholder: ' ' } : {}),
+}));
 
 function updateValue(event: Event): void {
   emit('update:modelValue', (event.target as HTMLTextAreaElement).value);

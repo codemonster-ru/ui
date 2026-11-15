@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "field-floating-over",
+  "description": "Native input with the over floating label.",
+  "props": {
+    "controlId": "field-floating-over",
+    "label": "Workspace name",
+    "labelPlacement": "floating",
+    "floatingVariant": "over"
+  },
+  "slots": {
+    "default": "<input class=\"cm-input cm-input--md\" type=\"text\" id=\"field-floating-over\" placeholder=\" \" value=\"\" />"
+  }
+}

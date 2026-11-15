@@ -11,18 +11,27 @@ Each component style is also available from the `field.css`, `input.css`, `texta
 
 ## Field API
 
-| Prop          | Values           | Default | Behavior                                                    |
-| ------------- | ---------------- | ------- | ----------------------------------------------------------- |
-| `controlId`   | non-empty string | —       | Id of the single control associated with the visible label. |
-| `label`       | string or `null` | `null`  | Fallback visible label.                                     |
-| `description` | string or `null` | `null`  | Fallback help text.                                         |
-| `error`       | string or `null` | `null`  | Fallback validation message; also implies invalid state.    |
-| `invalid`     | boolean          | `false` | Forces invalid presentation without requiring a message.    |
-| `required`    | boolean          | `false` | Shows a visual marker; the control still owns `required`.   |
+| Prop              | Values             | Default          | Behavior                                                                         |
+| ----------------- | ------------------ | ---------------- | -------------------------------------------------------------------------------- |
+| `controlId`       | non-empty string   | Generated in Vue | Id of the single control associated with the visible label.                      |
+| `label`           | string or `null`   | `null`           | Fallback visible label.                                                          |
+| `description`     | string or `null`   | `null`           | Fallback help text.                                                              |
+| `error`           | string or `null`   | `null`           | Fallback validation message; also implies invalid state.                         |
+| `invalid`         | boolean            | `false`          | Forces invalid presentation without requiring a message.                         |
+| `required`        | boolean            | `false`          | Shows a visual marker; the control still owns `required`.                        |
+| `labelPlacement`  | `top`, `floating`  | `top`            | Places the label above the control or inside it until focus or a value moves it. |
+| `floatingVariant` | `in`, `on`, `over` | `in`             | Places the raised label inside, on the border, or above the control.             |
 
 Named `label`, `description`, and `error` slots take precedence over matching fallback props. The
 default slot contains one control. Field derives `{controlId}-description` and `{controlId}-error`
 in that order; the control references only the regions that are actually rendered.
+
+`CmField` (also exported as `VfField`) generates an SSR-safe id when no `controlId` is passed.
+Bind the id provided by the default slot to the control. Floating labels support Input, Textarea,
+and Select. Other controls keep an ordinary top label. Vanilla uses the same CSS; supply a
+nonempty placeholder (a single space is sufficient) on native text inputs and textareas so CSS can
+tell whether the control has a value. See the [in](../../contracts/field/cases/floating-in.html),
+[on](../../contracts/field/cases/floating-on.html), and [over](../../contracts/field/cases/floating-over.html) examples.
 
 ## Input API
 

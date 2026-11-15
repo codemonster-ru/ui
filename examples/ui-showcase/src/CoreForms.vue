@@ -40,6 +40,8 @@ const releaseDate = ref('2026-07-30');
 const bookingDate = ref('2026-08-12');
 const releaseDates = ref(['2026-08-13', '2026-08-20']);
 const releaseWindow = ref(['2026-08-13', '2026-08-20']);
+const billingMonth = ref('2026-08');
+const licenseYear = ref('2026');
 const fieldsetPlan = ref('pro');
 const floatingVariants = ['in', 'on', 'over'] as const;
 const floatingStates = [
@@ -179,6 +181,24 @@ const states = [
       </CmField>
       <p>
         Model: <code>{{ releaseWindow.join(' – ') || 'empty' }}</code>
+      </p>
+    </div>
+    <div class="core-matrix-cell">
+      <h4>Month picker</h4>
+      <CmField v-slot="{ controlId }" control-id="core-billing-month" label="Billing month">
+        <CmDatePicker :id="controlId" v-model="billingMonth" month-picker clearable />
+      </CmField>
+      <p>
+        Model: <code>{{ billingMonth || 'empty' }}</code>
+      </p>
+    </div>
+    <div class="core-matrix-cell">
+      <h4>Year picker</h4>
+      <CmField v-slot="{ controlId }" control-id="core-license-year" label="License year">
+        <CmDatePicker :id="controlId" v-model="licenseYear" year-picker clearable />
+      </CmField>
+      <p>
+        Model: <code>{{ licenseYear || 'empty' }}</code>
       </p>
     </div>
     <div class="core-matrix-cell">
@@ -392,8 +412,8 @@ const states = [
             :control-id="'core-float-search-' + variant"
             label="Search"
             required
-            class="core-floating-field"
-            :data-placement="variant"
+            label-placement="floating"
+            :floating-variant="variant"
           >
             <CmInput :id="controlId" model-value="Search query" placeholder=" " required />
           </CmField>
@@ -401,8 +421,8 @@ const states = [
             v-slot="{ controlId }"
             :control-id="'core-float-plan-' + variant"
             label="Plan"
-            class="core-floating-field"
-            :data-placement="variant"
+            label-placement="floating"
+            :floating-variant="variant"
           >
             <CmSelect :id="controlId" model-value="pro" :options="plans" />
           </CmField>
@@ -410,8 +430,8 @@ const states = [
             v-slot="{ controlId }"
             :control-id="'core-float-notes-' + variant"
             label="Notes"
-            class="core-floating-field"
-            :data-placement="variant"
+            label-placement="floating"
+            :floating-variant="variant"
           >
             <CmTextarea :id="controlId" model-value="Textarea baseline check" placeholder=" " />
           </CmField>
@@ -430,8 +450,8 @@ const states = [
             :control-id="`core-float-${size}-${index}`"
             :label="example.label"
             :error="example.error"
-            class="core-floating-field"
-            data-placement="on"
+            label-placement="floating"
+            floating-variant="on"
           >
             <CmInput
               v-if="example.kind === 'input'"

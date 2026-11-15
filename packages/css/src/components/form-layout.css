@@ -10,51 +10,55 @@
   min-inline-size: 0;
 }
 
-.cm-form-layout--horizontal > .cm-field,
-.cm-form-layout--responsive > .cm-field {
+.cm-form-layout--horizontal > .cm-field:where(:not(.cm-field--floating)),
+.cm-form-layout--responsive > .cm-field:where(:not(.cm-field--floating)) {
   min-inline-size: 0;
 }
 
-.cm-form-layout--horizontal > .cm-field {
+.cm-form-layout--horizontal > .cm-field:where(:not(.cm-field--floating)) {
   grid-template-columns: var(--cm-form-layout-label-width) minmax(0, 1fr);
   align-items: start;
   column-gap: var(--cm-space-3);
 }
 
-.cm-form-layout--horizontal > .cm-field > .cm-field__label {
+.cm-form-layout--horizontal > .cm-field:where(:not(.cm-field--floating)) > .cm-field__label {
   place-self: start end;
   padding-block-start: calc(var(--cm-space-1) * 1.25);
   overflow-wrap: anywhere;
   text-align: end;
 }
 
-.cm-form-layout--horizontal > .cm-field > :is(.cm-field__control, .cm-field__description, .cm-field__error) {
+.cm-form-layout--horizontal
+  > .cm-field:where(:not(.cm-field--floating))
+  > :is(.cm-field__control, .cm-field__description, .cm-field__error) {
   grid-column: 2;
 }
 
-.cm-form-layout--horizontal > .cm-field > .cm-field__control {
+.cm-form-layout--horizontal > .cm-field:where(:not(.cm-field--floating)) > .cm-field__control {
   grid-row: 1;
 }
 
 @container cm-form-layout (width >= 768px) {
-  .cm-form-layout--responsive > .cm-field {
+  .cm-form-layout--responsive > .cm-field:where(:not(.cm-field--floating)) {
     grid-template-columns: var(--cm-form-layout-label-width) minmax(0, 1fr);
     align-items: start;
     column-gap: var(--cm-space-3);
   }
 
-  .cm-form-layout--responsive > .cm-field > .cm-field__label {
+  .cm-form-layout--responsive > .cm-field:where(:not(.cm-field--floating)) > .cm-field__label {
     place-self: start end;
     padding-block-start: calc(var(--cm-space-1) * 1.25);
     overflow-wrap: anywhere;
     text-align: end;
   }
 
-  .cm-form-layout--responsive > .cm-field > :is(.cm-field__control, .cm-field__description, .cm-field__error) {
+  .cm-form-layout--responsive
+    > .cm-field:where(:not(.cm-field--floating))
+    > :is(.cm-field__control, .cm-field__description, .cm-field__error) {
     grid-column: 2;
   }
 
-  .cm-form-layout--responsive > .cm-field > .cm-field__control {
+  .cm-form-layout--responsive > .cm-field:where(:not(.cm-field--floating)) > .cm-field__control {
     grid-row: 1;
   }
 }

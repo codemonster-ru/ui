@@ -6,12 +6,13 @@ import { fileURLToPath } from 'node:url';
 import { renderToString } from '@vue/server-renderer';
 import { createSSRApp, h } from 'vue';
 import { compareSignificantDom } from '../../../scripts/contracts/significant-dom.mjs';
-import { CmField } from '../dist/index.js';
+import { CmField, CmInput } from '../dist/index.js';
 
 const packageDirectory = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const casesDirectory = resolve(packageDirectory, '../../contracts/field/cases');
 
 function controlFor(definition) {
+  if (definition.props.labelPlacement === 'floating') return h(CmInput, { id: definition.props.controlId });
   if (definition.id === 'field-help-error') {
     return h('input', {
       id: 'profile-name',

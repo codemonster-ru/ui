@@ -144,6 +144,10 @@ for (const [slug, approved] of [
     [
       'cm-field',
       'cm-field--invalid',
+      'cm-field--floating',
+      'cm-field--floating-in',
+      'cm-field--floating-on',
+      'cm-field--floating-over',
       'cm-field__label',
       'cm-field__required',
       'cm-field__control',
@@ -262,6 +266,7 @@ for (const [slug, approved] of [
       'cm-date-picker--placeholder',
       'cm-date-picker__calendar',
       'cm-date-picker__grid',
+      'cm-date-picker__grid--period',
       'cm-date-picker__header',
       'cm-date-picker__month',
       'cm-date-picker__navigation',
