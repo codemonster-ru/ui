@@ -1,6 +1,7 @@
 import { nextTabsValue, resolveTabsValue } from './core/tabs.js';
 import { dispatchCmEvent } from './events.js';
 import type { CmController, CmControllerFactory } from './runtime.js';
+import { observeTabScroll, scrollTabList, type CmTabScrollEdge } from './tabs-scroll.js';
 
 export interface TabsValueChangeDetail {
   value: string;
@@ -35,6 +36,9 @@ function entries(root: Element): TabEntry[] {
 export class CmTabsController implements CmController {
   readonly #root: Element;
   #entries: TabEntry[] = [];
+  #scrollList: HTMLElement | null = null;
+  #scrollButtons: [CmTabScrollEdge, HTMLButtonElement][] = [];
+  #stopScroll?: () => void;
 
   get #coreItems(): { disabled: boolean; value: string }[] {
     return this.#entries.map(({ tab, value }) => ({ disabled: tab.disabled, value }));
@@ -48,6 +52,16 @@ export class CmTabsController implements CmController {
     this.#entries = entries(this.#root);
     const active = resolveTabsValue(this.#coreItems, this.#root.getAttribute('data-cm-tabs-value'));
     if (active !== null) this.#synchronize(active);
+    this.#scrollList = this.#root.querySelector(':scope > .cm-tabs__list');
+    this.#scrollButtons = (['start', 'end'] as const).flatMap((edge) => {
+      const button = this.#root.querySelector<HTMLButtonElement>(`:scope > button[data-cm-tabs-scroll="${edge}"]`);
+      return button ? [[edge, button]] : [];
+    });
+    if (this.#scrollList && this.#scrollButtons.length) {
+      this.#stopScroll = observeTabScroll(this.#scrollList, (edges) => {
+        for (const [edge, button] of this.#scrollButtons) button.hidden = !edges[edge];
+      });
+    }
     this.#root.addEventListener('click', this.#handleClick);
     this.#root.addEventListener('keydown', this.#handleKeydown);
   }
@@ -55,10 +69,22 @@ export class CmTabsController implements CmController {
   disconnect(): void {
     this.#root.removeEventListener('click', this.#handleClick);
     this.#root.removeEventListener('keydown', this.#handleKeydown);
+    this.#stopScroll?.();
+    this.#stopScroll = undefined;
+    for (const [, button] of this.#scrollButtons) button.hidden = true;
+    this.#scrollButtons = [];
+    this.#scrollList = null;
     this.#entries = [];
   }
 
   readonly #handleClick = (event: Event): void => {
+    const Element_ = this.#root.ownerDocument.defaultView?.Element;
+    const scroll = Element_ && event.target instanceof Element_ ? event.target.closest('[data-cm-tabs-scroll]') : null;
+    const control = this.#scrollButtons.find(([, button]) => button === scroll && !button.hidden);
+    if (control && this.#scrollList && !event.defaultPrevented) {
+      scrollTabList(this.#scrollList, ...control);
+      return;
+    }
     const tab = this.#tabFromEvent(event);
     const entry = this.#entries.find((candidate) => candidate.tab === tab);
     if (entry && !entry.tab.disabled) this.#select(entry, false);

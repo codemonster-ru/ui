@@ -5,6 +5,11 @@
   "description": "Automatically activated horizontal tabs with related panels.",
   "props": {
     "id": { "type": "string", "required": false },
+    "scrollControls": {
+      "type": "boolean",
+      "required": false,
+      "description": "Include the initially hidden scroll buttons in rendered markup."
+    },
     "items": { "type": "collection", "required": true, "valueContract": "tab-item" },
     "value": {
       "type": "nullable",

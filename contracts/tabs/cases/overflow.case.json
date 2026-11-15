@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "tabs-overflow",
+  "description": "A narrow tab list with authored scroll buttons that become available on overflow.",
+  "props": {
+    "id": "workflow-tabs",
+    "scrollControls": true,
+    "items": [
+      { "value": "overview", "label": "Overview and requirements", "content": "Workflow overview." },
+      { "value": "accounts", "label": "Accounts and billing", "content": "Billing settings." },
+      { "value": "deployment", "label": "Deployment controls", "content": "Deployment settings." }
+    ]
+  },
+  "attributes": { "style": "max-inline-size: 16rem;" },
+  "slots": {}
+}

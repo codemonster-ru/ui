@@ -12,7 +12,7 @@ import {
 } from '@codemonster-ru/ui-vue';
 import { VfAccordion } from '@codemonster-ru/ui-vue/historical';
 import { folderOpen, grid, house, layers } from '@codemonster-ru/ui-icons';
-import { defineComponent, h, ref, watchPostEffect, type PropType } from 'vue';
+import { defineComponent, h, ref, type PropType } from 'vue';
 import CoreMatrix from './CoreMatrix.vue';
 
 const GuideLink = defineComponent({
@@ -265,42 +265,6 @@ const horizontalStep = ref('details');
 const belowStep = ref('plan');
 const verticalStep = ref('billing');
 
-const overflowTabs = ref<HTMLElement | null>(null);
-const canScrollBack = ref(false);
-const canScrollForward = ref(false);
-
-watchPostEffect((onCleanup) => {
-  const tabList = overflowTabs.value?.querySelector<HTMLElement>('.cm-tabs__list');
-  if (!tabList) return;
-
-  const list = tabList;
-  const updateControls = () => {
-    const offset = Math.abs(list.scrollLeft);
-    canScrollBack.value = offset > 1;
-    canScrollForward.value = list.scrollWidth - list.clientWidth - offset > 1;
-  };
-
-  const resize = new ResizeObserver(updateControls);
-  resize.observe(list);
-  for (const tab of list.children) resize.observe(tab);
-  list.addEventListener('scroll', updateControls, { passive: true });
-  updateControls();
-  onCleanup(() => {
-    resize.disconnect();
-    list.removeEventListener('scroll', updateControls);
-  });
-});
-
-function scrollTabs(direction: -1 | 1) {
-  const list = overflowTabs.value?.querySelector<HTMLElement>('.cm-tabs__list');
-  if (!list) return;
-  const rtl = getComputedStyle(list).direction === 'rtl';
-  list.scrollBy({
-    left: direction * (rtl ? -1 : 1) * list.clientWidth * 0.75,
-    behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
-  });
-}
-
 const menuBarExamples = [
   { label: 'Menu bar', variant: 'default', selected: ref('pricing') },
   { label: 'Pill menu bar', variant: 'pills', selected: ref('about') },
@@ -344,23 +308,7 @@ const menuBarExamples = [
     <div class="core-matrix-cell">
       <h4>Tabs</h4>
       <CmTabs id="core-release-tabs" :items="tabs.slice(0, 4)" default-value="overview" />
-      <div ref="overflowTabs" class="core-tabs-overflow">
-        <CmTabs id="core-release-tabs-overflow" :items="tabs" default-value="status" />
-        <button
-          v-show="canScrollBack"
-          class="core-tabs-scroll core-tabs-scroll--back"
-          type="button"
-          aria-label="Scroll to earlier tabs"
-          @click="scrollTabs(-1)"
-        />
-        <button
-          v-show="canScrollForward"
-          class="core-tabs-scroll core-tabs-scroll--forward"
-          type="button"
-          aria-label="Scroll to later tabs"
-          @click="scrollTabs(1)"
-        />
-      </div>
+      <CmTabs id="core-release-tabs-overflow" :items="tabs" default-value="status" scroll-controls />
     </div>
     <div class="core-matrix-cell">
       <h4>Stepper · horizontal</h4>
