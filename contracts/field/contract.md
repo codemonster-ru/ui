@@ -24,6 +24,13 @@ When label content exists, Field renders `label.cm-field__label` with `for=contr
 The default slot is wrapped in `div.cm-field__control`. Field does not inspect, clone, or mutate the
 rendered control.
 
+## Floating DatePicker
+
+Use the DatePicker trigger as the Field's primary control. The label raises with focus, a
+selection, or an expanded calendar. An empty trigger's placeholder stays visually hidden where
+the floating label names the control. The raised label follows the trigger's `aria-expanded`
+state even when the calendar is portaled outside the Field.
+
 ## Help and validation content
 
 Non-empty description content renders after the control in `p.cm-field__description` with id

@@ -167,6 +167,8 @@ and browser output across different runtime locales, pass the same `locale` expl
 
 The wrapper uses the native DatePicker's immediate selection display and native hour and minute
 selects. To connect it to Field, pass the scoped `controlId` as the trigger `id`.
+When Field uses `label-placement="floating"`, its label raises while focused, open, or filled.
+This includes calendars portaled outside the Field.
 Vanilla restores the authored fields and updates the trigger text. Set `form` to associate
 a picker outside the form.
 

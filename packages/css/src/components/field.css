@@ -44,7 +44,7 @@
   color: var(--cm-color-status-danger-subtle-foreground);
 }
 
-.cm-field--floating:has(> .cm-field__control :is(.cm-input, .cm-textarea, .cm-select)) {
+.cm-field--floating:has(> .cm-field__control :is(.cm-input, .cm-textarea, .cm-select, .cm-date-picker)) {
   --cm-field-float-reserve: 0px;
   --cm-field-float-height: var(--cm-control-height-md);
   --cm-field-float-inline: var(--cm-space-3);
@@ -56,30 +56,35 @@
   padding-block-start: var(--cm-field-float-reserve);
 }
 
-.cm-field--floating-on:has(> .cm-field__control :is(.cm-input, .cm-textarea, .cm-select)) {
+.cm-field--floating-on:has(> .cm-field__control :is(.cm-input, .cm-textarea, .cm-select, .cm-date-picker)) {
   --cm-field-float-reserve: 0.375rem;
   --cm-field-float-active: 0px;
   --cm-field-float-translate: -50%;
   --cm-field-float-background: var(--cm-color-background-surface);
 }
 
-.cm-field--floating-over:has(> .cm-field__control :is(.cm-input, .cm-textarea, .cm-select)) {
+.cm-field--floating-over:has(> .cm-field__control :is(.cm-input, .cm-textarea, .cm-select, .cm-date-picker)) {
   --cm-field-float-reserve: 0.6875rem;
   --cm-field-float-active: -0.0625rem;
   --cm-field-float-translate: -100%;
 }
 
-.cm-field--floating:has(> .cm-field__control :is(.cm-input--sm, .cm-textarea--sm, .cm-select--sm)) {
+.cm-field--floating:has(
+  > .cm-field__control :is(.cm-input--sm, .cm-textarea--sm, .cm-select--sm, .cm-date-picker--sm)
+) {
   --cm-field-float-height: var(--cm-control-height-sm);
   --cm-field-float-inline: var(--cm-space-2);
 }
 
-.cm-field--floating:has(> .cm-field__control :is(.cm-input--lg, .cm-textarea--lg, .cm-select--lg)) {
+.cm-field--floating:has(
+  > .cm-field__control :is(.cm-input--lg, .cm-textarea--lg, .cm-select--lg, .cm-date-picker--lg)
+) {
   --cm-field-float-height: var(--cm-control-height-lg);
   --cm-field-float-inline: 0.875rem;
 }
 
-.cm-field--floating:has(> .cm-field__control :is(.cm-input, .cm-textarea, .cm-select)) > .cm-field__control {
+.cm-field--floating:has(> .cm-field__control :is(.cm-input, .cm-textarea, .cm-select, .cm-date-picker))
+  > .cm-field__control {
   grid-area: 1 / 1;
 }
 
@@ -87,7 +92,8 @@
   --cm-field-float-resting: calc(var(--cm-field-float-height) / 2);
 }
 
-.cm-field--floating:has(> .cm-field__control :is(.cm-input, .cm-textarea, .cm-select)) > .cm-field__label {
+.cm-field--floating:has(> .cm-field__control :is(.cm-input, .cm-textarea, .cm-select, .cm-date-picker))
+  > .cm-field__label {
   position: absolute;
   z-index: 1;
   grid-area: 1 / 1;
@@ -104,13 +110,19 @@
     transform var(--cm-motion-duration-fast) var(--cm-motion-ease-standard);
 }
 
-/* Native text controls track their live value through :placeholder-shown. The Select
- * trigger updates data-cm-filled in both adapters. Unsupported controls retain the top label. */
-.cm-field--floating:has(> .cm-field__control :is(.cm-input, .cm-textarea, .cm-select)):where(
+/* A DatePicker label aligns to the trigger row even when the Field also has help or error text. */
+.cm-field--floating:has(> .cm-field__control .cm-date-picker) > .cm-field__label {
+  grid-area: 1 / 1 / 2 / 2;
+}
+
+/* Native text controls use :placeholder-shown. DatePicker stays raised while its calendar is open,
+ * including when focus moves to a portal outside the Field. */
+.cm-field--floating:has(> .cm-field__control :is(.cm-input, .cm-textarea, .cm-select, .cm-date-picker)):where(
     :focus-within,
     :has(
       > .cm-field__control :is(.cm-input, .cm-textarea):not(:placeholder-shown),
-      > .cm-field__control .cm-select[data-cm-filled='true']
+      > .cm-field__control :is(.cm-select, .cm-date-picker)[data-cm-filled='true'],
+      > .cm-field__control .cm-date-picker[aria-expanded='true']
     )
   )
   > .cm-field__label {
@@ -120,18 +132,21 @@
   transform: translateY(var(--cm-field-float-translate));
 }
 
-.cm-field--floating-on:has(> .cm-field__control :is(.cm-input, .cm-textarea, .cm-select)) > .cm-field__label {
+.cm-field--floating-on:has(> .cm-field__control :is(.cm-input, .cm-textarea, .cm-select, .cm-date-picker))
+  > .cm-field__label {
   padding-inline: var(--cm-space-1);
   border-radius: var(--cm-radius-control-tight);
 }
 
-.cm-field--floating.cm-field--invalid:has(> .cm-field__control :is(.cm-input, .cm-textarea, .cm-select))
+.cm-field--floating.cm-field--invalid:has(
+    > .cm-field__control :is(.cm-input, .cm-textarea, .cm-select, .cm-date-picker)
+  )
   > .cm-field__label {
   color: var(--cm-color-status-danger-subtle-foreground);
 }
 
 .cm-field--floating:focus-within:not(.cm-field--invalid):has(
-    > .cm-field__control :is(.cm-input, .cm-textarea, .cm-select)
+    > .cm-field__control :is(.cm-input, .cm-textarea, .cm-select, .cm-date-picker)
   )
   > .cm-field__label {
   color: var(--cm-color-interactive-primary-subtle-foreground);
@@ -142,15 +157,36 @@
   color: transparent;
 }
 
-.cm-field--floating-in > .cm-field__control :is(.cm-input, .cm-select) {
+.cm-field--floating > .cm-field__control .cm-date-picker--placeholder .cm-date-picker__value {
+  visibility: hidden;
+}
+
+.cm-field--floating
+  > .cm-field__control
+  .cm-date-picker-wrap:not(:has(> .cm-date-picker__clear:not([hidden])))
+  > .cm-date-picker {
+  padding-inline-end: calc(var(--cm-field-float-inline) + var(--cm-date-picker-icon-size) + var(--cm-space-2));
+}
+
+.cm-field--floating
+  > .cm-field__control
+  .cm-date-picker-wrap:not(:has(> .cm-date-picker__clear:not([hidden])))
+  .cm-date-picker__icon {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: var(--cm-field-float-inline);
+  transform: translateY(-50%);
+}
+
+.cm-field--floating-in > .cm-field__control :is(.cm-input, .cm-select, .cm-date-picker) {
   padding-block: 1.3125rem 0.1875rem;
 }
 
-.cm-field--floating-in > .cm-field__control :is(.cm-input--sm, .cm-select--sm) {
+.cm-field--floating-in > .cm-field__control :is(.cm-input--sm, .cm-select--sm, .cm-date-picker--sm) {
   padding-block: 1rem 0.125rem;
 }
 
-.cm-field--floating-in > .cm-field__control :is(.cm-input--lg, .cm-select--lg) {
+.cm-field--floating-in > .cm-field__control :is(.cm-input--lg, .cm-select--lg, .cm-date-picker--lg) {
   padding-block: 1.625rem 0.375rem;
 }
 
@@ -163,7 +199,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cm-field--floating:has(> .cm-field__control :is(.cm-input, .cm-textarea, .cm-select)) > .cm-field__label {
+  .cm-field--floating:has(> .cm-field__control :is(.cm-input, .cm-textarea, .cm-select, .cm-date-picker))
+    > .cm-field__label {
     transition: none;
   }
 }
