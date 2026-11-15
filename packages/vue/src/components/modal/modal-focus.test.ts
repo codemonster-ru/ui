@@ -1,8 +1,9 @@
 import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
-import { expect, it } from 'vitest';
+import { expect, it, vi } from 'vitest';
 
 import CmDialog from '../dialog/CmDialog.vue';
+import CmDrawer from '../drawer/CmDrawer.vue';
 
 it('focuses and traps only available Dialog controls', async () => {
   const wrapper = mount(CmDialog, {
@@ -68,5 +69,61 @@ it('synchronizes a native close with v-model and ignores a delayed close after r
   } finally {
     wrapper.unmount();
     opener.remove();
+  }
+});
+
+it.each([CmDialog, CmDrawer])(
+  'restores the invoking focus when an open %s unmounts without emitting',
+  async (Modal) => {
+    const opener = document.createElement('button');
+    document.body.append(opener);
+    opener.focus();
+    const changed = vi.fn();
+    const wrapper = mount(Modal, {
+      attachTo: document.body,
+      props: { id: 'unmount', title: 'Open modal', open: true, onOpenChange: changed, 'onUpdate:open': changed },
+      slots: { default: '<button autofocus>Inside</button>' },
+    });
+
+    try {
+      await nextTick();
+      const dialog = wrapper.get('dialog').element;
+      expect(document.activeElement).toBe(dialog.querySelector('[autofocus]'));
+      const close = vi.fn(() => {
+        dialog.open = false;
+        dialog.dispatchEvent(new Event('close'));
+      });
+      dialog.close = close;
+      wrapper.unmount();
+
+      expect(close).toHaveBeenCalledTimes(1);
+      expect(document.activeElement).toBe(opener);
+      expect(changed).not.toHaveBeenCalled();
+    } finally {
+      if (wrapper.exists()) wrapper.unmount();
+      opener.remove();
+    }
+  },
+);
+
+it('preserves focus that moved to an outside control before the modal unmounted', async () => {
+  const opener = document.createElement('button');
+  const outside = document.createElement('button');
+  document.body.append(opener, outside);
+  opener.focus();
+  const wrapper = mount(CmDialog, {
+    attachTo: document.body,
+    props: { id: 'next-action', title: 'Continue', open: true },
+  });
+
+  try {
+    await nextTick();
+    outside.focus();
+    wrapper.unmount();
+    expect(document.activeElement).toBe(outside);
+  } finally {
+    if (wrapper.exists()) wrapper.unmount();
+    opener.remove();
+    outside.remove();
   }
 });

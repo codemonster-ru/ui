@@ -1,5 +1,5 @@
 import { cmFocusableSelector } from '@codemonster-ru/ui-runtime/core';
-import { nextTick, onMounted, ref, watch, type Ref } from 'vue';
+import { nextTick, onBeforeUnmount, onMounted, ref, watch, type Ref } from 'vue';
 
 function availableFocusCandidates(dialog: HTMLDialogElement, selector: string): HTMLElement[] {
   return [...dialog.querySelectorAll<HTMLElement>(selector)].filter(
@@ -32,6 +32,12 @@ export function useCmModal(
     if (next !== undefined) synchronize(next);
   });
   onMounted(() => synchronize(localOpen.value, false));
+  onBeforeUnmount(() => {
+    const element = dialog.value;
+    if (!element || !localOpen.value) return;
+    const { activeElement, body } = element.ownerDocument;
+    synchronize(false, activeElement === body || element.contains(activeElement));
+  });
 
   function setOpen(next: boolean, restoreFocus = true): void {
     if (localOpen.value === next) return;
