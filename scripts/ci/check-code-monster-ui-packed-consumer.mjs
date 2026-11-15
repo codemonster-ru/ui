@@ -312,6 +312,50 @@ function writeConsumer(tarballs) {
       '',
     ].join('\n'),
   );
+
+  const migrationAliases = run(
+    process.execPath,
+    [join(repositoryRoot, 'scripts/migration/print-vueforge-component-aliases.mjs')],
+    { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] },
+  );
+  writeFileSync(join(consumerDirectory, 'vueforge-aliases.mjs'), migrationAliases);
+  writeFileSync(
+    join(consumerDirectory, 'vite-aliases.config.mjs'),
+    "import alias from './vueforge-aliases.mjs';\n" +
+      "export default { resolve: { alias }, build: { outDir: 'dist-aliases', rollupOptions: { input: 'aliases.html' } } };\n",
+  );
+  writeFileSync(
+    join(consumerDirectory, 'aliases.html'),
+    '<main id="app"></main><script type="module" src="/src/aliases.mjs"></script>\n',
+  );
+  writeFileSync(
+    join(consumerDirectory, 'src/aliases.mjs'),
+    [
+      "import { createApp, h } from 'vue';",
+      "import { VfButton } from '@codemonster-ru/vueforge-core/button';",
+      "import { VfDataTable } from '@codemonster-ru/vueforge-core/data-table';",
+      "import VfContainer from '@codemonster-ru/vueforge-layouts/container';",
+      'export const render = () => h(VfContainer, null, () => [',
+      "  h(VfButton, null, () => 'From an original VueForge import'),",
+      "  h(VfDataTable, { columns: [{ key: 'name' }], rows: [{ name: 'Ada' }] }),",
+      ']);',
+      "if (!import.meta.env.SSR) createApp({ render }).mount('#app');",
+      '',
+    ].join('\n'),
+  );
+  writeFileSync(
+    join(consumerDirectory, 'src/aliases-ssr.mjs'),
+    [
+      "import { match } from 'node:assert/strict';",
+      "import { renderToString } from '@vue/server-renderer';",
+      "import { render } from '../dist-aliases-ssr/aliases.js';",
+      'const html = await renderToString(render());',
+      'for (const name of ["container", "button", "data-table"]) match(html, new RegExp("cm-" + name));',
+      'match(html, /From an original VueForge import/u);',
+      "console.log('[ui-packed-consumer] Original component imports passed Vite SSR.');",
+      '',
+    ].join('\n'),
+  );
 }
 
 try {
@@ -352,8 +396,19 @@ try {
   ]);
   run(join(consumerDirectory, 'node_modules/.bin/vite'), ['build']);
   run(join(consumerDirectory, 'node_modules/.bin/vite'), ['build', '--config', 'vite-styled.config.mjs']);
+  run(join(consumerDirectory, 'node_modules/.bin/vite'), ['build', '--config', 'vite-aliases.config.mjs']);
+  run(join(consumerDirectory, 'node_modules/.bin/vite'), [
+    'build',
+    '--config',
+    'vite-aliases.config.mjs',
+    '--ssr',
+    'src/aliases.mjs',
+    '--outDir',
+    'dist-aliases-ssr',
+  ]);
   run(process.execPath, ['src/ssr.mjs']);
   run(process.execPath, ['src/ssr.cjs']);
+  run(process.execPath, ['src/aliases-ssr.mjs']);
 
   const cssAssets = readdirSync(join(consumerDirectory, 'dist/assets')).filter((fileName) => fileName.endsWith('.css'));
   assert.equal(cssAssets.length, 1, 'Vite must emit one complete consumer stylesheet.');
@@ -376,6 +431,11 @@ try {
     'Shared tokens must be bundled once.',
   );
   assert.doesNotMatch(historicalCss, /\.cm-command-palette/u);
+  const aliasAssets = readdirSync(join(consumerDirectory, 'dist-aliases/assets'));
+  const aliasCss = aliasAssets.filter((fileName) => fileName.endsWith('.css'));
+  assert.equal(aliasCss.length, 1, 'Original component imports should also load one shared stylesheet.');
+  const legacyImportCss = readFileSync(join(consumerDirectory, 'dist-aliases/assets', aliasCss[0]), 'utf8');
+  assert.equal(legacyImportCss, historicalCss, 'Original and current component imports should emit identical styles.');
   for (const name of expectedNames) {
     const installedManifest = JSON.parse(readFileSync(join(consumerDirectory, 'node_modules', name, 'package.json')));
     assert.equal(installedManifest.name, name);
