@@ -1,4 +1,5 @@
 export type CmDataTableAlign = 'start' | 'center' | 'end';
+export type CmDataTableVerticalAlign = 'top' | 'middle' | 'bottom' | 'baseline';
 export type CmDataTableDensity = 'default' | 'compact';
 export type CmDataTableSortDirection = 'ascending' | 'descending';
 export type CmDataTableMode = 'client' | 'manual';
@@ -9,6 +10,12 @@ export interface CmDataTableColumn {
   header: string;
   sortable?: boolean;
   align?: CmDataTableAlign;
+  verticalAlign?: CmDataTableVerticalAlign;
+  width?: string;
+  minWidth?: string;
+  maxWidth?: string;
+  nowrap?: boolean;
+  scope?: 'col' | 'row' | 'colgroup' | 'rowgroup';
 }
 
 export interface CmDataTableRow {
@@ -32,9 +39,15 @@ export interface CmDataTableProps {
   columnDividers?: boolean;
   stickyHeader?: boolean;
   visibleColumnKeys?: readonly string[] | null;
+  columnOrder?: readonly string[] | null;
+  columnWidths?: Readonly<Record<string, string>>;
   selectable?: boolean;
   rowSelectable?: (row: CmDataTableRow, rowIndex: number) => boolean;
   selectedRowIds?: readonly string[];
+  expandedRowKeys?: readonly string[] | null;
+  defaultExpandedRowKeys?: readonly string[];
+  expandRowLabelTemplate?: string;
+  collapseRowLabelTemplate?: string;
   sort?: CmDataTableSort | null;
   sortingMode?: CmDataTableMode;
   pagination?: boolean;
@@ -45,6 +58,8 @@ export interface CmDataTableProps {
   pageSizeOptions?: readonly number[];
   totalRows?: number | null;
   loading?: boolean;
+  loadingVariant?: 'status' | 'mask' | 'skeleton';
+  loadingRows?: number;
   error?: boolean;
   emptyText?: string;
   loadingText?: string;

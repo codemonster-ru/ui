@@ -126,6 +126,98 @@ describe('Vue data table components', () => {
     expect(wrapper.findAll('tbody td').map((cell) => cell.text())).toEqual(['Active', 'Paused']);
   });
 
+  it('applies column order and widths without dropping unspecified visible columns', async () => {
+    const wrapper = mount(CmDataTable, {
+      props: {
+        id: 'projects',
+        columns: [
+          { ...columns[0], width: '8rem', maxWidth: '20rem' },
+          { ...columns[1], minWidth: '5rem', verticalAlign: 'middle', nowrap: true },
+        ],
+        rows,
+        columnWidths: { name: '12rem' },
+        columnOrder: ['removed', 'status', 'status'],
+      },
+    });
+    const headings = wrapper.findAll<HTMLTableCellElement>('thead th');
+    expect(headings.map((heading) => heading.text())).toEqual(['Status', 'Name']);
+    expect(headings[1].element.style.inlineSize).toBe('12rem');
+    expect(headings[1].element.style.maxInlineSize).toBe('20rem');
+    const status = wrapper.get<HTMLTableCellElement>('tbody td');
+    expect(status.element.style.minInlineSize).toBe('5rem');
+    expect(status.element.style.verticalAlign).toBe('middle');
+    expect(status.element.style.whiteSpace).toBe('nowrap');
+    await wrapper.setProps({ columnWidths: {} });
+    expect(headings[1].element.style.inlineSize).toBe('8rem');
+  });
+
+  it('expands a controlled detail row only after the caller accepts the update', async () => {
+    const wrapper = mount(CmDataTable, {
+      props: { id: 'projects', columns, rows, expandedRowKeys: [], selectable: true },
+      slots: {
+        'expanded-row': ({ row, rowKey, rowIndex }: { row: CmDataTableRow; rowKey: string; rowIndex: number }) =>
+          h('p', `${rowIndex + 1}. ${rowKey}: ${String(row.cells.status)}`),
+      },
+    });
+    const trigger = wrapper.get('button[aria-expanded]');
+    expect(trigger.attributes()).toMatchObject({ 'aria-expanded': 'false', 'aria-label': 'Expand Apollo' });
+    await trigger.trigger('click');
+    expect(wrapper.emitted('update:expandedRowKeys')).toEqual([[['apollo']]]);
+    expect(wrapper.find('.cm-data-table__expanded-row').exists()).toBe(false);
+    await wrapper.setProps({ expandedRowKeys: ['apollo'] });
+    const detail = wrapper.get('#projects-expanded-apollo');
+    expect(detail.text()).toBe('1. apollo: Active');
+    expect(detail.get('td').attributes('colspan')).toBe('4');
+    expect(trigger.attributes()).toMatchObject({
+      'aria-expanded': 'true',
+      'aria-label': 'Collapse Apollo',
+      'aria-controls': 'projects-expanded-apollo',
+    });
+    await trigger.trigger('click');
+    expect(wrapper.emitted('update:expandedRowKeys')).toEqual([[['apollo']], [[]]]);
+    expect(wrapper.find('#projects-expanded-apollo').exists()).toBe(true);
+  });
+
+  it('uses default expansion and replaces data with inaccessible placeholder rows while loading', async () => {
+    const wrapper = mount(CmDataTable, {
+      props: {
+        id: 'projects',
+        columns,
+        rows,
+        defaultExpandedRowKeys: ['apollo'],
+        loading: true,
+        loadingVariant: 'skeleton',
+        loadingRows: 2,
+      },
+      slots: { 'expanded-row': 'Additional project details' },
+    });
+    expect(wrapper.get('tbody').attributes('aria-busy')).toBe('true');
+    expect(wrapper.findAll('tbody tr[aria-hidden="true"]')).toHaveLength(2);
+    expect(wrapper.findAll('tbody .cm-skeleton')).toHaveLength(4);
+    expect(wrapper.get('[role="status"]').text()).toBe('Loading...');
+    expect(wrapper.findAll('[data-cm-data-table-row]')).toHaveLength(0);
+    await wrapper.setProps({ loading: false });
+    expect(wrapper.get('tbody').attributes('aria-busy')).toBeUndefined();
+    expect(wrapper.find('[role="status"]').exists()).toBe(false);
+    expect(wrapper.get('#projects-expanded-apollo').text()).toBe('Additional project details');
+    await wrapper.get('button[aria-expanded="true"]').trigger('click');
+    expect(wrapper.find('#projects-expanded-apollo').exists()).toBe(false);
+  });
+
+  it('retains the loaded rows and covers them with a loading mask', async () => {
+    const wrapper = mount(CmDataTable, {
+      props: { id: 'projects', columns, rows, loading: true, loadingVariant: 'mask', error: true },
+      slots: { loading: '<span>Updating projects</span>' },
+    });
+    expect(wrapper.get('table').element.hasAttribute('inert')).toBe(true);
+    const firstRow = wrapper.get('[data-cm-data-table-row="apollo"]').element;
+    expect(wrapper.get('.cm-data-table__loading-mask[role="status"]').text()).toBe('Updating projects');
+    await wrapper.setProps({ loading: false, error: false });
+    expect(wrapper.get('table').element.hasAttribute('inert')).toBe(false);
+    expect(wrapper.get('[data-cm-data-table-row="apollo"]').element).toBe(firstRow);
+    expect(wrapper.find('.cm-data-table__loading-mask').exists()).toBe(false);
+  });
+
   it('composes scoped cell and heading slots inside a native table', async () => {
     const wrapper = mount(CmDataTable, {
       props: { id: 'projects', columns, rows },

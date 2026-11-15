@@ -34,7 +34,11 @@ Set a row's `selectable` field to `false` when it must remain visible but cannot
 removed from the current selection. In Vue, `rowSelectable(row, rowIndex)` can apply the same
 restriction conditionally to a rendered row.
 Pass `visibleColumnKeys` in the desired display order to hide or rearrange columns without changing
-the complete column and row data. The application owns the chooser UI and persistence.
+the complete column and row data. In Vue, `columnOrder` can supply an order separately from
+visibility. Unlisted visible columns stay at the end in their existing order. Columns can set
+`width`, `minWidth`, `maxWidth`, `nowrap`, `verticalAlign`, and header `scope`. A supplied
+`columnWidths` entry overrides that column's width. The application owns the chooser UI and
+persistence.
 
 ```vue
 <script setup lang="ts">
@@ -92,6 +96,18 @@ native sort button and accessible action label. Use the `loading`, `error`, and 
 to customize their status row. The equivalent Vanilla markup contains the authored text and
 elements directly in the corresponding table regions.
 
+Add an `expanded-row` slot to enable a labelled disclosure button in each row. The slot
+receives `row`, `rowKey` (the row ID), and `rowIndex`. Use `defaultExpandedRowKeys` for
+initial expansion or `v-model:expanded-row-keys` for controlled state. Customize the
+accessible action labels with `expandRowLabelTemplate` and `collapseRowLabelTemplate`
+using the `{row}` placeholder.
+
+Set `loadingVariant="skeleton"` to show placeholder rows when loading. Adjust their count
+with `loadingRows` (default three). The placeholders are hidden from assistive technology
+and the loading message remains available as a status announcement. Set
+`loadingVariant="mask"` to keep loaded rows in place behind the loading status mask. The
+covered table is inert while loading. The default `status` variant shows a single status row.
+
 Localize selection and sorting accessible names with `selectAllLabel`, `selectRowLabelTemplate`,
 `sortAscendingLabelTemplate`, `sortDescendingLabelTemplate`, and `clearSortLabelTemplate`. The row
 template must contain `{row}`; each sort template must contain `{column}`. Vanilla HTML uses the equivalent
@@ -142,12 +158,12 @@ hide, or replace rows. Without JavaScript, users retain a readable semantic tabl
 - Format dates, money, links, and status text before passing the shared scalar data model.
 - Treat row and column values as untrusted. Both adapters escape them and reject arbitrary HTML,
   executable accessors, unknown cell keys, duplicate identifiers, and non-finite numbers.
-- Supply rich cell and header content as trusted Vue slots or authored Vanilla markup. For
-  expanded rows, compose `CmTable` with application-owned disclosure state.
+- Supply rich cell and header content as trusted Vue slots or authored Vanilla markup. The
+  Vanilla table controller leaves expanded content and its state to the application.
 - Multi-sort query semantics and interactive column pinning, resizing, and reordering remain
   application-owned policy. `visibleColumnKeys` covers the stable shared visibility/order state.
-- For skeleton rows, compose `CmSkeleton` with `CmTable`; DataTable's portable loading state remains
-  a semantic status row.
+- Vanilla templates can render skeleton rows with `.cm-skeleton` markup and a loading status
+  announcement. The standard portable loading state uses a visible status row.
 - Do not initialize shared runtime over Vue-owned DataTable markup.
 
 ## Choosing columns
