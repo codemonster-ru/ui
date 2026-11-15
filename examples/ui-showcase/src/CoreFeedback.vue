@@ -9,6 +9,7 @@ import {
   CmProgressBar,
   CmProgressSpinner,
   CmSkeleton,
+  CmSkeletonGate,
   CmTag,
 } from '@codemonster-ru/ui-vue';
 import { checkCircle, info, questionCircle, user, warning, xCircle } from '@codemonster-ru/ui-icons';
@@ -33,6 +34,7 @@ const people = [
   { label: 'Sam Rivera', initials: 'SR', role: 'Quality assurance', image: null, status: 'Away' },
 ];
 const progress = ref(0);
+const panelReady = ref(true);
 let timer: ReturnType<typeof setInterval> | undefined;
 function startProgress() {
   clearInterval(timer);
@@ -163,8 +165,12 @@ onUnmounted(() => clearInterval(timer));
     </div>
     <div class="core-matrix-cell">
       <h4>Loading and ready panels</h4>
-      <CmSkeleton min-height="6rem" />
-      <CmCard title="Ready panel" class="core-ready-panel">Ready content replaces the skeleton.</CmCard>
+      <CmButton variant="secondary" @click="panelReady = !panelReady">{{
+        panelReady ? 'Show loading' : 'Show content'
+      }}</CmButton>
+      <CmSkeletonGate :ready="panelReady" min-height="6rem" preserve-last-height>
+        <CmCard title="Ready panel" class="core-ready-panel">Ready content replaces the skeleton.</CmCard>
+      </CmSkeletonGate>
     </div>
   </CoreMatrix>
 </template>

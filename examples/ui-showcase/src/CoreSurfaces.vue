@@ -6,6 +6,8 @@ import {
   CmColumnChooser,
   CmDataTable,
   CmDivider,
+  CmGroupBox,
+  CmPanel,
   CmSkeleton,
   CmTable,
   CmTag,
@@ -172,22 +174,19 @@ const pageSize = ref(3);
     </div>
     <div class="core-matrix-cell">
       <h4>Panel · default</h4>
-      <CmCard title="Supporting Context">Panel content with regular treatment.</CmCard>
+      <CmPanel title="Supporting Context">Panel content with regular treatment.</CmPanel>
     </div>
     <div class="core-matrix-cell">
       <h4>Panel · subtle</h4>
-      <CmCard title="Subtle Context" class="core-subtle-card">Subtle panel treatment for quiet grouping.</CmCard>
+      <CmPanel title="Subtle Context" subtle>Subtle panel treatment for quiet grouping.</CmPanel>
     </div>
     <div class="core-matrix-cell">
       <h4>Group · default</h4>
-      <CmCard title="Shipping address">1234 Elm Street, San Francisco, CA 94102</CmCard>
+      <CmGroupBox title="Shipping address">1234 Elm Street, San Francisco, CA 94102</CmGroupBox>
     </div>
     <div class="core-matrix-cell">
       <h4>Group · collapsible</h4>
-      <details class="showcase-panel core-matrix-cell" open>
-        <summary>Invoice details</summary>
-        <p>Invoice #1024 · Design service · $120.00</p>
-      </details>
+      <CmGroupBox title="Invoice details" collapsible>Invoice #1024 · Design service · $120.00</CmGroupBox>
     </div>
     <div v-for="{ title, props, headers, rows: tableRows } in tableExamples" :key="title" class="core-matrix-cell">
       <h4>Table · {{ title }}</h4>

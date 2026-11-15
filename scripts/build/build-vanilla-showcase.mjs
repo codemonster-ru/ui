@@ -247,6 +247,10 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
       '<svg></svg>',
       `<svg class="cm-icon cm-icon--regular cm-icon--classic" viewBox="${icon.viewBox}" aria-hidden="true" focusable="false">${icon.body}</svg>`,
     );
+  const themeIcons = ['sun', 'moon'].map((name) => {
+    const icon = icons.resolveCmIcon(icons[name], 'classic', 'regular');
+    return `<span data-showcase-theme-icon="${name}" hidden><svg class="cm-icon cm-icon--regular cm-icon--classic" viewBox="${icon.viewBox}" aria-hidden="true" focusable="false">${icon.body}</svg></span>`;
+  });
   const bySlug = new Map(components.map(({ slug, manifest }) => [slug, manifest]));
   const assigned = groups.flatMap(({ components }) => components);
   if (
@@ -266,11 +270,37 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
   ) => `<fieldset class="cm-theme-switch" id="${id}"${controlled ? ' data-cm-controller="theme-switch"' : ''}><legend class="cm-theme-switch__legend">Theme</legend>
     ${['light', 'system', 'dark'].map((mode) => `<label class="cm-theme-switch__option"><input class="cm-theme-switch__input" type="radio" name="${id}" value="${mode}"${mode === 'light' ? ' checked' : ''}><span class="cm-theme-switch__label">${mode.charAt(0).toUpperCase() + mode.slice(1)}</span></label>`).join('')}
   </fieldset>`;
+  const themeCards = (contractExamples) => `<div class="showcase-grid">
+    <article class="showcase-panel core-theme-card">
+      <h3>Theme provider</h3>
+      <div class="core-theme-controls">
+        ${['light', 'dark', 'system', 'toggle'].map((mode) => `<button class="cm-button cm-button--${mode === 'toggle' ? 'primary' : 'secondary'} cm-button--sm" type="button" data-showcase-set-theme="${mode}" disabled>${mode.charAt(0).toUpperCase() + mode.slice(1)}</button>`).join('')}
+      </div>
+      <div class="core-theme-controls" aria-live="polite">
+        <span class="cm-tag cm-tag--primary" data-showcase-theme-mode>mode: light</span>
+        <span class="cm-tag cm-tag--contrast" data-showcase-theme-resolved>resolved: light</span>
+      </div>
+    </article>
+    <article class="showcase-panel core-theme-card">
+      <h3>Theme switch</h3>
+      ${themeSwitch('showcase-theme-example', true)}
+      <p class="showcase-muted">Choose an explicit palette or follow the system preference.</p>
+    </article>
+    <article class="showcase-panel core-theme-card">
+      <h3>Theme utilities</h3>
+      <p class="showcase-muted">Use the controls above to switch theme mode and verify component contrast in light, dark, and system states.</p>
+    </article>
+  </div>
+  <details class="showcase-contracts"><summary>Contract examples and palette samples</summary>
+    <div class="showcase-grid">${contractExamples}${themeSamples}</div>
+  </details>`;
   const sections = new Map(
     groups.map(({ id, title, description, components: slugs, matrix: matrixTitle, recipeAfter }) => {
       const isCore = id !== 'layouts' && id !== 'icons';
       const shellSlugs = panels.map(({ slug }) => slug);
-      const ordered = id === 'layouts' ? [...Object.keys(layoutSamples), ...shellSlugs] : slugs;
+      const layoutOrder = [...Object.keys(layoutSamples), ...shellSlugs];
+      const ordered =
+        id === 'layouts' ? [...layoutOrder, ...slugs.filter((slug) => !layoutOrder.includes(slug))] : slugs;
       const cards = ordered.map((slug) => {
         const manifest = bySlug.get(slug);
         const variants = casesByComponent.get(slug);
@@ -311,7 +341,6 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
         <${heading} id="component-${slug}"${matrixTitle ? ' class="showcase-label"' : slug === 'icon' ? ' class="showcase-icon-intro-heading"' : ''}>${escapeHtml(panel?.title ?? (isCore ? coreComponentTitle(slug) : manifest.name))}</${heading}>
         ${layoutSamples[slug] ?? composition}
         ${slug === 'icon' ? renderIconIntro() : ''}
-        ${slug === 'theme-switch' ? themeSwitch('showcase-theme-example', true) : ''}
         ${actions}
         ${matrix ? `<div data-core-matrix>${matrix}</div>` : ''}
         <details class="showcase-contracts"><summary>Contract examples</summary><div class="showcase-variants">${expandedExamples(
@@ -330,11 +359,14 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
         );
       const recipes = coreRecipesFor(coreSamples, id);
       if (recipeAfter) cards.splice(ordered.indexOf(recipeAfter) + 1, 0, recipes);
-      const grid = matrixTitle
-        ? `<section class="showcase-panel core-group-matrix" aria-labelledby="${id}-matrix-title">
+      const grid =
+        id === 'theme'
+          ? themeCards(cards.join('\n'))
+          : matrixTitle
+            ? `<section class="showcase-panel core-group-matrix" aria-labelledby="${id}-matrix-title">
           <h3 id="${id}-matrix-title">${escapeHtml(matrixTitle)}</h3>${recipeAfter ? '' : recipes}${cards.join('\n')}
         </section>`
-        : `<div class="showcase-grid">${recipes}${cards.join('\n')}${id === 'theme' ? themeSamples : ''}</div>`;
+            : `<div class="showcase-grid">${recipes}${cards.join('\n')}</div>`;
       const typeSamples =
         id === 'actions'
           ? `<section id="typography" class="showcase-group">
@@ -365,17 +397,16 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
   const titles = { core: 'Core', colors: 'Colors', layouts: 'Layouts', icons: 'Icons' };
   function renderPage(current, base) {
     const navigation = Object.entries(titles)
-      .map(
-        ([id, label]) =>
-          `<a class="cm-link" href="./${id}/"${id === current ? ' aria-current="page"' : ''}>${label}</a>`,
-      )
+      .map(([id, label]) => `<li><a href="./${id}/"${id === current ? ' aria-current="page"' : ''}>${label}</a></li>`)
       .join('\n');
     return page(
       `${titles[current]} · CodeMonster UI Vanilla`,
       `<header class="showcase-topbar">
-    <span class="showcase-brand">CodeMonster UI · Vanilla</span>
-    <nav class="showcase-navigation" aria-label="Showcase sections">${navigation}</nav>
-    ${themeSwitch('showcase-theme')}
+    <div class="showcase-header">
+      <a class="showcase-brand" href="./core/">CodeMonster UI · Vanilla</a>
+      <nav class="showcase-navigation" aria-label="Showcase sections"><ul>${navigation}</ul></nav>
+      <button class="cm-icon-button cm-icon-button--secondary cm-icon-button--md showcase-theme" id="showcase-theme" type="button" aria-label="Toggle color theme" hidden>${themeIcons.join('')}</button>
+    </div>
   </header>
   <main class="showcase-content">
     ${
