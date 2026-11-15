@@ -11,4 +11,16 @@ export interface CmColumnChooserProps {
   disabled?: boolean;
   triggerLabel?: string;
   allLabel?: string;
+  triggerAsChild?: boolean;
+  teleportTo?: string | HTMLElement | null | false;
+}
+
+export interface CmColumnChooserTriggerScope {
+  visibleColumnKeys: string[];
+  disabled: boolean;
+}
+
+export interface VfDataTableColumnChooserProps extends Omit<CmColumnChooserProps, 'id' | 'visibleColumnKeys'> {
+  id?: string;
+  modelValue?: readonly string[];
 }

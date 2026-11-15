@@ -3,7 +3,6 @@ import {
   CmBadge,
   CmButton,
   CmCard,
-  CmColumnChooser,
   CmDataTable,
   CmDivider,
   CmGroupBox,
@@ -13,6 +12,7 @@ import {
   CmTag,
   type CmDataTableProps,
 } from '@codemonster-ru/ui-vue';
+import { VfDataTableColumnChooser } from '@codemonster-ru/ui-vue/historical';
 import { computed, ref } from 'vue';
 import CoreMatrix from './CoreMatrix.vue';
 import CoreResizableTable from './CoreResizableTable.vue';
@@ -333,9 +333,9 @@ const pageSize = ref(3);
       <div class="core-matrix-cell" :class="{ 'core-matrix-wide': id === 'sorting' }">
         <h4>Data table · {{ title }}</h4>
         <div v-if="id === 'columns'" class="core-theme-controls">
-          <CmColumnChooser
+          <VfDataTableColumnChooser
             id="core-column-chooser"
-            v-model:visible-column-keys="visible"
+            v-model="visible"
             :columns="columns"
             :required-column-keys="['member']"
           />

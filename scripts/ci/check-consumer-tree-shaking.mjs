@@ -102,6 +102,22 @@ const cases = [
     name: 'ui-vue historical Drawer without the icon catalogue',
   },
   {
+    entry: "export { VfDataTableColumnChooser } from '@codemonster-ru/ui-vue/historical';\n",
+    fileName: 'ui-vue-historical-column-chooser',
+    forbiddenMarkers: [...unrelatedRuntimeMarkers, unrelatedIcon],
+    includesPositioning: true,
+    maxGzipBytes: 11 * 1024,
+    name: 'ui-vue historical ColumnChooser without the icon catalogue',
+  },
+  {
+    entry: "export { VfDatePicker } from '@codemonster-ru/ui-vue/historical';\n",
+    fileName: 'ui-vue-historical-date-picker',
+    forbiddenMarkers: [...unrelatedRuntimeMarkers, unrelatedIcon],
+    includesPositioning: true,
+    maxGzipBytes: 16 * 1024,
+    name: 'ui-vue historical DatePicker without the icon catalogue',
+  },
+  {
     entry: "export { CmThemeProvider } from '@codemonster-ru/ui-vue';\n",
     fileName: 'ui-vue-theme-provider',
     forbiddenMarkers: [...domRuntimeMarkers, themeRuntime, unrelatedIcon],
@@ -114,8 +130,8 @@ const cases = [
     fileName: 'ui-vue-historical',
     forbiddenMarkers: unrelatedRuntimeMarkers,
     includesPositioning: true,
-    // The opt-in controls, named icons, and historical modal defaults measured 48.68 KiB together.
-    maxGzipBytes: 51 * 1024,
+    // The DatePicker and ColumnChooser add their controls to the opt-in namespace (57.41 KiB total).
+    maxGzipBytes: 60 * 1024,
     name: 'ui-vue opt-in historical namespace',
   },
   {
