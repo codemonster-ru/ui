@@ -33,6 +33,10 @@ Individual styles are also available from the `dialog.css`, `drawer.css`, `dropd
   `defaultVisible` sets the initial rendering state. The Vue `VfTooltip` export uses top placement,
   an 80 ms delay, and a body portal by default.
 
+Dropdown, Popover, and Tooltip reveal their content with the shared overlay motion. The content
+becomes hidden immediately on dismissal. A reduced-motion preference or a browser without CSS
+starting styles displays the content immediately. [CSS starting styles](https://www.w3.org/TR/css-transitions-2/#defining-before-change-style)
+
 `VfDialog` and `VfDrawer` accept `teleportTo` as a selector or element in their document.
 They render inline on the server and move to the target after mounting, defaulting to `body`.
 Use `disableTeleport`, `false`, or `null` to keep them inline. The target controls DOM ancestry

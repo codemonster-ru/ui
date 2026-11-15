@@ -1,3 +1,5 @@
+@import '../primitives/floating-reveal.css';
+
 .cm-tooltip,
 .cm-tooltip--visible,
 .cm-tooltip--delay-none,

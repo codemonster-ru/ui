@@ -28,7 +28,10 @@ function componentClasses(slug) {
 }
 
 function cssClasses(slug) {
-  const css = readFileSync(resolve(repositoryRoot, `packages/css/src/components/${slug}.css`), 'utf8');
+  const directory = resolve(repositoryRoot, 'packages/css/src/components');
+  const entry = readFileSync(resolve(directory, `${slug}.css`), 'utf8');
+  const imports = [...entry.matchAll(/^@import '(\.\.\/primitives\/[^']+)';/gmu)];
+  const css = [entry, ...imports.map(([, file]) => readFileSync(resolve(directory, file), 'utf8'))].join('\n');
   return new Set(
     [...css.matchAll(new RegExp(`\\.(cm-${slug}(?:--|__|-wrap)[a-z0-9-]*|cm-${slug})\\b`, 'g'))].map(
       (match) => match[1],
