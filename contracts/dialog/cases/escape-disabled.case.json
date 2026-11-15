@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "dialog-escape-disabled",
+  "description": "An initially open dialog named by aria-label with Escape dismissal disabled.",
+  "props": { "id": "help", "ariaLabel": "Keyboard help", "defaultOpen": true, "closeOnEscape": false },
+  "slots": { "default": "Use Tab to navigate the controls." }
+}

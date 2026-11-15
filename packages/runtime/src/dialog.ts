@@ -8,6 +8,7 @@ export class CmDialogController extends CmModalController {
       closeSelector: '[data-cm-dialog-close]',
       eventName: 'dialog',
       stateAttribute: 'cmDialogState',
+      allowEscape: () => root.getAttribute('data-cm-dialog-close-on-escape') !== 'false',
     });
   }
 }

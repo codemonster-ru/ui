@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "dialog-escape-disabled",
+  "case": "dialog-escape-disabled",
+  "steps": [
+    { "expect": "focus", "target": "close", "value": true },
+    { "action": "press", "target": "close", "key": "Escape" },
+    { "expect": "visible", "target": "root", "value": true },
+    { "expect": "eventCount", "target": "root", "name": "cm:dialog-open-change", "count": 0 },
+    { "action": "click", "target": "close" },
+    { "expect": "visible", "target": "root", "value": false },
+    { "expect": "eventCount", "target": "root", "name": "cm:dialog-open-change", "count": 1 }
+  ]
+}

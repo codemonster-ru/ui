@@ -4,6 +4,7 @@ import { nextTick, onMounted, ref, watch, type Ref } from 'vue';
 function availableFocusCandidates(dialog: HTMLDialogElement, selector: string): HTMLElement[] {
   return [...dialog.querySelectorAll<HTMLElement>(selector)].filter(
     (element) =>
+      element.closest('dialog') === dialog &&
       !element.matches(':disabled, input[type="hidden"]') &&
       !element.closest('[hidden], [inert], [aria-hidden="true"]'),
   );
@@ -12,19 +13,25 @@ function availableFocusCandidates(dialog: HTMLDialogElement, selector: string): 
 export interface CmModalBinding {
   dialog: Ref<HTMLDialogElement | undefined>;
   localOpen: Ref<boolean>;
-  onCancel: (event: Event) => void;
+  onCancel: (event: Event, allowEscape?: boolean) => void;
   onClose: () => void;
   onKeydown: (event: KeyboardEvent, allowEscape?: boolean) => void;
   setOpen: (open: boolean, restoreFocus?: boolean) => void;
 }
 
-export function useCmModal(open: () => boolean, emitOpen: (open: boolean) => void): CmModalBinding {
+export function useCmModal(
+  open: () => boolean | undefined,
+  emitOpen: (open: boolean) => void,
+  defaultOpen = false,
+): CmModalBinding {
   const dialog = ref<HTMLDialogElement>();
-  const localOpen = ref(open());
+  const localOpen = ref(open() ?? defaultOpen);
   let returnFocus: HTMLElement | null = null;
 
-  watch(open, (next) => synchronize(next));
-  onMounted(() => synchronize(open(), false));
+  watch(open, (next) => {
+    if (next !== undefined) synchronize(next);
+  });
+  onMounted(() => synchronize(localOpen.value, false));
 
   function setOpen(next: boolean, restoreFocus = true): void {
     if (localOpen.value === next) return;
@@ -69,9 +76,9 @@ export function useCmModal(open: () => boolean, emitOpen: (open: boolean) => voi
     }
   }
 
-  function onCancel(event: Event): void {
+  function onCancel(event: Event, allowEscape = true): void {
     event.preventDefault();
-    setOpen(false);
+    if (allowEscape) setOpen(false);
   }
 
   function onClose(): void {
@@ -80,14 +87,17 @@ export function useCmModal(open: () => boolean, emitOpen: (open: boolean) => voi
   }
 
   function onKeydown(event: KeyboardEvent, allowEscape = true): void {
+    const element = dialog.value;
+    const ElementConstructor = element?.ownerDocument.defaultView?.Element;
+    if (!element || !localOpen.value || !ElementConstructor || !(event.target instanceof ElementConstructor)) return;
+    if (event.target.closest('dialog') !== element) return;
     if (event.key === 'Escape') {
       if (event.defaultPrevented) return;
       event.preventDefault();
       if (allowEscape) setOpen(false);
       return;
     }
-    const element = dialog.value;
-    if (event.key !== 'Tab' || !element || !localOpen.value) return;
+    if (event.key !== 'Tab') return;
     const focusable = availableFocusCandidates(element, cmFocusableSelector).filter(
       (candidate) => candidate.tabIndex >= 0,
     );
