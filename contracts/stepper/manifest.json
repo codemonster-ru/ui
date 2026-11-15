@@ -11,6 +11,8 @@
       "default": null,
       "description": "The active step. An unknown or disabled value falls back to the first enabled step."
     },
+    "modelValue": { "type": "string", "required": false, "description": "Authoritative Vue active step." },
+    "defaultValue": { "type": "string", "required": false, "description": "Initial Vue active step." },
     "orientation": {
       "type": "enum",
       "required": false,
@@ -21,13 +23,14 @@
       "type": "enum",
       "required": false,
       "default": "bottom",
-      "values": ["bottom", "inline"]
+      "values": ["bottom", "inline", "above", "below", "start", "end"]
     },
     "ariaLabel": { "type": "string", "required": false, "default": "Progress" }
   },
   "slots": {},
   "events": {
-    "valueChange": { "description": "Reports the newly active step value.", "payloadContract": "string" }
+    "valueChange": { "description": "Reports the newly active step value.", "payloadContract": "string" },
+    "change": { "description": "Vue historical name for a step activation.", "payloadContract": "string" }
   },
   "states": ["complete", "current", "upcoming", "disabled"]
 }

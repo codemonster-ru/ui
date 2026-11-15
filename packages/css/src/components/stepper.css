@@ -1,8 +1,4 @@
-/*
- * The rail is drawn per step: each trigger carries its own connector before and after the marker,
- * so a step knows its own geometry without the list computing offsets. --cm-stepper-progress-factor
- * lets a filled rail be one gradient rather than a class per step.
- */
+/* Each trigger includes both connector segments to keep its marker independent of the label. */
 .cm-stepper__list {
   display: flex;
   gap: 0;
@@ -123,4 +119,24 @@
   align-items: center;
   gap: var(--cm-space-2);
   text-align: start;
+}
+
+.cm-stepper--content-above .cm-stepper__item {
+  display: flex;
+}
+
+.cm-stepper--content-above .cm-stepper__trigger {
+  flex-direction: column-reverse;
+  justify-content: space-between;
+}
+
+.cm-stepper--content-start .cm-stepper__trigger {
+  flex-direction: row-reverse;
+}
+
+.cm-stepper--content-start .cm-stepper__content {
+  min-inline-size: 0;
+  align-items: flex-end;
+  flex: 1 1 auto;
+  text-align: end;
 }

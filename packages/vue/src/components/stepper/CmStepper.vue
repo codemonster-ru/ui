@@ -15,6 +15,8 @@ defineOptions({ inheritAttrs: false });
 const props = defineProps({
   items: { type: Array as PropType<readonly CmStepperItem[]>, required: true },
   value: { type: String as PropType<string | null>, default: null },
+  modelValue: { type: String, default: undefined },
+  defaultValue: { type: String, default: undefined },
   orientation: {
     type: String as PropType<CmStepperOrientation>,
     default: 'horizontal',
@@ -23,24 +25,43 @@ const props = defineProps({
   contentPosition: {
     type: String as PropType<CmStepperContentPosition>,
     default: 'bottom',
-    validator: (value: string) => ['bottom', 'inline'].includes(value),
+    validator: (value: string) => ['bottom', 'inline', 'above', 'below', 'start', 'end'].includes(value),
   },
   ariaLabel: { type: String, default: 'Progress' },
 });
-const emit = defineEmits<{ valueChange: [value: string]; 'update:value': [value: string] }>();
+const emit = defineEmits<{
+  valueChange: [value: string];
+  'update:value': [value: string];
+  'update:modelValue': [value: string];
+  change: [value: string];
+}>();
 const attrs = useAttrs();
 const root = ref<HTMLElement>();
 
-const localValue = ref<string | null>(props.value);
+const localValue = ref<string | null>(props.value ?? props.defaultValue ?? null);
 watch(
   () => props.value,
   (value) => (localValue.value = value),
 );
 
 const orientation = computed(() => (props.orientation === 'vertical' ? 'vertical' : 'horizontal'));
-const contentPosition = computed(() => (props.contentPosition === 'inline' ? 'inline' : 'bottom'));
-const activeValue = computed(() => resolveStepperValue(props.items, localValue.value));
+const contentPosition = computed(() => {
+  if (props.contentPosition === 'inline') return 'inline';
+  if (orientation.value === 'vertical') return props.contentPosition === 'start' ? 'start' : 'bottom';
+  return props.contentPosition === 'above' ? 'above' : 'bottom';
+});
+const activeValue = computed(() => resolveStepperValue(props.items, props.modelValue ?? localValue.value));
 const progress = computed(() => resolveStepperProgress(props.items, activeValue.value));
+
+watch(
+  () => props.items,
+  () => {
+    if (props.modelValue === undefined && props.defaultValue === undefined) return;
+    const fallback = activeValue.value;
+    if (fallback !== null && fallback !== (props.modelValue ?? localValue.value)) select(fallback);
+  },
+  { deep: true },
+);
 
 const classes = computed(() =>
   mergeCmClasses(
@@ -63,9 +84,15 @@ function stepState(item: CmStepperItem): string {
 
 function activate(item: CmStepperItem): void {
   if (item.disabled || item.value === activeValue.value) return;
-  localValue.value = item.value;
-  emit('update:value', item.value);
-  emit('valueChange', item.value);
+  select(item.value);
+}
+
+function select(value: string): void {
+  if (props.modelValue === undefined) localValue.value = value;
+  emit('update:modelValue', value);
+  emit('change', value);
+  emit('update:value', value);
+  emit('valueChange', value);
 }
 
 function onKeydown(event: KeyboardEvent, item: CmStepperItem): void {
@@ -75,7 +102,8 @@ function onKeydown(event: KeyboardEvent, item: CmStepperItem): void {
   event.preventDefault();
   const next = props.items.find((candidate) => candidate.value === nextValue);
   if (next) activate(next);
-  root.value?.querySelector<HTMLElement>(`[data-cm-stepper-value="${nextValue}"]`)?.focus();
+  const buttons = root.value?.querySelectorAll<HTMLButtonElement>('[data-cm-stepper-value]') ?? [];
+  [...buttons].find((button) => button.dataset.cmStepperValue === nextValue)?.focus();
 }
 
 useCmHydrated();

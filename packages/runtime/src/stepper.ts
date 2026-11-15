@@ -7,6 +7,7 @@ export interface StepperValueChangeDetail {
 }
 
 const triggerSelector = '[data-cm-stepper-value]';
+const stateClasses = ['complete', 'current', 'disabled', 'upcoming'].map((state) => `cm-stepper__item--${state}`);
 
 export class CmStepperController implements CmController {
   readonly #root: Element;
@@ -38,12 +39,19 @@ export class CmStepperController implements CmController {
   }
 
   #triggerFor(value: string): HTMLButtonElement | null {
-    return this.#root.querySelector<HTMLButtonElement>(`[data-cm-stepper-value="${value}"]`);
+    return (
+      [...this.#root.querySelectorAll<HTMLButtonElement>(triggerSelector)].find(
+        (trigger) => trigger.dataset.cmStepperValue === value,
+      ) ?? null
+    );
   }
 
   #activate(value: string, focus: boolean): void {
     const items = this.#items;
-    if (this.#activeValue === value) return;
+    if (this.#activeValue === value) {
+      if (focus) this.#triggerFor(value)?.focus();
+      return;
+    }
 
     for (const item of items) {
       const trigger = this.#triggerFor(item.value);
@@ -51,7 +59,8 @@ export class CmStepperController implements CmController {
       if (!trigger || !node) continue;
 
       const state = resolveStepState(items, value, item.value);
-      node.className = `cm-stepper__item cm-stepper__item--${state}`;
+      node.classList.remove(...stateClasses);
+      node.classList.add(`cm-stepper__item--${state}`);
       trigger.classList.toggle('cm-stepper__trigger--current', state === 'current');
       if (state === 'current') trigger.setAttribute('aria-current', 'step');
       else trigger.removeAttribute('aria-current');

@@ -160,11 +160,16 @@ export { default as VfSkeletonGate } from './components/skeleton-gate/CmSkeleton
 export { default as CmStack } from './components/stack/CmStack.vue';
 export type { CmStackElement, CmStackProps } from './components/stack/stack.types';
 export { default as CmStepper } from './components/stepper/CmStepper.vue';
+export { default as VfStepper } from './components/stepper/CmStepper.vue';
 export type {
   CmStepperContentPosition,
   CmStepperItem,
   CmStepperOrientation,
   CmStepperProps,
+  VfStepperContentPosition,
+  VfStepperItem,
+  VfStepperOrientation,
+  VfStepperProps,
 } from './components/stepper/stepper.types';
 export { default as CmSwitch } from './components/switch/CmSwitch.vue';
 export type { CmSwitchProps, CmSwitchSize, CmSwitchThumbContrast } from './components/switch/switch.types';
