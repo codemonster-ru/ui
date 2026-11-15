@@ -48,8 +48,9 @@ export const codeMonsterUiPackageSizeBudgets = Object.freeze({
   //
   // The theme subsystem was named here as the one deferred addition that would grow this further,
   // and it did: 50.65 KiB against the 48 KiB limit. Restored controller and calendar behavior
-  // brought the distributed runtime to 60.35 KiB. The bundled core still has its own 5 KiB limit.
-  '@codemonster-ru/ui-runtime': { cssGzip: 0, cssRaw: 0, jsGzip: 64 * 1024 },
+  // brought the distributed runtime to 60.35 KiB. Adding the shared calendar clock and expanded
+  // navigation/placement brought it to 67.28 KiB. The bundled pure core has its own 7 KiB limit.
+  '@codemonster-ru/ui-runtime': { cssGzip: 0, cssRaw: 0, jsGzip: 72 * 1024 },
   '@codemonster-ru/ui-css': { cssGzip: 48 * 1024, cssRaw: 320 * 1024, jsGzip: 8 * 1024 },
   '@codemonster-ru/ui-utilities': { cssGzip: 32 * 1024, cssRaw: 256 * 1024, jsGzip: 8 * 1024 },
   '@codemonster-ru/ui-vue': { cssGzip: 8 * 1024, cssRaw: 32 * 1024, jsGzip: 128 * 1024 },

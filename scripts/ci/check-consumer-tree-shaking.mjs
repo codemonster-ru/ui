@@ -24,7 +24,6 @@ const domRuntimeMarkers = [
   ['CmRuntime registry', /Controller name must use lowercase kebab-case/],
   ['CmRuntime observer', /MutationObserver is not available/],
   ['a DOM controller', /controller requires/i],
-  ['the positioning engine', /autoUpdate|computePosition/],
 ];
 const unrelatedIcon = ['unused Bell geometry', /vf-duotone-primary-bell/];
 const themeStorage = ['theme storage', /localStorage\.setItem/];
@@ -71,11 +70,20 @@ const cases = [
     entry: "import * as CodeMonsterUiVue from '@codemonster-ru/ui-vue';\nconsole.log(CodeMonsterUiVue);\n",
     fileName: 'ui-vue-full',
     forbiddenMarkers: [...domRuntimeMarkers, themeRuntime, unrelatedIcon],
-    // The theme provider, data table composition, and localized calendar are available here.
-    // The restored namespace measured 35.45 KiB without the opt-in named icon catalogue.
-    maxGzipBytes: 38 * 1024,
+    includesPositioning: true,
+    // The full namespace includes the calendar clock, navigation, and the Select positioning engine.
+    // Measured 46.21 KiB without the opt-in named icon catalogue or the Vanilla controllers.
+    maxGzipBytes: 50 * 1024,
     minGzipBytes: 15 * 1024,
     name: 'ui-vue full namespace',
+  },
+  {
+    entry: "export { CmSelect } from '@codemonster-ru/ui-vue';\n",
+    fileName: 'ui-vue-select',
+    forbiddenMarkers: [...unrelatedRuntimeMarkers, unrelatedIcon],
+    includesPositioning: true,
+    maxGzipBytes: 10 * 1024,
+    name: 'ui-vue CmSelect with positioning',
   },
   {
     entry: "export { CmThemeProvider } from '@codemonster-ru/ui-vue';\n",
@@ -89,14 +97,17 @@ const cases = [
     entry: "import * as Historical from '@codemonster-ru/ui-vue/historical';\nconsole.log(Historical);\n",
     fileName: 'ui-vue-historical',
     forbiddenMarkers: unrelatedRuntimeMarkers,
-    maxGzipBytes: 32 * 1024,
-    name: 'ui-vue opt-in historical icon and menu namespace',
+    includesPositioning: true,
+    // Named controls and Select positioning measured 38.10 KiB together.
+    maxGzipBytes: 42 * 1024,
+    name: 'ui-vue opt-in historical namespace',
   },
   {
     entry: "import * as CodeMonsterUiCore from '@codemonster-ru/ui-runtime/core';\nconsole.log(CodeMonsterUiCore);\n",
     fileName: 'ui-core-full',
     forbiddenMarkers: unrelatedRuntimeMarkers,
-    maxGzipBytes: 5 * 1024,
+    // Calendar date and clock parsing and range rules bring the full pure core to 6.09 KiB.
+    maxGzipBytes: 7 * 1024,
     name: 'ui-runtime core subpath',
   },
 ];
@@ -116,9 +127,10 @@ try {
     const cssOutputPath = join(temporaryDirectory, `${testCase.fileName}.bundle.css`);
     writeFileSync(entryPath, testCase.entry);
 
-    await build({
+    const { metafile } = await build({
       ...commonBuildOptions,
       entryPoints: [entryPath],
+      metafile: true,
       outfile: outputPath,
     });
 
@@ -128,6 +140,17 @@ try {
     const cssOutput = existsSync(cssOutputPath) ? readFileSync(cssOutputPath) : null;
     const cssOutputText = cssOutput?.toString('utf8') ?? '';
     const searchableOutput = `${outputText}\n${cssOutputText}`;
+    const includesPositioning = Object.values(metafile.outputs).some(({ inputs }) =>
+      Object.entries(inputs).some(
+        ([name, { bytesInOutput }]) => bytesInOutput > 0 && name.includes('/@codemonster-ru/floater.js/'),
+      ),
+    );
+
+    if (includesPositioning !== Boolean(testCase.includesPositioning)) {
+      throw new Error(
+        `${testCase.name} ${includesPositioning ? 'retained' : 'did not retain'} the positioning engine.`,
+      );
+    }
 
     if (gzipBytes > testCase.maxGzipBytes) {
       throw new Error(
