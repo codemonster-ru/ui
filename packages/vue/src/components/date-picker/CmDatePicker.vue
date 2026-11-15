@@ -1,7 +1,7 @@
 <script setup lang="ts" generic="Multiple extends boolean = false, Range extends boolean = false">
-import { autoUpdate, computePosition, flip, offset, shift } from '@codemonster-ru/floater.js';
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useAttrs, watch, type PropType } from 'vue';
 
+import { observeCmAnchoredPosition, type CmAnchoredStyle } from '../../internal/anchored-position';
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
 import { assertCm, warnCm } from '../../internal/warn';
@@ -113,7 +113,7 @@ const authoredDates = currentDates.value.slice();
 const firstDate = computed(() => currentDates.value[0] ?? '');
 const formValues = computed(() => (selectionMode.value === 'single' ? [firstDate.value] : currentDates.value));
 const isOpen = ref(false);
-const calendarPosition = ref<{ inset: string; left: string; top: string }>();
+const calendarPosition = ref<CmAnchoredStyle>();
 const placement = computed(() => (props.placement === 'bottom-end' ? 'bottom-end' : 'bottom-start'));
 const portal = computed(() => (props.disableTeleport ? null : (props.teleportTo ?? null)));
 const teleportTarget = computed(() => {
@@ -436,24 +436,17 @@ watch(
   [isOpen, calendarRef, triggerRef, teleportTarget, placement],
   ([open, calendar, trigger, target, preferredPlacement], _, onCleanup) => {
     if (!open || !calendar || !trigger) return;
-    let active = true;
-    const place = (): void => {
-      void computePosition(trigger, calendar, {
-        placement: preferredPlacement,
-        strategy: target ? 'fixed' : 'absolute',
-        middleware: [
-          offset(2),
-          flip({ placements: [preferredPlacement, preferredPlacement === 'bottom-end' ? 'top-end' : 'top-start'] }),
-          shift(),
-        ],
-      }).then(({ x, y }) => {
-        if (active) calendarPosition.value = { inset: 'auto', left: `${x}px`, top: `${y}px` };
-      });
-    };
-    const stop = autoUpdate(trigger, place, calendar);
-    place();
+    const stop = observeCmAnchoredPosition(
+      trigger,
+      calendar,
+      preferredPlacement,
+      2,
+      target ? null : rootRef.value,
+      (style) => {
+        calendarPosition.value = style;
+      },
+    );
     onCleanup(() => {
-      active = false;
       stop();
       calendarPosition.value = undefined;
     });

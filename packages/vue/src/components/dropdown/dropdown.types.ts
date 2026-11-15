@@ -22,6 +22,8 @@ export interface CmDropdownProps {
   defaultOpen?: boolean;
   disabled?: boolean;
   placement?: CmDropdownPlacement;
+  teleportTo?: string | HTMLElement | null | false;
+  disableTeleport?: boolean;
   closeOnSelect?: boolean;
   variant?: CmDropdownVariant;
 }

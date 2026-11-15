@@ -1,4 +1,4 @@
-import { autoUpdate, computePosition, flip, offset, shift } from '@codemonster-ru/floater.js';
+import { attachCmAnchoredPosition } from './anchored-position.js';
 import {
   boundCalendarDate,
   buildCalendarGrid,
@@ -590,44 +590,27 @@ export class CmDatePickerController implements CmController {
     const calendar = this.#calendar;
     const placement = this.#trigger.dataset.cmDatePickerPlacement === 'bottom-end' ? 'bottom-end' : 'bottom-start';
     const target = this.#portalTarget();
-    const { inset, left, top } = calendar.style;
     const origin = target ? calendar.ownerDocument.createComment('date-picker') : null;
     if (target && origin) {
       calendar.before(origin);
       target.append(calendar);
       calendar.setAttribute('data-cm-date-picker-portaled', '');
     }
-    let active = true;
-    const place = (): void => {
-      void computePosition(this.#trigger, calendar, {
-        placement,
-        strategy: target ? 'fixed' : 'absolute',
-        middleware: [
-          offset(2),
-          flip({ placements: [placement, placement === 'bottom-end' ? 'top-end' : 'top-start'] }),
-          shift(),
-        ],
-      }).then(({ x, y }) => {
-        if (!active) return;
-        calendar.style.inset = 'auto';
-        calendar.style.left = `${x}px`;
-        calendar.style.top = `${y}px`;
-      });
-    };
-    const stop = autoUpdate(this.#trigger, place, calendar);
+    const stop = attachCmAnchoredPosition(
+      this.#trigger,
+      calendar,
+      placement,
+      2,
+      target ? null : calendar.parentElement,
+    );
     this.#stopAutoUpdate = () => {
-      active = false;
       stop();
-      calendar.style.inset = inset;
-      calendar.style.left = left;
-      calendar.style.top = top;
       if (origin) {
         calendar.removeAttribute('data-cm-date-picker-portaled');
         if (origin.parentNode) origin.replaceWith(calendar);
         else calendar.remove();
       }
     };
-    place();
   }
 
   #portalTarget(): Element | null {

@@ -71,9 +71,9 @@ const cases = [
     fileName: 'ui-vue-full',
     forbiddenMarkers: [...domRuntimeMarkers, themeRuntime, unrelatedIcon],
     includesPositioning: true,
-    // The full namespace includes the calendar clock, navigation, and the Select positioning engine.
-    // Measured 46.21 KiB without the opt-in named icon catalogue or the Vanilla controllers.
-    maxGzipBytes: 50 * 1024,
+    // Includes the restored calendar, result compositions, and anchored popups.
+    // Measured 51.72 KiB without the opt-in named icon catalogue or the Vanilla controllers.
+    maxGzipBytes: 55 * 1024,
     minGzipBytes: 15 * 1024,
     name: 'ui-vue full namespace',
   },

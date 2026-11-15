@@ -84,6 +84,7 @@ export class CmModalController implements CmController {
     const KeyboardEventConstructor = this.#dialog.ownerDocument.defaultView?.KeyboardEvent;
     if (!KeyboardEventConstructor || !(event instanceof KeyboardEventConstructor)) return;
     if (event.key === 'Escape') {
+      if (event.defaultPrevented) return;
       event.preventDefault();
       if (this.#isDismissible() && this.#options.allowEscape?.() !== false) this.setOpen(false);
       return;

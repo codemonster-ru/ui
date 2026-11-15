@@ -220,6 +220,9 @@
   inset-block-start: calc(100% + 2px);
   inset-inline-start: 0;
   display: grid;
+  box-sizing: border-box;
+  inline-size: max-content;
+  max-inline-size: calc(100dvw - var(--cm-space-4));
   gap: var(--cm-space-2);
   padding: var(--cm-space-3);
   border: var(--cm-border-width) solid var(--cm-color-border-default);

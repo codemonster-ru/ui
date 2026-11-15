@@ -12,11 +12,16 @@ or author the action content in the default slot. The root owns
 `cm-dropdown` and `data-cm-controller="dropdown"`. Its native button has
 `aria-haspopup="menu"`, `aria-expanded`, and a deterministic relationship to `{id}-menu`.
 
-The menu remains in DOM and uses native `hidden` while closed, allowing server rendering and
-progressive enhancement without a positioning dependency. `placement` is limited to
-`bottom-start` and `bottom-end` and controls a CSS modifier. The Menu keeps its own controller and
-keyboard contract. `variant="pills"` adds the `cm-dropdown--pills` class and gives active
-items the selected background, including hover and pressed states.
+The menu remains in DOM and uses native `hidden` while closed, allowing server rendering with
+an inline CSS placement. Both interactive adapters use the requested `bottom-start` or
+`bottom-end`, flip above the trigger if needed, and shift away from the viewport edge. The
+Menu keeps its own controller and keyboard contract. `variant="pills"` gives active items the
+selected background, including hover and pressed states.
+
+Vue can move the open menu to a selector or element with `teleportTo`, including `"body"`. When
+that trigger sits inside a dialog, a body portal uses the dialog so the menu stays interactive.
+`disableTeleport` keeps the menu inline. Vanilla keeps the attached Menu controller inside the
+authored Dropdown and uses the same collision rules there.
 
 The trusted `trigger` slot replaces visible trigger content inside the component-owned button, so
 arbitrary icons and markup cannot replace its button semantics. Vue receives `{ open, disabled,
@@ -38,5 +43,5 @@ without moving focus. Set `closeOnSelect=false` to report selection and leave th
 `data-cm-dropdown-close-on-select="false"` on the Vanilla root. Disabled Dropdowns use the native
 disabled attribute and stay closed.
 
-Dropdown reports open changes and selected item ids. It does not teleport, calculate floating
-coordinates, trap focus, or own modal semantics.
+Dropdown reports open changes and selected item ids. A menu action that consumes Escape does
+not also dismiss its containing modal. Dropdown does not trap focus or own modal semantics.

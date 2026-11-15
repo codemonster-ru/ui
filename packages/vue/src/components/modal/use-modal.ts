@@ -81,6 +81,7 @@ export function useCmModal(open: () => boolean, emitOpen: (open: boolean) => voi
 
   function onKeydown(event: KeyboardEvent, allowEscape = true): void {
     if (event.key === 'Escape') {
+      if (event.defaultPrevented) return;
       event.preventDefault();
       if (allowEscape) setOpen(false);
       return;
