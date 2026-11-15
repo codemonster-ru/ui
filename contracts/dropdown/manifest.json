@@ -6,21 +6,29 @@
   "props": {
     "id": { "type": "string", "required": true },
     "label": { "type": "string", "required": true },
-    "items": { "type": "collection", "required": true, "valueContract": "menu-item" },
-    "open": { "type": "boolean", "required": false, "default": false },
+    "items": { "type": "collection", "required": false, "valueContract": "menu-item" },
+    "open": { "type": "boolean", "required": false },
+    "defaultOpen": { "type": "boolean", "required": false, "default": false },
+    "closeOnSelect": { "type": "boolean", "required": false, "default": true },
     "disabled": { "type": "boolean", "required": false, "default": false },
     "placement": {
       "type": "enum",
       "required": false,
       "default": "bottom-start",
       "values": ["bottom-start", "bottom-end"]
-    }
+    },
+    "variant": { "type": "enum", "required": false, "default": "default", "values": ["default", "pills"] }
   },
   "slots": {
     "trigger": {
       "required": false,
       "description": "Trusted visible content inside the owned trigger button.",
       "scopeContract": "dropdown-state"
+    },
+    "default": {
+      "required": false,
+      "description": "Trusted action content inside the owned menu.",
+      "scopeContract": "dropdown-content-state"
     }
   },
   "events": {

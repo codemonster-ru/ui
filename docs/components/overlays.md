@@ -1,11 +1,11 @@
 # Overlay components
 
 `Dialog` and `Drawer` are modal native-dialog surfaces. `Popover` is a non-modal disclosure, and
-`Tooltip` provides short non-interactive text on both focus and hover. Vue owns interaction inside
+`Dropdown` opens an action menu. `Tooltip` provides short non-interactive text on both focus and hover. Vue owns interaction inside
 its component tree; Vanilla HTML uses the shared progressive-enhancement runtime.
 
 Load the token and complete component stylesheets described in the [Button guide](./button.md).
-Individual styles are also available from the `dialog.css`, `drawer.css`, `popover.css`, and
+Individual styles are also available from the `dialog.css`, `drawer.css`, `dropdown.css`, `popover.css`, and
 `tooltip.css` npm subpath exports.
 
 ## APIs
@@ -19,6 +19,10 @@ Individual styles are also available from the `dialog.css`, `drawer.css`, `popov
 - `Popover` requires `id` and trigger `label`. It accepts `open`, `disabled`, and `placement`
   (`top`, `bottom-start`, or `bottom-end`); the trusted `trigger` slot stays inside the
   component-owned labelled button and the default slot is its non-modal panel.
+- `Dropdown` requires `id` and trigger `label`. Use `items` or the default slot with native menu
+  actions. The default slot receives `{ open, close }`. The `trigger` slot receives
+  `{ open, disabled, toggle }` and stays inside the labelled button. Use `variant="pills"`
+  for highlighted active items and `closeOnSelect=false` to keep the menu open after selection.
 - `Tooltip` requires `id`, trigger `label`, and fallback `content`. Trusted `trigger` and `content`
   slots can replace their visible content, but tooltip content must stay non-interactive.
   `placement` is `top`, `bottom`, `start`, or `end`; `delay` is `none`, `short`, or `long`.

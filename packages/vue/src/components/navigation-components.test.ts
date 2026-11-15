@@ -142,6 +142,39 @@ describe('Vue navigation components', () => {
     expect(wrapper.get('.cm-dropdown__menu').attributes('role')).toBe('menu');
   });
 
+  it('provides Dropdown slot state and close control with an owned trigger', async () => {
+    const wrapper = mount(CmDropdown, {
+      attachTo: document.body,
+      props: { id: 'tools', label: 'Project tools', defaultOpen: true, closeOnSelect: false, variant: 'pills' },
+      slots: {
+        trigger: ({ open, toggle }) => h('span', { onClick: toggle }, open ? 'Hide' : 'Show'),
+        default: ({ open, close }) => [
+          h('button', { type: 'button', role: 'menuitem', tabindex: 0, 'data-cm-menu-value': 'refresh' }, 'Refresh'),
+          h('button', { type: 'button', role: 'menuitem', tabindex: -1, disabled: true }, 'Unavailable'),
+          h('button', { type: 'button', role: 'menuitem', tabindex: -1, onClick: close }, open ? 'Done' : 'Closed'),
+        ],
+      },
+    });
+    const trigger = wrapper.get('button.cm-dropdown__trigger');
+    expect(wrapper.classes()).toContain('cm-dropdown--pills');
+    expect(trigger.text()).toBe('Hide');
+    await trigger.get('span').trigger('click');
+    expect(trigger.text()).toBe('Show');
+    await trigger.trigger('keydown', { key: 'ArrowDown' });
+    const [first, , last] = wrapper.findAll('[role="menuitem"]');
+    expect(document.activeElement).toBe(first.element);
+    await first.trigger('click');
+    expect(wrapper.emitted('select')).toEqual([['refresh']]);
+    expect(trigger.attributes('aria-expanded')).toBe('true');
+    await first.trigger('keydown', { key: 'ArrowDown' });
+    expect(document.activeElement).toBe(last.element);
+    await last.trigger('click');
+    expect(trigger.attributes('aria-expanded')).toBe('false');
+    expect(last.text()).toBe('Closed');
+    expect(document.activeElement).toBe(trigger.element);
+    wrapper.unmount();
+  });
+
   it('uses an uncontrolled Tabs default with rich owned content', () => {
     const wrapper = mount(CmTabs, {
       props: {

@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "dropdown-pills-select",
+  "case": "dropdown-pills",
+  "steps": [
+    { "expect": "visible", "target": "menu", "value": true },
+    { "action": "click", "target": "trigger-content" },
+    { "expect": "visible", "target": "menu", "value": false },
+    { "action": "click", "target": "trigger-content" },
+    { "action": "focus", "target": "item-first" },
+    { "action": "press", "target": "item-first", "key": "ArrowDown" },
+    { "expect": "focus", "target": "item-last", "value": true },
+    { "action": "press", "target": "item-last", "key": "Enter" },
+    { "expect": "eventCount", "target": "root", "name": "cm:dropdown-select", "count": 1 },
+    { "expect": "visible", "target": "menu", "value": true },
+    { "action": "press", "target": "item-last", "key": "Escape" },
+    { "expect": "focus", "target": "trigger", "value": true },
+    { "expect": "visible", "target": "menu", "value": false }
+  ]
+}

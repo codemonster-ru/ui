@@ -17,6 +17,11 @@ const items = [
   { id: 'edit', label: 'Edit' },
   { id: 'delete', label: 'Delete', tone: 'danger' },
 ] as const;
+const viewItems = [
+  { id: 'list', label: 'List', active: true },
+  { id: 'board', label: 'Board', disabled: true },
+  { id: 'grid', label: 'Grid' },
+];
 </script>
 
 <template>
@@ -34,6 +39,18 @@ const items = [
     <div v-for="entry in menus" :key="entry.id" class="core-matrix-cell">
       <h4>Dropdown · {{ entry.placement }}</h4>
       <CmDropdown v-bind="entry" :items="entry.placement === 'bottom-start' ? items : actionItems" />
+    </div>
+    <div class="core-matrix-cell">
+      <h4>Dropdown · pills</h4>
+      <CmDropdown
+        id="core-dropdown-pills"
+        label="View options"
+        variant="pills"
+        :items="viewItems"
+        :close-on-select="false"
+      >
+        <template #trigger><span aria-hidden="true">•••</span></template>
+      </CmDropdown>
     </div>
     <div class="core-matrix-cell">
       <h4>Popover · content</h4>

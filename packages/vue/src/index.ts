@@ -59,7 +59,13 @@ export type { CmDividerOrientation, CmDividerProps } from './components/divider/
 export { default as CmDialog } from './components/dialog/CmDialog.vue';
 export type { CmDialogProps, CmDialogSize } from './components/dialog/dialog.types';
 export { default as CmDropdown } from './components/dropdown/CmDropdown.vue';
-export type { CmDropdownPlacement, CmDropdownProps } from './components/dropdown/dropdown.types';
+export type {
+  CmDropdownContentScope,
+  CmDropdownPlacement,
+  CmDropdownProps,
+  CmDropdownTriggerScope,
+  CmDropdownVariant,
+} from './components/dropdown/dropdown.types';
 export { default as CmDrawer } from './components/drawer/CmDrawer.vue';
 export type { CmDrawerProps, CmDrawerSide, CmDrawerSize } from './components/drawer/drawer.types';
 export { default as CmField } from './components/field/CmField.vue';

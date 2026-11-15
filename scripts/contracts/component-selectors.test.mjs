@@ -342,7 +342,14 @@ for (const [slug, approved] of [
   ],
   [
     'dropdown',
-    ['cm-dropdown', 'cm-dropdown--bottom-end', 'cm-dropdown--open', 'cm-dropdown__trigger', 'cm-dropdown__menu'],
+    [
+      'cm-dropdown',
+      'cm-dropdown--bottom-end',
+      'cm-dropdown--open',
+      'cm-dropdown--pills',
+      'cm-dropdown__trigger',
+      'cm-dropdown__menu',
+    ],
   ],
   [
     'dialog',

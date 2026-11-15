@@ -7,26 +7,36 @@ Component: `Dropdown`
 ## Purpose and composition
 
 Dropdown is a button disclosure that owns one action Menu. `id` is a required stable prefix;
-`label` is the required accessible trigger name; `items` follows the Menu item contract. The root owns
+`label` is the required accessible trigger name. Supply `items` following the Menu item contract
+or author the action content in the default slot. The root owns
 `cm-dropdown` and `data-cm-controller="dropdown"`. Its native button has
 `aria-haspopup="menu"`, `aria-expanded`, and a deterministic relationship to `{id}-menu`.
 
 The menu remains in DOM and uses native `hidden` while closed, allowing server rendering and
 progressive enhancement without a positioning dependency. `placement` is limited to
 `bottom-start` and `bottom-end` and controls a CSS modifier. The Menu keeps its own controller and
-keyboard contract.
+keyboard contract. `variant="pills"` adds the `cm-dropdown--pills` class and gives active
+items the selected background, including hover and pressed states.
 
 The trusted `trigger` slot replaces visible trigger content inside the component-owned button, so
 arbitrary icons and markup cannot replace its button semantics. Vue receives `{ open, disabled,
-toggle }`; an icon-only trigger still uses `label` through `aria-label`, and Vanilla templates place authored markup inside the button. Dropdown keeps its Menu collection and menuitem semantics component-owned.
+toggle }`; an icon-only trigger uses `label` through `aria-label`. Author only noninteractive
+content here. The owned button handles clicks. Vanilla templates place the same markup inside the button.
+
+The trusted default slot replaces the generated actions inside the owned menu and receives
+`{ open, close }` in Vue. Use focusable native actions with `role="menuitem"` and give the
+first enabled item `tabindex="0"` and the remaining items `tabindex="-1"`. Set `data-cm-menu-item`
+and `data-cm-menu-value` for Vanilla runtime enhancement and portable selection events.
 
 ## State and interaction
 
-`open` is the semantic current state. Vue maps it to `v-model:open`; Vanilla HTML renders server state and
+`defaultOpen` sets the initial state when `open` is omitted. Vue maps `open` to `v-model:open`; Vanilla HTML renders server state and
 the shared runtime manages the current client disclosure state. Clicking the trigger toggles.
 ArrowDown, Enter, or Space opens and focuses the first enabled item; ArrowUp opens and focuses the
-last. Escape, outside pointer activation, or enabled item selection closes and restores trigger
-focus. Disabled Dropdowns never open and use the native disabled attribute.
+last. Escape and enabled item selection close and return focus to the trigger. Outside clicks close
+without moving focus. Set `closeOnSelect=false` to report selection and leave the menu open, or set
+`data-cm-dropdown-close-on-select="false"` on the Vanilla root. Disabled Dropdowns use the native
+disabled attribute and stay closed.
 
 Dropdown reports open changes and selected item ids. It does not teleport, calculate floating
 coordinates, trap focus, or own modal semantics.

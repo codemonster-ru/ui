@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "dropdown-scoped-select",
+  "case": "dropdown-scoped",
+  "steps": [
+    { "action": "focus", "target": "trigger" },
+    { "action": "press", "target": "trigger", "key": "ArrowDown" },
+    { "expect": "focus", "target": "item-first", "value": true },
+    { "action": "press", "target": "item-first", "key": "End" },
+    { "expect": "focus", "target": "item-last", "value": true },
+    { "action": "press", "target": "item-last", "key": "Enter" },
+    { "expect": "eventCount", "target": "root", "name": "cm:dropdown-select", "count": 1 },
+    { "expect": "focus", "target": "trigger", "value": true },
+    { "expect": "visible", "target": "menu", "value": false }
+  ]
+}

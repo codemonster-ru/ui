@@ -63,6 +63,19 @@
   display: none;
 }
 
+.cm-dropdown--pills .cm-dropdown__menu > .cm-menu__item--active:not(:disabled, [aria-disabled='true']) {
+  background: var(--cm-color-background-surface-selected);
+  color: var(--cm-color-selected-foreground);
+}
+
+.cm-dropdown--pills .cm-dropdown__menu > .cm-menu__item--active:hover:not(:disabled, [aria-disabled='true']) {
+  background: var(--cm-color-background-surface-selected-hover);
+}
+
+.cm-dropdown--pills .cm-dropdown__menu > .cm-menu__item--active:active:not(:disabled, [aria-disabled='true']) {
+  background: var(--cm-color-background-surface-selected-active);
+}
+
 @media (forced-colors: active) {
   .cm-dropdown__trigger {
     border-color: ButtonText;

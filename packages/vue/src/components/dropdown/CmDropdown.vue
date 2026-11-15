@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, useAttrs, useSlots, watch, type PropType } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, useAttrs, watch, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
@@ -7,16 +7,28 @@ import { dropdownKeyAction, resolveDisclosureOpen } from '@codemonster-ru/ui-run
 import { assertCm } from '../../internal/warn';
 import CmMenu from '../menu/CmMenu.vue';
 import type { CmMenuItem } from '../menu/menu.types';
-import type { CmDropdownPlacement } from './dropdown.types';
+import type {
+  CmDropdownContentScope,
+  CmDropdownPlacement,
+  CmDropdownTriggerScope,
+  CmDropdownVariant,
+} from './dropdown.types';
 
 defineOptions({ inheritAttrs: false });
 
 const props = defineProps({
   id: { type: String, required: true },
   label: { type: String, required: true },
-  items: { type: Array as PropType<readonly CmMenuItem[]>, required: true },
-  open: Boolean,
+  items: { type: Array as PropType<readonly CmMenuItem[]>, default: () => [] },
+  open: { type: Boolean, default: undefined },
+  defaultOpen: Boolean,
   disabled: Boolean,
+  closeOnSelect: { type: Boolean, default: true },
+  variant: {
+    type: String as PropType<CmDropdownVariant>,
+    default: 'default',
+    validator: (value: string) => ['default', 'pills'].includes(value),
+  },
   placement: {
     type: String as PropType<CmDropdownPlacement>,
     default: 'bottom-start',
@@ -29,10 +41,13 @@ const emit = defineEmits<{
   'update:open': [open: boolean];
 }>();
 const attrs = useAttrs();
-const slots = useSlots();
+const slots = defineSlots<{
+  trigger?: (scope: CmDropdownTriggerScope) => unknown;
+  default?: (scope: CmDropdownContentScope) => unknown;
+}>();
 const root = ref<HTMLElement>();
 const trigger = ref<HTMLButtonElement>();
-const localOpen = ref(resolveDisclosureOpen(props.open, props.disabled));
+const localOpen = ref(resolveDisclosureOpen(props.open ?? props.defaultOpen, props.disabled));
 const placement = computed(() =>
   ['bottom-start', 'bottom-end'].includes(props.placement) ? props.placement : 'bottom-start',
 );
@@ -40,17 +55,18 @@ const classes = computed(() =>
   mergeCmClasses(
     'cm-dropdown',
     placement.value === 'bottom-end' ? 'cm-dropdown--bottom-end' : undefined,
+    props.variant === 'pills' ? 'cm-dropdown--pills' : undefined,
     localOpen.value ? 'cm-dropdown--open' : undefined,
     attrs.class,
   ),
 );
-const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['data-cm-controller']));
+const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['data-cm-controller', 'data-cm-dropdown-close-on-select']));
 
 assertCm(props.id.trim() !== '' && props.label.trim() !== '', 'Dropdown id and label must be non-empty strings.');
 
 watch(
   () => [props.open, props.disabled] as const,
-  ([open, disabled]) => (localOpen.value = resolveDisclosureOpen(open, disabled)),
+  ([open, disabled]) => (localOpen.value = resolveDisclosureOpen(open ?? localOpen.value, disabled)),
 );
 
 function setOpen(open: boolean, restoreFocus = false): void {
@@ -77,19 +93,41 @@ async function onTriggerKeydown(event: KeyboardEvent): Promise<void> {
   }
   setOpen(true);
   await nextTick();
-  const items = root.value?.querySelectorAll<HTMLElement>(
-    '[data-cm-menu-item]:not([disabled]):not([aria-disabled="true"])',
-  );
-  const item = action.focus === 'last' ? items?.[items.length - 1] : items?.[0];
-  item?.focus();
+  const menu = root.value?.querySelector('.cm-dropdown__menu');
+  if (!menu) return;
+  const items = [
+    ...menu.querySelectorAll<HTMLElement>('[role="menuitem"]:not(:disabled, [aria-disabled="true"])'),
+  ].filter((item) => item.closest('[role="menu"]') === menu);
+  const index = action.focus === 'last' ? items.length - 1 : 0;
+  items[index]?.focus();
 }
 
 function onSelect(value: string): void {
   emit('select', value);
+  if (props.closeOnSelect) close();
+}
+
+function onContentClick(event: MouseEvent): void {
+  if (!slots.default || event.defaultPrevented || !(event.target instanceof Element)) return;
+  const item = event.target.closest<HTMLElement>('[role="menuitem"]');
+  if (
+    !item ||
+    item.closest('[role="menu"]') !== event.currentTarget ||
+    item.matches(':disabled, [aria-disabled="true"]')
+  )
+    return;
+  const value = item.dataset.cmMenuValue;
+  if (value) onSelect(value);
+  else if (props.closeOnSelect) close();
+}
+
+function close(): void {
   setOpen(false, true);
 }
 
-function toggle(): void {
+function toggle(event?: MouseEvent): void {
+  if (event?.defaultPrevented) return;
+  event?.preventDefault();
   setOpen(!localOpen.value);
 }
 
@@ -104,7 +142,13 @@ useCmHydrated();
 </script>
 
 <template>
-  <div ref="root" v-bind="rootAttrs" :class="classes" data-cm-controller="dropdown">
+  <div
+    ref="root"
+    v-bind="rootAttrs"
+    :class="classes"
+    data-cm-controller="dropdown"
+    :data-cm-dropdown-close-on-select="props.closeOnSelect ? undefined : 'false'"
+  >
     <button
       :id="`${props.id}-trigger`"
       ref="trigger"
@@ -127,7 +171,12 @@ useCmHydrated();
       :aria-labelledby="`${props.id}-trigger`"
       :hidden="!localOpen"
       @select="onSelect"
-      @close-request="setOpen(false, true)"
-    />
+      @click="onContentClick"
+      @close-request="close"
+    >
+      <template v-if="slots.default" #default>
+        <slot :open="localOpen" :close="close" />
+      </template>
+    </CmMenu>
   </div>
 </template>

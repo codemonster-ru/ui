@@ -20,6 +20,7 @@ const selectors: Record<string, string> = {
   'step-second': '[data-cm-stepper-value]',
   'step-third': '[data-cm-stepper-value]',
   'item-active': '.cm-menu__item--active',
+  'trigger-content': '.cm-dropdown__trigger > span',
   dark: 'input[value="dark"]',
   light: 'input[value="light"]',
 };
@@ -77,6 +78,7 @@ export function initializeBehavior(root: HTMLElement, slug: string) {
     'group-box-collapsed-change',
     'popover-open-change',
     'dropdown-open-change',
+    'dropdown-select',
     'column-chooser-visible-columns-change',
     'menu-select',
     'tabs-value-change',
