@@ -201,7 +201,7 @@ onUnmounted(() => clearTimeout(timer));
 <template>
   <section class="showcase-group" aria-labelledby="codeblock-heading">
     <header>
-      <h2 id="codeblock-heading">VfCodeBlock</h2>
+      <h1 id="codeblock-heading" class="codeblock-heading">VfCodeBlock</h1>
       <p>
         Render syntax-highlighted, themed source code with filenames, line numbers, copy controls, and constrained
         long-file scrolling.
@@ -236,6 +236,13 @@ onUnmounted(() => clearTimeout(timer));
 </template>
 
 <style scoped>
+.codeblock-heading {
+  margin: 0;
+  font-size: 1.4375rem;
+  font-weight: var(--cm-font-weight-semibold);
+  line-height: 1.3;
+}
+
 .codeblock-replay {
   justify-self: start;
 }
