@@ -1,4 +1,4 @@
-import type { CmCalendarLocale, CmCalendarWeekday } from './date-picker.calendar';
+import type { CmCalendarLocale, CmCalendarWeekday } from '@codemonster-ru/ui-runtime/core';
 
 export type CmDatePickerSize = 'sm' | 'md' | 'lg';
 export interface CmDatePickerLabels {
@@ -6,6 +6,10 @@ export interface CmDatePickerLabels {
   clear?: string;
   previousMonth?: string;
   nextMonth?: string;
+  previousYear?: string;
+  nextYear?: string;
+  previousDecade?: string;
+  nextDecade?: string;
 }
 
 export type CmDatePickerValue<Multiple extends boolean = false, Range extends boolean = false> = Multiple extends true
@@ -19,6 +23,8 @@ export interface CmDatePickerProps<Multiple extends boolean = false, Range exten
   modelValue?: CmDatePickerValue<Multiple, Range>;
   multiple?: Multiple;
   range?: Range;
+  monthPicker?: boolean;
+  yearPicker?: boolean;
   min?: string | null;
   max?: string | null;
   placeholder?: string | null;

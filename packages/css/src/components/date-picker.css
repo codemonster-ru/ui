@@ -265,6 +265,22 @@
   font: inherit;
 }
 
+.cm-date-picker__grid--period .cm-date-picker__week {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.cm-date-picker__grid--period .cm-date-picker__day {
+  inline-size: auto;
+  min-inline-size: 0;
+  padding: var(--cm-button-padding-md);
+  text-transform: capitalize;
+}
+
+.cm-date-picker__grid--period
+  :is(.cm-date-picker__day--in-range, .cm-date-picker__day--range-start, .cm-date-picker__day--range-end) {
+  inline-size: 100%;
+}
+
 .cm-date-picker__navigation {
   inline-size: var(--cm-control-height-md);
   block-size: var(--cm-control-height-md);

@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "id": "date-picker-month",
+  "description": "Choose a billing month using an ISO year and month.",
+  "props": { "value": "2026-08", "min": "2026-04", "max": "2027-09", "monthPicker": true, "clearable": true },
+  "attributes": { "id": "billing-month", "name": "billing_month", "aria-label": "Billing month" },
+  "slots": {}
+}

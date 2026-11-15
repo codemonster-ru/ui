@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { URL } from 'node:url';
 import { JSDOM } from 'jsdom';
-import { calendarKeyTarget } from '../dist/core/index.js';
+import { calendarKeyTarget, calendarYearRangeStart, parseIsoDate } from '../dist/core/index.js';
 import { CmRuntime, createCmDatePickerController } from '../dist/index.js';
 
 const markup = readFileSync(new URL('../../../contracts/date-picker/cases/default.html', import.meta.url), 'utf8');
@@ -15,6 +15,9 @@ test('calendar key targets clamp shorter months and follow the direction and sta
   assert.equal(calendarKeyTarget('2026-08-13', 'ArrowLeft', 1, true), '2026-08-14');
   assert.equal(calendarKeyTarget('2026-08-13', 'ArrowRight', 1, true), '2026-08-12');
   assert.equal(calendarKeyTarget('2026-08-13', 'Enter'), null);
+  assert.equal(parseIsoDate('0099-02-01')?.getFullYear(), 99);
+  assert.equal(calendarKeyTarget('0099-12-31', 'ArrowRight'), '0100-01-01');
+  assert.equal(calendarYearRangeStart('2032', 2020), 2032);
 });
 
 test('localizes Vanilla grid labels, navigates one day tab stop, and commits an ISO form value', (context) => {
@@ -163,3 +166,29 @@ test('resets authored Vanilla dates after a canceled reset, cleanup, and DOM rei
   assert.equal(root.querySelector('.cm-date-picker__value').textContent, '08/13/26 – 08/20/26');
   assert.equal(clear.hidden, false);
 });
+
+for (const [name, id, initialLabel, selection, field] of [
+  ['month', 'billing-month', '2026', '2027-08', 'billing_month'],
+  ['year', 'license-year', '2020–2031', '2038', 'license_year'],
+]) {
+  test(`Vanilla navigates and submits a ${name} choice`, (context) => {
+    const markup = readFileSync(new URL(`../../../contracts/date-picker/cases/${name}.html`, import.meta.url), 'utf8');
+    const { window } = new JSDOM(`<form>${markup}</form>`);
+    const { document } = window;
+    const runtime = new CmRuntime().register('date-picker', createCmDatePickerController);
+    context.after(() => {
+      runtime.stop();
+      window.close();
+    });
+    runtime.start(document);
+    const trigger = document.getElementById(id);
+    trigger.click();
+    assert.equal(document.querySelector('[data-cm-date-picker-month]').textContent, initialLabel);
+    assert.equal(document.querySelectorAll('[role="gridcell"]').length, 12);
+    document.activeElement.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'PageDown', bubbles: true }));
+    assert.equal(document.activeElement.dataset.cmDatePickerValue, selection);
+    document.activeElement.click();
+    assert.equal(new window.FormData(document.querySelector('form')).get(field), selection);
+    assert.equal(document.activeElement, trigger);
+  });
+}

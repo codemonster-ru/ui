@@ -27,18 +27,31 @@ export type {
 } from './data-table.js';
 export {
   boundCalendarDate,
+  buildCalendarGrid,
   buildCalendarMonth,
+  calendarAdjacentPeriod,
+  calendarGridKeyTarget,
+  calendarGridTitle,
   calendarKeyTarget,
   calendarMonthAllowed,
+  calendarYearRangeStart,
+  formatCalendarValue,
   formatDisplayDate,
   formatIsoDate,
   monthLabel,
+  parseCalendarValue,
   parseIsoDate,
   selectCalendarDate,
   shiftMonth,
   weekdayLabels,
 } from './date-picker.js';
-export type { CmCalendarDay, CmCalendarLocale, CmCalendarSelectionMode, CmCalendarWeekday } from './date-picker.js';
+export type {
+  CmCalendarDay,
+  CmCalendarLocale,
+  CmCalendarPrecision,
+  CmCalendarSelectionMode,
+  CmCalendarWeekday,
+} from './date-picker.js';
 export { commandPaletteKeyAction, filterCommands, normalizeCommandQuery } from './command-palette.js';
 export type { CmCommandCoreItem, CmCommandPaletteAction } from './command-palette.js';
 export {
