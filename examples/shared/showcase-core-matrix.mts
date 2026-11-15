@@ -133,22 +133,27 @@ function coreExampleSource(slug: string, name: string, read: (id: string) => str
       if (name === 'inline') return source?.replace('cm-nav-menu--sidebar', 'cm-nav-menu--inline');
       if (name === 'wrapping-labels') {
         return source
-          ?.replace('>Dashboard<', '>Documentation and getting started<')
+          ?.replace('cm-nav-menu--sidebar', 'cm-nav-menu--sidebar cm-nav-menu--sidebar-expanded')
+          .replace('>Dashboard<', '>Documentation and getting started<')
           .replace('>Projects<', '>Examples and implementation guides<');
       }
       return source
         ?.replace(
           'class="cm-nav-menu cm-nav-menu--sidebar"',
           name === 'collapsed'
-            ? 'class="cm-nav-menu cm-nav-menu--sidebar core-collapsed-nav"'
-            : 'class="cm-nav-menu cm-nav-menu--sidebar"',
+            ? 'class="cm-nav-menu cm-nav-menu--sidebar cm-nav-menu--sidebar-compact core-collapsed-nav"'
+            : 'class="cm-nav-menu cm-nav-menu--sidebar cm-nav-menu--sidebar-expanded"',
+        )
+        .replace(
+          'aria-label="Main navigation"',
+          `aria-label="${name === 'collapsed' ? 'Collapsed sidebar navigation' : 'Sidebar navigation'}"`,
         )
         .replace(
           /<span class="cm-nav-menu__label">(Dashboard|Projects|Active|Archived|Docs)<\/span>/gu,
           (labelMarkup, label: string) => {
             const icon = resolveCmIcon(label === 'Dashboard' ? house : folder, 'classic', 'regular');
             return icon
-              ? `<svg class="cm-icon" viewBox="${icon.viewBox}" aria-hidden="true">${icon.body}</svg>${labelMarkup}`
+              ? `<svg class="cm-icon cm-icon--classic cm-icon--regular cm-nav-menu__leading-icon" viewBox="${icon.viewBox}" aria-hidden="true" focusable="false">${icon.body}</svg>${labelMarkup}`
               : labelMarkup;
           },
         )

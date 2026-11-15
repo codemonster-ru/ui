@@ -1,8 +1,10 @@
+import { folderOpen, house } from '@codemonster-ru/ui-icons';
 import { mount } from '@vue/test-utils';
 import { defineComponent, h, type PropType } from 'vue';
 import { describe, expect, it } from 'vitest';
 
 import CmNavMenu from './CmNavMenu.vue';
+import VfNavMenu from './VfNavMenu.vue';
 import type { CmNavMenuItem } from './nav-menu.types';
 
 const RouteLink = defineComponent({
@@ -47,6 +49,9 @@ describe('CmNavMenu routes and selection', () => {
     });
     expect(menu.get('[data-cm-nav-menu-value="billing"]').attributes('href')).toBeUndefined();
     expect(menu.get('[data-cm-nav-menu-value="icons"]').attributes('rel')).toBe('noopener noreferrer');
+    expect(menu.get('[data-cm-nav-menu-value="icons"] .cm-nav-menu__external-icon').attributes('aria-hidden')).toBe(
+      'true',
+    );
     await menu.get('[data-cm-nav-menu-value="billing"]').trigger('click');
     expect(menu.emitted('select')).toBeUndefined();
 
@@ -75,5 +80,50 @@ describe('CmNavMenu routes and selection', () => {
     expect(menu.get('a[aria-current="page"]').attributes('href')).toBe('/layouts/#grid');
     await menu.setProps({ value: 'overview' });
     expect(overview.attributes('aria-current')).toBe('page');
+  });
+
+  it('applies the explicit sidebar mode and keeps the disclosure state', async () => {
+    const menu = mount(CmNavMenu, {
+      props: {
+        items: [
+          { value: 'overview', label: 'Overview', leadingIcon: house },
+          { ...items[1], leadingIcon: folderOpen },
+        ],
+        defaultValue: 'grid',
+        linkComponent: RouteLink,
+        compact: true,
+      },
+    });
+    expect(menu.classes()).toContain('cm-nav-menu--sidebar-compact');
+    const branch = menu.get('[data-cm-nav-menu-branch="guides"]');
+    expect(branch.get('.cm-nav-menu__leading-icon').attributes('aria-hidden')).toBe('true');
+    expect(branch.attributes('aria-expanded')).toBe('true');
+    await menu.setProps({ compact: false });
+    expect(menu.classes()).toContain('cm-nav-menu--sidebar-expanded');
+    expect(menu.classes()).not.toContain('cm-nav-menu--sidebar-compact');
+    expect(branch.attributes('aria-expanded')).toBe('true');
+    await menu.setProps({ variant: 'pills', compact: true });
+    expect(menu.classes()).toEqual(['cm-nav-menu', 'cm-nav-menu--pills']);
+  });
+
+  it('resolves historical names and emits the historical source item', async () => {
+    const item = { ...grid, leadingIcon: 'folder-open' };
+    const menu = mount(VfNavMenu, {
+      props: {
+        items: [{ ...items[1], leadingIcon: 'house', children: [item] }],
+        modelValue: 'grid',
+        variant: 'sidebar',
+        compact: true,
+        linkComponent: RouteLink,
+      },
+    });
+    expect(menu.classes()).toContain('cm-nav-menu--sidebar-compact');
+    const routed = menu.get('a[aria-current="page"]');
+    expect(routed.attributes('href')).toBe('/layouts/#grid');
+    expect(routed.get('.cm-nav-menu__leading-icon').element.innerHTML).toBe(folderOpen['classic/regular'].body);
+    await routed.trigger('click');
+    expect(menu.emitted('update:modelValue')).toEqual([['grid']]);
+    expect(menu.emitted('change')).toEqual([['grid']]);
+    expect(menu.emitted('select')).toEqual([[item]]);
   });
 });

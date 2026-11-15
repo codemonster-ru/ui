@@ -39,6 +39,11 @@
       "default": "sidebar",
       "values": ["sidebar", "inline", "pills"]
     },
+    "compact": {
+      "type": "boolean",
+      "required": false,
+      "description": "Overrides automatic compact presentation for a sidebar."
+    },
     "ariaLabel": {
       "type": "string",
       "required": false,
@@ -61,5 +66,5 @@
       "payloadContract": "string-list"
     }
   },
-  "states": ["default", "expanded", "active", "disabled", "pills"]
+  "states": ["default", "expanded", "active", "disabled", "pills", "compact"]
 }

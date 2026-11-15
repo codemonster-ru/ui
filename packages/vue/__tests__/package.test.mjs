@@ -107,6 +107,7 @@ test('publishes the opt-in historical icon and Vue components', async () => {
     'VfInput',
     'VfMenu',
     'VfMenuItem',
+    'VfNavMenu',
     'VfPopover',
     'VfProgressSpinner',
     'VfSelect',
@@ -115,6 +116,16 @@ test('publishes the opt-in historical icon and Vue components', async () => {
   ]);
   assert.match(await renderToString(h(entry.VfMenu, null, () => 'Actions')), /role="menu"[\s\S]*Actions/u);
   assert.match(await renderToString(h(entry.VueIconify)), /<svg[^>]+aria-hidden="true"/u);
+  const navMenu = await renderToString(
+    h(entry.VfNavMenu, {
+      items: [{ value: 'home', label: 'Home', href: '/', leadingIcon: 'house' }],
+      defaultValue: 'home',
+      variant: 'sidebar',
+      compact: true,
+    }),
+  );
+  assert.match(navMenu, /cm-nav-menu--sidebar-compact/u);
+  assert.match(navMenu, /aria-current="page"[^>]*>[\s\S]*<svg[^>]*cm-nav-menu__leading-icon/u);
   const button = await renderToString(
     h(entry.VfIconButton, { icon: 'gear', variant: 'warn', 'aria-label': 'Settings' }),
   );

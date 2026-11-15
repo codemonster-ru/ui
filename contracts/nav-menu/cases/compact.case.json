@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "nav-menu-compact",
+  "description": "A wide sidebar forced into compact presentation with an open, still reachable active branch.",
+  "attributes": {
+    "style": "inline-size: 16rem"
+  },
+  "props": {
+    "ariaLabel": "Workspace navigation",
+    "variant": "sidebar",
+    "compact": true,
+    "defaultValue": "active",
+    "items": [
+      {
+        "value": "dashboard",
+        "label": "Dashboard",
+        "href": "/dashboard",
+        "leadingIcon": {
+          "classic/regular": {
+            "body": "<path d=\"M3.5 10.75 12 3.6l8.5 7.15\"></path><path d=\"M5.25 9.5v10.25h13.5V9.5\"></path><path d=\"M9.25 19.75v-5.5h5.5v5.5\"></path>",
+            "viewBox": "0 0 24 24"
+          }
+        }
+      },
+      {
+        "value": "projects",
+        "label": "Projects",
+        "leadingIcon": {
+          "classic/regular": {
+            "body": "<path d=\"M2.75 6.25h6l1.75 2h10.75v10.5a2 2 0 0 1-2 2H4.75a2 2 0 0 1-2-2Z\" transform=\"translate(0 -1.25)\"></path><path d=\"M2.75 9h18.5\" transform=\"translate(0 -1.25)\"></path>",
+            "viewBox": "0 0 24 24"
+          }
+        },
+        "children": [
+          {
+            "value": "active",
+            "label": "Active",
+            "href": "/projects/active"
+          }
+        ]
+      }
+    ]
+  },
+  "slots": {}
+}

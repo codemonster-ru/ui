@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import * as icons from '@codemonster-ru/ui-icons';
+import { cmIconFamilies } from '@codemonster-ru/ui-icons';
 
 import CmIcon from './CmIcon.vue';
 import type { VueIconifyProps } from './icon.types';
+import { normalizeIconName, resolveNamedIcon } from './named-icon';
 
 const props = withDefaults(defineProps<VueIconifyProps>(), {
   icon: 'moon',
@@ -27,17 +28,10 @@ const opticalOffsets: Readonly<Record<string, readonly [number, number]>> = {
   upload: [0, 0.0158],
 };
 
-const iconName = computed(() =>
-  props.icon.includes('-')
-    ? props.icon.toLowerCase().replace(/-([a-z0-9])/gu, (_, letter: string) => letter.toUpperCase())
-    : props.icon,
-);
-const geometry = computed(() => {
-  const entry = icons[iconName.value as keyof typeof icons];
-  return entry && typeof entry === 'object' && 'classic/solid' in entry ? entry : icons.moon;
-});
+const iconName = computed(() => normalizeIconName(props.icon));
+const geometry = computed(() => resolveNamedIcon(iconName.value));
 const variant = computed(() => {
-  if (!icons.cmIconFamilies.includes(props.family)) throw new Error(`Unknown icon family "${props.family}".`);
+  if (!cmIconFamilies.includes(props.family)) throw new Error(`Unknown icon family "${props.family}".`);
   const resolved = props.variant ?? (geometry.value['classic/regular'] ? 'regular' : 'solid');
   if (!geometry.value[`${props.family}/${resolved}`]) {
     throw new Error(`Icon "${iconName.value}" does not support the "${props.family}/${resolved}" rendering.`);

@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { externalLink } from '@codemonster-ru/ui-icons';
 import { computed, resolveComponent, type Component, type PropType } from 'vue';
 
+import CmIcon from '../icon/CmIcon.vue';
 import type { CmNavMenuItem } from './nav-menu.types';
 
 // The recursion lives in its own component because a template cannot include itself; the rules it
@@ -30,6 +32,7 @@ const destination = computed(() =>
       },
 );
 const rel = computed(() => props.item.rel ?? (props.item.target === '_blank' ? 'noopener noreferrer' : undefined));
+const isExternal = computed(() => isLink.value && !props.item.disabled && props.item.target === '_blank');
 
 function leafComponent() {
   if (!isLink.value) return 'button';
@@ -75,11 +78,13 @@ const branchClasses = computed(() => [
       :disabled="props.item.disabled || undefined"
       @click="$emit('toggle', props.item.value)"
     >
-      <span class="cm-nav-menu__item-content"
-        ><slot :name="`item${props.item.value}`" :item="props.item"
-          ><span class="cm-nav-menu__label">{{ props.item.label }}</span></slot
-        ></span
-      ><span class="cm-nav-menu__icon" aria-hidden="true"></span>
+      <span class="cm-nav-menu__item-content">
+        <CmIcon v-if="props.item.leadingIcon" class="cm-nav-menu__leading-icon" :icon="props.item.leadingIcon" />
+        <slot :name="`item${props.item.value}`" :item="props.item">
+          <span class="cm-nav-menu__label">{{ props.item.label }}</span>
+        </slot>
+      </span>
+      <span class="cm-nav-menu__icon" aria-hidden="true"></span>
     </button>
     <component
       :is="leafComponent()"
@@ -97,11 +102,13 @@ const branchClasses = computed(() => [
       :disabled="!isLink && props.item.disabled ? true : undefined"
       @click="props.item.disabled ? $event.preventDefault() : $emit('select', props.item)"
     >
-      <span class="cm-nav-menu__item-content"
-        ><slot :name="`item${props.item.value}`" :item="props.item"
-          ><span class="cm-nav-menu__label">{{ props.item.label }}</span></slot
-        ></span
-      >
+      <span class="cm-nav-menu__item-content">
+        <CmIcon v-if="props.item.leadingIcon" class="cm-nav-menu__leading-icon" :icon="props.item.leadingIcon" />
+        <slot :name="`item${props.item.value}`" :item="props.item">
+          <span class="cm-nav-menu__label">{{ props.item.label }}</span>
+        </slot>
+      </span>
+      <CmIcon v-if="isExternal" class="cm-nav-menu__external-icon" :icon="externalLink" />
     </component>
     <div v-if="hasChildren" class="cm-nav-menu__collapse">
       <ul class="cm-nav-menu__list cm-nav-menu__list--nested">
