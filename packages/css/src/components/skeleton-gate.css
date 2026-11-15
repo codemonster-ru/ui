@@ -1,0 +1,39 @@
+@import './skeleton.css';
+
+.cm-skeleton-gate {
+  --cm-skeleton-gate-fade-duration: 220ms;
+  --cm-skeleton-gate-fade-easing: ease;
+  --cm-skeleton-gate-overflow: hidden;
+
+  position: relative;
+  overflow: var(--cm-skeleton-gate-overflow);
+}
+
+.cm-skeleton-gate__content {
+  opacity: 0;
+  transition: opacity var(--cm-skeleton-gate-fade-duration) var(--cm-skeleton-gate-fade-easing);
+}
+
+.cm-skeleton-gate__content--normalize-spacing > :first-child {
+  margin-block-start: 0;
+}
+
+.cm-skeleton-gate__content--normalize-spacing > :last-child {
+  margin-block-end: 0;
+}
+
+.cm-skeleton-gate__content--ready {
+  opacity: 1;
+}
+
+.cm-skeleton-gate__overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cm-skeleton-gate__content {
+    transition: none;
+  }
+}

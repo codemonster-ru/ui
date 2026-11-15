@@ -1,4 +1,15 @@
-export type CmButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost';
+export const buttonVariants = [
+  'primary',
+  'secondary',
+  'success',
+  'info',
+  'warn',
+  'help',
+  'danger',
+  'contrast',
+  'ghost',
+] as const;
+export type CmButtonVariant = (typeof buttonVariants)[number];
 
 export type CmButtonSize = 'sm' | 'md' | 'lg';
 
@@ -9,6 +20,7 @@ export interface CmButtonProps {
   size?: CmButtonSize;
   type?: CmButtonType;
   href?: string | null;
+  block?: boolean;
   disabled?: boolean;
   loading?: boolean;
 }

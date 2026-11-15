@@ -27,9 +27,12 @@ The root always owns `cm-button`, one variant modifier, and one size modifier:
 
 ```text
 cm-button
-cm-button--primary | cm-button--secondary | cm-button--danger | cm-button--ghost
+cm-button--primary | cm-button--secondary | cm-button--success | cm-button--info
+cm-button--warn | cm-button--help | cm-button--danger | cm-button--contrast | cm-button--ghost
 cm-button--sm | cm-button--md | cm-button--lg
 ```
+
+Use `cm-button--block` when the action should fill the available inline width.
 
 Invalid finite values produce a development diagnostic. Production adapters fall back to
 `primary` and `md` rather than rendering unapproved classes.

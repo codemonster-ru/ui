@@ -7,7 +7,7 @@ export interface CmModalBinding {
   dialog: Ref<HTMLDialogElement | undefined>;
   localOpen: Ref<boolean>;
   onCancel: (event: Event) => void;
-  onKeydown: (event: KeyboardEvent) => void;
+  onKeydown: (event: KeyboardEvent, allowEscape?: boolean) => void;
   setOpen: (open: boolean, restoreFocus?: boolean) => void;
 }
 
@@ -35,12 +35,21 @@ export function useCmModal(open: () => boolean, emitOpen: (open: boolean) => voi
       if (HTMLElementConstructor && active instanceof HTMLElementConstructor && !element.contains(active)) {
         returnFocus = active;
       }
-      if (typeof element.showModal === 'function' && !element.open) element.showModal();
-      else element.open = true;
+      if (typeof element.showModal === 'function') {
+        if (!element.matches(':modal')) {
+          // SSR renders open content before hydration. Remove its non-modal open state before
+          // entering the browser's modal stack, which owns the backdrop and outside focus.
+          element.removeAttribute('open');
+          element.showModal();
+        }
+      } else {
+        element.open = true;
+      }
       void nextTick(() => {
         if (!localOpen.value) return;
         (
           element.querySelector<HTMLElement>('[autofocus]') ??
+          element.querySelector<HTMLElement>('[data-autofocus]') ??
           element.querySelector<HTMLElement>(focusableSelector) ??
           element
         ).focus();
@@ -58,10 +67,10 @@ export function useCmModal(open: () => boolean, emitOpen: (open: boolean) => voi
     setOpen(false);
   }
 
-  function onKeydown(event: KeyboardEvent): void {
+  function onKeydown(event: KeyboardEvent, allowEscape = true): void {
     if (event.key === 'Escape') {
       event.preventDefault();
-      setOpen(false);
+      if (allowEscape) setOpen(false);
       return;
     }
     const element = dialog.value;

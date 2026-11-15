@@ -8,7 +8,7 @@
       "type": "enum",
       "required": false,
       "default": "primary",
-      "values": ["primary", "secondary", "danger", "ghost"],
+      "values": ["primary", "secondary", "success", "info", "warn", "help", "danger", "contrast", "ghost"],
       "description": "Visual action emphasis."
     },
     "size": {
@@ -30,6 +30,12 @@
       "required": false,
       "default": null,
       "description": "A non-empty link destination switches the semantic root to an anchor."
+    },
+    "block": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Fills the available inline width."
     },
     "disabled": {
       "type": "boolean",

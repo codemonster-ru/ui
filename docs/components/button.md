@@ -25,14 +25,15 @@ graph.
 
 ## Props
 
-| Prop       | Values                                    | Default   | Behavior                                      |
-| ---------- | ----------------------------------------- | --------- | --------------------------------------------- |
-| `variant`  | `primary`, `secondary`, `danger`, `ghost` | `primary` | Visual action emphasis.                       |
-| `size`     | `sm`, `md`, `lg`                          | `md`      | Shared control height and spacing.            |
-| `type`     | `button`, `submit`, `reset`               | `button`  | Native button type; ignored in link mode.     |
-| `href`     | non-empty string or `null`                | `null`    | A non-empty value selects native anchor mode. |
-| `disabled` | boolean                                   | `false`   | Prevents button or link activation.           |
-| `loading`  | boolean                                   | `false`   | Shows busy state and prevents activation.     |
+| Prop       | Values                                                                                   | Default   | Behavior                                      |
+| ---------- | ---------------------------------------------------------------------------------------- | --------- | --------------------------------------------- |
+| `variant`  | `primary`, `secondary`, `success`, `info`, `warn`, `help`, `danger`, `contrast`, `ghost` | `primary` | Visual action emphasis.                       |
+| `size`     | `sm`, `md`, `lg`                                                                         | `md`      | Shared control height and spacing.            |
+| `type`     | `button`, `submit`, `reset`                                                              | `button`  | Native button type; ignored in link mode.     |
+| `href`     | non-empty string or `null`                                                               | `null`    | A non-empty value selects native anchor mode. |
+| `block`    | boolean                                                                                  | `false`   | Fills the available inline width.             |
+| `disabled` | boolean                                                                                  | `false`   | Prevents button or link activation.           |
+| `loading`  | boolean                                                                                  | `false`   | Shows busy state and prevents activation.     |
 
 Unknown safe attributes reach the semantic root. Consumer classes are appended after the stable
 contract classes and deduplicated. Component-owned `type`, `href`, disabled, busy, and link ARIA
@@ -71,7 +72,8 @@ consumer click handler.
 
 ## Vanilla HTML
 
-Use the canonical HTML for [button](../../contracts/button/contract.md).
+Use the canonical HTML for [button](../../contracts/button/contract.md). Add `cm-button--block`
+to fill the available width.
 
 ## Forms and accessibility
 

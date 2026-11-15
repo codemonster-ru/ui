@@ -16,6 +16,9 @@ const props = defineProps({
   open: Boolean,
   closeLabel: { type: String, default: 'Close' },
   dismissible: { type: Boolean, default: true },
+  closable: { type: Boolean, default: true },
+  closeOnOverlayClick: Boolean,
+  focusDialog: Boolean,
   size: {
     type: String as PropType<CmDialogSize>,
     default: 'md',
@@ -78,9 +81,14 @@ useCmHydrated();
     :data-cm-dialog-state="localOpen ? 'open' : 'closed'"
     :data-cm-dialog-dismissible="props.dismissible ? 'true' : 'false'"
     @cancel="props.dismissible ? onCancel($event) : $event.preventDefault()"
-    @keydown="props.dismissible ? onKeydown($event) : undefined"
+    @keydown="onKeydown($event, props.dismissible)"
+    @click.self="props.closeOnOverlayClick ? requestClose() : undefined"
   >
-    <div class="cm-dialog__surface">
+    <div
+      class="cm-dialog__surface"
+      :tabindex="props.focusDialog ? -1 : undefined"
+      :data-autofocus="props.focusDialog ? '' : undefined"
+    >
       <header class="cm-dialog__header">
         <h2 :id="`${props.id}-title`" class="cm-dialog__title">
           <slot name="header" :title-id="`${props.id}-title`">{{ props.title }}</slot>
@@ -89,7 +97,7 @@ useCmHydrated();
           <slot name="actions" :close="requestClose" />
         </div>
         <!-- prettier-ignore -->
-        <button class="cm-dialog__close" type="button" :aria-label="props.closeLabel" :disabled="!props.dismissible" data-cm-dialog-close @click="requestClose">×</button>
+        <button v-if="props.closable" class="cm-dialog__close" type="button" :aria-label="props.closeLabel" :disabled="!props.dismissible" data-cm-dialog-close @click="requestClose">×</button>
       </header>
       <div v-if="$slots.description" :id="`${props.id}-description`" class="cm-dialog__description">
         <slot name="description" :description-id="`${props.id}-description`" />
