@@ -61,6 +61,7 @@ const modal = useCmModal(
   props.defaultOpen,
 );
 const { dialog, localOpen, onCancel, onClose, onKeydown, setOpen } = modal;
+defineExpose({ restoreAfterMove: modal.restoreAfterMove });
 const allowEscape = computed(() => props.dismissible && props.closeOnEscape);
 function requestClose(): void {
   if (props.dismissible) setOpen(false);

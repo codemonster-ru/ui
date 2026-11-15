@@ -1,3 +1,5 @@
+import type { VfModalPortalProps } from '../modal/modal-portal';
+
 export type CmDialogSize = 'sm' | 'md' | 'lg';
 
 export interface CmDialogProps {
@@ -19,6 +21,6 @@ export interface CmDialogProps {
   dividers?: boolean;
 }
 
-export interface VfDialogProps extends Omit<CmDialogProps, 'id'> {
+export interface VfDialogProps extends Omit<CmDialogProps, 'id'>, VfModalPortalProps {
   id?: string;
 }
