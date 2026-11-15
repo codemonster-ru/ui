@@ -193,7 +193,7 @@ function guideLink(path: string, base: string, label = 'Developer guide') {
 
 export function referenceFrameClass(slug: string) {
   if (tallPreviews.has(slug)) return ' reference-frame--tall';
-  if (['table', 'data-table', 'form-layout'].includes(slug)) return ' reference-frame--content';
+  if (['table', 'data-table', 'form-layout', 'nav-menu'].includes(slug)) return ' reference-frame--content';
   return floatingComponents.has(slug) ? ' reference-frame--floating' : '';
 }
 
