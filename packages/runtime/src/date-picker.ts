@@ -8,8 +8,10 @@ import {
   formatIsoDate,
   monthLabel,
   parseIsoDate,
+  selectCalendarDate,
   shiftMonth,
   weekdayLabels,
+  type CmCalendarSelectionMode,
   type CmCalendarWeekday,
 } from './core/date-picker.js';
 import { dispatchCmEvent } from './events.js';
@@ -17,6 +19,11 @@ import type { CmController, CmControllerFactory } from './runtime.js';
 
 export interface DatePickerValueChangeDetail {
   value: string;
+}
+
+export interface DatePickerSelectionChangeDetail {
+  mode: 'multiple' | 'range';
+  values: string[];
 }
 
 const triggerSelector = '.cm-date-picker';
@@ -36,7 +43,9 @@ export class CmDatePickerController implements CmController {
   readonly #calendar: HTMLElement;
   readonly #clear: HTMLButtonElement | null;
   readonly #input: HTMLInputElement | null;
-  #value: string;
+  readonly #mode: CmCalendarSelectionMode;
+  readonly #fieldName: string;
+  #selectedDates: string[];
   #visibleMonth: string;
   #focusedDate: string;
   #stopAutoUpdate: (() => void) | null = null;
@@ -50,7 +59,16 @@ export class CmDatePickerController implements CmController {
     this.#calendar = calendar;
     this.#clear = root.querySelector<HTMLButtonElement>(clearSelector);
     this.#input = root.querySelector<HTMLInputElement>(hiddenInputSelector);
-    this.#value = this.#input?.value ?? trigger.dataset.cmValue ?? '';
+    const mode = trigger.dataset.cmDatePickerMode;
+    this.#mode = mode === 'multiple' || mode === 'range' ? mode : 'single';
+    this.#fieldName = trigger.dataset.cmDatePickerName ?? this.#input?.name ?? '';
+    const initial =
+      this.#mode === 'single'
+        ? [this.#input?.value ?? trigger.dataset.cmValue ?? '']
+        : this.#arrayInputs().map((input) => input.value);
+    this.#selectedDates = initial.filter((date) => parseIsoDate(date) !== null);
+    if (this.#mode === 'range') this.#selectedDates = this.#selectedDates.slice(0, 2).sort();
+    if (this.#mode === 'multiple') this.#selectedDates = [...new Set(this.#selectedDates)];
     this.#visibleMonth = this.#initialDate();
     this.#focusedDate = this.#visibleMonth;
   }
@@ -62,7 +80,14 @@ export class CmDatePickerController implements CmController {
     this.#root.addEventListener('focusin', this.#handleDayFocus);
     this.#root.ownerDocument.addEventListener('click', this.#dismissOutside, true);
     this.#root.ownerDocument.addEventListener('focusin', this.#dismissOutside);
-    if (this.#input && this.#trigger.disabled) this.#input.disabled = true;
+    if (this.#mode === 'single') {
+      if (this.#input && this.#trigger.disabled) this.#input.disabled = true;
+    } else {
+      if (this.#fieldName) this.#trigger.dataset.cmDatePickerName = this.#fieldName;
+      this.#writeArrayInputs(this.#selectedDates);
+      this.#calendar.querySelector('[role="grid"]')?.setAttribute('aria-multiselectable', 'true');
+      this.#syncDisplay(this.#selectedDates);
+    }
     this.#synchronize(this.#trigger.getAttribute('aria-expanded') === 'true');
   }
 
@@ -76,13 +101,35 @@ export class CmDatePickerController implements CmController {
     this.#releasePlacement();
   }
 
-  #currentValue(): string {
-    return this.#input?.value ?? this.#value;
+  #currentDates(): string[] {
+    if (this.#mode !== 'single' || !this.#input) return this.#selectedDates;
+    return parseIsoDate(this.#input.value) ? [this.#input.value] : [];
+  }
+
+  #arrayInputs(): HTMLInputElement[] {
+    return [...this.#root.querySelectorAll<HTMLInputElement>(`:scope > ${hiddenInputSelector}`)].filter(
+      (input) => input.name === this.#fieldName,
+    );
+  }
+
+  #writeArrayInputs(values: readonly string[]): void {
+    if (this.#fieldName === '') return;
+    const inputs = this.#arrayInputs();
+    const form = this.#input?.getAttribute('form') ?? this.#trigger.getAttribute('form');
+    for (const [index, value] of values.entries()) {
+      const input = inputs[index] ?? this.#root.ownerDocument.createElement('input');
+      input.type = 'hidden';
+      input.name = this.#fieldName;
+      input.value = value;
+      input.disabled = this.#trigger.disabled;
+      if (form !== null) input.setAttribute('form', form);
+      if (!inputs[index]) this.#root.append(input);
+    }
+    for (const input of inputs.slice(values.length)) input.remove();
   }
 
   #initialDate(): string {
-    const value = this.#currentValue();
-    return this.#boundDate(parseIsoDate(value) ? value : formatIsoDate(new Date()));
+    return this.#boundDate(this.#currentDates()[0] ?? formatIsoDate(new Date()));
   }
 
   #boundDate(value: string): string {
@@ -118,10 +165,10 @@ export class CmDatePickerController implements CmController {
 
   readonly #handleClick = (event: Event): void => {
     const target = event.target as Element | null;
-    if (!target) return;
+    if (!target || this.#trigger.disabled || this.#trigger.getAttribute('aria-readonly') === 'true') return;
 
     if (target.closest(clearSelector)) {
-      this.#commit('');
+      this.#commit([]);
       this.#setOpen(false, true);
       return;
     }
@@ -137,9 +184,12 @@ export class CmDatePickerController implements CmController {
     }
 
     const day = target.closest<HTMLButtonElement>(daySelector);
-    if (day && !day.disabled) {
-      this.#commit(day.dataset.cmDatePickerValue ?? '');
-      this.#setOpen(false, true);
+    const value = day?.dataset.cmDatePickerValue;
+    if (day && !day.disabled && value) {
+      const next = selectCalendarDate(this.#currentDates(), value, this.#mode);
+      this.#commit(next);
+      if (this.#mode === 'single' || (this.#mode === 'range' && next.length === 2)) this.#setOpen(false, true);
+      else this.#moveFocus(value);
       return;
     }
 
@@ -204,12 +254,12 @@ export class CmDatePickerController implements CmController {
     if (previous) previous.disabled = !this.#canChangeMonth(shiftMonth(this.#visibleMonth, -1));
     if (next) next.disabled = !this.#canChangeMonth(shiftMonth(this.#visibleMonth, 1));
 
-    const selected = this.#currentValue();
     const weeks = buildCalendarMonth({
       max: this.#trigger.dataset.cmMax ?? null,
       min: this.#trigger.dataset.cmMin ?? null,
       month: this.#visibleMonth,
-      selected,
+      selected: this.#currentDates(),
+      range: this.#mode === 'range',
       firstDayOfWeek: this.#firstDayOfWeek(),
       locale,
     });
@@ -238,42 +288,58 @@ export class CmDatePickerController implements CmController {
     weeks.flat().forEach((day, index) => {
       const cell = cells[index];
       if (!cell) return;
-      const isSelected = day.selected && selected !== '';
       cell.dataset.cmDatePickerValue = day.value;
       cell.textContent = day.label;
       cell.disabled = day.disabled;
       cell.classList.toggle('cm-date-picker__day--outside', day.outside);
       cell.classList.toggle('cm-date-picker__day--today', day.today);
-      cell.classList.toggle('cm-date-picker__day--selected', isSelected);
+      cell.classList.toggle('cm-date-picker__day--selected', day.selected);
+      cell.classList.toggle('cm-date-picker__day--in-range', day.inRange);
+      cell.classList.toggle('cm-date-picker__day--range-start', day.rangeStart);
+      cell.classList.toggle('cm-date-picker__day--range-end', day.rangeEnd);
       cell.setAttribute('aria-label', day.accessibleLabel);
-      cell.setAttribute('aria-selected', String(isSelected));
+      cell.setAttribute('aria-selected', String(day.selected || day.inRange));
       if (day.today) cell.setAttribute('aria-current', 'date');
       else cell.removeAttribute('aria-current');
       cell.tabIndex = !day.disabled && day.value === this.#focusedDate ? 0 : -1;
     });
   }
 
-  #commit(value: string): void {
-    this.#value = value;
-    if (this.#input) this.#input.value = value;
-    if (value !== '') this.#visibleMonth = value;
+  #commit(dates: string[]): void {
+    this.#selectedDates = dates;
+    if (this.#mode === 'single') {
+      if (this.#input) this.#input.value = dates[0] ?? '';
+    } else this.#writeArrayInputs(dates);
 
+    this.#syncDisplay(dates);
+    if (this.#mode === 'single') {
+      dispatchCmEvent<DatePickerValueChangeDetail>(this.#root, 'date-picker-value-change', { value: dates[0] ?? '' });
+    } else {
+      dispatchCmEvent<DatePickerSelectionChangeDetail>(this.#root, 'date-picker-selection-change', {
+        mode: this.#mode,
+        values: dates.slice(),
+      });
+    }
+    const view = this.#root.ownerDocument.defaultView;
+    if (view) this.#trigger.dispatchEvent(new view.Event('change', { bubbles: true }));
+  }
+
+  #syncDisplay(dates: readonly string[]): void {
     const valueElement = this.#trigger.querySelector<HTMLElement>(valueSelector);
     if (valueElement) {
       valueElement.textContent =
-        value === ''
+        dates.length === 0
           ? (this.#trigger.dataset.cmPlaceholder ?? '')
-          : formatDisplayDate(value, this.#trigger.dataset.cmLocale, this.#trigger.dataset.cmDisplayFormat);
+          : dates
+              .map((date) =>
+                formatDisplayDate(date, this.#trigger.dataset.cmLocale, this.#trigger.dataset.cmDisplayFormat),
+              )
+              .join(this.#mode === 'range' ? ' – ' : '; ');
     }
-    this.#trigger.classList.toggle('cm-date-picker--placeholder', value === '');
-    if (value) this.#trigger.dataset.cmFilled = 'true';
+    this.#trigger.classList.toggle('cm-date-picker--placeholder', dates.length === 0);
+    if (dates.length > 0) this.#trigger.dataset.cmFilled = 'true';
     else delete this.#trigger.dataset.cmFilled;
-    if (this.#clear) this.#clear.hidden = value === '';
-    this.#renderMonth();
-
-    dispatchCmEvent<DatePickerValueChangeDetail>(this.#root, 'date-picker-value-change', { value });
-    const view = this.#root.ownerDocument.defaultView;
-    if (view) this.#trigger.dispatchEvent(new view.Event('change', { bubbles: true }));
+    if (this.#clear) this.#clear.hidden = dates.length === 0;
   }
 
   #setOpen(open: boolean, restoreFocus: boolean): void {

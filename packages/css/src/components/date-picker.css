@@ -213,6 +213,8 @@
 /* Calendar ----------------------------------------------------------------- */
 
 .cm-date-picker__calendar {
+  --cm-date-picker-column-gap: 0.125rem;
+
   position: absolute;
   z-index: 1;
   inset-block-start: calc(100% + 2px);
@@ -277,7 +279,7 @@
 .cm-date-picker__week {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  column-gap: 0.125rem;
+  column-gap: var(--cm-date-picker-column-gap);
   justify-items: center;
 }
 
@@ -309,6 +311,61 @@
 
 .cm-date-picker__day--today {
   border-color: var(--cm-color-border-interactive);
+}
+
+.cm-date-picker__day--in-range,
+.cm-date-picker__day--range-start,
+.cm-date-picker__day--range-end {
+  position: relative;
+  inline-size: 100%;
+}
+
+.cm-date-picker__day--in-range {
+  border-radius: 0;
+  background: var(--cm-color-background-surface-hover);
+}
+
+.cm-date-picker__day--range-start {
+  border-start-end-radius: 0;
+  border-end-end-radius: 0;
+}
+
+.cm-date-picker__day--range-end {
+  border-start-start-radius: 0;
+  border-end-start-radius: 0;
+}
+
+.cm-date-picker__day--range-start.cm-date-picker__day--range-end {
+  border-radius: var(--cm-radius-control-tight);
+}
+
+.cm-date-picker__day--in-range::before,
+.cm-date-picker__day--in-range::after,
+.cm-date-picker__day--range-start::after,
+.cm-date-picker__day--range-end::before {
+  position: absolute;
+  inset-block: calc(-1 * var(--cm-border-width));
+  inline-size: var(--cm-date-picker-column-gap);
+  background: var(--cm-color-background-surface-hover);
+  content: '';
+  pointer-events: none;
+}
+
+.cm-date-picker__day--in-range::before,
+.cm-date-picker__day--range-end::before {
+  inset-inline-end: 100%;
+}
+
+.cm-date-picker__day--in-range::after,
+.cm-date-picker__day--range-start::after {
+  inset-inline-start: 100%;
+}
+
+.cm-date-picker__week > :first-child::before,
+.cm-date-picker__week > :last-child::after,
+.cm-date-picker__day--range-start.cm-date-picker__day--range-end::before,
+.cm-date-picker__day--range-start.cm-date-picker__day--range-end::after {
+  display: none;
 }
 
 .cm-date-picker__day--selected {

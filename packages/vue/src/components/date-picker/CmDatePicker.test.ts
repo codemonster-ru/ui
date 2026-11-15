@@ -128,4 +128,65 @@ describe('CmDatePicker', () => {
     expect(wrapper.emitted('update:modelValue')).toBeUndefined();
     wrapper.unmount();
   });
+
+  it('keeps multiple selection open, toggles dates, and submits each date under the same field name', async () => {
+    const form = document.createElement('form');
+    document.body.append(form);
+    const wrapper = mount(CmDatePicker, {
+      attachTo: form,
+      props: { id: 'dates', multiple: true, modelValue: ['2026-08-13'], clearable: true },
+      attrs: { name: 'dates' },
+    });
+    const trigger = wrapper.get('button.cm-date-picker');
+    await trigger.trigger('click');
+    const grid = wrapper.get('[role="grid"]');
+    const selected = grid.get('[aria-selected="true"]');
+    await selected.trigger('keydown', { key: 'ArrowRight' });
+    const next = grid.get('[tabindex="0"]');
+    expect(next.attributes('data-cm-date-picker-value')).toBe('2026-08-14');
+    await next.trigger('click');
+    expect(wrapper.emitted('update:modelValue')).toEqual([[['2026-08-13', '2026-08-14']]]);
+    expect(grid.attributes('aria-multiselectable')).toBe('true');
+    expect(trigger.attributes('aria-expanded')).toBe('true');
+    expect(new FormData(form).getAll('dates')).toEqual(['2026-08-13', '2026-08-14']);
+    await selected.trigger('click');
+    expect(wrapper.emitted('valueChange')).toEqual([[['2026-08-13', '2026-08-14']], [['2026-08-14']]]);
+    expect(new FormData(form).getAll('dates')).toEqual(['2026-08-14']);
+    await wrapper.get('[data-cm-date-picker-clear]').trigger('click');
+    expect(wrapper.emitted('update:modelValue')?.slice(-1)[0]).toEqual([[]]);
+    expect(new FormData(form).has('dates')).toBe(false);
+    expect(document.activeElement).toBe(trigger.element);
+    wrapper.unmount();
+  });
+
+  it('commits an ordered range after the second date and exposes every date in the selected span', async () => {
+    const form = document.createElement('form');
+    document.body.append(form);
+    const wrapper = mount(CmDatePicker, {
+      attachTo: form,
+      props: { id: 'dates', range: true, modelValue: [], min: '2026-08-01', max: '2026-08-31' },
+      attrs: { name: 'dates' },
+    });
+    const trigger = wrapper.get('button.cm-date-picker');
+    const day = (value: string) => wrapper.get(`[data-cm-date-picker-value="${value}"]`);
+    await trigger.trigger('click');
+    await day('2026-08-16').trigger('click');
+    expect(trigger.attributes('aria-expanded')).toBe('true');
+    expect(wrapper.emitted('update:modelValue')).toEqual([[['2026-08-16']]]);
+    await day('2026-08-13').trigger('click');
+    expect(wrapper.emitted('update:modelValue')).toEqual([[['2026-08-16']], [['2026-08-13', '2026-08-16']]]);
+    expect(trigger.attributes('aria-expanded')).toBe('false');
+    expect(document.activeElement).toBe(trigger.element);
+    expect(new FormData(form).getAll('dates')).toEqual(['2026-08-13', '2026-08-16']);
+
+    await trigger.trigger('click');
+    expect(day('2026-08-13').classes()).toContain('cm-date-picker__day--range-start');
+    expect(day('2026-08-14').classes()).toContain('cm-date-picker__day--in-range');
+    expect(day('2026-08-14').attributes('aria-selected')).toBe('true');
+    expect(day('2026-08-16').classes()).toContain('cm-date-picker__day--range-end');
+    await day('2026-08-20').trigger('click');
+    expect(wrapper.emitted('update:modelValue')?.slice(-1)[0]).toEqual([['2026-08-20']]);
+    expect(trigger.attributes('aria-expanded')).toBe('true');
+    wrapper.unmount();
+  });
 });
