@@ -1,8 +1,8 @@
 const themeKey = 'cm-showcase-theme';
 
-export function readShowcaseTheme() {
+export function readShowcaseTheme(fallback = 'light') {
   const mode = localStorage.getItem(themeKey);
-  return mode === 'dark' || mode === 'system' ? mode : 'light';
+  return mode === 'light' || mode === 'dark' || mode === 'system' ? mode : fallback;
 }
 
 /** @param {'light' | 'dark' | 'system'} mode */
@@ -13,13 +13,13 @@ export function applyShowcaseTheme(mode) {
 /** @param {'light' | 'dark' | 'system'} mode */
 export function saveShowcaseTheme(mode) {
   applyShowcaseTheme(mode);
-  if (readShowcaseTheme() !== mode) localStorage.setItem(themeKey, mode);
+  if (localStorage.getItem(themeKey) !== mode) localStorage.setItem(themeKey, mode);
 }
 
 /** @param {(mode: 'light' | 'dark' | 'system') => void} sync */
-export function followShowcaseTheme(sync) {
+export function followShowcaseTheme(sync, fallback) {
   const update = () => {
-    const mode = readShowcaseTheme();
+    const mode = readShowcaseTheme(fallback);
     applyShowcaseTheme(mode);
     sync(mode);
   };
