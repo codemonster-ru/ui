@@ -26,7 +26,7 @@ function active(id: string) {
   <section
     v-for="{ id, title, description } in recipes"
     :key="id"
-    class="showcase-group"
+    class="showcase-group layout-guide-entry"
     :aria-labelledby="'demo-' + id + '-layout'"
   >
     <header>

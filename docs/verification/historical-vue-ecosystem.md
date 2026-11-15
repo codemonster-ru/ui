@@ -61,6 +61,31 @@ The current product and component names, top navigation, and contract inventory 
 differences. The screenshots cover the first viewport; examples farther down the guide were
 checked through the listed interactions.
 
+## Vue Layouts guide
+
+The Vue guide uses the same guide grid, section spacing, and mobile top inset as Vanilla,
+with live Vue components and the existing recipe and shell controls. It uses the shared shell
+ordering and display data.
+
+| Viewport   | Theme | Pinned Vue before | Vue after | Vue after, matched reference recapture |
+| ---------- | ----- | ----------------: | --------: | -------------------------------------: |
+| 390 × 844  | Light |            18.02% |     3.15% |                                  2.83% |
+| 390 × 844  | Dark  |            18.05% |     3.20% |                                  2.85% |
+| 1280 × 800 | Light |            11.96% |     1.09% |                                  0.90% |
+| 1280 × 800 | Dark  |            11.96% |     1.09% |                                  0.89% |
+
+The first two measurement columns compare with the pinned `d9879116` reference screenshots
+from `/private/tmp/cmui-browser-checkpoint.XZHnOm/showcase`. The exact reference recapture
+varied by 0.19–0.38% against those reference screenshots. The first four Vue headings,
+descriptions, and sample surfaces matched the recaptured reference's rounded bounds in all
+four configurations. Chrome reported zero JavaScript errors and horizontal page overflow.
+Product and component names and top navigation remain visible differences.
+
+Both viewports and themes passed the breakpoint readout, minimum error preview, auth password
+reveal and submission, and SetupLayout forward and back controls. Desktop also passed AppShell
+region selection, sticky header activation, and warehouse pagination. Captures and reports are in
+`/tmp/cm-vue-layout-guide-evidence`.
+
 ## Vue and Vanilla Icons galleries
 
 Both galleries lead with the historical catalogue heading, search, family tabs, and four-weight

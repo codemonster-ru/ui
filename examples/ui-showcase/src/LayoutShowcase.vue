@@ -6,6 +6,7 @@ import annabelLogo from '../../shared/annabel-logo-icon.svg';
 import {
   columns,
   defaultPreview,
+  panels,
   previewClass,
   previews,
   regionControls,
@@ -38,33 +39,6 @@ import LayoutPrimitives from './LayoutPrimitives.vue';
 import LayoutPageRecipes from './LayoutPageRecipes.vue';
 import ContractExamples from './ContractExamples.vue';
 
-const panels = [
-  {
-    slug: 'setup-layout',
-    title: 'CmSetupLayout',
-    description: 'Structures an initial configuration flow with progress, content, and actions.',
-  },
-  {
-    slug: 'app-shell',
-    title: 'CmAppShell and shell areas',
-    description: 'Composes header, sidebar, content, aside, and footer regions into an application frame.',
-  },
-  {
-    slug: 'admin-layout',
-    title: 'CmAdminLayout',
-    description: 'Provides responsive admin navigation with collapsible desktop and mobile sidebars.',
-  },
-  {
-    slug: 'admin-shell',
-    title: 'CmAdminShell',
-    description: 'Provides an opinionated product shell for dense administration workflows.',
-  },
-  {
-    slug: 'document-layout',
-    title: 'CmDocumentLayout',
-    description: 'Organizes documentation with optional navigation, article content, and an aside.',
-  },
-] as const;
 const layouts = [
   { value: 'content', label: 'content' },
   { value: 'sidebar-content', label: 'sidebar-content' },
@@ -134,7 +108,7 @@ function setMode(kind: 'app' | 'document', value: string) {
     v-for="{ slug, title, description } in panels"
     :id="'demo-' + slug"
     :key="slug"
-    class="showcase-group"
+    class="showcase-group layout-guide-entry"
     :aria-labelledby="'layout-title-' + slug"
   >
     <header>
@@ -201,9 +175,11 @@ function setMode(kind: 'app' | 'document', value: string) {
                   :sticky-header="flags[slug].header"
                   :sticky-sidebar="flags[slug].sidebar"
                   :sticky-aside="flags[slug].aside"
-                  v-bind="slug === 'app-shell'
-                    ? { contentAppearance: flags[slug].plain ? 'plain' : 'default' }
-                    : { edgeNotches: flags[slug].notches }"
+                  v-bind="
+                    slug === 'app-shell'
+                      ? { contentAppearance: flags[slug].plain ? 'plain' : 'default' }
+                      : { edgeNotches: flags[slug].notches }
+                  "
                 >
                   <template #header><strong>Header</strong></template>
                   <template #subheader><strong>Subheader</strong></template>

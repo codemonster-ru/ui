@@ -107,6 +107,7 @@ const { theme: themeMode, resolvedTheme, setTheme: selectTheme, toggleTheme } = 
     class="showcase-content showcase-core"
     :class="{
       'showcase-layouts': currentPage === 'layouts',
+      'showcase-content--layout-guide': currentPage === 'layouts',
       'showcase-content--core-guide': currentPage === 'core',
     }"
   >
@@ -184,7 +185,9 @@ const { theme: themeMode, resolvedTheme, setTheme: selectTheme, toggleTheme } = 
       </template>
     </template>
     <ColorsShowcase v-else-if="currentPage === 'colors'" />
-    <LayoutShowcase v-else-if="currentPage === 'layouts'" />
+    <div v-else-if="currentPage === 'layouts'" class="layout-guide">
+      <LayoutShowcase />
+    </div>
     <CodeBlockShowcase v-else-if="currentPage === 'codeblock'" :theme="resolvedTheme" />
     <PlaygroundShowcase v-else-if="currentPage === 'playground'" :theme="resolvedTheme" />
     <template v-else>
