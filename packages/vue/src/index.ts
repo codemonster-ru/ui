@@ -99,7 +99,7 @@ export type {
   CmLinkUnderline as VfLinkUnderline,
 } from './components/link/link.types';
 export { default as CmMenuBar } from './components/menu-bar/CmMenuBar.vue';
-export type { CmMenuBarItem, CmMenuBarProps } from './components/menu-bar/menu-bar.types';
+export type { CmMenuBarItem, CmMenuBarProps, CmMenuBarVariant } from './components/menu-bar/menu-bar.types';
 export { default as CmMenu } from './components/menu/CmMenu.vue';
 export type { CmMenuItem, CmMenuItemTone, CmMenuProps } from './components/menu/menu.types';
 export { default as CmNavMenu } from './components/nav-menu/CmNavMenu.vue';
@@ -120,6 +120,7 @@ export { default as VfPanel } from './components/panel/CmPanel.vue';
 export { default as CmPopover } from './components/popover/CmPopover.vue';
 export type { CmPopoverPlacement, CmPopoverProps } from './components/popover/popover.types';
 export { default as CmProgressBar } from './components/progress-bar/CmProgressBar.vue';
+export { default as VfProgressBar } from './components/progress-bar/CmProgressBar.vue';
 export type { CmProgressBarProps, CmProgressBarTone } from './components/progress-bar/progress-bar.types';
 export { default as CmProgressSpinner } from './components/progress-spinner/CmProgressSpinner.vue';
 export type {

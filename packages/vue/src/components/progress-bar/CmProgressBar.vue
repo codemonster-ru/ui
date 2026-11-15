@@ -17,11 +17,14 @@ const tones: readonly CmProgressBarTone[] = [
   'contrast',
 ];
 const props = defineProps({
-  label: { type: String, required: true },
+  label: { type: String, default: 'Progress' },
   value: { type: Number, default: 0 },
   max: { type: Number, default: 100 },
   indeterminate: Boolean,
   showValue: Boolean,
+  height: { type: [String, Number] as PropType<string | number | null>, default: null },
+  striped: Boolean,
+  animated: Boolean,
   tone: {
     type: String as PropType<CmProgressBarTone>,
     default: 'primary',
@@ -44,18 +47,34 @@ const classes = computed(() =>
   mergeCmClasses(
     'cm-progress-bar',
     props.indeterminate ? 'cm-progress-bar--indeterminate' : undefined,
+    props.striped ? 'cm-progress-bar--striped' : undefined,
+    props.striped && props.animated ? 'cm-progress-bar--animated' : undefined,
     tone.value === 'primary' ? undefined : `cm-progress-bar--${tone.value}`,
     attrs.class,
   ),
 );
 const rootAttrs = computed(() =>
-  omitCmOwnedAttrs(attrs, ['role', 'aria-label', 'aria-valuemin', 'aria-valuemax', 'aria-valuenow']),
+  omitCmOwnedAttrs(attrs, ['style', 'role', 'aria-label', 'aria-valuemin', 'aria-valuemax', 'aria-valuenow']),
 );
+const rootStyle = computed(() => {
+  const height = props.height;
+  let cssHeight: string | undefined;
+  if (typeof height === 'number') {
+    if (Number.isFinite(height) && height >= 0) cssHeight = `${height}px`;
+  } else {
+    cssHeight = height?.trim();
+  }
+  return cssHeight
+    ? { style: [attrs.style, { '--cm-progress-bar-height': cssHeight }] }
+    : attrs.style === undefined
+      ? {}
+      : { style: attrs.style };
+});
 </script>
 
 <template>
   <div
-    v-bind="rootAttrs"
+    v-bind="{ ...rootAttrs, ...rootStyle }"
     :class="classes"
     role="progressbar"
     :aria-label="props.label"
