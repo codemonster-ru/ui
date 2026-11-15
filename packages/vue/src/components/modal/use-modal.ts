@@ -13,6 +13,7 @@ export interface CmModalBinding {
   dialog: Ref<HTMLDialogElement | undefined>;
   localOpen: Ref<boolean>;
   onCancel: (event: Event) => void;
+  onClose: () => void;
   onKeydown: (event: KeyboardEvent, allowEscape?: boolean) => void;
   setOpen: (open: boolean, restoreFocus?: boolean) => void;
 }
@@ -73,6 +74,11 @@ export function useCmModal(open: () => boolean, emitOpen: (open: boolean) => voi
     setOpen(false);
   }
 
+  function onClose(): void {
+    // Native close may arrive after a subsequent open; the current element state wins.
+    if (dialog.value?.open === false) setOpen(false);
+  }
+
   function onKeydown(event: KeyboardEvent, allowEscape = true): void {
     if (event.key === 'Escape') {
       event.preventDefault();
@@ -98,5 +104,5 @@ export function useCmModal(open: () => boolean, emitOpen: (open: boolean) => voi
     }
   }
 
-  return { dialog, localOpen, onCancel, onKeydown, setOpen };
+  return { dialog, localOpen, onCancel, onClose, onKeydown, setOpen };
 }

@@ -36,3 +36,37 @@ it('focuses and traps only available Dialog controls', async () => {
     wrapper.unmount();
   }
 });
+
+it('synchronizes a native close with v-model and ignores a delayed close after reopening', async () => {
+  const opener = document.createElement('button');
+  document.body.append(opener);
+  const wrapper = mount(CmDialog, {
+    attachTo: document.body,
+    props: { id: 'close', title: 'Close', open: false },
+  });
+
+  try {
+    opener.focus();
+    await wrapper.setProps({ open: true });
+    const dialog = wrapper.get('dialog');
+    // In a browser, close() and form method="dialog" clear open before dispatching close.
+    dialog.element.open = false;
+    await dialog.trigger('close');
+    expect(dialog.attributes('data-cm-dialog-state')).toBe('closed');
+    expect(dialog.classes()).not.toContain('cm-dialog--open');
+    expect(document.activeElement).toBe(opener);
+    expect(wrapper.emitted('update:open')).toEqual([[false]]);
+
+    await wrapper.setProps({ open: false });
+    await wrapper.setProps({ open: true });
+    await dialog.trigger('close');
+    expect(dialog.element.open).toBe(true);
+    await wrapper.get('[data-cm-dialog-close]').trigger('click');
+    await dialog.trigger('close');
+    expect(wrapper.emitted('update:open')).toEqual([[false], [false]]);
+    expect(wrapper.emitted('openChange')).toEqual([[false], [false]]);
+  } finally {
+    wrapper.unmount();
+    opener.remove();
+  }
+});

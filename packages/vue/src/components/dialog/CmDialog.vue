@@ -39,7 +39,7 @@ const modal = useCmModal(
     emit('openChange', open);
   },
 );
-const { dialog, localOpen, onCancel, onKeydown, setOpen } = modal;
+const { dialog, localOpen, onCancel, onClose, onKeydown, setOpen } = modal;
 function requestClose(): void {
   if (props.dismissible) setOpen(false);
 }
@@ -81,6 +81,7 @@ useCmHydrated();
     :data-cm-dialog-state="localOpen ? 'open' : 'closed'"
     :data-cm-dialog-dismissible="props.dismissible ? 'true' : 'false'"
     @cancel="props.dismissible ? onCancel($event) : $event.preventDefault()"
+    @close="onClose"
     @keydown="onKeydown($event, props.dismissible)"
     @click.self="props.closeOnOverlayClick ? requestClose() : undefined"
   >
