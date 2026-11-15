@@ -29,13 +29,15 @@ function resolveCssValue(name, variables, seen = new Set()) {
 }
 
 test('matches the machine-readable VueForge 2 token parity report', () => {
+  const layoutTokens = new Set(['layoutHeaderHeight', 'layoutSubheaderHeight']);
+  const referenceTokenCount = (tokens) => tokens.filter((name) => !layoutTokens.has(name)).length;
   assert.equal(report.status, 'pass');
   assert.deepEqual(
-    Object.fromEntries(Object.entries(cmThemeTokenSchema).map(([name, tokens]) => [name, tokens.length])),
+    Object.fromEntries(Object.entries(cmThemeTokenSchema).map(([name, tokens]) => [name, referenceTokenCount(tokens)])),
     report.groups,
   );
-  assert.equal(Object.keys(cmLightThemePreset.tokens).length, report.themePresets.light.tokenCount);
-  assert.equal(Object.keys(cmDarkThemePreset.tokens).length, report.themePresets.dark.tokenCount);
+  assert.equal(referenceTokenCount(Object.keys(cmLightThemePreset.tokens)), report.themePresets.light.tokenCount);
+  assert.equal(referenceTokenCount(Object.keys(cmDarkThemePreset.tokens)), report.themePresets.dark.tokenCount);
 
   for (const [name, value] of Object.entries(report.aliases)) {
     assert.equal(cmLightThemePreset.tokens[name], value, `${name} alias drifted.`);

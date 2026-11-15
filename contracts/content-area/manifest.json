@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "name": "ContentArea",
+  "slug": "content-area",
+  "description": "A main landmark with optional inset spacing.",
+  "props": {
+    "as": {
+      "type": "string",
+      "required": false,
+      "default": "main"
+    },
+    "padded": {
+      "type": "boolean",
+      "required": false,
+      "default": true
+    }
+  },
+  "slots": {
+    "default": {
+      "required": true
+    }
+  },
+  "events": {},
+  "states": ["default"]
+}

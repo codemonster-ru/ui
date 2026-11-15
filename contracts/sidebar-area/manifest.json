@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "name": "SidebarArea",
+  "slug": "sidebar-area",
+  "description": "A sidebar region with a padded interior.",
+  "props": {
+    "as": {
+      "type": "string",
+      "required": false,
+      "default": "aside"
+    },
+    "appearance": {
+      "type": "enum",
+      "required": false,
+      "default": "default",
+      "values": ["default", "plain"]
+    }
+  },
+  "slots": {
+    "default": {
+      "required": true
+    }
+  },
+  "events": {},
+  "states": ["default"]
+}

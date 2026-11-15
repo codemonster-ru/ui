@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "error-layout-default",
+  "description": "A centered error page with an optional code, explanation and recovery actions.",
+  "props": {
+    "code": 404,
+    "title": "Page not found",
+    "description": "The address may have changed."
+  },
+  "slots": {
+    "actions": "Recovery links"
+  }
+}

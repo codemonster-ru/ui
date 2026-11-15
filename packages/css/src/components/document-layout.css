@@ -41,6 +41,7 @@
 
 .cm-document-layout--header-static > :is(.cm-document-layout__header, .cm-document-layout__subheader) {
   position: relative;
+  inset-block-start: auto;
 }
 
 .cm-document-layout--edge-notches > :is(.cm-document-layout__header, .cm-document-layout__footer) {

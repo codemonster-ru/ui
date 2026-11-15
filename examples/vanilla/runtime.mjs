@@ -11,6 +11,7 @@ import {
   createCmDialogController,
   createCmDrawerController,
   createCmDropdownController,
+  createCmGroupBoxController,
   createCmInputController,
   createCmMenuController,
   createCmMenuBarController,
@@ -40,6 +41,7 @@ export function createRuntime() {
     .register('dialog', createCmDialogController)
     .register('drawer', createCmDrawerController)
     .register('dropdown', createCmDropdownController)
+    .register('group-box', createCmGroupBoxController)
     .register('input', createCmInputController)
     .register('menu', createCmMenuController)
     .register('menu-bar', createCmMenuBarController)

@@ -34,7 +34,7 @@ const iconName = computed(() =>
 );
 const geometry = computed(() => {
   const entry = icons[iconName.value as keyof typeof icons];
-  return entry && typeof entry === 'object' && 'classic/solid' in entry ? (entry as icons.CmIconGeometry) : icons.moon;
+  return entry && typeof entry === 'object' && 'classic/solid' in entry ? entry : icons.moon;
 });
 const variant = computed(() => {
   if (!icons.cmIconFamilies.includes(props.family)) throw new Error(`Unknown icon family "${props.family}".`);

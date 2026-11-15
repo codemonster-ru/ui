@@ -109,6 +109,7 @@ if (platform === 'vue') {
             'selection-change',
             'sort-change',
             'visible-columns-change',
+            ...(componentSlug === 'group-box' ? ['collapsed-change'] : []),
           ];
     for (const name of names) {
       const listener = 'on' + name.replace(/(^|-)([a-z])/gu, (_, _separator, char: string) => char.toUpperCase());

@@ -22,7 +22,7 @@
     "id": "surfaces",
     "title": "Surface Components",
     "description": "Explore content, grouping, and table surfaces.",
-    "components": ["card", "divider", "fieldset", "table", "data-table", "column-chooser"]
+    "components": ["card", "divider", "fieldset", "group-box", "table", "data-table", "column-chooser"]
   },
   {
     "id": "feedback",
@@ -66,7 +66,14 @@
       "document-layout",
       "admin-layout",
       "admin-shell",
-      "setup-layout"
+      "setup-layout",
+      "auth-layout",
+      "error-layout",
+      "header-area",
+      "sidebar-area",
+      "content-area",
+      "aside-area",
+      "footer-area"
     ]
   },
   {

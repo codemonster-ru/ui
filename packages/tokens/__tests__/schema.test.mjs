@@ -23,7 +23,7 @@ test('defines the complete immutable token schema', () => {
       primitiveColor: 66,
       semanticColor: 85,
       spacing: 11,
-      sizing: 7,
+    sizing: 9,
       control: 21,
       typography: 26,
       border: 2,
@@ -38,7 +38,7 @@ test('defines the complete immutable token schema', () => {
 });
 
 test('covers both presets once and in declaration order', () => {
-  assert.equal(cmThemeTokenNames.length, 237);
+  assert.equal(cmThemeTokenNames.length, 239);
   assert.equal(new Set(cmThemeTokenNames).size, cmThemeTokenNames.length);
   assert.deepEqual(cmThemeTokenNames, Object.keys(cmLightThemePreset.tokens));
   assert.deepEqual(cmThemeTokenNames, Object.keys(cmDarkThemePreset.tokens));

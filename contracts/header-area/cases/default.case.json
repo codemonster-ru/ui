@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "header-area-default",
+  "description": "A header landmark with optional sticky placement.",
+  "props": {},
+  "slots": {
+    "default": "Workspace"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "group-box-default",
+  "description": "A collapsible invoice fieldset with an initially visible form control.",
+  "props": { "title": "Invoice details", "collapsible": true },
+  "slots": { "default": "<label>Reference <input name=\"reference\" value=\"PO-123\" required></label>" }
+}

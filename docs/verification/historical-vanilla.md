@@ -33,7 +33,8 @@ rules from `ui-runtime/core`; CSS and icon geometry are shared.
 | DatePicker                                                                           | D. One ISO calendar date, range exclusion, clear and hidden-field submission exist.                                                                                         | Historical month/year/time, multiple selection, formatting and roving calendar keyboard behavior are missing. Verify form policy, locale, range navigation, focus and reset before parity.             |
 | CommandPalette                                                                       | D. Existing state controller for filtering, focus movement, Escape and selection.                                                                                           | Exercise historic search/render states, disabled and loading options, option focus and lifecycle.                                                                                                      |
 | ConfirmDialog                                                                        | C. Documented Dialog composition. Historical confirm/cancel events, loading lock and initial focus need a tested portable recipe.                                           | Verify loading blocks dismissal and cancel, confirm respects disabled state and close policy, and default focus is cancel.                                                                             |
-| FormLayout, GroupBox, PageHeader, Panel, SkeletonGate                                | A/B. No canonical fixture at the starting revision. Shared Vue composition work adds styles. GroupBox disclosure and SkeletonGate state require tested HTML patterns.       | Check CSS-only FormLayout, PageHeader, Panel, native or enhanced GroupBox, and caller-owned loading state.                                                                                             |
+| FormLayout, PageHeader, Panel, SkeletonGate                                          | A/B. No canonical fixture at the starting revision. Shared CSS provides static layout and presentation.                                                                     | Check the CSS-only compositions and a caller-owned loading state.                                                                                                                                      |
+| GroupBox                                                                             | A/C. Native fieldset markup shares styles. The Vanilla disclosure controller toggles validation and submission along with visibility, while retaining authored controls.    | Tests cover collapse, keyboard reopening, field exclusion, retained values and cleanup.                                                                                                                |
 | AuthLayout, ErrorLayout, HeaderArea, SidebarArea, ContentArea, AsideArea, FooterArea | A. Auth/error samples and semantic shell regions exist in recipes. The historical geometry/options and responsive rules need a portable reference.                          | Test affected layout classes and landmark structure across viewport sizes.                                                                                                                             |
 | SVG icons and Icon wrapper                                                           | A. Canonical Icon case plus shared SVG catalog.                                                                                                                             | Verify filled/line geometry, labels, decorative use, assets and CSS sizing without Vue.                                                                                                                |
 | CodeBlock                                                                            | A/C. Static `pre` and `code` can display server-highlighted output. No canonical code presentation and copy enhancement at the starting revision.                           | Verify semantic code, wrapping, long lines, contrast, responsive menus and copy. Keep browser language parsing optional.                                                                               |
@@ -54,10 +55,36 @@ node connected after removal and survived scoped disposal. The runtime now check
 membership and disconnects lost observations while preserving controllers that remain observed.
 The runtime workspace passed lint, type checking, build, and all 206 tests under Node 24.
 
-## Consumer and browser acceptance still required
+## Packed consumer evidence
 
-Run fresh npm tarball consumption for CSS with no JavaScript and for CSS plus runtime with no Vue
-installed. Inspect distributed declarations, SSR-safe ESM imports, component CSS export and font
-resolution, and standalone assets from `npm run build:vanilla`. Existing contract, accessibility,
-and cross-platform screenshot tooling exercises the canonical cohort. The exact historical
-showcase still needs a direct comparison, especially for contracts outside that cohort.
+On Node 24.19.0, `npm_config_offline=true node scripts/ci/check-code-monster-ui-css-packed-consumer.mjs --manager=npm`
+installed three CSS packages and verified 62 direct CSS exports with no framework installed. This
+used locally built workspace artifacts at the ColumnChooser milestone (`5f0f79e1`) while additional
+composition and layout work was in the shared tree.
+
+A separate fresh npm consumer used built tokens, CSS, and runtime workspace tarballs from the
+TableOfContents change set (`7f5c3bbe`), with the same shared CSS workspace. The build and install
+commands were:
+
+```bash
+npm --cache "$repo/.npm-cache" --offline pack --ignore-scripts --silent \
+  --workspace @codemonster-ru/ui-tokens --workspace @codemonster-ru/ui-css \
+  --workspace @codemonster-ru/ui-runtime --pack-destination "$fixture/tarballs"
+npm --cache "$repo/.npm-cache" --offline pack --ignore-scripts --silent \
+  @codemonster-ru/floater.js@1.0.11 --pack-destination "$fixture/tarballs"
+cd "$fixture/consumer"
+npm --cache "$repo/.npm-cache" --offline install --ignore-scripts --no-audit --no-fund ../tarballs/*.tgz
+"$repo/node_modules/.bin/tsc" --noEmit --strict --target es2022 --module nodenext app.ts
+"$repo/node_modules/.bin/esbuild" app.ts --bundle --format=esm --outdir=public --loader:.woff2=file
+```
+
+Four packages installed offline. The Node ESM import registered ColumnChooser and TableOfContents
+without browser globals and could not resolve Vue, React, or Angular. Node also resolved the
+tokens, bundle and Button CSS exports. The consumer entry imported the tokens, fonts and styles
+and registered the TableOfContents factory. Type checking passed with the packaged
+`ColumnChooserVisibleColumnsChangeDetail` declaration. The browser bundle contained CSS, ESM
+JavaScript, and all four bundled Inter font assets.
+
+The final catalog still needs comprehensive browser and accessibility acceptance. The exact
+historical showcase needs a direct comparison, especially for contracts outside the canonical
+case cohort.

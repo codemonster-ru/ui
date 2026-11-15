@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "name": "GroupBox",
+  "slug": "group-box",
+  "description": "A titled fieldset with an optional disclosure that omits collapsed form controls from validation and submission.",
+  "props": {
+    "title": { "type": "nullable-string", "required": false },
+    "collapsible": { "type": "boolean", "required": false, "default": false },
+    "collapsed": { "type": "boolean", "required": false },
+    "defaultCollapsed": { "type": "boolean", "required": false, "default": false },
+    "disabled": { "type": "boolean", "required": false, "default": false }
+  },
+  "slots": {
+    "default": { "required": false, "description": "Grouped content and form controls." },
+    "title": { "required": false, "description": "Custom legend or disclosure name." },
+    "toggleIcon": { "required": false, "description": "Decorative content before the disclosure name." }
+  },
+  "events": {
+    "collapsedChange": { "description": "Reports the new disclosure state.", "payloadContract": "boolean" }
+  },
+  "states": ["default", "collapsed", "disabled"]
+}

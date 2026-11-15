@@ -37,7 +37,7 @@ test('generates the complete light theme and minimal dark overrides', () => {
   const [lightBlock, rest] = css.split('\n\n@media (prefers-color-scheme: dark) {');
   const [systemBlock, explicitBlock] = rest.split("\n\n[data-cm-theme='dark'] {");
 
-  assert.equal(lightBlock.match(/ {2}--cm-/g)?.length, 231);
+  assert.equal(lightBlock.match(/ {2}--cm-/g)?.length, 233);
   assert.equal(systemBlock.match(/ {4}--cm-/g)?.length, 83);
   assert.equal(explicitBlock.match(/ {2}--cm-/g)?.length, 83);
   assert.match(css, /^@import '\.\/breakpoints\.css';/);

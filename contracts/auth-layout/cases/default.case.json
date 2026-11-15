@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "auth-layout-default",
+  "description": "A centered sign-in page with optional branding and account links.",
+  "props": {
+    "title": "Sign in",
+    "description": "Use your account to continue."
+  },
+  "slots": {
+    "brand": "Acme",
+    "default": "Sign-in form",
+    "footer": "Account help"
+  }
+}

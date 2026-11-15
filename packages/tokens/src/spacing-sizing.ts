@@ -26,6 +26,8 @@ export const cmSizingTokens = Object.freeze({
   iconSizeMd: '1rem',
   iconSizeLg: '1.125rem',
   iconSizeXl: '1.5rem',
+  layoutHeaderHeight: '4rem',
+  layoutSubheaderHeight: '2.75rem',
 } as const);
 
 export type CmSizingTokenName = keyof typeof cmSizingTokens;

@@ -21,7 +21,7 @@ test('defines an ordered immutable spacing scale', () => {
   );
 });
 
-test('owns the shared control and icon size scales', () => {
+test('owns the shared control, icon, and layout sizes', () => {
   assert.deepEqual(Object.keys(cmSizingTokens), [...cmSizingTokenNames]);
   assert.equal(Object.isFrozen(cmSizingTokens), true);
   assert.equal(Object.isFrozen(cmSizingTokenNames), true);
@@ -33,5 +33,7 @@ test('owns the shared control and icon size scales', () => {
     iconSizeMd: '1rem',
     iconSizeLg: '1.125rem',
     iconSizeXl: '1.5rem',
+    layoutHeaderHeight: '4rem',
+    layoutSubheaderHeight: '2.75rem',
   });
 });

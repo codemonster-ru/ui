@@ -48,6 +48,57 @@ const items = [{ value: 'dashboard', label: 'Dashboard', href: '/dashboard' }];
 </template>
 ```
 
+## Authentication and error layouts
+
+`CmAuthLayout` renders a `main` with optional `brand`, `title`, `description`, and `footer` slots
+around the default slot. Use the default slot for an application-owned form. `CmErrorLayout`
+renders a `section` with `code`, `title`, `description`, and `actions` slots. Both accept `as`,
+`title`, `description`, `fillViewport`, `centered`, and `surface`. `CmErrorLayout` also accepts
+a string or numeric `code`. Slots take precedence over heading and description props.
+
+```vue
+<script setup lang="ts">
+import { CmAuthLayout, CmErrorLayout } from '@codemonster-ru/ui-layouts';
+</script>
+
+<template>
+  <CmAuthLayout title="Sign in">
+    <template #brand>Acme</template>
+    <form action="/sessions" method="post">
+      <label for="email">Email</label>
+      <input id="email" type="email" name="email" autocomplete="email" required />
+      <button type="submit">Continue</button>
+    </form>
+    <template #footer><a href="/help">Account help</a></template>
+  </CmAuthLayout>
+
+  <CmErrorLayout :code="404" title="Page not found">
+    <template #actions><a href="/">Go home</a></template>
+  </CmErrorLayout>
+</template>
+```
+
+Use the same headings, landmarks, and styling classes in [Auth page HTML](../../contracts/auth-layout/cases/default.html)
+or [Error page HTML](../../contracts/error-layout/cases/default.html). Load `styles.css` or
+`page-layouts.css` from `@codemonster-ru/ui-css` with the shared tokens. The layout itself requires
+no JavaScript.
+
+## Standalone shell regions
+
+Each region renders a semantic HTML element, forwards standard attributes, renders a default
+slot, and accepts `as` to change its root when needed for the page's landmark structure.
+
+| Vue component   | Default element and modifiers              | Vanilla HTML                                                    |
+| --------------- | ------------------------------------------ | --------------------------------------------------------------- |
+| `CmHeaderArea`  | `header` with `sticky` enabled             | [Header area](../../contracts/header-area/cases/default.html)   |
+| `CmSidebarArea` | `aside` with default or plain `appearance` | [Sidebar area](../../contracts/sidebar-area/cases/default.html) |
+| `CmContentArea` | `main` with `padded` enabled               | [Content area](../../contracts/content-area/cases/default.html) |
+| `CmAsideArea`   | `aside` with default or plain `appearance` | [Aside area](../../contracts/aside-area/cases/default.html)     |
+| `CmFooterArea`  | `footer`                                   | [Footer area](../../contracts/footer-area/cases/default.html)   |
+
+Use `@codemonster-ru/ui-css/layout-areas.css` for these regions when you do not already load the
+full stylesheet. The corresponding historical `Vf*` names also resolve in `ui-layouts`.
+
 Vanilla markup: [admin-layout HTML](../../contracts/admin-layout/cases/default.html).
 
 ## AdminShell

@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "name": "HeaderArea",
+  "slug": "header-area",
+  "description": "A header landmark with optional sticky placement.",
+  "props": {
+    "as": {
+      "type": "string",
+      "required": false,
+      "default": "header"
+    },
+    "sticky": {
+      "type": "boolean",
+      "required": false,
+      "default": true
+    }
+  },
+  "slots": {
+    "default": {
+      "required": true
+    }
+  },
+  "events": {},
+  "states": ["default"]
+}

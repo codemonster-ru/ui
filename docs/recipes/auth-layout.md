@@ -1,8 +1,8 @@
 # Authentication page recipe
 
-This recipe replaces `VfAuthLayout` with semantic application markup and the stable Container,
-Stack, Section, and Button components. It is intentionally not a `CmAuthLayout`: the application
-owns its product mark, page heading, form action, account links, and choice of page landmark.
+This recipe uses Container, Stack, Section, and Button to give the application control over
+the page markup. Choose the published `CmAuthLayout` for the established brand, heading, form,
+and account links frame. See the [layout guide](../components/layouts.md).
 
 Load `@codemonster-ru/ui-tokens/tokens.css` and `@codemonster-ru/ui-css/styles.css` once at the
 application entry point. Keep the small recipe classes with the application shell.
