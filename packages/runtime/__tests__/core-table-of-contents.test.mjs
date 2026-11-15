@@ -42,4 +42,5 @@ test('only a same-document link names a target', () => {
   assert.equal(resolveAnchorTargetId('#caf%C3%A9'), 'café');
   assert.equal(resolveAnchorTargetId('/guide'), null);
   assert.equal(resolveAnchorTargetId('#'), null);
+  assert.equal(resolveAnchorTargetId('#bad%zz'), null);
 });

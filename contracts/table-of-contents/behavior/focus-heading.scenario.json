@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "table-of-contents-focus-heading",
+  "case": "table-of-contents-offset",
+  "steps": [
+    { "action": "press", "target": "link", "key": "Enter" },
+    { "expect": "focus", "target": "install-heading", "value": true }
+  ]
+}

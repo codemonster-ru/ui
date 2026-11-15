@@ -29,6 +29,7 @@ export function behaviorTarget(slug: string, name: string): HTMLElement | null {
   if (!root) return null;
   if (name === 'root') return root.querySelector('.cm-' + slug);
   if (name === 'form' || name === 'outside') return document.querySelector('#behavior-' + name);
+  if (name === 'install-heading') return document.getElementById('install');
   if (name === 'control') return root.querySelector('input:not([type=hidden]), textarea, input[type=hidden]');
   if (name === 'trigger' && ['date-picker', 'select'].includes(slug))
     return root.querySelector('button[role=combobox]');
@@ -44,7 +45,7 @@ export function behaviorTarget(slug: string, name: string): HTMLElement | null {
   return items.at(ordinal[index] ?? 0) ?? null;
 }
 
-export function initializeBehavior(root: HTMLElement) {
+export function initializeBehavior(root: HTMLElement, slug: string) {
   const form = document.createElement('form');
   form.id = 'behavior-form';
   form.addEventListener('submit', (event) => event.preventDefault());
@@ -54,6 +55,13 @@ export function initializeBehavior(root: HTMLElement) {
   outside.id = 'behavior-outside';
   outside.textContent = 'Outside';
   form.after(outside);
+  if (slug === 'table-of-contents') {
+    const heading = document.createElement('h2');
+    heading.id = 'install';
+    heading.tabIndex = -1;
+    heading.textContent = 'Installation';
+    outside.after(heading);
+  }
   for (const name of ['input', 'change']) root.addEventListener(name, () => recordEvent(name));
   for (const name of [
     'open-change',

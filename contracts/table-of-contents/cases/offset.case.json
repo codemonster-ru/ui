@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "table-of-contents-offset",
+  "description": "Navigation that scrolls smoothly and leaves space for a sticky header.",
+  "props": {
+    "items": [{ "id": "install", "label": "Installation" }],
+    "scrollOffset": 64,
+    "smooth": true
+  },
+  "slots": {}
+}

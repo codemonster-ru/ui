@@ -38,6 +38,7 @@ export type { ThemeChangeDetail } from './theme-switch.js';
 export type { PopoverOpenChangeDetail } from './popover.js';
 export { CmTabsController, createCmTabsController } from './tabs.js';
 export type { TabsValueChangeDetail } from './tabs.js';
+export { CmTableOfContentsController, createCmTableOfContentsController } from './table-of-contents.js';
 export { CmTooltipController, createCmTooltipController } from './tooltip.js';
 export { CmStepperController, createCmStepperController } from './stepper.js';
 export type { StepperValueChangeDetail } from './stepper.js';

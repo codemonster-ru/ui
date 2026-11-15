@@ -58,6 +58,10 @@ export function resolveAnchorTargetId(href: string): string | null {
     return null;
   }
 
-  const id = decodeURIComponent(href.slice(1));
-  return id === '' ? null : id;
+  try {
+    const id = decodeURIComponent(href.slice(1));
+    return id === '' ? null : id;
+  } catch {
+    return null;
+  }
 }
