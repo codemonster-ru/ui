@@ -13,6 +13,7 @@ import type {
   VfDataTableSort,
 } from './historical-data-table.types';
 import { tableRowField } from './row-field';
+import { useDataTableColumnReorder } from './use-column-reorder';
 
 defineOptions({ inheritAttrs: false });
 const props = withDefaults(defineProps<VfDataTableProps<Row>>(), {
@@ -31,6 +32,8 @@ const emit = defineEmits<{
   'update:page': [page: number];
   'update:pageSize': [size: number];
   'update:sort': [sort: VfDataTableSort[]];
+  'update:columnOrder': [order: string[]];
+  'column-reorder-end': [order: string[]];
   'update:columnWidths': [widths: CmDataTableColumnWidths];
   'column-resize-end': [widths: CmDataTableColumnWidths];
 }>();
@@ -54,6 +57,18 @@ const columnByKey = computed(() => new Map(props.columns.map((column) => [column
 const columns = computed(() =>
   props.columns.map((column) => ({ ...column, header: column.header?.trim() || column.key })),
 );
+const reorder = useDataTableColumnReorder({
+  columns,
+  order: () => props.columnOrder,
+  defaultOrder: props.defaultColumnOrder,
+  visibleKeys: () => props.visibleColumnKeys,
+  enabled: () => props.reorderableColumns,
+  labels: () => props.labels,
+  commit(order) {
+    emit('update:columnOrder', [...order]);
+    emit('column-reorder-end', order);
+  },
+});
 const currentPageSize = computed(() => wholePage(props.pageSize ?? pageSize.value));
 const suppliedRowCount = computed(() => props.rows?.length ?? 0);
 const manualTotalRows = computed(
@@ -77,7 +92,10 @@ const native = computed(() => ({
   columnDividers: props.columnDividers,
   stickyHeader: props.stickyHeader,
   visibleColumnKeys: props.visibleColumnKeys,
-  columnOrder: props.columnOrder ?? props.defaultColumnOrder,
+  columnOrder: reorder.order.value,
+  headerInteraction: props.reorderableColumns
+    ? { attrs: reorder.headerAttrs, announcement: reorder.announcement.value }
+    : undefined,
   columnWidths: props.columnWidths,
   defaultColumnWidths: props.defaultColumnWidths,
   resizableColumns: props.resizableColumns,

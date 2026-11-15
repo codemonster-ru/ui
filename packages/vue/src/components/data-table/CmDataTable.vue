@@ -46,6 +46,7 @@ import type {
   CmDataTableRowKeyResolver,
   CmDataTableSort,
   CmDataTableSortDirection,
+  DataTableHeaderInteraction,
 } from './data-table.types';
 
 defineOptions({ inheritAttrs: false });
@@ -68,6 +69,7 @@ const props = defineProps({
   stickyHeader: Boolean,
   visibleColumnKeys: { type: Array as PropType<readonly string[] | null>, default: null },
   columnOrder: { type: Array as PropType<readonly string[] | null>, default: null },
+  headerInteraction: { type: Object as PropType<DataTableHeaderInteraction>, default: undefined },
   columnWidths: { type: Object as PropType<Readonly<CmDataTableColumnWidths> | null>, default: null },
   defaultColumnWidths: { type: Object as PropType<Readonly<CmDataTableColumnWidths>>, default: () => ({}) },
   resizableColumns: Boolean,
@@ -330,6 +332,7 @@ watch([visibleColumns, () => props.resizableColumns], () => {
   drag = null;
   previewColumnWidths.value = null;
   resizeValues.value = {};
+  void nextTick(measureVisibleResizeValues);
 });
 
 assertCm(idPattern.test(props.id), 'DataTable id must use lowercase kebab-case.');
@@ -607,11 +610,13 @@ function updateResizeValues(event: Event): void {
   if (event.currentTarget instanceof HTMLElement) measureResizeValues(event.currentTarget);
 }
 
-onMounted(() => {
+function measureVisibleResizeValues(): void {
   for (const handle of tableRef.value?.querySelectorAll<HTMLElement>('[data-cm-data-table-resize]') ?? []) {
     if (handle.closest('table') === tableRef.value) measureResizeValues(handle);
   }
-});
+}
+
+onMounted(measureVisibleResizeValues);
 
 function reportColumnWidths(boundary: CmDataTableResizeBoundary, delta: number, preview: boolean): void {
   const widths = { ...activeColumnWidths.value, ...resizedDataTableWidths(boundary, delta) };
@@ -825,7 +830,7 @@ useCmHydrated();
             <th
               v-for="(column, index) in visibleColumns"
               :key="column.key"
-              v-bind="cellAttrs(column)"
+              v-bind="{ ...cellAttrs(column), ...props.headerInteraction?.attrs(column, index, visibleColumns) }"
               :scope="column.scope ?? 'col'"
               :aria-sort="column.sortable ? columnAriaSort(column) : undefined"
             >
@@ -959,6 +964,9 @@ useCmHydrated();
           <slot name="footer" />
         </tfoot>
       </table>
+      <span v-if="props.headerInteraction" class="cm-data-table__reorder-status" aria-live="polite">{{
+        props.headerInteraction.announcement
+      }}</span>
       <div v-if="maskLoading" class="cm-data-table__loading-mask" role="status" :aria-label="props.loadingText">
         <slot name="loading">
           <CmProgressSpinner :label="props.loadingText" aria-hidden="true" />

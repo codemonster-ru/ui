@@ -61,6 +61,10 @@ authoritative on rerender, while Vanilla applications are authoritative when rep
 Vue also supports custom contents in the pagination region. The `pagination` slot receives
 `page`, `pageCount`, `pageSize`, `pageSizeOptions`, `totalRows`, and `renderedRowCount`.
 
+The historical Vue adapter supports header keyboard and pointer reordering within each pin group.
+`update:columnOrder` and `column-reorder-end` send the complete normalized column key array on
+commit. Vanilla applications keep authoring the column order in HTML.
+
 For row details in Vanilla, place a native `button type="button"` with `data-cm-data-table-expand`,
 `aria-expanded`, and `aria-controls` in the data row. Give the details `tr` the corresponding ID
 and `cm-data-table__expanded-row`, with both rows in the same table body. Mark collapsed details

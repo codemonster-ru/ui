@@ -64,7 +64,8 @@ const cases = [
     entry: "export { VfDataTable } from '@codemonster-ru/ui-vue/historical';\n",
     fileName: 'ui-vue-historical-data-table',
     forbiddenMarkers: [...unrelatedRuntimeMarkers, unrelatedIcon, overlayTrigger],
-    maxGzipBytes: 14 * 1024,
+    // Includes numbered pagination and column reordering. Measured 15.61 KiB without controllers.
+    maxGzipBytes: 16 * 1024,
     name: 'ui-vue historical DataTable without DOM controllers',
   },
   {
@@ -157,8 +158,8 @@ const cases = [
     fileName: 'ui-vue-historical',
     forbiddenMarkers: unrelatedRuntimeMarkers,
     includesPositioning: true,
-    // Including the native DataTable renderer and opt-in historical model adapters (76.05 KiB measured).
-    maxGzipBytes: 79 * 1024,
+    // Includes the native renderer and historical adapters, with DataTable paging and reorder (79.76 KiB measured).
+    maxGzipBytes: 80 * 1024,
     name: 'ui-vue opt-in historical namespace',
   },
   {

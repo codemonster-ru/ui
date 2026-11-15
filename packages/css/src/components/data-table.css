@@ -70,6 +70,22 @@
   border-color: var(--cm-color-focus-ring);
 }
 
+.cm-data-table__head th[data-cm-data-table-reorder-column][tabindex] {
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.cm-data-table__head th[data-cm-data-table-reordering] {
+  background: var(--cm-color-background-surface-active);
+  cursor: grabbing;
+}
+
+.cm-data-table__head th[data-cm-data-table-reorder-column]:focus-visible {
+  outline: var(--cm-focus-ring-width) solid var(--cm-color-focus-ring);
+  outline-offset: calc(-1 * var(--cm-focus-ring-width));
+}
+
 .cm-data-table__caption {
   padding: var(--cm-field-padding-lg);
   border-block-end: var(--cm-border-width) solid var(--cm-color-border-divider);
@@ -173,7 +189,8 @@
   min-block-size: var(--cm-icon-size-md);
 }
 
-.cm-data-table__loading-status {
+.cm-data-table__loading-status,
+.cm-data-table__reorder-status {
   position: absolute;
   overflow: hidden;
   inline-size: 1px;

@@ -580,6 +580,7 @@ for (const [slug, approved] of [
       'cm-data-table__sort-indicator',
       'cm-data-table__sort-priority',
       'cm-data-table__column-resizer',
+      'cm-data-table__reorder-status',
       'cm-data-table__row--selected',
       'cm-data-table__state',
       'cm-data-table__pagination',

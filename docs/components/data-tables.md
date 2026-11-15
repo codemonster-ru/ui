@@ -174,6 +174,19 @@ DataTable controller. It updates the header and body cell widths and dispatches
 `cm:data-table-column-widths-change` and `cm:data-table-column-resize-end`, each with
 `detail.columnWidths`.
 
+### Reordering columns in Vue
+
+Set `reorderableColumns` on `VfDataTable`. Drag a header or focus it and press Left or Right
+Arrow. A drag previews the order and commits on release. Escape cancels the preview.
+Columns move within their start-pinned, unpinned, or end-pinned group. A column with
+`reorderable: false` cannot initiate a move. Other columns in the same group can pass it.
+
+Use `defaultColumnOrder` for the initial order or `v-model:column-order` to own it.
+`column-reorder-end` reports the full key array, including hidden columns, once per completed
+move. Use `labels.reorderColumn`, `labels.reorderColumnInstructions`, and `labels.columnMoved`
+for accessible names, instructions, and announcements. Sort buttons and resize separators have
+their own controls. In Vanilla HTML, the application owns changes to the authored column order.
+
 ### Pinning columns
 
 Set a column's `pinned` value to `start` or `end` to keep it in view during horizontal scrolling.

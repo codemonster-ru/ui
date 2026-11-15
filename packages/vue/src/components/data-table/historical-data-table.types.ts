@@ -43,6 +43,9 @@ export interface VfDataTableLabels {
   previousPage: string;
   nextPage: string;
   selectAllRows: string;
+  reorderColumn: (column: string, position: number, columnCount: number) => string;
+  reorderColumnInstructions: string;
+  columnMoved: (column: string, position: number, columnCount: number) => string;
 }
 
 export interface VfDataTableProps<Row extends VfDataTableRow = VfDataTableRow> extends Omit<
@@ -67,6 +70,7 @@ export interface VfDataTableProps<Row extends VfDataTableRow = VfDataTableRow> e
   defaultPage?: number;
   defaultPageSize?: number;
   defaultColumnOrder?: readonly string[];
+  reorderableColumns?: boolean;
   sort?: readonly VfDataTableSort[];
   defaultSort?: readonly VfDataTableSort[];
   labels?: Partial<VfDataTableLabels>;
