@@ -29,6 +29,7 @@ export interface CmMenuBarProps {
 
 export interface VfMenuBarProps {
   items: readonly VfNavMenuItem[];
+  openPath?: readonly string[] | null;
   modelValue?: string;
   defaultValue?: string;
   variant?: CmMenuBarVariant;
