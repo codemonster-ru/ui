@@ -1,7 +1,7 @@
 import { CmRuntime, createCmTabsController } from '@codemonster-ru/ui-runtime';
 import { renderToString } from '@vue/server-renderer';
 import { mount } from '@vue/test-utils';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createSSRApp, h, nextTick } from 'vue';
 import CmTabs from './CmTabs.vue';
 
@@ -117,6 +117,46 @@ describe('CmTabs under a running CmRuntime', () => {
     } finally {
       app.unmount();
       runtime.stop();
+    }
+  });
+
+  it('hydrates overflow controls and the moving indicator after a browser-measured runtime enhancement', async () => {
+    const container = document.createElement('div');
+    document.body.append(container);
+    const view = { render: () => h(CmTabs, { id: 'account', items, scrollControls: true }) };
+    container.innerHTML = await renderToString(createSSRApp(view));
+    const list = container.querySelector<HTMLElement>('[role="tablist"]')!;
+    const indicator = list.querySelector<HTMLElement>('.cm-tabs__indicator')!;
+    const end = container.querySelector<HTMLButtonElement>('[data-cm-tabs-scroll="end"]')!;
+    Object.defineProperties(list, { clientWidth: { value: 160 }, scrollWidth: { value: 240 } });
+    for (const tab of list.querySelectorAll<HTMLElement>('[role="tab"]')) {
+      tab.getBoundingClientRect = () => new DOMRect(0, 0, 120, 36);
+    }
+    expect(end.hidden).toBe(true);
+    expect(indicator.hidden).toBe(true);
+    expect(indicator.hasAttribute('style')).toBe(false);
+    const runtime = startRuntime();
+    expect(end.hidden).toBe(false);
+    expect(indicator.hidden).toBe(false);
+    expect(indicator.style.width).toBe('120px');
+
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const app = createSSRApp(view);
+    try {
+      app.mount(container);
+      await nextTick();
+      expect(warn).not.toHaveBeenCalled();
+      expect(error).not.toHaveBeenCalled();
+      expect(container.firstElementChild?.hasAttribute('data-cm-hydrated')).toBe(true);
+      expect(end.hidden).toBe(false);
+      expect(indicator.hidden).toBe(false);
+      expect(indicator.style.width).toBe('120px');
+    } finally {
+      app.unmount();
+      runtime.stop();
+      warn.mockRestore();
+      error.mockRestore();
     }
   });
 });
