@@ -55,6 +55,7 @@ export type {
 export { default as CmDatePicker } from './components/date-picker/CmDatePicker.vue';
 export type {
   CmDatePickerLabels,
+  CmDatePickerPlacement,
   CmDatePickerProps,
   CmDatePickerSize,
   CmDatePickerValue,

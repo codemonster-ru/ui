@@ -16,6 +16,13 @@ Page Down change month. Movement respects the date bounds. Escape closes the cal
 returns focus to the trigger. An outside click or focus move closes the calendar without
 moving focus back.
 
+The calendar prefers `bottom-start` placement and can flip above the trigger near an edge.
+Choose `bottom-end` to align its trailing edge. Vue `teleportTo` accepts a selector or
+element and `disableTeleport` keeps the calendar inline. Vanilla accepts
+`data-cm-date-picker-placement` and `data-cm-date-picker-teleport-to` on the trigger.
+A `body` portal inside an open native dialog stays in that dialog. The named inputs and
+combobox remain in their original form.
+
 `clearable` adds an action named by `clearLabel`, which defaults to `Clear date`. It is hidden
 while empty and omitted for disabled or readonly controls. Activating it commits the empty
 value and returns focus to the trigger. Vue reports `update:modelValue` and `valueChange`.

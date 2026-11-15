@@ -1,6 +1,7 @@
 import type { CmCalendarLocale, CmCalendarWeekday } from '@codemonster-ru/ui-runtime/core';
 
 export type CmDatePickerSize = 'sm' | 'md' | 'lg';
+export type CmDatePickerPlacement = 'bottom-start' | 'bottom-end';
 export interface CmDatePickerLabels {
   calendar?: string;
   clear?: string;
@@ -43,6 +44,9 @@ export interface CmDatePickerProps<Multiple extends boolean = false, Range exten
   readonly?: boolean;
   required?: boolean;
   clearable?: boolean;
+  placement?: CmDatePickerPlacement;
+  teleportTo?: string | HTMLElement | null | false;
+  disableTeleport?: boolean;
   clearLabel?: string;
   previousMonthLabel?: string;
   nextMonthLabel?: string;

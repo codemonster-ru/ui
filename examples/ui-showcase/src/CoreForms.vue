@@ -43,6 +43,7 @@ const releaseWindow = ref(['2026-08-13', '2026-08-20']);
 const billingMonth = ref('2026-08');
 const licenseYear = ref('2026');
 const releaseTime = ref('2026-08-13T09:30');
+const portalDate = ref('2026-08-13');
 const fieldsetPlan = ref('pro');
 const floatingVariants = ['in', 'on', 'over'] as const;
 const floatingStates = [
@@ -210,6 +211,12 @@ const states = [
       <p>
         Model: <code>{{ releaseTime || 'empty' }}</code>
       </p>
+    </div>
+    <div class="core-matrix-cell">
+      <h4>Calendar portal</h4>
+      <CmField v-slot="{ controlId }" control-id="core-calendar-portal" label="Portal date">
+        <CmDatePicker :id="controlId" v-model="portalDate" placement="bottom-end" teleport-to="body" />
+      </CmField>
     </div>
     <div class="core-matrix-cell">
       <h4>States</h4>

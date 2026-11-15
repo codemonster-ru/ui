@@ -13,6 +13,14 @@
     "yearPicker": { "type": "boolean", "required": false, "default": false },
     "showTime": { "type": "boolean", "required": false, "default": false },
     "minuteStep": { "type": "number", "required": false, "default": 1 },
+    "placement": {
+      "type": "enum",
+      "required": false,
+      "default": "bottom-start",
+      "values": ["bottom-start", "bottom-end"]
+    },
+    "teleportTo": { "type": "string", "required": false },
+    "disableTeleport": { "type": "boolean", "required": false, "default": false },
     "size": { "type": "enum", "required": false, "default": "md", "values": ["sm", "md", "lg"] },
     "invalid": { "type": "boolean", "required": false, "default": false },
     "disabled": { "type": "boolean", "required": false, "default": false },

@@ -16,6 +16,44 @@ import { CmRuntime, createCmDatePickerController } from '../dist/index.js';
 
 const markup = readFileSync(new URL('../../../contracts/date-picker/cases/default.html', import.meta.url), 'utf8');
 
+test('moves only the calendar into an enclosing dialog and keeps portal interactions live', (context) => {
+  const { window } = new JSDOM(`<dialog open><form>${markup}</form></dialog>`, { pretendToBeVisual: true });
+  const { document } = window;
+  const dialog = document.querySelector('dialog');
+  const form = document.querySelector('form');
+  const root = document.querySelector('.cm-date-picker-wrap');
+  const trigger = root.querySelector('.cm-date-picker');
+  const calendar = root.querySelector('.cm-date-picker__calendar');
+  root.querySelector('input').value = '2026-08-13';
+  trigger.dataset.cmDatePickerPlacement = 'bottom-end';
+  trigger.dataset.cmDatePickerTeleportTo = 'body';
+  const runtime = new CmRuntime().register('date-picker', createCmDatePickerController);
+  context.after(() => {
+    runtime.stop();
+    window.close();
+  });
+  runtime.start(document);
+
+  const press = (target, key) => target.dispatchEvent(new window.KeyboardEvent('keydown', { bubbles: true, key }));
+  press(trigger, 'ArrowDown');
+  assert.equal(calendar.parentElement, dialog);
+  assert.equal(calendar.hasAttribute('data-cm-date-picker-portaled'), true);
+  assert.equal(document.activeElement.dataset.cmDatePickerValue, '2026-08-13');
+  press(document.activeElement, 'ArrowRight');
+  assert.equal(document.activeElement.dataset.cmDatePickerValue, '2026-08-14');
+  document.activeElement.click();
+  assert.equal(new window.FormData(form).get('launch_date'), '2026-08-14');
+  assert.equal(calendar.parentElement, root);
+  assert.equal(calendar.hidden, true);
+  assert.equal(document.activeElement, trigger);
+
+  trigger.click();
+  assert.equal(calendar.parentElement, dialog);
+  runtime.stop();
+  assert.equal(calendar.parentElement, root);
+  assert.equal(calendar.hasAttribute('data-cm-date-picker-portaled'), false);
+});
+
 test('calendar key targets clamp shorter months and follow the direction and start of the week', () => {
   assert.equal(calendarKeyTarget('2024-01-31', 'PageDown'), '2024-02-29');
   assert.equal(calendarKeyTarget('2026-08-13', 'Home', 1), '2026-08-10');
