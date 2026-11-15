@@ -13,7 +13,7 @@
       "type": "enum",
       "required": false,
       "default": "ghost",
-      "values": ["primary", "secondary", "danger", "ghost"],
+      "values": ["primary", "secondary", "success", "info", "warn", "help", "danger", "contrast", "ghost"],
       "description": "Visual action emphasis."
     },
     "size": {

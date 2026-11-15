@@ -56,6 +56,46 @@
   color: var(--cm-color-icon-primary);
 }
 
+.cm-icon-button--success {
+  --cm-icon-button-hover-background: var(--cm-color-status-success-hover-background);
+  --cm-icon-button-active-background: var(--cm-color-status-success-active-background);
+
+  background: var(--cm-color-status-success-solid-background);
+  color: var(--cm-color-status-success-solid-foreground);
+}
+
+.cm-icon-button--info {
+  --cm-icon-button-hover-background: var(--cm-color-status-info-hover-background);
+  --cm-icon-button-active-background: var(--cm-color-status-info-active-background);
+
+  background: var(--cm-color-status-info-solid-background);
+  color: var(--cm-color-status-info-solid-foreground);
+}
+
+.cm-icon-button--warn {
+  --cm-icon-button-hover-background: var(--cm-color-status-warning-hover-background);
+  --cm-icon-button-active-background: var(--cm-color-status-warning-active-background);
+
+  background: var(--cm-color-status-warning-solid-background);
+  color: var(--cm-color-status-warning-solid-foreground);
+}
+
+.cm-icon-button--help {
+  --cm-icon-button-hover-background: var(--cm-color-status-help-hover-background);
+  --cm-icon-button-active-background: var(--cm-color-status-help-active-background);
+
+  background: var(--cm-color-status-help-solid-background);
+  color: var(--cm-color-status-help-solid-foreground);
+}
+
+.cm-icon-button--contrast {
+  --cm-icon-button-hover-background: var(--cm-color-background-inverse-hover);
+  --cm-icon-button-active-background: var(--cm-color-background-inverse-active);
+
+  background: var(--cm-color-background-inverse);
+  color: var(--cm-color-icon-inverse);
+}
+
 .cm-icon-button:disabled {
   border-color: var(--cm-color-border-disabled);
   background: var(--cm-color-background-surface-disabled);
@@ -105,6 +145,26 @@
   background: var(--cm-color-status-danger-active-background);
 }
 
+:is(
+    .cm-icon-button--success,
+    .cm-icon-button--info,
+    .cm-icon-button--warn,
+    .cm-icon-button--help,
+    .cm-icon-button--contrast
+  ):hover:not(:disabled) {
+  background: var(--cm-icon-button-hover-background);
+}
+
+:is(
+    .cm-icon-button--success,
+    .cm-icon-button--info,
+    .cm-icon-button--warn,
+    .cm-icon-button--help,
+    .cm-icon-button--contrast
+  ):active:not(:disabled) {
+  background: var(--cm-icon-button-active-background);
+}
+
 .cm-icon-button:focus-visible {
   border-color: var(--cm-color-border-focus);
   outline: none;
@@ -146,5 +206,11 @@
 
   .cm-icon-button:focus-visible {
     outline-color: Highlight;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cm-icon-button {
+    transition: none;
   }
 }

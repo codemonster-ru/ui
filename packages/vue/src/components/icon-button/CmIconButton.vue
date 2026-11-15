@@ -2,11 +2,11 @@
 import { computed, useAttrs, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
+import { buttonVariants } from '../button/button.types';
 import type { CmIconButtonSize, CmIconButtonType, CmIconButtonVariant } from './icon-button.types';
 
 defineOptions({ inheritAttrs: false });
 
-const variants: readonly CmIconButtonVariant[] = ['primary', 'secondary', 'danger', 'ghost'];
 const sizes: readonly CmIconButtonSize[] = ['sm', 'md', 'lg'];
 const types: readonly CmIconButtonType[] = ['button', 'submit', 'reset'];
 
@@ -19,7 +19,7 @@ const props = defineProps({
   variant: {
     type: String as PropType<CmIconButtonVariant>,
     default: 'ghost',
-    validator: (value: string) => ['primary', 'secondary', 'danger', 'ghost'].includes(value),
+    validator: (value: CmIconButtonVariant) => buttonVariants.includes(value),
   },
   size: {
     type: String as PropType<CmIconButtonSize>,
@@ -35,7 +35,7 @@ const props = defineProps({
 });
 
 const attrs = useAttrs();
-const variant = computed(() => (variants.includes(props.variant) ? props.variant : 'ghost'));
+const variant = computed(() => (buttonVariants.includes(props.variant) ? props.variant : 'ghost'));
 const size = computed(() => (sizes.includes(props.size) ? props.size : 'md'));
 const type = computed(() => (types.includes(props.type) ? props.type : 'button'));
 const classes = computed(() =>

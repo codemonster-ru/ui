@@ -1,4 +1,6 @@
-export type CmIconButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost';
+import type { CmButtonVariant } from '../button/button.types';
+
+export type CmIconButtonVariant = CmButtonVariant;
 
 export type CmIconButtonSize = 'sm' | 'md' | 'lg';
 
