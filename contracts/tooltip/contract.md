@@ -4,18 +4,24 @@ Status: Active
 
 Component: `Tooltip`
 
-Tooltip supplies brief non-interactive content for a native button trigger. `id` is a stable prefix,
-`label` is the trigger's escaped fallback content, and `content` is escaped tooltip fallback text.
-Trusted `trigger` and `content` slots can replace those visible fallbacks while the component retains
-the native button and tooltip semantics. The trigger references the `role="tooltip"` region through
-`aria-describedby`. `placement` is
-`top`, `bottom`, `start`, or `end` and controls only a finite CSS modifier.
+Tooltip supplies brief non-interactive content for a native button or an authored trigger. In
+Vue, `label` supplies the fallback button text and accessible name. The `trigger` slot
+replaces that button's visible contents. Supply a single focusable element in the default slot to
+use your own trigger. For component triggers, the root element must accept HTML attributes.
+`content`, `text`, or the trusted `content` slot supplies the tooltip body. A Vue tooltip can
+generate its ID. Vanilla markup must supply a unique ID and reference it on the trigger with
+`aria-describedby`. Give an authored trigger the `cm-tooltip__trigger` class and the
+`data-cm-tooltip-custom-trigger` attribute to retain its styling.
 
-Rich tooltip content remains non-interactive; links and controls are invalid even when supplied by
-a trusted slot. Hover or focus shows the tooltip after the optional `delay` (`none`, `short`, or `long`). Pointer
-exit or focus exit hides it. Escape hides it while preserving trigger focus. Tooltip content cannot
-contain interactive controls, is never required to operate the trigger, and is not exposed only on
-hover. The panel remains in the DOM and the shared runtime owns its `hidden` state for Vanilla HTML; Vue
-owns the same behavior directly. `defaultVisible` supplies only the initial render state for visual
-examples and server-authored introductions; interaction remains authoritative afterward. Tooltip
-has no controlled-open API or selection event.
+`placement` supports `top`, `bottom`, `start`, and `end`. Hover or focus shows the tooltip
+after `delay` (`none`, `short`, or `long`). A finite nonnegative `openDelay` takes
+precedence. Use `data-cm-tooltip-open-delay` for the equivalent Vanilla setting. The tooltip
+closes when pointer and focus both leave, or when Escape is pressed on the trigger. Escape keeps
+the trigger focused. The panel remains in the DOM and `hidden` tracks whether it is visible.
+`defaultVisible` sets only the initial render state.
+
+The visible tooltip can be positioned in another container. Use `teleportTo` with a selector or
+element in Vue, or `data-cm-tooltip-teleport-to` with a selector in Vanilla. A `body` target
+inside an open dialog keeps the tooltip in that dialog. Vue `disableTeleport`, `null`, or
+`false` keeps it inline. The historical `VfTooltip` Vue export defaults to an 80 ms delay, top
+placement, and a body target, and accepts the default trigger and named content slots.

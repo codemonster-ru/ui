@@ -23,10 +23,12 @@ Individual styles are also available from the `dialog.css`, `drawer.css`, `dropd
   actions. The default slot receives `{ open, close }`. The `trigger` slot receives
   `{ open, disabled, toggle }` and stays inside the labelled button. Use `variant="pills"`
   for highlighted active items and `closeOnSelect=false` to keep the menu open after selection.
-- `Tooltip` requires `id`, trigger `label`, and fallback `content`. Trusted `trigger` and `content`
-  slots can replace their visible content, but tooltip content must stay non-interactive.
-  `placement` is `top`, `bottom`, `start`, or `end`; `delay` is `none`, `short`, or `long`.
-  `defaultVisible` is only an initial rendering state, not a controlled API.
+- `Tooltip` accepts an authored focusable trigger in its default slot or renders a button with
+  `label` and optional `trigger` slot content. Use `content`, `text`, or the `content` slot for its
+  non-interactive help. Choose `top`, `bottom`, `start`, or `end` and a named `delay` or an
+  `openDelay` in milliseconds. Use `teleportTo` to position the help outside a clipped ancestor.
+  `defaultVisible` sets the initial rendering state. The Vue `VfTooltip` export uses top placement,
+  an 80 ms delay, and a body portal by default.
 
 ## Vue
 

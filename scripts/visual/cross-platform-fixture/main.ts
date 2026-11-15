@@ -76,9 +76,17 @@ function resolveVueProps(): Record<string, unknown> {
   return { ...props, ...componentCase.attributes };
 }
 
-function staticSlot(contents: string): () => VNodeChild {
+function staticSlot(contents: string, needsElementVNode: boolean): () => VNodeChild {
   const template = document.createElement('template');
   template.innerHTML = contents;
+  if (needsElementVNode) {
+    const element = template.content.firstElementChild;
+    if (!element || template.content.childElementCount !== 1) {
+      throw new Error('A composed fixture trigger requires a single element.');
+    }
+    const attrs = Object.fromEntries([...element.attributes].map(({ name, value }) => [name, value]));
+    return () => h(element.localName, { ...attrs, innerHTML: element.innerHTML });
+  }
   const nodeCount = template.content.childNodes.length;
   return () => createStaticVNode(contents, Math.max(1, nodeCount));
 }
@@ -90,7 +98,10 @@ if (behavior) initializeBehavior(root, componentSlug);
 
 if (platform === 'vue') {
   const slots = Object.fromEntries(
-    Object.entries(componentCase.slots).map(([name, contents]) => [name, staticSlot(contents)]),
+    Object.entries(componentCase.slots).map(([name, contents]) => [
+      name,
+      staticSlot(contents, componentSlug === 'tooltip' && name === 'default'),
+    ]),
   );
   const props = reactive(resolveVueProps());
   if (behavior) {
