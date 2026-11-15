@@ -76,8 +76,7 @@ export type { CmGridElement, CmGridProps } from './components/grid/grid.types';
 export { default as CmGroupBox } from './components/group-box/CmGroupBox.vue';
 export { default as VfGroupBox } from './components/group-box/CmGroupBox.vue';
 export { default as CmIcon } from './components/icon/CmIcon.vue';
-export { default as VueIconify } from './components/icon/VueIconify.vue';
-export type { CmIconFamily, CmIconGeometry, CmIconVariant, VueIconifyProps } from './components/icon/icon.types';
+export type { CmIconFamily, CmIconGeometry, CmIconVariant } from './components/icon/icon.types';
 export { default as CmIconButton } from './components/icon-button/CmIconButton.vue';
 export type {
   CmIconButtonProps,
@@ -101,8 +100,6 @@ export type {
 export { default as CmMenuBar } from './components/menu-bar/CmMenuBar.vue';
 export type { CmMenuBarItem, CmMenuBarProps } from './components/menu-bar/menu-bar.types';
 export { default as CmMenu } from './components/menu/CmMenu.vue';
-export { default as VfMenu } from './components/menu/VfMenu.vue';
-export { default as VfMenuItem } from './components/menu/VfMenuItem.vue';
 export type { CmMenuItem, CmMenuItemTone, CmMenuProps } from './components/menu/menu.types';
 export { default as CmNavMenu } from './components/nav-menu/CmNavMenu.vue';
 export type {
@@ -154,7 +151,10 @@ export { default as CmTable } from './components/table/CmTable.vue';
 export type { CmTableDensity, CmTableProps } from './components/table/table.types';
 export { default as CmTag } from './components/tag/CmTag.vue';
 export type { CmTagProps, CmTagTone } from './components/tag/tag.types';
-export { default as CmThemeProvider, default as VfThemeProvider } from './components/theme-provider/CmThemeProvider.vue';
+export {
+  default as CmThemeProvider,
+  default as VfThemeProvider,
+} from './components/theme-provider/CmThemeProvider.vue';
 export { useCmTheme, useCmTheme as useTheme } from './components/theme-provider/use-theme';
 export type { CmThemeContext, CmThemeProviderProps } from './components/theme-provider/use-theme';
 export { default as CmThemeSwitch } from './components/theme-switch/CmThemeSwitch.vue';

@@ -20,9 +20,7 @@ export default defineConfig({
       formats: ['es'],
     },
     rollupOptions: {
-      // The shared core stays external so a consumer using both adapters gets one copy of the
-      // logic rather than an inlined duplicate per adapter.
-      external: ['vue', '@codemonster-ru/ui-runtime/core'],
+      external: ['vue', '@codemonster-ru/ui-runtime/core', '@codemonster-ru/ui-tokens', '@codemonster-ru/ui-vue'],
     },
   },
 });

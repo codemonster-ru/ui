@@ -19,7 +19,14 @@ import {
   CmHeaderArea,
   CmSetupLayout,
   CmSidebarArea,
+  VfContainer,
+  VfGrid,
+  VfInline,
+  VfSection,
+  VfStack,
+  vfBreakpoints,
 } from '../../layouts/dist/index.js';
+import { cmBreakpoints } from '@codemonster-ru/ui-tokens';
 import {
   CmColumnChooser,
   CmGroupBox,
@@ -31,6 +38,16 @@ import {
 } from '../dist/index.js';
 
 const packageDirectory = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+
+test('preserves historical layout primitive exports and the shared breakpoint registry', async () => {
+  const vue = await import('../dist/index.js');
+  assert.equal(VfContainer, vue.CmContainer);
+  assert.equal(VfGrid, vue.CmGrid);
+  assert.equal(VfInline, vue.CmInline);
+  assert.equal(VfSection, vue.CmSection);
+  assert.equal(VfStack, vue.CmStack);
+  assert.equal(vfBreakpoints, cmBreakpoints);
+});
 
 /**
  * The components carried across after the VueForge line, plus the theme switch.

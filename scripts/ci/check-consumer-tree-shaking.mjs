@@ -26,41 +26,69 @@ const domRuntimeMarkers = [
   ['a DOM controller', /controller requires/i],
   ['the positioning engine', /autoUpdate|computePosition/],
 ];
+const unrelatedIcon = ['unused Bell geometry', /vf-duotone-primary-bell/];
+const themeStorage = ['theme storage', /localStorage\.setItem/];
+const themeRuntime = ['theme application runtime', /data-vf-theme-transition/];
+const unrelatedRuntimeMarkers = [...domRuntimeMarkers, themeRuntime, themeStorage];
 
 const cases = [
   {
     entry: "export { CmButton } from '@codemonster-ru/ui-vue';\n",
     fileName: 'ui-vue-button',
-    forbiddenMarkers: domRuntimeMarkers,
+    forbiddenMarkers: unrelatedRuntimeMarkers,
     maxGzipBytes: 3 * 1024,
     name: 'ui-vue CmButton',
   },
   {
     entry: "export { CmTabs } from '@codemonster-ru/ui-vue';\n",
     fileName: 'ui-vue-tabs',
-    forbiddenMarkers: domRuntimeMarkers,
+    forbiddenMarkers: unrelatedRuntimeMarkers,
     maxGzipBytes: 4 * 1024,
     name: 'ui-vue CmTabs with its shared core',
   },
   {
     entry: "export { CmButton, CmDialog, CmTabs } from '@codemonster-ru/ui-vue';\n",
     fileName: 'ui-vue-multiple',
-    forbiddenMarkers: domRuntimeMarkers,
+    forbiddenMarkers: unrelatedRuntimeMarkers,
     maxGzipBytes: 8 * 1024,
     name: 'ui-vue multiple components',
   },
   {
+    entry: "export { CmIcon } from '@codemonster-ru/ui-vue';\nexport { arrowLeft } from '@codemonster-ru/ui-icons';\n",
+    fileName: 'ui-vue-static-icon',
+    forbiddenMarkers: [...unrelatedRuntimeMarkers, unrelatedIcon],
+    maxGzipBytes: 3 * 1024,
+    name: 'ui-vue CmIcon with one static glyph',
+  },
+  {
     entry: "import * as CodeMonsterUiVue from '@codemonster-ru/ui-vue';\nconsole.log(CodeMonsterUiVue);\n",
     fileName: 'ui-vue-full',
-    forbiddenMarkers: domRuntimeMarkers,
-    maxGzipBytes: 32 * 1024,
+    forbiddenMarkers: [...domRuntimeMarkers, themeRuntime, unrelatedIcon],
+    // The theme provider, data table composition, and localized calendar are available here.
+    // The restored namespace measured 35.45 KiB without the opt-in named icon catalogue.
+    maxGzipBytes: 38 * 1024,
     minGzipBytes: 15 * 1024,
     name: 'ui-vue full namespace',
   },
   {
+    entry: "export { CmThemeProvider } from '@codemonster-ru/ui-vue';\n",
+    fileName: 'ui-vue-theme-provider',
+    forbiddenMarkers: [...domRuntimeMarkers, themeRuntime, unrelatedIcon],
+    requiredMarkers: [themeStorage],
+    maxGzipBytes: 3 * 1024,
+    name: 'ui-vue CmThemeProvider with persistence',
+  },
+  {
+    entry: "import * as Historical from '@codemonster-ru/ui-vue/historical';\nconsole.log(Historical);\n",
+    fileName: 'ui-vue-historical',
+    forbiddenMarkers: unrelatedRuntimeMarkers,
+    maxGzipBytes: 32 * 1024,
+    name: 'ui-vue opt-in historical icon and menu namespace',
+  },
+  {
     entry: "import * as CodeMonsterUiCore from '@codemonster-ru/ui-runtime/core';\nconsole.log(CodeMonsterUiCore);\n",
     fileName: 'ui-core-full',
-    forbiddenMarkers: domRuntimeMarkers,
+    forbiddenMarkers: unrelatedRuntimeMarkers,
     maxGzipBytes: 5 * 1024,
     name: 'ui-runtime core subpath',
   },
@@ -68,7 +96,6 @@ const cases = [
 const forbiddenOutput = [
   ['OKLCH palette', /oklch\(/i],
   ['primitive color token graph', /--vf-palette-(?:neutral|primary|success|warning|danger|help)-/],
-  ['theme application runtime', /data-vf-theme-transition|localStorage\.setItem/],
 ];
 
 function formatKiB(bytes) {
@@ -111,6 +138,10 @@ try {
       if (matcher.test(searchableOutput)) {
         throw new Error(`${testCase.name} retained ${description}.`);
       }
+    }
+
+    for (const [description, matcher] of testCase.requiredMarkers ?? []) {
+      if (!matcher.test(searchableOutput)) throw new Error(`${testCase.name} did not retain ${description}.`);
     }
 
     if (testCase.checkForbidden !== false) {

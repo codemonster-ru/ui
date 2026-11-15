@@ -2,14 +2,13 @@ import { flushPromises, mount } from '@vue/test-utils';
 import { defineComponent, h, markRaw } from 'vue';
 import { describe, expect, it, vi } from 'vitest';
 
+import { VfMenu, VfMenuItem } from '../historical';
 import {
   CmBreadcrumbs,
   VfButton,
   VfConfirmDialog,
   VfFormLayout,
   VfGroupBox,
-  VfMenu,
-  VfMenuItem,
   VfPageHeader,
   VfPanel,
   VfSkeletonGate,

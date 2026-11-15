@@ -7,6 +7,7 @@ import type { CmGridElement } from './grid.types';
 defineOptions({ inheritAttrs: false });
 const elements: readonly CmGridElement[] = ['div', 'section', 'ul', 'ol'];
 const props = defineProps({
+  as: String,
   element: {
     type: String as PropType<CmGridElement>,
     default: 'div',
@@ -14,7 +15,7 @@ const props = defineProps({
   },
 });
 const attrs = useAttrs();
-const rootElement = computed(() => (elements.includes(props.element) ? props.element : 'div'));
+const rootElement = computed(() => props.as ?? (elements.includes(props.element) ? props.element : 'div'));
 const classes = computed(() => mergeCmClasses('cm-grid', attrs.class));
 const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, []));
 </script>

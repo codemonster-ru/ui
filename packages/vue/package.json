@@ -27,6 +27,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./historical": {
+      "types": "./dist/historical.d.ts",
+      "import": "./dist/historical.js"
     }
   },
   "scripts": {

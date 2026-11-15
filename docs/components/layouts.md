@@ -99,6 +99,17 @@ slot, and accepts `as` to change its root when needed for the page's landmark st
 Use `@codemonster-ru/ui-css/layout-areas.css` for these regions when you do not already load the
 full stylesheet. The corresponding historical `Vf*` names also resolve in `ui-layouts`.
 
+## Responsive utilities
+
+`useBreakpoint('md')` tracks a min-width query. Pass `{ direction: 'max' }` for the complementary
+query or pass a numeric width directly. `useBreakpoints()` returns a record of all active widths,
+and `useBreakpointValue({ base: 1, md: 2, xl: 3 })` selects the largest active override. Server
+renders use the base value until a browser can evaluate the viewport.
+
+`useCssVarBreakpoints()` reads numeric pixel, `em`, and `rem` values from the document root. It
+uses a historical `--vf-breakpoint-*` override when provided, then the shared `--cm-breakpoint-*`
+variable, then the numeric registry. All utilities are exported from `@codemonster-ru/ui-layouts`.
+
 Vanilla markup: [admin-layout HTML](../../contracts/admin-layout/cases/default.html).
 
 ## AdminShell

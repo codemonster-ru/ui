@@ -157,6 +157,8 @@ function writeConsumer(tarballs) {
     [
       "import { createApp, h } from 'vue';",
       "import { CmButton, CmIcon } from '@codemonster-ru/ui-vue';",
+      "import { VueIconify } from '@codemonster-ru/ui-vue/historical';",
+      "import { CmAuthLayout, VfStack, useBreakpointValue } from '@codemonster-ru/ui-layouts';",
       "import { arrowLeft } from '@codemonster-ru/ui-icons';",
       "import { CmRuntime } from '@codemonster-ru/ui-runtime';",
       "import { cmLightThemePreset } from '@codemonster-ru/ui-tokens';",
@@ -167,7 +169,11 @@ function writeConsumer(tarballs) {
       'document.documentElement.dataset.cmTheme = cmLightThemePreset.mode;',
       'new CmRuntime().start(document);',
       'createApp({',
-      "  render: () => h(CmButton, { variant: 'primary' }, () => [h(CmIcon, { icon: arrowLeft }), 'Packed consumer']),",
+      '  setup() {',
+      "    const title = useBreakpointValue({ base: 'Workspace', md: 'Account' });",
+      "    return () => h(CmAuthLayout, { title: title.value }, () => h(VfStack, { as: 'article' }, () =>",
+      "      h(CmButton, { variant: 'primary' }, () => [h(CmIcon, { icon: arrowLeft }), h(VueIconify, { icon: 'moon' }), 'Packed consumer'])));",
+      '  },',
       "}).mount('#app');",
       '',
     ].join('\n'),
@@ -178,12 +184,23 @@ function writeConsumer(tarballs) {
       "import { renderToString } from '@vue/server-renderer';",
       "import { createSSRApp, h } from 'vue';",
       "import { CmButton, CmIcon } from '@codemonster-ru/ui-vue';",
+      "import { VueIconify } from '@codemonster-ru/ui-vue/historical';",
+      "import { CmAuthLayout, VfStack, useBreakpointValue } from '@codemonster-ru/ui-layouts';",
       "import { arrowLeft } from '@codemonster-ru/ui-icons';",
       "import { CmRuntime } from '@codemonster-ru/ui-runtime';",
       "import { cmLightThemePreset } from '@codemonster-ru/ui-tokens';",
       '',
       "const html = await renderToString(createSSRApp({ render: () => h(CmButton, null, () => 'SSR') }));",
       "assert(html.includes('cm-button') && html.includes('SSR'), 'Vue SSR output is incomplete.');",
+      'const layout = await renderToString(createSSRApp({',
+      '  setup() {',
+      "    const title = useBreakpointValue({ base: 'Workspace', md: 'Account' });",
+      "    return () => h(CmAuthLayout, { title: title.value }, () => h(VfStack, { as: 'article' }, () => 'Packed layout'));",
+      '  },',
+      '}));',
+      "assert(layout.includes('cm-auth-layout') && layout.includes('<article') && layout.includes('Workspace'), 'Layout SSR exports are incomplete.');",
+      "const icon = await renderToString(h(VueIconify, { icon: 'arrow-left', size: 16 }));",
+      "assert(icon.includes('<svg') && icon.includes('--cm-icon-size:16px'), 'Historical icon export is incomplete.');",
       "assert(typeof new CmRuntime().start === 'function', 'Runtime import is not side-effect free.');",
       "assert(cmLightThemePreset.mode === 'light', 'Token runtime export is invalid.');",
       "console.log('[ui-packed-consumer] Node SSR and runtime imports passed.');",
@@ -232,6 +249,7 @@ try {
   const outputCss = readFileSync(join(consumerDirectory, 'dist/assets', cssAssets[0]), 'utf8');
   assert.match(outputCss, /\.cm-button/u);
   assert.match(outputCss, /\.cm-stack/u);
+  assert.match(outputCss, /\.cm-auth-layout/u);
   assert.match(outputCss, /\.cm-grid-cols-2/u);
   for (const name of expectedNames) {
     const installedManifest = JSON.parse(readFileSync(join(consumerDirectory, 'node_modules', name, 'package.json')));

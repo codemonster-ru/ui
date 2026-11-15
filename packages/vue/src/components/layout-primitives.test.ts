@@ -46,6 +46,17 @@ describe('Vue layout primitives', () => {
     }
   });
 
+  it.each(semanticCases)('preserves the historical $name as prop for semantic roots', ({ component, elements }) => {
+    const wrapper = mount(component, {
+      props: { as: 'article', element: elements[0] },
+      attrs: { 'aria-label': 'Article' },
+      slots: { default: 'Content' },
+    });
+    expect(wrapper.element.tagName).toBe('ARTICLE');
+    expect(wrapper.attributes('aria-label')).toBe('Article');
+    expect(wrapper.text()).toBe('Content');
+  });
+
   it('renders the stable Stack, Inline, Section, and Grid modifiers', () => {
     expect(mount(CmStack, { slots: { default: 'Items' } }).classes()).toEqual(['cm-stack']);
     expect(mount(CmInline, { props: { wrap: false } }).classes()).toEqual(['cm-inline', 'cm-inline--nowrap']);

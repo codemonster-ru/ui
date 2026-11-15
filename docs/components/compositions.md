@@ -93,7 +93,7 @@ the Vue server renderer's teleport output into a dedicated target.
 
 ## Composed menu
 
-`VfMenu` and `VfMenuItem` preserve the slot-based Vue menu. Put menu items in the default
+`VfMenu` and `VfMenuItem` from `@codemonster-ru/ui-vue/historical` preserve the slot-based Vue menu. Put menu items in the default
 slot. Each item takes a required `label` and optional `icon`, `active`, `disabled`, or
 `tone` (`default` or `danger`). A non-empty `href` selects anchor mode, which accepts
 `target` and `rel`. An enabled item emits `select`. Disabled links omit the destination and
