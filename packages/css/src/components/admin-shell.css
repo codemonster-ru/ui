@@ -21,6 +21,10 @@
   color: var(--cm-color-text-inverse);
 }
 
+.cm-admin-shell--fit-content {
+  min-block-size: auto;
+}
+
 .cm-admin-shell__header {
   flex: 1 1 auto;
   min-inline-size: 0;

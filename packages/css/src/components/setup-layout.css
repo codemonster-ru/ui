@@ -20,6 +20,15 @@
   background: var(--cm-color-background-surface);
 }
 
+.cm-setup-layout--fit-content {
+  min-block-size: auto;
+}
+
+.cm-setup-layout--plain .cm-setup-layout__panel {
+  border-color: transparent;
+  background: transparent;
+}
+
 .cm-setup-layout__heading {
   display: flex;
   flex-direction: column;

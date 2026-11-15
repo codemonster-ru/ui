@@ -31,20 +31,28 @@
   background: var(--cm-color-background-surface-subtle);
 }
 
+.cm-app-shell--fit-content {
+  min-block-size: auto;
+}
+
+.cm-app-shell--header-static > .cm-app-shell__subheader {
+  position: static;
+}
+
 .cm-app-shell__body {
+  --cm-app-shell-sidebar-width: 16rem;
+  --cm-app-shell-sidebar-track: ;
+  --cm-app-shell-aside-track: ;
+
   display: grid;
   flex: 1;
-  grid-template-columns: 1fr;
+  grid-template-columns: var(--cm-app-shell-sidebar-track) minmax(0, 1fr) var(--cm-app-shell-aside-track);
   gap: var(--cm-space-4);
   align-items: start;
 }
 
-.cm-app-shell--sidebar-content .cm-app-shell__body {
-  grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
-}
-
-.cm-app-shell--sidebar-content-aside .cm-app-shell__body {
-  grid-template-columns: minmax(0, 16rem) minmax(0, 1fr) minmax(0, 18rem);
+.cm-app-shell[data-cm-sidebar-collapsed='true'] > .cm-app-shell__body {
+  --cm-app-shell-sidebar-width: 4.75rem;
 }
 
 .cm-app-shell__sidebar,
@@ -74,42 +82,65 @@
   padding: var(--cm-space-3);
 }
 
+.cm-app-shell--sidebar-static .cm-app-shell__sidebar,
+.cm-app-shell--aside-static .cm-app-shell__aside {
+  position: static;
+  max-block-size: none;
+  overflow-y: visible;
+}
+
+.cm-app-shell__region--plain {
+  border-color: transparent;
+  background: transparent;
+}
+
+.cm-app-shell__content--unpadded {
+  padding: 0;
+}
+
+.cm-app-shell__content-subheader {
+  display: flex;
+  align-items: center;
+  gap: var(--cm-space-2);
+  padding: var(--cm-space-2) var(--cm-space-3);
+  border-block-end: var(--cm-border-width) solid var(--cm-color-border-subtle);
+  background: var(--cm-color-background-surface-subtle);
+}
+
+.cm-app-shell__region--plain > .cm-app-shell__content-subheader {
+  border-color: transparent;
+  background: transparent;
+}
+
 .cm-app-shell__footer {
   padding: var(--cm-space-2) var(--cm-space-3);
   border-block-start: var(--cm-border-width) solid var(--cm-color-border-subtle);
   background: var(--cm-color-background-surface);
 }
 
-.cm-app-shell[data-cm-sidebar-collapsed='true'] .cm-app-shell__sidebar {
-  display: none;
-}
-
-.cm-app-shell[data-cm-sidebar-collapsed='true'].cm-app-shell--sidebar-content .cm-app-shell__body,
-.cm-app-shell[data-cm-sidebar-collapsed='true'].cm-app-shell--sidebar-content-aside .cm-app-shell__body {
-  grid-template-columns: minmax(0, 1fr);
-}
-
 /*
- * Two stages, not one: the aside is the first casualty of a narrowing window (nice-to-have context,
- * not primary navigation), so it goes before the sidebar does. Below 64em there's no room for a
- * three- or even two-column grid at all, and both go static and stack with the content.
+ * The optional aside hides below 80em. Below 64em the sidebar stacks with the content, so its
+ * controls remain reachable.
  */
-@media (width < 80em) {
-  .cm-app-shell--sidebar-content-aside .cm-app-shell__body {
-    grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
+@media (width >= 64em) {
+  .cm-app-shell__body:has(> .cm-app-shell__sidebar) {
+    --cm-app-shell-sidebar-track: minmax(0, var(--cm-app-shell-sidebar-width));
   }
+}
 
-  .cm-app-shell--sidebar-content-aside .cm-app-shell__aside {
+@media (width >= 80em) {
+  .cm-app-shell__body:has(> .cm-app-shell__aside) {
+    --cm-app-shell-aside-track: minmax(0, 18rem);
+  }
+}
+
+@media (width < 80em) {
+  .cm-app-shell__aside {
     display: none;
   }
 }
 
 @media (width < 64em) {
-  .cm-app-shell--sidebar-content .cm-app-shell__body,
-  .cm-app-shell--sidebar-content-aside .cm-app-shell__body {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
   .cm-app-shell__sidebar,
   .cm-app-shell__aside {
     position: static;

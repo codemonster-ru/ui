@@ -9,10 +9,28 @@
 .cm-icon {
   display: inline-block;
   flex-shrink: 0;
-  inline-size: var(--cm-icon-size-md);
-  block-size: var(--cm-icon-size-md);
+  inline-size: var(--cm-icon-size, var(--cm-icon-size-md));
+  block-size: var(--cm-icon-size, var(--cm-icon-size-md));
   fill: none;
   vertical-align: middle;
+  translate: var(--cm-icon-offset-x, 0) var(--cm-icon-offset-y, 0);
+  scale: var(--cm-icon-scale, 1);
+}
+
+.cm-icon--spin {
+  animation: cm-icon-spin 2s linear infinite;
+}
+
+@keyframes cm-icon-spin {
+  to {
+    rotate: 1turn;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cm-icon--spin {
+    animation: none;
+  }
 }
 
 .cm-icon--regular {

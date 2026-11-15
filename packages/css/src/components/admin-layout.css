@@ -29,6 +29,10 @@
   transition: inline-size var(--cm-motion-duration-normal) var(--cm-motion-ease-standard);
 }
 
+.cm-admin-layout--fit-content {
+  min-block-size: auto;
+}
+
 .cm-admin-layout[data-cm-sidebar-collapsed='true'] .cm-admin-layout__aside {
   inline-size: 4.75rem;
 }
