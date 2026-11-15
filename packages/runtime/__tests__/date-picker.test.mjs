@@ -74,3 +74,50 @@ test('localizes Vanilla grid labels, navigates one day tab stop, and commits an 
   trigger.click();
   assert.equal(trigger.getAttribute('aria-expanded'), 'false');
 });
+
+test('Vanilla range submits ordered values and retains the field name across runtime restarts', (context) => {
+  const { window } = new JSDOM(`<form>${markup}</form>`, { pretendToBeVisual: true });
+  const { document } = window;
+  const runtime = new CmRuntime().register('date-picker', createCmDatePickerController);
+  context.after(() => {
+    runtime.stop();
+    window.close();
+  });
+  const root = document.querySelector('[data-cm-controller="date-picker"]');
+  const trigger = root.querySelector('.cm-date-picker');
+  const form = document.querySelector('form');
+  const currentValues = () => new window.FormData(form).getAll('launch_date');
+  Object.assign(trigger.dataset, {
+    cmDatePickerMode: 'range',
+    cmDisplayFormat: 'dd.MM.yyyy',
+    cmMin: '2026-08-01',
+    cmMax: '2026-08-31',
+  });
+  const day = (value) => root.querySelector(`[data-cm-date-picker-value="${value}"]`);
+  const changes = [];
+  root.addEventListener('cm:date-picker-selection-change', (event) => changes.push(event.detail));
+
+  runtime.start(document);
+  assert.deepEqual(currentValues(), []);
+  assert.equal(root.querySelector('[role="grid"]').getAttribute('aria-multiselectable'), 'true');
+  runtime.stop();
+  runtime.start(document);
+  trigger.click();
+  day('2026-08-20').click();
+  assert.equal(trigger.getAttribute('aria-expanded'), 'true');
+  assert.deepEqual(currentValues(), ['2026-08-20']);
+  day('2026-08-13').click();
+  assert.deepEqual(currentValues(), ['2026-08-13', '2026-08-20']);
+  assert.deepEqual(changes, [
+    { mode: 'range', values: ['2026-08-20'] },
+    { mode: 'range', values: ['2026-08-13', '2026-08-20'] },
+  ]);
+  assert.equal(root.querySelector('.cm-date-picker__value').textContent, '13.08.2026 – 20.08.2026');
+  assert.equal(document.activeElement, trigger);
+  trigger.click();
+  assert.equal(day('2026-08-14').getAttribute('aria-selected'), 'true');
+  runtime.stop();
+  trigger.disabled = true;
+  runtime.start(document);
+  assert.deepEqual(currentValues(), []);
+});

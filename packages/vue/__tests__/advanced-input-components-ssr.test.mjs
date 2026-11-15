@@ -104,3 +104,28 @@ test('omits a disabled DatePicker and submits a readonly DatePicker as ISO', asy
     [['review', '2026-09-02']],
   );
 });
+
+test('serializes an initial DatePicker range as repeated ISO fields', async (context) => {
+  const actual = await renderToString(
+    createSSRApp({
+      render: () =>
+        h('form', [
+          h(CmDatePicker, {
+            id: 'release-range',
+            name: 'release_dates',
+            modelValue: ['2026-09-10', '2026-09-02'],
+            displayFormat: 'dd.MM.yyyy',
+            range: true,
+            readonly: true,
+          }),
+        ]),
+    }),
+  );
+  const { window } = new JSDOM(actual);
+  context.after(() => window.close());
+  assert.match(actual, /02\.09\.2026 – 10\.09\.2026/u);
+  assert.deepEqual(new window.FormData(window.document.querySelector('form')).getAll('release_dates'), [
+    '2026-09-02',
+    '2026-09-10',
+  ]);
+});

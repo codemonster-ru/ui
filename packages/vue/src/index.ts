@@ -52,6 +52,7 @@ export type {
   CmDatePickerLabels,
   CmDatePickerProps,
   CmDatePickerSize,
+  CmDatePickerValue,
 } from './components/date-picker/date-picker.types';
 export { default as CmDivider } from './components/divider/CmDivider.vue';
 export type { CmDividerOrientation, CmDividerProps } from './components/divider/divider.types';

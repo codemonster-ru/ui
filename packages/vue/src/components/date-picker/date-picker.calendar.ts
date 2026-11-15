@@ -9,7 +9,13 @@ export {
   formatIsoDate,
   monthLabel,
   parseIsoDate,
+  selectCalendarDate,
   shiftMonth,
   weekdayLabels,
 } from '@codemonster-ru/ui-runtime/core';
-export type { CmCalendarDay, CmCalendarLocale, CmCalendarWeekday } from '@codemonster-ru/ui-runtime/core';
+export type {
+  CmCalendarDay,
+  CmCalendarLocale,
+  CmCalendarSelectionMode,
+  CmCalendarWeekday,
+} from '@codemonster-ru/ui-runtime/core';

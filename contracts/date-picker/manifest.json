@@ -2,11 +2,13 @@
   "schemaVersion": 1,
   "name": "DatePicker",
   "slug": "date-picker",
-  "description": "A labelled calendar popup that submits a single ISO date.",
+  "description": "A labelled calendar popup for single, multiple, or range ISO date selection.",
   "props": {
-    "value": { "type": "string", "required": false, "default": "" },
+    "value": { "type": "structured", "required": false, "default": "", "valueContract": "date-picker-value" },
     "min": { "type": "nullable", "required": false, "default": null },
     "max": { "type": "nullable", "required": false, "default": null },
+    "multiple": { "type": "boolean", "required": false, "default": false },
+    "range": { "type": "boolean", "required": false, "default": false },
     "size": { "type": "enum", "required": false, "default": "md", "values": ["sm", "md", "lg"] },
     "invalid": { "type": "boolean", "required": false, "default": false },
     "disabled": { "type": "boolean", "required": false, "default": false },
@@ -16,6 +18,15 @@
     "clearLabel": { "type": "string", "required": false, "default": "Clear date" }
   },
   "slots": {},
-  "events": { "valueChange": { "description": "Reports the native ISO date string.", "payloadContract": "string" } },
+  "events": {
+    "valueChange": {
+      "description": "Reports the ISO selection as a single value or, in Vue array modes, a list of values.",
+      "payloadContract": "date-picker-value"
+    },
+    "selectionChange": {
+      "description": "In Vanilla array modes, reports multiple or range and the selected ISO values.",
+      "payloadContract": "date-picker-selection"
+    }
+  },
   "states": ["default", "value", "clearable", "invalid", "disabled", "readonly"]
 }

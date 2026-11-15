@@ -8,9 +8,17 @@ export interface CmDatePickerLabels {
   nextMonth?: string;
 }
 
-export interface CmDatePickerProps {
+export type CmDatePickerValue<Multiple extends boolean = false, Range extends boolean = false> = Multiple extends true
+  ? string[]
+  : Range extends true
+    ? string[]
+    : string;
+
+export interface CmDatePickerProps<Multiple extends boolean = false, Range extends boolean = false> {
   id: string;
-  modelValue?: string;
+  modelValue?: CmDatePickerValue<Multiple, Range>;
+  multiple?: Multiple;
+  range?: Range;
   min?: string | null;
   max?: string | null;
   placeholder?: string | null;

@@ -108,6 +108,19 @@ day tab stop. Use arrows, Home/End, and Page Up/Down to navigate, and Enter or S
 to select. Escape returns focus to the trigger. Clicking outside or tabbing to another
 control dismisses the calendar.
 
+Set `multiple` to toggle several dates or `range` to choose two endpoints. Bind
+`v-model` to a string array in either mode. Range selection takes precedence when both
+flags are set. The first range click reports one date. The second reports the two dates in
+chronological order and closes the calendar. Multiple selection stays open while toggling
+dates. Both modes submit one ISO field per selected date under the same `name`. Read the
+fields with `FormData.getAll(name)`.
+
+In Vanilla put `data-cm-date-picker-mode="multiple"` or `"range"` on the trigger.
+For form submission use `data-cm-date-picker-name` as the field name and include an
+initial hidden input for each selected date. Use the `cm:date-picker-selection-change`
+event, whose detail contains `mode` and `values`. Single mode retains its scalar
+`cm:date-picker-value-change` event.
+
 ## CommandPalette
 
 CommandPalette requires `id`, `title`, and ordered `commands` with unique kebab-case `id`, `label`,

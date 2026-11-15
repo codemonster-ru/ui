@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "id": "date-picker-range",
+  "description": "Choose the start and end of a release window.",
+  "props": { "value": ["2026-08-13", "2026-08-20"], "range": true, "clearable": true },
+  "attributes": { "id": "release-window", "name": "release_window", "aria-label": "Release window" },
+  "slots": {}
+}

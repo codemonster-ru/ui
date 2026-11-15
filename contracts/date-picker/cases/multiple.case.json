@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "id": "date-picker-multiple",
+  "description": "Toggle several release dates and submit each as an ISO value.",
+  "props": { "value": ["2026-08-13", "2026-08-20"], "multiple": true, "clearable": true },
+  "attributes": { "id": "release-dates", "name": "release_dates", "aria-label": "Release dates" },
+  "slots": {}
+}

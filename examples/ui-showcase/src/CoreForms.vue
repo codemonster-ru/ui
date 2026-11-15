@@ -38,6 +38,8 @@ const billingEmail = ref('');
 const workspacePlan = ref('');
 const releaseDate = ref('2026-07-30');
 const bookingDate = ref('2026-08-12');
+const releaseDates = ref(['2026-08-13', '2026-08-20']);
+const releaseWindow = ref(['2026-08-13', '2026-08-20']);
 const fieldsetPlan = ref('pro');
 const floatingVariants = ['in', 'on', 'over'] as const;
 const floatingStates = [
@@ -159,6 +161,24 @@ const states = [
       </CmField>
       <p>
         Model: <code>{{ bookingDate || 'empty' }}</code>
+      </p>
+    </div>
+    <div class="core-matrix-cell">
+      <h4>Multiple dates</h4>
+      <CmField v-slot="{ controlId }" control-id="core-release-dates" label="Release dates">
+        <CmDatePicker :id="controlId" v-model="releaseDates" multiple placeholder="Choose dates" clearable />
+      </CmField>
+      <p>
+        Model: <code>{{ releaseDates.join(', ') || 'empty' }}</code>
+      </p>
+    </div>
+    <div class="core-matrix-cell">
+      <h4>Date range</h4>
+      <CmField v-slot="{ controlId }" control-id="core-release-window" label="Release window">
+        <CmDatePicker :id="controlId" v-model="releaseWindow" range placeholder="Choose a date range" clearable />
+      </CmField>
+      <p>
+        Model: <code>{{ releaseWindow.join(' – ') || 'empty' }}</code>
       </p>
     </div>
     <div class="core-matrix-cell">

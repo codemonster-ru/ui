@@ -34,10 +34,11 @@ export {
   formatIsoDate,
   monthLabel,
   parseIsoDate,
+  selectCalendarDate,
   shiftMonth,
   weekdayLabels,
 } from './date-picker.js';
-export type { CmCalendarDay, CmCalendarLocale, CmCalendarWeekday } from './date-picker.js';
+export type { CmCalendarDay, CmCalendarLocale, CmCalendarSelectionMode, CmCalendarWeekday } from './date-picker.js';
 export { commandPaletteKeyAction, filterCommands, normalizeCommandQuery } from './command-palette.js';
 export type { CmCommandCoreItem, CmCommandPaletteAction } from './command-palette.js';
 export {

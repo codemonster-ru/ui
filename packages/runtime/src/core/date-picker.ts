@@ -10,8 +10,11 @@
 export interface CmCalendarDay {
   accessibleLabel: string;
   disabled: boolean;
+  inRange: boolean;
   label: string;
   outside: boolean;
+  rangeEnd: boolean;
+  rangeStart: boolean;
   selected: boolean;
   today: boolean;
   value: string;
@@ -19,6 +22,7 @@ export interface CmCalendarDay {
 
 export type CmCalendarWeekday = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 export type CmCalendarLocale = string | string[];
+export type CmCalendarSelectionMode = 'single' | 'multiple' | 'range';
 
 const isoPattern = /^(\d{4})-(\d{2})-(\d{2})$/u;
 const displayFormatter = new Intl.DateTimeFormat('en-US', { day: '2-digit', month: '2-digit', year: '2-digit' });
@@ -123,11 +127,23 @@ export function calendarMonthAllowed(value: string, min?: string, max?: string):
   return (!min || month >= min.slice(0, 7)) && (!max || month <= max.slice(0, 7));
 }
 
+export function selectCalendarDate(
+  selected: readonly string[],
+  value: string,
+  mode: CmCalendarSelectionMode,
+): string[] {
+  if (mode === 'range' && selected.length === 1) return [selected[0], value].sort();
+  if (mode !== 'multiple') return [value];
+  if (selected.includes(value)) return selected.filter((date) => date !== value);
+  return [...selected, value];
+}
+
 export function buildCalendarMonth(options: {
   max?: string | null;
   min?: string | null;
   month: string;
-  selected: string;
+  selected: string | readonly string[];
+  range?: boolean;
   firstDayOfWeek?: CmCalendarWeekday;
   locale?: CmCalendarLocale;
 }): CmCalendarDay[][] {
@@ -138,6 +154,9 @@ export function buildCalendarMonth(options: {
   const leadingDays = (firstOfMonth.getDay() - (options.firstDayOfWeek ?? 0) + 7) % 7;
   start.setDate(1 - leadingDays);
   const accessibleFormatter = new Intl.DateTimeFormat(options.locale ?? 'en-US', { dateStyle: 'full' });
+  const selected = typeof options.selected === 'string' ? [options.selected] : options.selected;
+  const selectedDates = new Set(selected);
+  const [rangeStart, rangeEnd] = options.range ? [...selected].sort() : [];
 
   const weeks: CmCalendarDay[][] = [];
   for (let week = 0; week < 6; week += 1) {
@@ -148,9 +167,12 @@ export function buildCalendarMonth(options: {
       days.push({
         accessibleLabel: accessibleFormatter.format(date),
         disabled: Boolean((options.min && value < options.min) || (options.max && value > options.max)),
+        inRange: Boolean(rangeStart && rangeEnd && value > rangeStart && value < rangeEnd),
         label: String(date.getDate()),
         outside: date.getMonth() !== anchor.getMonth(),
-        selected: value === options.selected,
+        rangeEnd: value === rangeEnd,
+        rangeStart: value === rangeStart,
+        selected: selectedDates.has(value),
         today: value === today,
         value,
       });
