@@ -6,10 +6,11 @@ Component: `Tabs`
 
 ## Purpose and item model
 
-Tabs switches among related content panels. `id` is a required stable DOM prefix. `items` is a
+Tabs switches among related content panels. Vue generates a stable DOM prefix when `id` is
+omitted. `items` is a
 non-empty ordered collection of records with unique kebab-case `value`, non-empty `label`, optional
-escaped string `content`, and optional `disabled`. At least one item is enabled. Every item requires
-content or a trusted panel slot.
+escaped string `content`, optional `disabled`, and optional `tabId` and `panelId`. At least one
+item is enabled.
 
 `value` is the active enabled item value. `defaultValue` selects the initial uncontrolled value.
 When both are omitted or invalid, the first enabled item is active.
@@ -19,13 +20,24 @@ next value but adapters do not invent application content state.
 ## Structure and relationships
 
 The root owns `cm-tabs`, `data-cm-controller="tabs"`, and `data-cm-tabs-value`. It contains a
-horizontal `role="tablist"`, one native button and one owned `role="tabpanel"` per item. Tab and
-panel ids are `{id}-tab-{value}` and `{id}-panel-{value}`. Only the active panel is visible. Disabled
-tabs use the native disabled attribute and are never active.
+horizontal `role="tablist"` and one native button per item. Owned panels use `role="tabpanel"` and
+only the active panel is visible. The default IDs are `{id}-tab-{value}` and
+`{id}-panel-{value}`. Item-level IDs replace those defaults. IDs must be unique on the page.
+A tab with neither owned content nor a `panelId` omits `aria-controls`. Disabled tabs use the native
+disabled attribute.
+
+To render panels outside the component, set `panelId` and use it as the ID of an external
+`role="tabpanel"`. Label it with the corresponding tab ID. Vue callers own the visibility of their
+external panels. The Vanilla controller uses `data-cm-tab-value` on buttons with custom IDs or without
+a panel to resolve the value independently of the DOM ID. It synchronizes any associated panel in
+the same document.
 
 Each item accepts trusted `tab{UpperCamelValue}` and `panel{UpperCamelValue}` platform content, such
-as `tabAccountDetails`. Vue slots receive `{ item, active }`; Vanilla HTML uses explicit markup. Escaped
-label and content remain fallbacks while the component retains tab and panel semantics.
+as `tabAccountDetails`. Vue item slots receive `{ item, active }`. Existing item panels remain mounted
+when their tab is inactive. The shared `tab` slot is a fallback for an item without its own tab slot
+and receives `{ item, isActive, index }`. The shared `panel` slot provides a fallback for an item
+without an item panel slot or text content. It receives `{ activeValue }` and mounts its content only
+while that item is selected. Vanilla HTML authors the corresponding markup directly.
 
 ## Keyboard behavior
 

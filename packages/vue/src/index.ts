@@ -193,7 +193,8 @@ export type {
   CmTableOfContentsVariant,
 } from './components/table-of-contents/table-of-contents.types';
 export { default as CmTabs } from './components/tabs/CmTabs.vue';
-export type { CmTabItem, CmTabsProps } from './components/tabs/tabs.types';
+export { default as VfTabs } from './components/tabs/CmTabs.vue';
+export type { CmTabItem, CmTabsProps, VfTabItem, VfTabsProps } from './components/tabs/tabs.types';
 export { default as CmTextarea } from './components/textarea/CmTextarea.vue';
 export type { CmTextareaProps, CmTextareaSize } from './components/textarea/textarea.types';
 export { default as CmTooltip } from './components/tooltip/CmTooltip.vue';
