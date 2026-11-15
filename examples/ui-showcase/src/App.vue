@@ -26,12 +26,16 @@ import { CmButton, CmIcon, CmIconButton, CmLink } from '@codemonster-ru/ui-vue';
 const CodeBlockShowcase = defineAsyncComponent(
   async () => (await import('./CodeBlockShowcase.vue')) as { default: Component },
 );
+const PlaygroundShowcase = defineAsyncComponent(
+  async () => (await import('./PlaygroundShowcase.vue')) as { default: Component },
+);
 const pages = [
   { id: 'core', label: 'Core' },
   { id: 'colors', label: 'Colors' },
   { id: 'layouts', label: 'Layouts' },
   { id: 'icons', label: 'Icons' },
   { id: 'codeblock', label: 'CodeBlock' },
+  { id: 'playground', label: 'Playground' },
 ];
 const coreDescriptions: Record<string, string> = {
   actions: 'Use buttons for actions and links for navigation to another location or resource.',
@@ -209,6 +213,7 @@ onUnmounted(() => {
     <ColorsShowcase v-else-if="currentPage === 'colors'" />
     <LayoutShowcase v-else-if="currentPage === 'layouts'" />
     <CodeBlockShowcase v-else-if="currentPage === 'codeblock'" :theme="resolvedTheme" />
+    <PlaygroundShowcase v-else-if="currentPage === 'playground'" :theme="resolvedTheme" />
     <template v-else>
       <IconsShowcase />
       <details class="icon-showcase-extras" @toggle="openIconExamples">
