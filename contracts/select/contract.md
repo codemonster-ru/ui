@@ -62,15 +62,20 @@ it while activation is refused.
 
 ## Placement
 
-The listbox stays in the document next to its trigger and is positioned by the shared runtime, which
-both adapters use, so placement does not depend on framework features. It opens below the trigger
-with a two pixel offset, spans at least the trigger's inline size, and scrolls within a bounded
-block size once its options exceed it. When the space below runs out it flips above the trigger, and
-it shifts along the trigger to stay inside the viewport.
+Both adapters default to keeping the listbox next to the trigger. It opens below the trigger with a
+two pixel offset, is at least as wide as the trigger, and scrolls when the options exceed its
+maximum height. It can flip above the trigger or shift sideways to fit. Set Vue's
+`placement="bottom-end"` or set `data-cm-placement="bottom-end"` on the Vanilla listbox to align
+to the end of the trigger instead of the start.
 
-The listbox is not raised into a top layer, so an ancestor that clips overflow still clips it. That
-limitation is shared with Dropdown, Popover, and Menu; lifting it belongs to all four at once rather
-than to this contract alone.
+An ancestor that clips overflow can still clip an inline listbox. Vue accepts a selector or element
+through `teleportTo` when a portal is needed. It renders inline for SSR and moves after hydration;
+`disableTeleport`, `false`, and `null` keep it inline. Vue targets the containing dialog instead of
+`body` when the trigger is inside a native modal so that the options remain interactive.
+
+For historical Vue templates, `VfSelect` from `@codemonster-ru/ui-vue/historical` generates the ID
+when omitted, accepts `leadingIcon` and `trailingIcon`, and defaults to a body portal. Explicit
+adornment slots override the corresponding named icons.
 
 ## Behavior
 
@@ -88,8 +93,10 @@ trigger.
 
 ## Scripting
 
-Both adapters render identical markup and share the `select` controller, which owns listbox
-placement as well as pointer and keyboard interaction.
+Vue owns its state, event handling and rendering, and emits `update:modelValue` and `valueChange`.
+Vanilla enhances the authored HTML through `createCmSelectController`; it dispatches
+`cm:select-value-change` from the root and a bubbling native `change` from the trigger. Both
+adapters use the same keyboard rules and positioning dependency.
 
 `required` is announced through `aria-required` but is not enforced by the browser, because a
 component-owned control sits outside constraint validation. Refusing an empty submission is the

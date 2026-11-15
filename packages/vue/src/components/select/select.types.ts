@@ -1,4 +1,5 @@
 export type CmSelectSize = 'sm' | 'md' | 'lg';
+export type CmSelectPlacement = 'bottom-start' | 'bottom-end';
 
 export interface CmSelectOption {
   value: string;
@@ -17,4 +18,13 @@ export interface CmSelectProps {
   required?: boolean;
   clearable?: boolean;
   clearLabel?: string;
+  placement?: CmSelectPlacement;
+  teleportTo?: string | HTMLElement | null | false;
+  disableTeleport?: boolean;
+}
+
+export interface VfSelectProps extends Omit<CmSelectProps, 'id'> {
+  id?: string;
+  leadingIcon?: string;
+  trailingIcon?: string;
 }

@@ -23,9 +23,8 @@ export default defineConfig({
       formats: ['es'],
     },
     rollupOptions: {
-      // The shared core stays external so a consumer using both adapters gets one copy of the
-      // logic rather than an inlined duplicate per adapter.
-      external: ['vue', '@codemonster-ru/ui-runtime/core', '@codemonster-ru/ui-icons'],
+      // Keep shared logic external so a consumer using both adapters can bundle it once.
+      external: ['vue', '@codemonster-ru/ui-runtime/core', '@codemonster-ru/ui-icons', '@codemonster-ru/floater.js'],
     },
   },
 });
