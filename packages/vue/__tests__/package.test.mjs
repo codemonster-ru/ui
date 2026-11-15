@@ -100,6 +100,7 @@ test('publishes the opt-in historical icon and Vue components', async () => {
   const entry = await import('@codemonster-ru/ui-vue/historical');
 
   assert.deepEqual(Object.keys(entry), [
+    'VfAccordion',
     'VfAlert',
     'VfAvatar',
     'VfBadge',

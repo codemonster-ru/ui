@@ -1,3 +1,5 @@
+export { default as VfAccordion } from './components/accordion/VfAccordion.vue';
+export type { VfAccordionProps } from './components/accordion/accordion.types';
 export { default as VfAlert } from './components/alert/VfAlert.vue';
 export type { VfAlertProps, VfAlertTone } from './components/alert/alert.types';
 export { default as VfAvatar } from './components/avatar/VfAvatar.vue';

@@ -16,3 +16,10 @@ export interface CmAccordionProps {
 export interface CmAccordionOpenChange {
   openItems: string[];
 }
+
+export interface VfAccordionProps {
+  open?: boolean;
+  defaultOpen?: boolean;
+  title?: string;
+  disabled?: boolean;
+}

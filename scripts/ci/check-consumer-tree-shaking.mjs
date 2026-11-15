@@ -102,6 +102,13 @@ const cases = [
     name: 'ui-vue historical Drawer without the icon catalogue',
   },
   {
+    entry: "export { VfAccordion } from '@codemonster-ru/ui-vue/historical';\n",
+    fileName: 'ui-vue-historical-accordion',
+    forbiddenMarkers: [...unrelatedRuntimeMarkers, unrelatedIcon],
+    maxGzipBytes: 2 * 1024,
+    name: 'ui-vue historical Accordion without the icon catalogue',
+  },
+  {
     entry: "export { VfDataTableColumnChooser } from '@codemonster-ru/ui-vue/historical';\n",
     fileName: 'ui-vue-historical-column-chooser',
     forbiddenMarkers: [...unrelatedRuntimeMarkers, unrelatedIcon],
@@ -130,8 +137,8 @@ const cases = [
     fileName: 'ui-vue-historical',
     forbiddenMarkers: unrelatedRuntimeMarkers,
     includesPositioning: true,
-    // The DatePicker and ColumnChooser add their controls to the opt-in namespace (57.41 KiB total).
-    maxGzipBytes: 60 * 1024,
+    // Including the historical disclosure and native selection adapters, this measures 60.44 KiB.
+    maxGzipBytes: 63 * 1024,
     name: 'ui-vue opt-in historical namespace',
   },
   {
