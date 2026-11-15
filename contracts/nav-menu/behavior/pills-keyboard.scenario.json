@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "nav-menu-pills-keyboard",
+  "case": "nav-menu-pills",
+  "steps": [
+    { "expect": "attribute", "target": "branch-first", "name": "aria-expanded", "value": "true" },
+    { "action": "focus", "target": "branch-first" },
+    { "action": "press", "target": "branch-first", "key": "Enter" },
+    { "expect": "attribute", "target": "branch-first", "name": "aria-expanded", "value": "false" },
+    { "expect": "focus", "target": "branch-first", "value": true },
+    { "action": "press", "target": "branch-first", "key": " " },
+    { "expect": "attribute", "target": "branch-first", "name": "aria-expanded", "value": "true" }
+  ]
+}

@@ -176,10 +176,11 @@ Vanilla markup: [stepper HTML](../../contracts/stepper/cases/default.html).
 `CmNavMenu` renders a nested menu. Branches expand in place, and an uncontrolled menu opens the path
 to the active item itself — an active item nobody can see is the failure worth preventing.
 
-A collapsed branch stays in the markup and CSS closes it. That keeps the whole tree present on a
-page without JavaScript and lets a browser's find-in-page reach text inside a closed branch. The
-open and closed states animate with `grid-template-rows`, so no height is measured and both adapters
-behave identically.
+A collapsed branch stays in the markup. Its links leave the tab order until the branch opens.
+The open and closed states animate with `grid-template-rows`, so neither adapter measures height.
+Choose `variant="pills"` for the historical row height, rounded selected surface, and visible
+labels at narrow widths. Pills use the same native link and disclosure button markup as the
+sidebar and inline variants.
 
 `kind: 'group'` renders a non-interactive section heading whose children are always shown.
 
@@ -203,11 +204,12 @@ const items = [
 </script>
 
 <template>
-  <CmNavMenu :items="items" value="active" expand-mode="single" />
+  <CmNavMenu :items="items" value="active" expand-mode="single" variant="pills" />
 </template>
 ```
 
-Vanilla markup: [nav-menu HTML](../../contracts/nav-menu/cases/default.html).
+Vanilla markup is available for [sidebar](../../contracts/nav-menu/cases/default.html) and
+[pills](../../contracts/nav-menu/cases/pills.html).
 
 ## Menu bar
 
@@ -222,6 +224,10 @@ drops downward in both directions. Those rules are one function in the shared co
 nested conditions in each adapter.
 
 Submenus are positioned by CSS and stay in the markup while closed, hidden rather than absent.
+The menu bar has one tab stop. Arrow keys skip disabled commands, and Escape closes the open menu
+and restores focus to its top-level trigger. Use `variant="pills"` for the historical control
+geometry and selected surfaces. Set `defaultValue` for an initial selection or bind `v-model`.
+The selected leaf has `aria-current="page"` and a corresponding class in both adapters.
 
 ```vue
 <script setup lang="ts">
@@ -234,8 +240,9 @@ const items = [
 </script>
 
 <template>
-  <CmMenuBar :items="items" />
+  <CmMenuBar :items="items" default-value="help" variant="pills" />
 </template>
 ```
 
-Vanilla markup: [menu-bar HTML](../../contracts/menu-bar/cases/default.html).
+Vanilla markup is available for [default](../../contracts/menu-bar/cases/default.html) and
+[pills](../../contracts/menu-bar/cases/pills.html).

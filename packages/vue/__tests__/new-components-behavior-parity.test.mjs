@@ -96,10 +96,21 @@ const suites = {
     component: components.CmMenuBar,
     controller: ['menu-bar', runtime.createCmMenuBarController],
     root: '.cm-menu-bar',
-    targets: { 'branch-first': '[data-cm-menu-bar-branch]', 'submenu-first': '.cm-menu-bar__submenu' },
+    targets: {
+      'branch-first': '[data-cm-menu-bar-branch]',
+      'submenu-first': '.cm-menu-bar__submenu',
+      'first-command': '[data-cm-menu-bar-value="new"]',
+      'nested-branch': '[data-cm-menu-bar-branch="recent"]',
+      'nested-command': '[data-cm-menu-bar-value="report"]',
+      help: '[data-cm-menu-bar-value="help"]',
+    },
     snapshot: (root) => ({
       expanded: [...root.querySelectorAll('[data-cm-menu-bar-branch]')].map((b) => b.getAttribute('aria-expanded')),
       hidden: [...root.querySelectorAll('.cm-menu-bar__submenu')].map((s) => s.hidden),
+      active: root.querySelector('[aria-current="page"]')?.getAttribute('data-cm-menu-bar-value') ?? null,
+      tabStops: [...root.querySelectorAll('[role="menuitem"][tabindex="0"]')].map(
+        (item) => item.dataset.cmMenuBarBranch ?? item.dataset.cmMenuBarValue,
+      ),
     }),
   },
   'nav-menu': {
@@ -177,7 +188,13 @@ function activate(targetWindow, target, step) {
   if (step.action === 'click') target.click();
   if (step.action === 'focus') target.focus();
   if (step.action === 'press') {
-    target.dispatchEvent(new targetWindow.KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: step.key }));
+    const handledByBrowser = target.dispatchEvent(
+      new targetWindow.KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: step.key }),
+    );
+    // Synthetic keyboard events in jsdom do not run a button's native activation.
+    if (handledByBrowser && target instanceof targetWindow.HTMLButtonElement && ['Enter', ' '].includes(step.key)) {
+      target.click();
+    }
   }
 }
 

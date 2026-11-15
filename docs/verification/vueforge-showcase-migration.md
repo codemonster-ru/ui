@@ -22,8 +22,10 @@ HTML with the browser runtime in Vanilla.
 | Drawer top and bottom placement                                                                        | The current Drawer supports logical start and end, including full size.                                                                   |
 | VueForge icon registry and theme provider APIs                                                         | The current examples use shared icon geometry and the token theme contract.                                                               |
 
-The historical pills variant for Dropdown, NavMenu, and MenuBar
-has no matching variant in the current APIs.
+NavMenu and MenuBar now expose their historical pills appearance through the real Vue and Vanilla
+contracts. The variant has shared style tokens and keyboard fixtures. Dropdown still uses the
+current owned-button and Menu composition. The historical pills option, scoped default slot, and
+teleported floating menu need separate reconciliation.
 
 This inventory describes API differences. It does not certify that every
 historical composition or interaction with an equivalent API has been ported.
