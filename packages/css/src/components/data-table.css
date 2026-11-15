@@ -1,3 +1,8 @@
+@import './icon-button.css';
+@import './icon.css';
+@import './progress-spinner.css';
+@import './skeleton.css';
+
 .cm-data-table {
   display: flex;
   inline-size: 100%;
@@ -56,7 +61,12 @@
   padding: var(--cm-field-padding-md);
 }
 
-.cm-data-table--striped .cm-data-table__body > tr:nth-child(even) > td {
+.cm-data-table--striped .cm-data-table__body > tr:nth-child(even of :not(.cm-data-table__expanded-row)) > td,
+.cm-data-table--striped
+  .cm-data-table__body
+  > tr:nth-child(even of :not(.cm-data-table__expanded-row))
+  + .cm-data-table__expanded-row
+  > td {
   background: color-mix(in srgb, var(--cm-color-background-surface) 65%, var(--cm-color-background-surface-hover) 35%);
 }
 
@@ -85,6 +95,38 @@
   block-size: calc(var(--cm-space-4) + var(--cm-space-1));
   margin: 0;
   accent-color: var(--cm-color-focus-ring);
+}
+
+.cm-data-table__expansion {
+  inline-size: 1%;
+  text-align: center;
+}
+
+.cm-data-table__expansion [aria-expanded='true'] .cm-icon-button__icon {
+  transform: rotate(180deg);
+}
+
+.cm-data-table__skeleton {
+  min-block-size: var(--cm-icon-size-md);
+}
+
+.cm-data-table__loading-status {
+  position: absolute;
+  overflow: hidden;
+  inline-size: 1px;
+  block-size: 1px;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.cm-data-table__loading-mask {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--cm-field-padding-lg);
+  background: color-mix(in srgb, var(--cm-color-background-surface) 72%, transparent);
 }
 
 .cm-data-table__cell--center {

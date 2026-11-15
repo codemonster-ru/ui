@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, ref, useAttrs, watch, watchEffect, type PropType } from 'vue';
+import { chevronDown } from '@codemonster-ru/ui-icons';
+import { computed, ref, useAttrs, watch, watchEffect, type CSSProperties, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
@@ -13,6 +14,10 @@ import {
   toggleAllSelection,
 } from '@codemonster-ru/ui-runtime/core';
 import { assertCm, warnCm } from '../../internal/warn';
+import CmIconButton from '../icon-button/CmIconButton.vue';
+import CmIcon from '../icon/CmIcon.vue';
+import CmProgressSpinner from '../progress-spinner/CmProgressSpinner.vue';
+import CmSkeleton from '../skeleton/CmSkeleton.vue';
 import type {
   CmDataTableCellValue,
   CmDataTableColumn,
@@ -41,12 +46,16 @@ const props = defineProps({
   columnDividers: Boolean,
   stickyHeader: Boolean,
   visibleColumnKeys: { type: Array as PropType<readonly string[] | null>, default: null },
+  columnOrder: { type: Array as PropType<readonly string[] | null>, default: null },
+  columnWidths: { type: Object as PropType<Readonly<Record<string, string>>>, default: () => ({}) },
   selectable: Boolean,
   rowSelectable: {
     type: Function as PropType<(row: CmDataTableRow, rowIndex: number) => boolean>,
     default: undefined,
   },
   selectedRowIds: { type: Array as PropType<readonly string[]>, default: () => [] },
+  expandedRowKeys: { type: Array as PropType<readonly string[] | null>, default: null },
+  defaultExpandedRowKeys: { type: Array as PropType<readonly string[]>, default: () => [] },
   sort: { type: Object as PropType<CmDataTableSort | null>, default: null },
   sortingMode: {
     type: String as PropType<CmDataTableMode>,
@@ -65,6 +74,12 @@ const props = defineProps({
   pageSizeOptions: { type: Array as PropType<readonly number[]>, default: () => [] },
   totalRows: { type: Number as PropType<number | null>, default: null },
   loading: Boolean,
+  loadingVariant: {
+    type: String as PropType<'status' | 'mask' | 'skeleton'>,
+    default: 'status',
+    validator: (value: string) => ['status', 'mask', 'skeleton'].includes(value),
+  },
+  loadingRows: { type: Number, default: 3 },
   error: Boolean,
   emptyText: { type: String, default: 'No data' },
   loadingText: { type: String, default: 'Loading...' },
@@ -80,6 +95,8 @@ const props = defineProps({
   nextPageLabel: { type: String, default: 'Next page' },
   selectAllLabel: { type: String, default: 'Select all rows' },
   selectRowLabelTemplate: { type: String, default: 'Select {row}' },
+  expandRowLabelTemplate: { type: String, default: 'Expand {row}' },
+  collapseRowLabelTemplate: { type: String, default: 'Collapse {row}' },
   sortAscendingLabelTemplate: { type: String, default: 'Sort {column} ascending' },
   sortDescendingLabelTemplate: { type: String, default: 'Sort {column} descending' },
   clearSortLabelTemplate: { type: String, default: 'Clear sorting for {column}' },
@@ -92,6 +109,7 @@ const emit = defineEmits<{
   'update:page': [page: number];
   'update:pageSize': [pageSize: number];
   'update:selectedRowIds': [selectedRowIds: string[]];
+  'update:expandedRowKeys': [expandedRowKeys: string[]];
   'update:sort': [sort: CmDataTableSort | null];
 }>();
 defineSlots<{
@@ -100,6 +118,7 @@ defineSlots<{
   error?: () => unknown;
   loading?: () => unknown;
   footer?: () => unknown;
+  'expanded-row'?: (props: { row: CmDataTableRow; rowKey: string; rowIndex: number }) => unknown;
   [slot: `header-${string}`]: ((props: { column: CmDataTableColumn }) => unknown) | undefined;
   [slot: `cell-${string}`]:
     | ((props: {
@@ -121,6 +140,8 @@ const normalizedColumns = computed(() => {
       !idPattern.test(column.key) ||
       !column.header.trim() ||
       (column.align !== undefined && !['start', 'center', 'end'].includes(column.align)) ||
+      (column.verticalAlign !== undefined && !['top', 'middle', 'bottom', 'baseline'].includes(column.verticalAlign)) ||
+      (column.scope !== undefined && !['col', 'row', 'colgroup', 'rowgroup'].includes(column.scope)) ||
       keys.has(column.key)
     ) {
       warnCm(`Invalid DataTable column: ${column.key}. The column is not rendered.`);
@@ -161,7 +182,7 @@ const normalizedRows = computed(() => {
   return rows;
 });
 
-const visibleColumns = computed(() => {
+const requestedColumns = computed(() => {
   if (props.visibleColumnKeys === null) return normalizedColumns.value;
   if (!assertCm(props.visibleColumnKeys.length > 0, 'DataTable visibleColumnKeys must not be empty.')) {
     return normalizedColumns.value;
@@ -179,6 +200,17 @@ const visibleColumns = computed(() => {
     visible.push(column);
   }
   return visible;
+});
+const visibleColumns = computed(() => {
+  if (props.columnOrder === null) return requestedColumns.value;
+  const columns = new Map(requestedColumns.value.map((column) => [column.key, column]));
+  const ordered = props.columnOrder.flatMap((key) => {
+    const column = columns.get(key);
+    if (!column) return [];
+    columns.delete(key);
+    return [column];
+  });
+  return [...ordered, ...columns.values()];
 });
 
 assertCm(idPattern.test(props.id), 'DataTable id must use lowercase kebab-case.');
@@ -272,6 +304,8 @@ function normalizeSort(sort: CmDataTableSort | null): CmDataTableSort | null {
 
 const localSort = ref<CmDataTableSort | null>(normalizeSort(props.sort));
 const localSelectedRowIds = ref([...props.selectedRowIds]);
+const localExpandedRowKeys = ref([...props.defaultExpandedRowKeys]);
+const expandedRowKeys = computed(() => new Set(props.expandedRowKeys ?? localExpandedRowKeys.value));
 const localPage = ref(safePage.value);
 const localPageSize = ref(safePageSize.value);
 const resolvedPageCount = computed(() =>
@@ -366,9 +400,14 @@ const rootAttrs = computed(() =>
     'data-cm-data-table-selected-count',
   ]),
 );
-const state = computed(() =>
-  props.loading ? 'loading' : props.error ? 'error' : renderedRows.value.length === 0 ? 'empty' : undefined,
-);
+const maskLoading = computed(() => props.loading && props.loadingVariant === 'mask');
+const state = computed(() => {
+  if (props.loading && !maskLoading.value) return 'loading';
+  if (props.error && !props.loading) return 'error';
+  return renderedRows.value.length === 0 ? 'empty' : undefined;
+});
+const skeletonLoading = computed(() => props.loading && props.loadingVariant === 'skeleton');
+const skeletonRowCount = computed(() => (Number.isSafeInteger(props.loadingRows) ? Math.max(1, props.loadingRows) : 3));
 const showPagination = computed(
   () =>
     props.pagination ??
@@ -388,6 +427,28 @@ const columnCount = computed(() => visibleColumns.value.length + (props.selectab
 
 function cellAttrs(column: CmDataTableColumn): Record<string, string> {
   return column.align && column.align !== 'start' ? { class: `cm-data-table__cell--${column.align}` } : {};
+}
+
+function cellStyle(column: CmDataTableColumn): CSSProperties | undefined {
+  const width = props.columnWidths[column.key] ?? column.width;
+  const { minWidth, maxWidth, verticalAlign, nowrap } = column;
+  if (!(width || minWidth || maxWidth || verticalAlign || nowrap)) return undefined;
+  return {
+    inlineSize: width,
+    minInlineSize: minWidth,
+    maxInlineSize: maxWidth,
+    verticalAlign,
+    whiteSpace: nowrap ? 'nowrap' : undefined,
+  };
+}
+
+function toggleExpandedRow(id: string): void {
+  const next = new Set(expandedRowKeys.value);
+  if (next.has(id)) next.delete(id);
+  else next.add(id);
+  const keys = [...next];
+  if (props.expandedRowKeys === null) localExpandedRowKeys.value = keys;
+  emit('update:expandedRowKeys', keys);
 }
 
 function rowLabel(id: string): string {
@@ -472,7 +533,7 @@ useCmHydrated();
     :data-cm-data-table-selected-count="localSelectedRowIds.length"
   >
     <div class="cm-data-table__scroll">
-      <table class="cm-data-table__table">
+      <table class="cm-data-table__table" :inert="maskLoading || undefined">
         <caption v-if="props.caption || $slots.caption" class="cm-data-table__caption">
           <slot name="caption">{{ props.caption }}</slot>
         </caption>
@@ -489,11 +550,13 @@ useCmHydrated();
                 @change="changeAllSelection(($event.target as HTMLInputElement).checked)"
               />
             </th>
+            <th v-if="$slots['expanded-row']" class="cm-data-table__expansion" scope="col" aria-label="Row details" />
             <th
               v-for="column in visibleColumns"
               :key="column.key"
               v-bind="cellAttrs(column)"
-              scope="col"
+              :style="cellStyle(column)"
+              :scope="column.scope ?? 'col'"
               :aria-sort="column.sortable ? columnAriaSort(column) : undefined"
             >
               <button
@@ -516,48 +579,98 @@ useCmHydrated();
             </th>
           </tr>
         </thead>
-        <tbody class="cm-data-table__body">
-          <tr v-if="state">
-            <td class="cm-data-table__state" :colspan="columnCount" role="status">
+        <tbody class="cm-data-table__body" :aria-busy="skeletonLoading || undefined">
+          <template v-if="skeletonLoading">
+            <tr v-for="row in skeletonRowCount" :key="row" aria-hidden="true">
+              <td v-if="props.selectable" class="cm-data-table__selection" />
+              <td v-if="$slots['expanded-row']" class="cm-data-table__expansion" />
+              <td v-for="column in visibleColumns" :key="column.key" :style="cellStyle(column)">
+                <CmSkeleton class="cm-data-table__skeleton" radius="control" />
+              </td>
+            </tr>
+          </template>
+          <tr v-else-if="state">
+            <td
+              class="cm-data-table__state"
+              :colspan="Math.max(1, columnCount + Number(Boolean($slots['expanded-row'])))"
+              role="status"
+            >
               <slot :name="state">{{ props[`${state}Text`] }}</slot>
             </td>
           </tr>
-          <tr
-            v-for="(row, rowIndex) in state ? [] : renderedRows"
-            v-else
-            :key="row.id"
-            v-bind="selectedIds.has(row.id) ? { class: 'cm-data-table__row--selected' } : {}"
-            :data-cm-data-table-row="row.id"
-          >
-            <td v-if="props.selectable" class="cm-data-table__selection">
-              <input
-                type="checkbox"
-                :aria-label="formatTemplate(props.selectRowLabelTemplate, { row: rowLabel(row.id) })"
-                :value="row.id"
-                :checked="selectedIds.has(row.id)"
-                :disabled="!enabledIds.has(row.id)"
-                data-cm-data-table-select-row
-                @change="changeRowSelection(row.id, ($event.target as HTMLInputElement).checked)"
-              />
-            </td>
-            <td v-for="column in visibleColumns" :key="column.key" v-bind="cellAttrs(column)">
-              <slot
-                :name="`cell-${column.key}`"
-                :row="row"
-                :column="column"
-                :value="row.cells[column.key] ?? null"
-                :row-index="rowIndex"
+          <template v-else>
+            <template v-for="(row, rowIndex) in renderedRows" :key="row.id">
+              <tr
+                v-bind="selectedIds.has(row.id) ? { class: 'cm-data-table__row--selected' } : {}"
+                :data-cm-data-table-row="row.id"
               >
-                {{ row.cells[column.key] ?? '' }}
-              </slot>
-            </td>
-          </tr>
+                <td v-if="props.selectable" class="cm-data-table__selection">
+                  <input
+                    type="checkbox"
+                    :aria-label="formatTemplate(props.selectRowLabelTemplate, { row: rowLabel(row.id) })"
+                    :value="row.id"
+                    :checked="selectedIds.has(row.id)"
+                    :disabled="!enabledIds.has(row.id)"
+                    data-cm-data-table-select-row
+                    @change="changeRowSelection(row.id, ($event.target as HTMLInputElement).checked)"
+                  />
+                </td>
+                <td v-if="$slots['expanded-row']" class="cm-data-table__expansion">
+                  <CmIconButton
+                    size="sm"
+                    :label="
+                      formatTemplate(
+                        expandedRowKeys.has(row.id) ? props.collapseRowLabelTemplate : props.expandRowLabelTemplate,
+                        { row: rowLabel(row.id) },
+                      )
+                    "
+                    :aria-expanded="expandedRowKeys.has(row.id)"
+                    :aria-controls="expandedRowKeys.has(row.id) ? `${props.id}-expanded-${row.id}` : undefined"
+                    @click="toggleExpandedRow(row.id)"
+                  >
+                    <CmIcon :icon="chevronDown" />
+                  </CmIconButton>
+                </td>
+                <td
+                  v-for="column in visibleColumns"
+                  :key="column.key"
+                  v-bind="cellAttrs(column)"
+                  :style="cellStyle(column)"
+                >
+                  <slot
+                    :name="`cell-${column.key}`"
+                    :row="row"
+                    :column="column"
+                    :value="row.cells[column.key] ?? null"
+                    :row-index="rowIndex"
+                  >
+                    {{ row.cells[column.key] ?? '' }}
+                  </slot>
+                </td>
+              </tr>
+              <tr
+                v-if="$slots['expanded-row'] && expandedRowKeys.has(row.id)"
+                :id="`${props.id}-expanded-${row.id}`"
+                class="cm-data-table__expanded-row"
+              >
+                <td :colspan="columnCount + 1">
+                  <slot name="expanded-row" :row="row" :row-key="row.id" :row-index="rowIndex" />
+                </td>
+              </tr>
+            </template>
+          </template>
         </tbody>
         <tfoot v-if="$slots.footer">
           <slot name="footer" />
         </tfoot>
       </table>
+      <div v-if="maskLoading" class="cm-data-table__loading-mask" role="status" :aria-label="props.loadingText">
+        <slot name="loading">
+          <CmProgressSpinner :label="props.loadingText" aria-hidden="true" />
+        </slot>
+      </div>
     </div>
+    <span v-if="skeletonLoading" class="cm-data-table__loading-status" role="status">{{ props.loadingText }}</span>
     <nav v-if="showPagination" class="cm-data-table__pagination" :aria-label="props.paginationLabel">
       <label v-if="normalizedPageSizeOptions.length > 0" class="cm-data-table__page-size">
         <span>{{ props.rowsPerPageLabel }}</span>
