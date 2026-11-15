@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Code block</title>
+    <link rel="stylesheet" href="./tokens/tokens.css" />
+    <link rel="stylesheet" href="./css/fonts.css" />
+    <link rel="stylesheet" href="./css/styles.css" />
+    <link rel="stylesheet" href="./code-block-example.css" />
+  </head>
+  <body>
+    <main class="cm-container recipe-code-block-page">
+      <h1>Code block</h1>
+      <figure class="recipe-code-block" data-code-block>
+        <figcaption class="recipe-code-block__caption">
+          <span id="settings-caption">settings.js</span>
+          <button class="cm-button cm-button--secondary cm-button--sm" type="button" data-code-copy hidden>
+            <span class="cm-button__label">Copy code</span>
+          </button>
+        </figcaption>
+        <!-- prettier-ignore -->
+        <pre class="recipe-code-block__source" role="region" aria-labelledby="settings-caption" tabindex="0"><code class="language-javascript">const settings = {
+  autoSave: true,
+  message: 'Use &lt;main&gt; for the page content &amp; keep headings in order.',
+};
+
+if (settings.autoSave &amp;&amp; settings.message) {
+  console.log(settings.message);
+}</code></pre>
+        <p class="recipe-code-block__status" role="status" data-code-status></p>
+      </figure>
+    </main>
+    <script type="module">
+      import { connectCodeBlock } from './code-block-example.mjs';
+
+      connectCodeBlock(document.querySelector('[data-code-block]'));
+    </script>
+  </body>
+</html>

@@ -34,7 +34,8 @@ Run `npm run preview:vanilla` from the repository root to build and open the ful
 For assets to deploy, run `npm run build:vanilla` and serve the contents of
 `examples/vanilla/dist` over HTTP. Keep the `tokens` and `css` directories intact so
 their relative imports resolve. Open `index.html` for the catalog, `accordion-example.html`
-for minimal integration, or `confirm-dialog-example.html` for a confirmation flow.
+for minimal integration, `confirm-dialog-example.html` for a confirmation flow, or
+`code-block-example.html` for the [code block recipe](recipes/code-block.md).
 
 Render the [canonical component HTML](../contracts/README.md) in your templates with unique IDs
 and the initial state. Load the CSS entries and your own module:

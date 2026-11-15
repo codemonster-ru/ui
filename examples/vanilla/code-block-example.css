@@ -1,0 +1,49 @@
+.recipe-code-block-page {
+  max-inline-size: 48rem;
+  padding-block: var(--cm-space-6);
+}
+
+.recipe-code-block {
+  margin: var(--cm-space-4) 0 0;
+  border: var(--cm-border-width) solid var(--cm-color-border-default);
+  border-radius: var(--cm-radius-surface);
+  background: var(--cm-color-background-surface);
+}
+
+.recipe-code-block__caption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--cm-space-2);
+  padding: var(--cm-space-3) var(--cm-space-4);
+  border-block-end: var(--cm-border-width) solid var(--cm-color-border-default);
+  font-weight: var(--cm-font-weight-semibold);
+}
+
+.recipe-code-block [hidden] {
+  display: none;
+}
+
+.recipe-code-block__source {
+  overflow: auto;
+  margin: 0;
+  padding: var(--cm-space-4);
+  border-end-start-radius: inherit;
+  border-end-end-radius: inherit;
+  background: var(--cm-color-background-canvas);
+  color: var(--cm-color-text-primary);
+  font-family: var(--cm-font-family-mono);
+  font-size: var(--cm-text-body-font-size);
+  line-height: var(--cm-text-body-line-height);
+  white-space: pre;
+}
+
+.recipe-code-block__status {
+  margin: 0;
+  color: var(--cm-color-text-primary);
+}
+
+.recipe-code-block__status:not(:empty) {
+  padding: var(--cm-space-2) var(--cm-space-4);
+}
