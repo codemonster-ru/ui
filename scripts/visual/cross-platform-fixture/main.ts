@@ -43,9 +43,7 @@ if (
   !['vue', 'vanilla'].includes(platform ?? '') ||
   !['light', 'dark'].includes(theme ?? '')
 ) {
-  throw new Error(
-    'Cross-platform fixture requires a registered case, platform=vue|vanilla, and theme=light|dark.',
-  );
+  throw new Error('Cross-platform fixture requires a registered case, platform=vue|vanilla, and theme=light|dark.');
 }
 
 const resolvedCase = casesById.get(caseId);
@@ -110,6 +108,7 @@ if (platform === 'vue') {
             'page-size-change',
             'selection-change',
             'sort-change',
+            'visible-columns-change',
           ];
     for (const name of names) {
       const listener = 'on' + name.replace(/(^|-)([a-z])/gu, (_, _separator, char: string) => char.toUpperCase());
@@ -125,6 +124,7 @@ if (platform === 'vue') {
       'pageSize',
       'selectedRowIds',
       'openPath',
+      'visibleColumnKeys',
     ]) {
       props['onUpdate:' + key] = (value: unknown) => {
         props[key] = value;

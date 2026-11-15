@@ -71,11 +71,25 @@ const suites = {
   'column-chooser': {
     component: components.CmColumnChooser,
     controller: ['popover', runtime.createCmPopoverController],
+    additionalController: ['column-chooser', runtime.createCmColumnChooserController],
     root: '.cm-column-chooser',
-    targets: { panel: '.cm-column-chooser__panel', trigger: '.cm-column-chooser__trigger' },
+    targets: {
+      'all-columns': '[data-cm-column-chooser-all]',
+      'column-owner': '[data-cm-column-chooser-key="owner"]',
+      panel: '.cm-column-chooser__panel',
+      trigger: '.cm-column-chooser__trigger',
+    },
+    events: {
+      'column-chooser-visible-columns-change': {
+        dom: 'cm:column-chooser-visible-columns-change',
+        vue: 'visibleColumnsChange',
+      },
+    },
     snapshot: (root) => ({
       expanded: root.querySelector('.cm-column-chooser__trigger')?.getAttribute('aria-expanded'),
       hidden: root.querySelector('.cm-column-chooser__panel')?.hidden,
+      checked: [...root.querySelectorAll('input[type="checkbox"]')].map((input) => input.checked),
+      mixed: root.querySelector('[data-cm-column-chooser-all]')?.indeterminate,
     }),
   },
   'menu-bar': {
@@ -213,7 +227,9 @@ for (const [slug, suite] of Object.entries(suites)) {
       const razorDom = new JSDOM(`<!doctype html><html><body>${razorHtml}</body></html>`);
       const razorRoot = razorDom.window.document.querySelector(suite.root);
       assert.ok(razorRoot, `Canonical fixture has no ${suite.root}.`);
-      new runtime.CmRuntime().register(...suite.controller).start(razorDom.window.document);
+      const enhancement = new runtime.CmRuntime().register(...suite.controller);
+      if (suite.additionalController) enhancement.register(...suite.additionalController);
+      enhancement.start(razorDom.window.document);
 
       const slots = Object.fromEntries(
         Object.entries(definition.slots ?? {}).map(([name, content]) => [name, () => slotContent(content)]),
@@ -261,6 +277,7 @@ for (const [slug, suite] of Object.entries(suites)) {
       }
 
       vue.unmount();
+      enhancement.stop();
       razorDom.window.close();
     });
   }

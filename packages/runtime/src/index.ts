@@ -9,6 +9,8 @@ export type { DatePickerValueChangeDetail } from './date-picker.js';
 export { CmAccordionController, createCmAccordionController } from './accordion.js';
 export type { AccordionOpenChangeDetail } from './accordion.js';
 export { CmCheckboxController, createCmCheckboxController } from './checkbox.js';
+export { CmColumnChooserController, createCmColumnChooserController } from './column-chooser.js';
+export type { ColumnChooserVisibleColumnsChangeDetail } from './column-chooser.js';
 export { CmCommandPaletteController, createCmCommandPaletteController } from './command-palette.js';
 export type { CommandPaletteQueryChangeDetail, CommandPaletteSelectDetail } from './command-palette.js';
 export { CmDataTableController, createCmDataTableController } from './data-table.js';

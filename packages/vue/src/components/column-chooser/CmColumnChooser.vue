@@ -95,7 +95,7 @@ useCmHydrated();
 </script>
 
 <template>
-  <div v-bind="rootAttrs" :class="classes" data-cm-controller="popover" @keydown="onKeydown">
+  <div v-bind="rootAttrs" :class="classes" data-cm-controller="popover column-chooser" @keydown="onKeydown">
     <button
       :id="props.id"
       ref="trigger"
@@ -141,6 +141,7 @@ useCmHydrated();
             class="cm-checkbox__input"
             type="checkbox"
             :data-cm-column-chooser-key="column.key"
+            :data-cm-column-chooser-required="props.requiredColumnKeys.includes(column.key) ? '' : undefined"
             :checked="visibleKeys.includes(column.key)"
             :disabled="props.disabled || props.requiredColumnKeys.includes(column.key) || undefined"
             @change="
