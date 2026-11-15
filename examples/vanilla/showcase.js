@@ -36,21 +36,35 @@ const themeButton = document.querySelector('#showcase-theme');
 const themeModeLabel = document.querySelector('[data-showcase-theme-mode]');
 const themeResolvedLabel = document.querySelector('[data-showcase-theme-resolved]');
 const themeButtons = document.querySelectorAll('[data-showcase-set-theme]');
+const themeToggles = document.querySelectorAll('[data-showcase-theme-toggle]');
+const themeIcons = document.querySelectorAll('[data-showcase-theme-icon]');
+const themeLabels = document.querySelectorAll('[data-showcase-theme-label]');
 const systemTheme = window.matchMedia('(prefers-color-scheme: dark)');
 const themeDefault = 'system';
 let themeMode = themeDefault;
 const isDark = (mode) => mode === 'dark' || (mode === 'system' && systemTheme.matches);
 const syncThemeControls = (mode) => {
   themeMode = mode;
+  const dark = isDark(mode);
   for (const input of document.querySelectorAll('#showcase-theme-example input')) {
     input.checked = input.value === mode;
   }
-  for (const icon of themeButton.querySelectorAll('[data-showcase-theme-icon]')) {
-    icon.hidden = icon.dataset.showcaseThemeIcon !== (isDark(mode) ? 'moon' : 'sun');
+  for (const icon of themeIcons) {
+    icon.toggleAttribute('hidden', icon.dataset.showcaseThemeIcon !== (dark ? 'moon' : 'sun'));
+  }
+  for (const label of themeLabels) label.textContent = dark ? 'Dark' : 'Light';
+  for (const control of themeToggles) {
+    if (control instanceof HTMLInputElement) {
+      control.checked = dark;
+      control.setAttribute('aria-checked', String(dark));
+    } else {
+      control.setAttribute('aria-label', dark ? 'Switch to light theme' : 'Switch to dark theme');
+    }
+    control.disabled = false;
   }
   themeButton.hidden = false;
   if (themeModeLabel) themeModeLabel.textContent = `mode: ${mode}`;
-  if (themeResolvedLabel) themeResolvedLabel.textContent = `resolved: ${isDark(mode) ? 'dark' : 'light'}`;
+  if (themeResolvedLabel) themeResolvedLabel.textContent = `resolved: ${dark ? 'dark' : 'light'}`;
   for (const button of themeButtons) {
     if (button.dataset.showcaseSetTheme !== 'toggle') {
       button.setAttribute('aria-pressed', String(button.dataset.showcaseSetTheme === mode));
@@ -68,6 +82,13 @@ function selectTheme(mode) {
 themeButton.addEventListener('click', () => selectTheme('toggle'));
 for (const button of themeButtons) {
   button.addEventListener('click', () => selectTheme(button.dataset.showcaseSetTheme));
+}
+for (const control of themeToggles) {
+  if (control instanceof HTMLInputElement) {
+    control.addEventListener('change', () => selectTheme(control.checked ? 'dark' : 'light'));
+  } else {
+    control.addEventListener('click', () => selectTheme('toggle'));
+  }
 }
 
 catalog.addEventListener('cm:theme-change', (event) => {

@@ -31,12 +31,13 @@ const buttonVariants = ['secondary', 'ghost', 'secondary'] as const;
             :key="option"
             size="sm"
             variant="secondary"
+            :aria-pressed="mode === option"
             @click="emit('select', option)"
             >{{ option[0].toUpperCase() + option.slice(1) }}</CmButton
           >
           <CmButton size="sm" @click="emit('toggle')">Toggle</CmButton>
         </div>
-        <div class="core-theme-controls" aria-live="polite">
+        <div class="core-theme-controls core-theme-status" aria-live="polite">
           <CmTag tone="primary">mode: {{ mode }}</CmTag>
           <CmTag tone="contrast">resolved: {{ resolved }}</CmTag>
         </div>
@@ -63,7 +64,7 @@ const buttonVariants = ['secondary', 'ghost', 'secondary'] as const;
             :label="resolved === 'dark' ? 'Dark' : 'Light'"
           />
         </div>
-        <p class="showcase-muted">
+        <p class="showcase-muted core-theme-switch-note">
           The switch reflects the resolved theme and turns system mode into an explicit light or dark choice after
           interaction.
         </p>

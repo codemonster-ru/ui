@@ -2,7 +2,7 @@
   {
     "id": "theme",
     "title": "Theme",
-    "description": "Check components in light, dark, and system themes.",
+    "description": "Provide color-mode state and let users switch between system, light, and dark themes.",
     "components": ["theme-switch"]
   },
   {

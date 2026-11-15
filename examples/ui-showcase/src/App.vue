@@ -13,7 +13,7 @@ import ColorsShowcase from './ColorsShowcase.vue';
 import { iconIntro, renderOperations } from '../../shared/showcase-reference.mts';
 import { actionMatrices, buttonMatrices } from '../../shared/showcase-matrices.mts';
 import type { CmButtonProps, CmIconButtonProps, CmLinkProps } from '@codemonster-ru/ui-vue';
-import typography from './core-typography.html?raw';
+import typography from '../../shared/showcase-typography.html?raw';
 import { defineAsyncComponent, nextTick, onUnmounted, ref, type Component } from 'vue';
 import { CmRuntime, createCmTabsController } from '@codemonster-ru/ui-runtime';
 import { mountOperations } from '../../shared/showcase-reference.js';
@@ -107,6 +107,7 @@ const { theme: themeMode, resolvedTheme, setTheme: selectTheme, toggleTheme } = 
     class="showcase-content showcase-core"
     :class="{
       'showcase-layouts': currentPage === 'layouts',
+      'showcase-content--core-guide': currentPage === 'core',
     }"
   >
     <template v-if="currentPage === 'core'">

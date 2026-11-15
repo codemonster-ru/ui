@@ -84,3 +84,31 @@ unique Duotone SVG definition IDs, historical keyword search, group-specific emp
 copy feedback with an isolated clipboard stub. A separate production navigation check verified
 that Vue Core loaded four eager scripts without the gallery chunk or catalogue-only data.
 Screenshots and reports are in `/tmp/cm-icons-guide-evidence`.
+
+## Core Theme and Typography
+
+The Vanilla Theme card uses three native checkbox switches, three icon buttons, and three
+labelled buttons for the historical visual variants. They use the existing persisted theme
+preference and follow the system scheme until an explicit choice. The three-mode radio and
+palette samples are in the collapsible theme contracts after Typography. Vue and Vanilla
+render the same typography HTML and CSS.
+
+Chrome compared the production Core pages with `d9879116` using the same RGB threshold. Scrollbar
+visibility was held constant across the captures.
+
+| Viewport   | Theme | Vue before → after | Vanilla before → after |
+| ---------- | ----- | -----------------: | ---------------------: |
+| 390 × 844  | Light |     17.97% → 2.91% |         29.24% → 2.83% |
+| 390 × 844  | Dark  |     17.93% → 2.96% |         29.45% → 2.87% |
+| 1280 × 800 | Light |      7.13% → 1.12% |         21.38% → 1.06% |
+| 1280 × 800 | Dark  |      7.11% → 1.12% |         21.44% → 1.06% |
+
+All eight current screenshots matched the historical rounded bounds of the Theme cards and their
+nine controls, the Typography heading, and the heading scale and first text utility rows. Chrome
+reported zero JavaScript errors and no horizontal page overflow. The top bar, demo names, dark
+theme status labels, and some typography details still differ.
+
+At 390 px each adapter passed native Space activation from system mode, all nine control actions,
+accessible state synchronization, same-page Typography links, and saved preference restoration
+after reload. The Vanilla radio worked when its disclosure was opened. Screenshots and reports
+are in `/tmp/cm-core-guide-evidence`.
