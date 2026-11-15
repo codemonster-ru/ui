@@ -7,7 +7,9 @@ export interface VfModalPortalProps {
 }
 
 export function useVfModalPortal(destination: () => VfModalPortalProps['teleportTo'], disabled: () => boolean) {
-  const modal = useTemplateRef<Pick<CmModalBinding, 'restoreAfterMove'> & { $el: HTMLDialogElement }>('modal');
+  const modal = useTemplateRef<
+    Pick<CmModalBinding, 'restoreAfterMove'> & { $el: HTMLDialogElement; modalOpen?: boolean }
+  >('modal');
   const owner = shallowRef<Document | null>(null);
   let restore: (() => void) | undefined;
 
@@ -50,5 +52,5 @@ export function useVfModalPortal(destination: () => VfModalPortalProps['teleport
     { flush: 'post' },
   );
 
-  return { target };
+  return { target, modal };
 }

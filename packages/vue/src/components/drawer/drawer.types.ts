@@ -30,4 +30,5 @@ export type VfDrawerPlacement = Exclude<CmDrawerSide, 'start' | 'end'>;
 export interface VfDrawerProps extends Omit<CmDrawerProps, 'id' | 'side'>, VfModalPortalProps {
   id?: string;
   placement?: VfDrawerPlacement;
+  scrollLockTarget?: HTMLElement | null | false;
 }
