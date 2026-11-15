@@ -11,13 +11,23 @@ Current version: `@codemonster-ru/ui-vue@2.0.0-dev.0` — in development, not pu
 
 ## Installation
 
+The 2.0 candidate in this checkout is consumed through workspace builds or local tarballs.
+From the repository root:
+
 ```bash
-npm install vue@^3.5.0 @codemonster-ru/ui-vue@^2.0.0-dev.0 @codemonster-ru/ui-css@^2.0.0-dev.0
+npm ci
+npm run build
+npm run check:packed-consumers
 ```
+
+The packed check installs this candidate with npm, pnpm, and Yarn in fresh consumer projects.
+Install the matching tokens, CSS, runtime, icons, and Vue tarballs together when testing it in
+another project. Use the released `1.x` documentation for registry installations of that line.
 
 ## Quick start
 
 ```ts
+import '@codemonster-ru/ui-tokens/tokens.css';
 import '@codemonster-ru/ui-css/styles.css';
 import { CmButton } from '@codemonster-ru/ui-vue';
 ```
@@ -33,6 +43,23 @@ slots render icon regions. `loading` replaces the leading region with a hidden s
 button, and exposes `aria-busy="true"` while preserving its label. A non-empty `href` renders an
 anchor. Disabled links omit `href`, expose `aria-disabled="true"`, and suppress consumer click
 handlers.
+
+## Migrating VueForge templates
+
+Use the `Cm*` components from `@codemonster-ru/ui-vue` for new templates. The
+`@codemonster-ru/ui-vue/historical` entry is available for restored contracts such as named icons,
+authored overlay triggers, and the physical Drawer placement API:
+
+```ts
+import { VfDrawer, VfPopover } from '@codemonster-ru/ui-vue/historical';
+```
+
+Import the shared tokens and stylesheet before rendering either entry. The native Dialog and Drawer
+use the browser's modal stack; custom legacy Teleport destinations and scroll-lock targets are
+separate migration concerns. Package plugin registration, old component subpaths, and CommonJS
+imports remain part of the archived VueForge packages. See the
+[historical contract trace](../../docs/verification/historical-vue-core.md) and
+[layout migration notes](../layouts/README.md) for exact supported behavior and remaining differences.
 
 ## Documentation
 
