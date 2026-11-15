@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Vanilla playground</title>
+    <link rel="stylesheet" href="./tokens/tokens.css" />
+    <link rel="stylesheet" href="./css/fonts.css" />
+    <link rel="stylesheet" href="./css/styles.css" />
+    <link rel="stylesheet" href="./playground-example.css" />
+    <script type="module" src="./playground-example.mjs"></script>
+  </head>
+  <body>
+    <main class="cm-container">
+      <h1>Vanilla playground</h1>
+      <noscript
+        ><p>Run and Reset require JavaScript. The example source and starting preview are still available.</p></noscript
+      >
+      <div class="recipe-playground">
+        <form id="playground-editor" class="recipe-playground__editor">
+          <label>
+            HTML
+            <!-- prettier-ignore -->
+            <textarea name="html" rows="7" spellcheck="false">&lt;main class="card"&gt;
+  &lt;h1&gt;Preview a release&lt;/h1&gt;
+  &lt;p&gt;Review the changes before publishing.&lt;/p&gt;
+  &lt;button type="button" id="review"&gt;Review changes&lt;/button&gt;
+  &lt;p role="status" id="review-status"&gt;&lt;/p&gt;
+&lt;/main&gt;</textarea>
+          </label>
+          <label>
+            CSS
+            <!-- prettier-ignore -->
+            <textarea name="css" rows="7" spellcheck="false">body {
+  margin: 1.5rem;
+  font: 1rem system-ui;
+}
+.card { padding: 1rem; border: 1px solid #61829f; }
+button { font: inherit; }</textarea>
+          </label>
+          <label>
+            JavaScript
+            <!-- prettier-ignore -->
+            <textarea name="js" rows="5" spellcheck="false">const review = document.querySelector('#review');
+review.addEventListener('click', () =&gt; {
+  document.querySelector('#review-status').textContent = 'Ready for review.';
+});</textarea>
+          </label>
+          <div class="recipe-playground__actions" data-playground-actions hidden>
+            <button class="cm-button cm-button--primary cm-button--md" type="submit">
+              <span class="cm-button__label">Run</span>
+            </button>
+            <button class="cm-button cm-button--secondary cm-button--md" type="button" data-playground-reset>
+              <span class="cm-button__label">Reset</span>
+            </button>
+            <p role="status" data-playground-status></p>
+          </div>
+        </form>
+        <section class="recipe-playground__preview" aria-labelledby="playground-preview-title">
+          <h2 id="playground-preview-title">Preview</h2>
+          <iframe
+            id="playground-preview"
+            title="Playground preview"
+            sandbox="allow-scripts"
+            referrerpolicy="no-referrer"
+            srcdoc="&lt;!doctype html&gt;&lt;html lang='en'&gt;&lt;meta charset='utf-8'&gt;&lt;meta http-equiv='Content-Security-Policy' content=&quot;default-src 'none'; base-uri 'none'; form-action 'none'&quot;&gt;&lt;title&gt;Playground preview&lt;/title&gt;&lt;main&gt;&lt;h1&gt;Preview a release&lt;/h1&gt;&lt;p&gt;Review the changes before publishing.&lt;/p&gt;&lt;/main&gt;&lt;/html&gt;"
+          ></iframe>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>
