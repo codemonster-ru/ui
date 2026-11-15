@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "skeleton-gate-ready",
+  "description": "Loaded content with continued height reservation and its placeholder hidden.",
+  "props": { "ready": true, "minHeight": "6rem" },
+  "slots": { "default": "<p>Invoice paid.</p>" }
+}

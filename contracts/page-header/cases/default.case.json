@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "page-header-default",
+  "description": "A title, supporting description, and a link to the next task.",
+  "props": { "title": "Orders", "description": "Review recent purchases." },
+  "slots": {
+    "actions": "<a class=\"cm-button cm-button--primary cm-button--md\" href=\"/orders/new\"><span class=\"cm-button__label\">New order</span></a>"
+  }
+}
