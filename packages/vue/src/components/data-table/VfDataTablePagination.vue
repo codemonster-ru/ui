@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { chevronLeft, chevronRight } from '@codemonster-ru/ui-icons';
+import { chevronLeft, chevronRight } from '@codemonster-ru/ui-icons/controls';
 import { computed, nextTick, useTemplateRef, watch } from 'vue';
 import CmIconButton from '../icon-button/CmIconButton.vue';
 import CmIcon from '../icon/CmIcon.vue';

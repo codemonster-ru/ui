@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="Row extends object = CmDataTableRow">
-import { chevronDown } from '@codemonster-ru/ui-icons';
+import { chevronDown } from '@codemonster-ru/ui-icons/controls';
 import {
   measureDataTableColumnContent,
   measureDataTableResizeBoundary,

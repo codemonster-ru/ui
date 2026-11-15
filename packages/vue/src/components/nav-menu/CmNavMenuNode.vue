@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { externalLink } from '@codemonster-ru/ui-icons';
+import { externalLink } from '@codemonster-ru/ui-icons/controls';
 import { computed, resolveComponent, type Component, type PropType } from 'vue';
 
 import CmIcon from '../icon/CmIcon.vue';

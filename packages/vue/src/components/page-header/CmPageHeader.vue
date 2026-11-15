@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { chevronRight } from '@codemonster-ru/ui-icons';
+import { chevronRight } from '@codemonster-ru/ui-icons/controls';
 
 import CmBreadcrumbs from '../breadcrumbs/CmBreadcrumbs.vue';
 import type { CmBreadcrumbItem } from '../breadcrumbs/breadcrumbs.types';

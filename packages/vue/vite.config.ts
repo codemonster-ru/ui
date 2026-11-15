@@ -32,6 +32,7 @@ export default defineConfig({
         '@codemonster-ru/ui-runtime/native-modal',
         '@codemonster-ru/ui-runtime/tabs-scroll',
         '@codemonster-ru/ui-icons',
+        '@codemonster-ru/ui-icons/controls',
         '@codemonster-ru/ui-tokens',
         '@codemonster-ru/floater.js',
       ],

@@ -61,16 +61,18 @@ The Vue adapter takes the geometry as a prop, so install this alongside `@codemo
 ## Generating
 
 ```bash
-npm run generate -w @codemonster-ru/ui-icons
+npm run generate -w @codemonster-ru/ui-icons -- /path/to/built/vueforge-icons <source-commit>
 ```
 
-The generator renders every combination from `@codemonster-ru/vueforge-icons` headlessly — no
-browser, no bundler — and writes one module per icon. `src/generated/provenance.json` records the source version and the commit it was read at.
+The generator reads a built `@codemonster-ru/vueforge-icons` package and renders every combination
+in Node. Pass the source commit for an unpacked archive. In a source checkout the generator can
+read the revision from Git. `src/generated/provenance.json` records the source version and revision.
 
 ## Shape
 
-One module per icon, so a consumer using five icons ships roughly 3 KB gzipped rather than the 26 KB
-the whole set weighs.
+Named imports load only the geometry used by the consumer. The generated modules store repeating
+SVG bodies once per icon. The `/controls` entry provides the regular chevrons and external link
+marker with the same SVG as their complete forms.
 
 Not every icon has every form. A brand mark has one canonical rendering, so there is no thin-stroke
 GitHub logo to record, and `resolveCmIcon` falls back to the form that exists rather than failing.
