@@ -310,3 +310,96 @@ verification ref at the final SHA. Dispatch it with `gh workflow run ci.yml --re
 Confirm that the `visual` job checked out that SHA on `macos-26`. Record the runner image, pinned
 Chrome version and both strict comparisons against the existing stored images.
 [CI workflow](../../.github/workflows/ci.yml)
+
+## Continuation from f7471f59
+
+**PARTIAL.** The product revision passed the local package and adapter parity suites and all
+hosted gates. Historical navigation, overlay dismissal and package differences remain.
+
+- The historical Vue MenuBar switches open branches on hover and closes after the original
+  120 ms leave delay. Wide submenus use a positioned portal within the navigation landmark.
+  Compact and server-rendered menus remain inline. Browser checks covered pointer and keyboard
+  handoff, nested focus, clipping and live resizing (`170088ec`). Vue and Vanilla share the
+  historical 320 ms submenu reveal (`08c6f8fb`).
+- Dropdown, Popover and Tooltip restore the historical 320 ms fade, 4 px rise and 0.97 scale
+  (`b4394b4e`). Native Dialog and Drawer restore their matching 220 ms fade and rise or 320 ms
+  edge slide with backdrop fade (`beefa9fa`). Entry motion respects reduced motion. Native
+  dismissal immediately releases modality and restores focus. A modal containing an anchored
+  overlay fades in place so fixed panels stay aligned with their triggers (`c11d8460`).
+  Independent Chrome verification passed 24 cases covering viewport placement, focus, reduced
+  motion and dismissal before the fade ends. Four standalone Vanilla viewport and motion
+  combinations also passed for inline Dropdown and portaled Tooltip. The Tooltip's own reveal
+  left a horizontal offset under 1.4 px in this probe.
+- The historical DataTable animates header and body cells during keyboard and pointer reorder
+  (`d077fd73`). Pinned Chrome ran 30 scenarios across the current build and `d9879116`. Both
+  used the same 220 ms timing, kept pinned columns fixed, rolled back on Escape, and skipped
+  animations with reduced motion or more than 200 cells. The current build also kept header focus.
+- Compact generated icon data and fixed regular glyph imports make room for the restored
+  behavior inside the existing bundle limits (`36c3e38a`). The generator reproduced all 116
+  icon geometries from the frozen source with identical decoded data.
+- A generated Vite alias list preserves the 63 original Core and Layouts component subpaths
+  during browser and bundled SSR migration (`756fe45c`). The browser receives the same CSS as
+  the current package paths. Root package imports, the Layouts plugin and the raw runtime
+  preset engine still require the archived releases or migration to shared tokens.
+  [Migration guide](../migrate-from-vueforge.md)
+
+The historical horizontal MenuBar controls require overflow navigation that keeps compact items
+reachable with keyboard and touch. Restoring overlay exit motion requires retaining the closing
+paint and portal position while releasing pointer, focus and accessibility ownership immediately.
+Consumers of the raw preset engine and root package registrations can keep the pinned archived
+packages until they migrate to the current entries and shared tokens. [Vue contract trace](historical-vue-core.md)
+
+### Exact product candidate
+
+Product revision `084d19ea0244e86813875fc4a744f9878e8d285b` passed all 20 clean package checks,
+including 982 cold tests, 181 canonical accessibility cases, both production showcases and fresh
+npm, pnpm and Yarn tarball installs. The production audit found zero vulnerabilities. The
+development audit reported three low and 17 moderate findings. The native Vue and historical
+aggregates measured 59.60 KiB and 79.43 KiB against their existing 60 and 81 KiB gzip limits.
+Shared CSS measured 51,183 of 51,200 allowed gzip bytes. Package evidence is in
+`/private/tmp/cmui-verify.v9FnLQ`.
+
+In Chrome for Testing `151.0.7922.138` on macOS 27.2.1, all 96 stored-fixture captures matched
+the corresponding `d9879116` Inter-injected captures byte for byte. The strict local stored
+comparison again reported 44 of 48 differences per adapter, with zero missing or unexpected
+images. The frozen reference reproduces the same 520 changed glyph pixels. Approved PNGs, the
+rendering configuration and the comparison threshold are unchanged. [Renderer evidence](stored-visual-renderer.md)
+
+Pinned Chrome passed all 144 behavior runs. All 362 Vue and Vanilla fixture pairs had zero
+differing pixels and equal motion signatures. The historical, Vue and independent Vanilla
+production showcases produced 48 viewport captures with zero script errors or horizontal
+overflow. Against the historical showcase, the largest changed areas were 3.50% for Vue and
+3.44% for Vanilla at the four-level RGB threshold. The Vanilla build includes 62 components
+and 369 contract examples and variants. Browser evidence is in
+`/private/tmp/cmui-browser-checkpoint.JtBwQZ`.
+
+### First hosted run
+
+GitHub Actions built `c11d8460` on `macos-26-arm64` image `20261102.0473.1`, macOS 26.7.2
+(`25G332`), with Chrome for Testing `151.0.7922.138`. The two strict stored comparisons each
+reported 48 captures with zero changed, missing or unexpected images. Six broader paired
+comparisons failed across the two themes of `dropdown-composed`, `dropdown-open` and
+`dropdown-pills`, so the hosted behavior step did not run. The seven other CI jobs passed.
+[Hosted visual job](https://github.com/codemonster-ru/ui/actions/runs/43715133866/job/132814912035)
+
+Pinned Chrome reproduced the paired failure with 6× CPU throttling and reduced motion. The
+reduced-motion foundation rule gave all matching elements a nonzero transition duration. This
+started a padding transition on the fixture container even though it declared no transition.
+Vue measured the anchor at the viewport origin and retained that placement after the container
+settled. Vanilla measured later. `084d19ea` disables CSS transitions in reduced-motion mode and
+retains the shortened duration for animations. All 12 paired retests at 1×, 6× and 10× CPU
+throttling matched at capture and again after settling. Independent traces are in
+`/private/tmp/cmui-hosted-dropdown.nNE9Zy`. The paired stress results are in
+`/private/tmp/cmui-drawer-slice.eY9Pwm/dropdown-c11-no-reduced-transitions.log`. Six further
+paired captures against the committed build at 1× and 6× also matched at both checkpoints.
+Committed-build stress evidence is in `/private/tmp/cmui-dropdown-084d19ea-stress.log`.
+
+### Final hosted result
+
+All eight GitHub Actions jobs passed at `084d19ea0244e86813875fc4a744f9878e8d285b` on
+`codex/restoration-visual-c11d8460`. The `visual` job checked out that SHA on `macos-26-arm64`
+image `20261102.0473.1`, macOS 26.7.2 (`25G332`), and installed Chrome for Testing
+`151.0.7922.138`. It captured 96 screenshots and reported 48 comparisons per adapter with zero
+changed, missing or unexpected images. All 362 paired fixtures matched in pixels and motion.
+All 144 behavior runs passed with equal motion signatures.
+[Hosted visual job](https://github.com/codemonster-ru/ui/actions/runs/43716556197/job/132819264193)
