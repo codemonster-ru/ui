@@ -8,6 +8,20 @@ import { copyIcon, filterIcons } from './showcase-icon-catalog.js';
 
 const catalog = document.querySelector('.showcase-catalog');
 fillContrastTable(catalog);
+for (const button of catalog.querySelectorAll('[data-showcase-copy-color]')) {
+  button.disabled = false;
+  button.addEventListener('click', async () => {
+    const figure = button.closest('figure');
+    const code = figure.querySelector('code');
+    const status = figure.querySelector('[role="status"]');
+    try {
+      await navigator.clipboard.writeText(code.textContent);
+      status.textContent = 'Copied';
+    } catch {
+      status.textContent = 'Copy unavailable';
+    }
+  });
+}
 mountOperations(catalog);
 mountLayoutPreviews(catalog);
 mountLayoutRecipes(catalog);

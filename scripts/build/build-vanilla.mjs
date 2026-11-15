@@ -41,7 +41,7 @@ await Promise.all([
 await build({
   stdin: {
     contents:
-      "@import './packages/tokens/dist/tokens.css';\n@import './packages/css/dist/fonts.css';\n@import './packages/css/dist/styles.css';\n@import './examples/shared/showcase-shell.css';\n@import './examples/vanilla/showcase.css';",
+      "@import './packages/tokens/dist/tokens.css';\n@import './packages/css/dist/fonts.css';\n@import './packages/css/dist/styles.css';\n@import './examples/shared/showcase-shell.css';\n@import './examples/shared/showcase-colors.css';\n@import './examples/vanilla/showcase.css';",
     resolveDir: root,
     loader: 'css',
   },

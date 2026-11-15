@@ -282,6 +282,10 @@
   color: var(--cm-color-text-muted);
 }
 
+.color-system__copy-status:empty {
+  padding: 0;
+}
+
 @media (width <= 640px) {
   .color-system__hero h1 {
     max-inline-size: 13ch;
