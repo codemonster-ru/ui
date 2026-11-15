@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "skeleton-gate-default",
+  "description": "Reserved loading space with content marked inert and a decorative skeleton.",
+  "props": { "minHeight": "6rem" },
+  "slots": { "default": "<p>Invoice paid.</p>" }
+}

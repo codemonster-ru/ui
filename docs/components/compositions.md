@@ -15,6 +15,7 @@ In HTML use `cm-form-layout` and one of `cm-form-layout--stacked`,
 `cm-form-layout--horizontal`, or `cm-form-layout--responsive` on the wrapper. Put
 [field markup](./forms.md) directly inside it. Set the `--cm-form-layout-label-width`
 custom property to change the horizontal label track. No JavaScript is required.
+[Responsive HTML](../../contracts/form-layout/cases/default.html)
 
 ## Page header
 
@@ -28,6 +29,7 @@ In HTML use a `header.cm-page-header`. If needed, put breadcrumb navigation in
 `.cm-page-header__title` and optional `.cm-page-header__description` inside
 `.cm-page-header__content`, followed by an optional `.cm-page-header__actions` wrapper.
 Select the heading level according to the document outline.
+[Header with a page action](../../contracts/page-header/cases/default.html)
 
 ## Panel
 
@@ -37,6 +39,7 @@ flag makes the surface transparent.
 
 In HTML use `section.cm-panel` and add `cm-panel--subtle` for a transparent surface.
 Add a `header` containing a heading with the `cm-panel__title` class when needed.
+[Default HTML](../../contracts/panel/cases/default.html) · [Subtle HTML](../../contracts/panel/cases/subtle.html)
 
 ## Group box
 
@@ -50,8 +53,8 @@ Collapsing removes the slot content, so its form controls are excluded from subm
 
 For a static HTML group use `fieldset.cm-group-box` with
 `legend.cm-group-box__legend`, `.cm-group-box__title`, and `.cm-group-box__content`.
-Add `cm-group-box--titled` when supplying the legend. A framework-free disclosure controller for
-this markup requires tracking the button's `aria-expanded` state and the content's `hidden` state.
+Add `cm-group-box--titled` when supplying the legend. The [GroupBox recipe](../recipes/group-box.md)
+shows how to add disclosure behavior.
 
 ## Skeleton gate
 
@@ -61,6 +64,12 @@ while `ready` is false. The default content remains mounted with `inert` and
 space, `preserveLastHeight` to retain the measured height while loading again, and
 `normalizeContentSpacing` to remove the outer margins of the first and last content children.
 `radius` accepts a CSS length or expression. `fadeDuration` defaults to 220 milliseconds.
+
+For Vanilla HTML, render the [loading state](../../contracts/skeleton-gate/cases/default.html)
+or the [ready state](../../contracts/skeleton-gate/cases/ready.html). Your application owns when
+the state changes. Set `min-height` on the gate to reserve layout space and update
+`aria-busy`, `inert`, `aria-hidden`, the ready class, and the overlay's `hidden` attribute together.
+The shared CSS supplies the fade and respects reduced motion.
 
 `createAsyncWithSkeleton` wraps a Vue async component loader. A loading placeholder uses
 the component's `height`, `minHeight`, or `min-height` in that order. Supply

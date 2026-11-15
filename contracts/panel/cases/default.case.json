@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "panel-default",
+  "description": "A titled surface with supporting content.",
+  "props": { "title": "Activity" },
+  "slots": { "default": "<p>Nothing to review yet.</p>" }
+}

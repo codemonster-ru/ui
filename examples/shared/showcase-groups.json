@@ -22,7 +22,7 @@
     "id": "surfaces",
     "title": "Surface Components",
     "description": "Explore content, grouping, and table surfaces.",
-    "components": ["card", "divider", "fieldset", "group-box", "table", "data-table", "column-chooser"]
+    "components": ["card", "panel", "divider", "fieldset", "group-box", "table", "data-table", "column-chooser"]
   },
   {
     "id": "feedback",
@@ -30,13 +30,13 @@
     "description": "Compare status, progress, and loading states.",
     "matrix": "Feedback visual QA matrix",
     "recipeAfter": "skeleton",
-    "components": ["alert", "avatar", "badge", "tag", "progress-bar", "progress-spinner", "skeleton"]
+    "components": ["alert", "avatar", "badge", "tag", "progress-bar", "progress-spinner", "skeleton", "skeleton-gate"]
   },
   {
     "id": "forms",
     "title": "Forms",
     "description": "Try input, selection, and validation states.",
-    "components": ["field", "input", "textarea", "select", "date-picker", "checkbox", "radio", "switch"]
+    "components": ["field", "form-layout", "input", "textarea", "select", "date-picker", "checkbox", "radio", "switch"]
   },
   {
     "id": "navigation",
@@ -44,7 +44,17 @@
     "description": "Explore navigation, disclosure, and keyboard interaction.",
     "matrix": "Navigation visual QA matrix",
     "recipeAfter": "breadcrumbs",
-    "components": ["breadcrumbs", "tabs", "stepper", "accordion", "nav-menu", "menu-bar", "menu", "table-of-contents"]
+    "components": [
+      "breadcrumbs",
+      "page-header",
+      "tabs",
+      "stepper",
+      "accordion",
+      "nav-menu",
+      "menu-bar",
+      "menu",
+      "table-of-contents"
+    ]
   },
   {
     "id": "modals",

@@ -67,9 +67,9 @@ onBeforeUnmount(() => observer?.disconnect());
       <slot />
     </div>
     <div
-      v-show="!props.ready"
+      :hidden="props.ready || undefined"
       class="cm-skeleton-gate__overlay"
-      :style="{ borderRadius: props.radius }"
+      v-bind="props.radius ? { style: { borderRadius: props.radius } } : undefined"
       aria-hidden="true"
     >
       <slot name="skeleton">

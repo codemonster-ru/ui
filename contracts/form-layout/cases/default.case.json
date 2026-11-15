@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "form-layout-default",
+  "description": "A labelled native input in the responsive form layout.",
+  "props": { "mode": "responsive", "labelWidth": "12rem" },
+  "slots": {
+    "default": "<div class=\"cm-field\"><label class=\"cm-field__label\" for=\"billing-email\">Billing email</label><div class=\"cm-field__control\"><input class=\"cm-input cm-input--md\" id=\"billing-email\" name=\"email\" type=\"email\" autocomplete=\"email\" required></div></div>"
+  }
+}

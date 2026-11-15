@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "name": "Panel",
+  "slug": "panel",
+  "description": "A content surface with an optional header and a transparent variant.",
+  "props": {
+    "title": { "type": "nullable-string", "required": false },
+    "subtle": { "type": "boolean", "required": false, "default": false }
+  },
+  "slots": {
+    "header": { "required": false, "description": "Header content replacing the default title." },
+    "default": { "required": false, "description": "Content of the panel." }
+  },
+  "events": {},
+  "states": ["default", "subtle"]
+}

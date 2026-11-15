@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "name": "FormLayout",
+  "slug": "form-layout",
+  "description": "Layout for related fields that preserves source order and native form behavior.",
+  "props": {
+    "mode": {
+      "type": "enum",
+      "required": false,
+      "default": "stacked",
+      "values": ["stacked", "horizontal", "responsive"]
+    },
+    "labelWidth": { "type": "nullable-css-length", "required": false, "default": "minmax(10rem, 25%)" }
+  },
+  "slots": { "default": { "required": false, "description": "Field wrappers to arrange." } },
+  "events": {},
+  "states": ["stacked", "horizontal", "responsive"],
+  "relatedComponents": ["Field"]
+}

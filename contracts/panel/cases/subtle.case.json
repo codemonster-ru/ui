@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "panel-subtle",
+  "description": "A surface with a transparent background and a custom heading.",
+  "props": { "subtle": true },
+  "slots": {
+    "header": "<h2 class=\"cm-panel__title\">Notes</h2>",
+    "default": "<p>Invoices are archived monthly.</p>"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "name": "PageHeader",
+  "slug": "page-header",
+  "description": "A page heading and optional description, breadcrumb navigation, and associated actions.",
+  "props": {
+    "title": { "type": "nullable-string", "required": false },
+    "description": { "type": "nullable-string", "required": false },
+    "breadcrumbs": { "type": "collection", "required": false },
+    "headingLevel": { "type": "enum", "required": false, "default": 1, "values": [1, 2, 3, 4, 5, 6] }
+  },
+  "slots": {
+    "title": { "required": false, "description": "Content of the semantic page heading." },
+    "description": { "required": false, "description": "Supplementary content beneath the heading." },
+    "breadcrumbs": { "required": false, "description": "Breadcrumb navigation above the heading." },
+    "actions": { "required": false, "description": "Page actions placed beside the heading on wide layouts." }
+  },
+  "events": {},
+  "states": ["default"],
+  "relatedComponents": ["Breadcrumbs", "Button"]
+}

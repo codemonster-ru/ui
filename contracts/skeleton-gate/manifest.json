@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "name": "SkeletonGate",
+  "slug": "skeleton-gate",
+  "description": "A placeholder that reserves space and keeps loading content inert until it is ready.",
+  "props": {
+    "ready": { "type": "boolean", "required": false, "default": false },
+    "minHeight": { "type": "nullable-css-length", "required": false },
+    "reserveHeight": { "type": "nullable-css-length", "required": false },
+    "preserveLastHeight": { "type": "boolean", "required": false, "default": false },
+    "normalizeContentSpacing": { "type": "boolean", "required": false, "default": false },
+    "radius": { "type": "nullable-css-length", "required": false },
+    "fadeDuration": { "type": "number", "required": false, "default": 220 }
+  },
+  "slots": {
+    "default": { "required": false, "description": "Content that is available when ready." },
+    "skeleton": { "required": false, "description": "Decorative loading placeholder." }
+  },
+  "events": {},
+  "states": ["loading", "ready"],
+  "relatedComponents": ["Skeleton"]
+}
