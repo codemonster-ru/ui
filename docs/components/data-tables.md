@@ -96,11 +96,19 @@ native sort button and accessible action label. Use the `loading`, `error`, and 
 to customize their status row. The equivalent Vanilla markup contains the authored text and
 elements directly in the corresponding table regions.
 
-Add an `expanded-row` slot to enable a labelled disclosure button in each row. The slot
+Add an `expanded-row` or `expandedRow` slot to enable a labelled disclosure button in each row. The slot
 receives `row`, `rowKey` (the row ID), and `rowIndex`. Use `defaultExpandedRowKeys` for
 initial expansion or `v-model:expanded-row-keys` for controlled state. Customize the
 accessible action labels with `expandRowLabelTemplate` and `collapseRowLabelTemplate`
 using the `{row}` placeholder.
+
+In [authored Vanilla rows](../../contracts/data-table/cases/expansion.html), link a native
+`data-cm-data-table-expand` button to a details row in the same table body with `aria-controls`.
+The controller updates `aria-expanded` and `hidden`, then dispatches
+`cm:data-table-expansion-change` with `detail.rowId` and `detail.expanded`. Optional
+`data-cm-data-table-expand-label` and `data-cm-data-table-collapse-label` supply the accessible
+names after activation. A hidden Vanilla detail row still submits any named enabled form
+controls. Vue renders its detail slot only while expanded.
 
 Set `loadingVariant="skeleton"` to show placeholder rows when loading. Adjust their count
 with `loadingRows` (default three). The placeholders are hidden from assistive technology

@@ -18,7 +18,7 @@ column collection.
 
 Applications format dates, numbers, status labels, and links before or around this baseline. The
 shared data API deliberately excludes arbitrary HTML cells, client-side query execution, multi-sort,
-row expansion, interactive column reordering, pinning, and resizing. Rich row content belongs in an
+interactive column reordering, pinning, and resizing. Rich row content belongs in an
 application-owned `Table` composition; advanced query, layout, and persistence policy remains with
 the application rather than crossing the scalar boundary through callbacks or framework-only slots.
 
@@ -57,6 +57,18 @@ and next text is independent from the buttons' accessible labels so both can be 
 Vue owns interaction directly. Server-rendered Vanilla HTML markup uses the shared DataTable controller.
 The initial HTML remains a readable native table without JavaScript. Controlled Vue props are
 authoritative on rerender, while Vanilla applications are authoritative when replacing server markup.
+
+For row details in Vanilla, place a native `button type="button"` with `data-cm-data-table-expand`,
+`aria-expanded`, and `aria-controls` in the data row. Give the details `tr` the corresponding ID
+and `cm-data-table__expanded-row`, with both rows in the same table body. Mark collapsed details
+`hidden`. The runtime updates visibility and `aria-expanded` and sends
+`cm:data-table-expansion-change` with `{ rowId, expanded }` from the owning table root.
+The optional `data-cm-data-table-expand-label` and `data-cm-data-table-collapse-label` supply the
+localized accessible names. Closing while focus is inside the details returns focus to its button.
+
+The Vanilla details stay mounted, so enabled named controls still submit while hidden. The
+application owns any decision to disable those controls. Vue mounts its scoped detail content
+while the row is expanded.
 
 ## Accessibility and security
 

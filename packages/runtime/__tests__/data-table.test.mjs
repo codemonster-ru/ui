@@ -74,6 +74,7 @@ for (const scenarioFile of scenarioFiles) {
       'cm:data-table-page-size-change',
       'cm:data-table-selection-change',
       'cm:data-table-sort-change',
+      'cm:data-table-expansion-change',
     ]) {
       root.addEventListener(name, () => events.set(name, (events.get(name) ?? 0) + 1));
     }
@@ -82,6 +83,85 @@ for (const scenarioFile of scenarioFiles) {
     for (const step of scenario.steps) executeStep({ events, root, step });
   });
 }
+
+test('closing a detail row restores focus and leaves its named fields under the form owner', async (t) => {
+  const html = await readFile(resolve(contractDirectory, 'cases/expansion.html'), 'utf8');
+  const { window } = new JSDOM(`<form>${html}</form>`);
+  const { document } = window;
+  const root = document.getElementById('expanded-accounts');
+  const panel = document.getElementById('expanded-accounts-expanded-atlas');
+  const button = root.querySelector('[data-cm-data-table-expand]');
+  const field = document.createElement('input');
+  field.name = 'notes';
+  field.value = 'Draft';
+  panel.cells[0].append(field);
+  const events = [];
+  root.addEventListener('cm:data-table-expansion-change', (event) => events.push(event.detail));
+  const runtime = new CmRuntime().register('data-table', createCmDataTableController);
+  runtime.start(document);
+  t.after(() => {
+    runtime.stop();
+    window.close();
+  });
+
+  field.focus();
+  button.click();
+  assert.equal(document.activeElement, button);
+  assert.equal(panel.hidden, true);
+  assert.equal(new window.FormData(document.querySelector('form')).get('notes'), 'Draft');
+  field.disabled = true;
+  assert.equal(new window.FormData(document.querySelector('form')).has('notes'), false);
+  button.click();
+  assert.equal(panel.hidden, false);
+  assert.deepEqual(events, [
+    { rowId: 'atlas', expanded: false },
+    { rowId: 'atlas', expanded: true },
+  ]);
+});
+
+test('a nested detail table owns its own disclosures and selection', async (t) => {
+  const html = await readFile(resolve(contractDirectory, 'cases/expansion.html'), 'utf8');
+  const { window } = new JSDOM(html);
+  const { document } = window;
+  const outer = document.getElementById('expanded-accounts');
+  const outerPanel = document.getElementById('expanded-accounts-expanded-atlas');
+  outerPanel.cells[0].insertAdjacentHTML('beforeend', dataTableHtml());
+  const inner = outerPanel.querySelector('.cm-data-table');
+  inner
+    .querySelector('tbody')
+    .insertAdjacentHTML(
+      'beforeend',
+      '<tr id="nested-detail" class="cm-data-table__expanded-row" hidden><td>Details</td></tr>',
+    );
+  inner
+    .querySelector('[data-cm-data-table-row="second"] td')
+    .insertAdjacentHTML(
+      'beforeend',
+      '<button type="button" aria-controls="nested-detail" data-cm-data-table-expand>Toggle details</button>',
+    );
+  const innerButton = inner.querySelector('[data-cm-data-table-expand]');
+  const outerButton = outer.querySelector('[data-cm-data-table-expand]');
+  const events = [];
+  outer.addEventListener('cm:data-table-expansion-change', (event) => events.push(event.target));
+  const runtime = new CmRuntime().register('data-table', createCmDataTableController);
+  runtime.start(document);
+  t.after(() => {
+    runtime.stop();
+    window.close();
+  });
+
+  innerButton.click();
+  assert.equal(document.getElementById('nested-detail').hidden, false);
+  assert.equal(outerPanel.hidden, false);
+  inner.querySelector('[data-cm-data-table-select-all]').click();
+  assert.equal(inner.getAttribute('data-cm-data-table-selected-count'), '2');
+  assert.equal(outer.getAttribute('data-cm-data-table-selected-count'), '1');
+
+  outerButton.setAttribute('aria-controls', 'nested-detail');
+  outerButton.click();
+  assert.equal(document.getElementById('nested-detail').hidden, false);
+  assert.deepEqual(events, [inner]);
+});
 
 test('reports selected ids in rendered order and keeps select-all state synchronized', () => {
   const dom = new JSDOM(dataTableHtml());
@@ -130,6 +210,9 @@ function executeStep({ events, root, step }) {
 function resolveTarget(root, name) {
   if (name === 'root') return root;
   const selectors = {
+    'expand-first': '[data-cm-data-table-row="atlas"] [data-cm-data-table-expand]',
+    'detail-first': '#expanded-accounts-expanded-atlas',
+    'select-nova': '[data-cm-data-table-row="nova"] [data-cm-data-table-select-row]',
     'header-first': 'th[aria-sort]',
     'page-next': '[data-cm-data-table-page-action="next"]',
     'page-size': '[data-cm-data-table-page-size-control]',

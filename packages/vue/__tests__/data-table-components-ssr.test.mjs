@@ -27,12 +27,12 @@ for (const [slug, component] of Object.entries({ 'data-table': CmDataTable, tabl
       const basename = caseFile.slice(0, -'.case.json'.length);
       const definition = JSON.parse(await readFile(resolve(casesDirectory, caseFile), 'utf8'));
       const expected = await readFile(resolve(casesDirectory, `${basename}.html`), 'utf8');
-      const slots =
-        slug === 'table'
-          ? Object.fromEntries(
-              Object.entries(definition.slots).map(([name, content]) => [name, () => tableSlot(content)]),
-            )
-          : {};
+      const slots = Object.fromEntries(
+        Object.entries(definition.slots).map(([name, content]) => [
+          name,
+          () => (slug === 'table' ? tableSlot(content) : content),
+        ]),
+      );
       const actual = await renderToString(createSSRApp({ render: () => h(component, definition.props, slots) }));
       const comparison = compareSignificantDom(expected, actual);
       assert.equal(comparison.equal, true, comparison.difference);
