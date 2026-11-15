@@ -32,6 +32,10 @@
       "types": "./dist/core/index.d.ts",
       "import": "./dist/core/index.js"
     },
+    "./data-table-dom": {
+      "types": "./dist/data-table-dom.d.ts",
+      "import": "./dist/data-table-dom.js"
+    },
     "./native-modal": {
       "types": "./dist/native-modal.d.ts",
       "import": "./dist/native-modal.js"

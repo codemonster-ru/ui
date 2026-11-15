@@ -27,6 +27,7 @@ export default defineConfig({
       external: [
         'vue',
         '@codemonster-ru/ui-runtime/core',
+        '@codemonster-ru/ui-runtime/data-table-dom',
         '@codemonster-ru/ui-runtime/native-modal',
         '@codemonster-ru/ui-icons',
         '@codemonster-ru/floater.js',
