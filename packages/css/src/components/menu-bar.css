@@ -4,7 +4,8 @@
  * rather than absent, so a page without JavaScript still exposes it to assistive technology.
  */
 .cm-menu-bar__list,
-.cm-menu-bar__submenu {
+.cm-menu-bar__submenu,
+.cm-menu-bar__group-list {
   margin: 0;
   padding: 0;
   list-style: none;
@@ -18,6 +19,19 @@
 
 .cm-menu-bar__node {
   position: relative;
+}
+
+.cm-menu-bar__node--depth-0 > .cm-menu-bar__group-list {
+  display: flex;
+  align-items: center;
+  gap: var(--cm-space-1);
+}
+
+.cm-menu-bar__group-label {
+  display: block;
+  padding: var(--cm-space-1) var(--cm-space-2);
+  color: var(--cm-color-text-muted);
+  font-size: var(--cm-text-label-font-size);
 }
 
 .cm-menu-bar__item {

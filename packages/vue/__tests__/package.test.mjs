@@ -118,6 +118,7 @@ test('publishes the opt-in historical icon and Vue components', async () => {
     'VfIconButton',
     'VfInput',
     'VfMenu',
+    'VfMenuBar',
     'VfMenuItem',
     'VfNavMenu',
     'VfPopover',

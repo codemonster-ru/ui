@@ -12,3 +12,15 @@ Escape closes the open path and returns focus to the top-level trigger.
 
 Pills use selected and open surfaces. Mark an initially selected leaf with `aria-current="page"`
 and `cm-menu-bar__item--active`. Selection and keyboard state remain independent.
+
+Use `kind="group"` in the Vue item data to label related items at the same keyboard level. In
+authored HTML, put the visible `cm-menu-bar__group-label` and a named `ul[role="group"]` with
+`cm-menu-bar__group-list` inside one presentation list item. The group itself does not receive
+focus or appear in the open path, and arrows cross group boundaries at the same level.
+
+In Vue, `to` uses the provided `linkComponent` or the registered `RouterLink`. An `href` remains a
+native anchor. The opt-in historical `VfMenuBar` restores the `Menu bar` name, named leading
+icons, and `select` with the original item object after the model/change events. The current
+`CmMenuBar` and Vanilla event continue to report the selected value. Menus use inline CSS
+positioning; the historical hover-close timer, floating submenu portal and horizontal scroll
+controls are separate from this entry.

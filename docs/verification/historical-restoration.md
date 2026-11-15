@@ -49,6 +49,7 @@ migration, including behavioral or visual differences. Do not claim parity from 
 | DONE | Vue DataTable accepts host records and stable string/path or numeric keys (`a9a9df93`); native events retain the current string ID contract. Built TypeScript consumers verified typed row scopes, and Chrome verified selection survives client sorting. `VfTable` restores `compact` with SSR-equivalent native markup (`d82fa231`). |
 | DONE | Historical Switch, Checkbox and Radio expose the original model event payloads and slots (`08061eaf`, `28a555a9`). Chrome verified keyboard and native form behavior, checked and mixed accessibility state, and a Checkbox runtime-to-Vue hydration handoff. |
 | DONE | Restored the historical single Accordion's model, scoped trigger/content, height and opacity motion, and focus return. Chrome measured the same 36 px trigger and 49 px open panel as the isolated reference at both 390 and 1280 px. Source and packaged SSR tests passed. |
+| DONE | Restored labelled MenuBar groups and route leaves and the historical original-item event. Pinned Chrome passed six keyboard runs and six exact light/dark comparisons. The built Vue demo reached the real Layouts guide with Enter at both widths. The native import measures 5.38 KiB gzip without the named icon catalogue. |
 | DONE | Aligned Vue Layouts with the shared guide (`f47727a5`): changed pixels against the pinned historical views fell from 11.96–18.05% to 1.09–3.20%. Controls and responsive previews passed at both widths and in both themes. |
 | DONE | Restored the Vue showcase's narrow navigation controls without shifting content when the system draws scrollbars. Shortened the shared Colors introduction to restore its mobile text rhythm. Pinned Chrome passed overflow, active-route and keyboard checks at 390 and 1280 px. |
 | IN PROGRESS | Run package checks, lint, type checks, tests, browser behavior and accessibility checks, production builds, and fresh packed consumers. See the exact snapshots below. |
@@ -134,6 +135,16 @@ from 13.20% to 1.91% (worst frame: 36.01% to 3.50%), and Vanilla's fell from 3.9
   including the cold tests, both builds, type checks, package and accessibility gates. Lint found
   two misaligned cells in the historical Vue trace; `28a555a9` fixed those cells and passed the
   trace lint. Run a fresh archive after the active component slices.
+- `905ed0ec`, fresh copy at `/private/tmp/cmui-verify.W516XM`: all 20 checks passed, including
+  cold tests, 176 canonical accessibility fixtures, production builds, packed npm/pnpm/Yarn
+  consumers and the release audit (zero production findings; 20 low or moderate development).
+  Pinned Chrome passed all 138 behavior runs and 352 paired theme comparisons without pixel or
+  motion differences between Vue and Vanilla. Its 48 production viewport frames had no script
+  errors or horizontal page overflow; the worst strict historical comparison was 3.46% in Vue
+  and 3.43% in Vanilla. A clean fixture recapture produced all 96 images byte-for-byte identical
+  to the starting revision's local capture; the stored-baseline comparison still counts 44 of
+  48 changes per adapter. Evidence: `/private/tmp/cmui-browser-checkpoint.jmvofA` and
+  `/private/tmp/cmui-fixture-recapture.0urDel`.
 - The pinned browser ran 132 behavior scenarios across both adapters at `8ff4cecf` without failures
   or motion mismatches. The separate 48-frame showcase run reported no JavaScript errors and no
   horizontal page overflow. Vue Layouts was the largest remaining viewport difference in this run
