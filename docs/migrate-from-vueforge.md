@@ -156,8 +156,12 @@ Import `VueForgeCore` as a default or named export from `ui-vue/historical`, or 
 precedence. Move the old `theme` option to stylesheet overrides or keep the archived package for
 its runtime preset engine. [Theme plugin recipe](./recipes/vue-theme-plugin.md).
 
-The current layout entry supports named imports and Node `require()`. Keep the archived layouts package if you still
-use `app.use(VueForgeLayouts)` or its layout preset configuration. [Archived layout consumer](../packages/layouts/README.md#documentation).
+The current layout entry supports named imports and Node `require()`. Import the shared CSS and
+the layouts you render. Layout rendering needs no Vue plugin installation. If the old
+`app.use(VueForgeLayouts)` passed a theme mode, storage key, or resolved-theme attribute, pass
+those options to the current `VueForgeCore` plugin. For old layout preset overrides, move the
+values to shared CSS tokens or keep the archived layouts package with its preset configuration.
+[Archived layout consumer](../packages/layouts/README.md#documentation).
 
 ## Standalone Vanilla pages
 
