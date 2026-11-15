@@ -5,11 +5,9 @@ import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 
 // This lives at the repository root, not inside packages/css/__tests__, because it reads
-// packages/tokens/dist -- a sibling package's build output. packages/css's own workspace test
-// script only builds itself, and scripts/ci/test-without-dist.sh (the pre-push hook's isolation
-// check) wipes every workspace's dist before running each one's tests independently, so a css-package
-// test that assumed tokens' dist already existed would fail there even though `npm run verify`
-// (which builds every workspace up front) never would have caught it.
+// packages/tokens/dist, a sibling package's build output. A standalone CSS workspace test does not
+// require a tokens build. The repository verification and cold workspace run build the shared
+// artifacts before checking the cross-package CSS contract.
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const cssRoot = resolve(root, 'packages/css');
 const tokensRoot = resolve(root, 'packages/tokens');

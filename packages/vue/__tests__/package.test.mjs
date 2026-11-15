@@ -1,8 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { renderToString } from '@vue/server-renderer';
+import { h } from 'vue';
 
 test('publishes the Vue component adapter entries', async () => {
-  const entry = await import('../dist/index.js');
+  const entry = await import('@codemonster-ru/ui-vue');
 
   assert.deepEqual(Object.keys(entry), [
     'CmAccordion',
@@ -15,6 +17,7 @@ test('publishes the Vue component adapter entries', async () => {
     'CmCheckbox',
     'CmColumnChooser',
     'CmCommandPalette',
+    'CmConfirmDialog',
     'CmContainer',
     'CmDataTable',
     'CmDatePicker',
@@ -24,7 +27,9 @@ test('publishes the Vue component adapter entries', async () => {
     'CmDropdown',
     'CmField',
     'CmFieldset',
+    'CmFormLayout',
     'CmGrid',
+    'CmGroupBox',
     'CmIcon',
     'CmIconButton',
     'CmInline',
@@ -33,6 +38,8 @@ test('publishes the Vue component adapter entries', async () => {
     'CmMenu',
     'CmMenuBar',
     'CmNavMenu',
+    'CmPageHeader',
+    'CmPanel',
     'CmPopover',
     'CmProgressBar',
     'CmProgressSpinner',
@@ -40,6 +47,7 @@ test('publishes the Vue component adapter entries', async () => {
     'CmSection',
     'CmSelect',
     'CmSkeleton',
+    'CmSkeletonGate',
     'CmStack',
     'CmStepper',
     'CmSwitch',
@@ -48,8 +56,22 @@ test('publishes the Vue component adapter entries', async () => {
     'CmTabs',
     'CmTag',
     'CmTextarea',
+    'CmThemeProvider',
     'CmThemeSwitch',
     'CmTooltip',
+    'VfButton',
+    'VfConfirmDialog',
+    'VfFormLayout',
+    'VfGroupBox',
+    'VfLink',
+    'VfPageHeader',
+    'VfPanel',
+    'VfSkeletonGate',
+    'VfThemeProvider',
+    'VfThemeSwitch',
+    'createAsyncWithSkeleton',
+    'useCmTheme',
+    'useTheme',
   ]);
   assert.equal(entry.CmAccordion.__name, 'CmAccordion');
   assert.equal(entry.CmButton.__name, 'CmButton');
@@ -65,4 +87,12 @@ test('publishes the Vue component adapter entries', async () => {
   assert.equal(entry.CmBadge.__name, 'CmBadge');
   assert.equal(entry.CmDivider.__name, 'CmDivider');
   assert.equal(entry.CmSkeleton.__name, 'CmSkeleton');
+});
+
+test('publishes the opt-in historical icon and slot menu entry', async () => {
+  const entry = await import('@codemonster-ru/ui-vue/historical');
+
+  assert.deepEqual(Object.keys(entry), ['VfMenu', 'VfMenuItem', 'VueIconify']);
+  assert.match(await renderToString(h(entry.VfMenu, null, () => 'Actions')), /role="menu"[\s\S]*Actions/u);
+  assert.match(await renderToString(h(entry.VueIconify)), /<svg[^>]+aria-hidden="true"/u);
 });
