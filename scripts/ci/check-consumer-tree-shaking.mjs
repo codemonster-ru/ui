@@ -28,34 +28,35 @@ const domRuntimeMarkers = [
 const unrelatedIcon = ['unused Bell geometry', /vf-duotone-primary-bell/];
 const themeStorage = ['theme storage', /localStorage\.setItem/];
 const themeRuntime = ['theme application runtime', /data-vf-theme-transition/];
+const overlayTrigger = ['authored overlay trigger composition', /\btriggerClass\b/];
 const unrelatedRuntimeMarkers = [...domRuntimeMarkers, themeRuntime, themeStorage];
 
 const cases = [
   {
     entry: "export { CmButton } from '@codemonster-ru/ui-vue';\n",
     fileName: 'ui-vue-button',
-    forbiddenMarkers: unrelatedRuntimeMarkers,
+    forbiddenMarkers: [...unrelatedRuntimeMarkers, overlayTrigger],
     maxGzipBytes: 3 * 1024,
     name: 'ui-vue CmButton',
   },
   {
     entry: "export { CmTabs } from '@codemonster-ru/ui-vue';\n",
     fileName: 'ui-vue-tabs',
-    forbiddenMarkers: unrelatedRuntimeMarkers,
+    forbiddenMarkers: [...unrelatedRuntimeMarkers, overlayTrigger],
     maxGzipBytes: 4 * 1024,
     name: 'ui-vue CmTabs with its shared core',
   },
   {
     entry: "export { CmButton, CmDialog, CmTabs } from '@codemonster-ru/ui-vue';\n",
     fileName: 'ui-vue-multiple',
-    forbiddenMarkers: unrelatedRuntimeMarkers,
+    forbiddenMarkers: [...unrelatedRuntimeMarkers, overlayTrigger],
     maxGzipBytes: 8 * 1024,
     name: 'ui-vue multiple components',
   },
   {
     entry: "export { CmIcon } from '@codemonster-ru/ui-vue';\nexport { arrowLeft } from '@codemonster-ru/ui-icons';\n",
     fileName: 'ui-vue-static-icon',
-    forbiddenMarkers: [...unrelatedRuntimeMarkers, unrelatedIcon],
+    forbiddenMarkers: [...unrelatedRuntimeMarkers, unrelatedIcon, overlayTrigger],
     maxGzipBytes: 3 * 1024,
     name: 'ui-vue CmIcon with one static glyph',
   },
@@ -86,6 +87,14 @@ const cases = [
     name: 'ui-vue CmSelect with positioning',
   },
   {
+    entry: "export { VfPopover } from '@codemonster-ru/ui-vue/historical';\n",
+    fileName: 'ui-vue-historical-popover',
+    forbiddenMarkers: [...unrelatedRuntimeMarkers, unrelatedIcon],
+    includesPositioning: true,
+    maxGzipBytes: 10 * 1024,
+    name: 'ui-vue historical Popover without the icon catalogue',
+  },
+  {
     entry: "export { CmThemeProvider } from '@codemonster-ru/ui-vue';\n",
     fileName: 'ui-vue-theme-provider',
     forbiddenMarkers: [...domRuntimeMarkers, themeRuntime, unrelatedIcon],
@@ -98,8 +107,8 @@ const cases = [
     fileName: 'ui-vue-historical',
     forbiddenMarkers: unrelatedRuntimeMarkers,
     includesPositioning: true,
-    // Named controls and Select positioning measured 38.10 KiB together.
-    maxGzipBytes: 42 * 1024,
+    // The opt-in controls, named icons, and authored overlays measured 43.84 KiB together.
+    maxGzipBytes: 46 * 1024,
     name: 'ui-vue opt-in historical namespace',
   },
   {

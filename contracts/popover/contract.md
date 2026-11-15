@@ -8,8 +8,10 @@ Component: `Popover`
 
 Popover is a non-modal button disclosure for supplemental interactive content. `id` is a stable
 prefix, `label` is escaped trigger text, the trusted `trigger` slot can replace its visible content,
-and the default slot is the panel. The component always owns the native button semantics; arbitrary
-interactive trigger roots are intentionally not accepted. The native trigger owns
+and the default slot is the panel. By default the component owns the native button. With
+`triggerAsChild`, it accepts one authored native button or a Vue button that forwards attrs
+to its root. `VfPopover` from `@codemonster-ru/ui-vue/historical` uses that mode, generates an
+ID when omitted, and defaults to a body portal and focusing the open panel. The trigger owns
 `aria-expanded` and `aria-controls`; the panel has `role="dialog"`, is labelled by the trigger, and
 remains in the DOM and is hidden while closed. Both adapters position the open panel 10 pixels
 away from the trigger. The panel can flip vertically and shift horizontally at the viewport edge.

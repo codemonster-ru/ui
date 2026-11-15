@@ -101,10 +101,12 @@ test('publishes the opt-in historical icon and Vue components', async () => {
     'VfAlert',
     'VfAvatar',
     'VfBadge',
+    'VfDropdown',
     'VfIconButton',
     'VfInput',
     'VfMenu',
     'VfMenuItem',
+    'VfPopover',
     'VfProgressSpinner',
     'VfSelect',
     'VfTag',
@@ -130,4 +132,28 @@ test('publishes the opt-in historical icon and Vue components', async () => {
   assert.ok(select.includes(`id="${listboxId}"`));
   assert.match(select, /cm-select__icon--leading[\s\S]*<svg/u);
   assert.match(select, /data-cm-placement="bottom-end"/u);
+});
+
+test('server-renders historical overlays around a single authored trigger', async () => {
+  const { VfDropdown, VfPopover } = await import('@codemonster-ru/ui-vue/historical');
+  for (const [component, popup] of [
+    [VfDropdown, 'menu'],
+    [VfPopover, 'dialog'],
+  ]) {
+    const source = await renderToString(
+      h(
+        component,
+        { disableTeleport: true },
+        {
+          trigger: () => h('button', { class: 'custom-trigger' }, 'Details'),
+          default: () => 'More information',
+        },
+      ),
+    );
+    assert.equal((source.match(/<button\b/gu) ?? []).length, 1);
+    assert.match(source, /class="custom-trigger"/u);
+    assert.ok(source.includes(`aria-haspopup="${popup}"`));
+    const panelId = /aria-controls="([^"]+)"/u.exec(source)?.[1];
+    assert.ok(panelId && source.includes(`id="${panelId}"`));
+  }
 });

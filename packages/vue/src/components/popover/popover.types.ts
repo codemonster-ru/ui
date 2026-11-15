@@ -9,7 +9,13 @@ export interface CmPopoverProps {
   placement?: CmPopoverPlacement;
   teleportTo?: string | HTMLElement | null | false;
   disableTeleport?: boolean;
+  triggerAsChild?: boolean;
   closeOnOutsideClick?: boolean;
   closeOnEscape?: boolean;
   focusOnOpen?: boolean;
+}
+
+export interface VfPopoverProps extends Omit<CmPopoverProps, 'id' | 'label'> {
+  id?: string;
+  label?: string;
 }

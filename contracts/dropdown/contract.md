@@ -28,6 +28,10 @@ arbitrary icons and markup cannot replace its button semantics. Vue receives `{ 
 toggle }`; an icon-only trigger uses `label` through `aria-label`. Author only noninteractive
 content here. The owned button handles clicks. Vanilla templates place the same markup inside the button.
 
+For historical templates, `VfDropdown` from `@codemonster-ru/ui-vue/historical` supplies an ID
+and defaults to a body portal. It attaches interaction and ARIA to one authored native button or
+a Vue button that forwards attrs to its root. The direct API enables this with `triggerAsChild`.
+
 The trusted default slot replaces the generated actions inside the owned menu and receives
 `{ open, close }` in Vue. Use focusable native actions with `role="menuitem"` and give the
 first enabled item `tabindex="0"` and the remaining items `tabindex="-1"`. Set `data-cm-menu-item`
