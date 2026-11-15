@@ -3,7 +3,17 @@ import * as UiIcons from '@codemonster-ru/ui-icons';
 import * as UiLayouts from '@codemonster-ru/ui-layouts';
 
 import * as UiVue from '@codemonster-ru/ui-vue';
-import { createApp, createStaticVNode, h, nextTick, reactive, type Component, type VNodeChild } from 'vue';
+import {
+  createApp,
+  createStaticVNode,
+  defineComponent,
+  h,
+  nextTick,
+  reactive,
+  type Component,
+  type PropType,
+  type VNodeChild,
+} from 'vue';
 
 import '@codemonster-ru/ui-tokens/tokens.css';
 import '@codemonster-ru/ui-css/fonts.css';
@@ -144,7 +154,26 @@ if (platform === 'vue') {
       };
     }
   }
-  createApp({ render: () => h(component!, props, slots) }).mount(root);
+  const app = createApp({ render: () => h(component!, props, slots) });
+  if (caseId === 'nav-menu-routes') {
+    app.component(
+      'RouterLink',
+      defineComponent({
+        props: {
+          to: { type: [String, Object] as PropType<string | { path: string; hash?: string }>, required: true },
+        },
+        setup(props, { slots }) {
+          return () =>
+            h(
+              'a',
+              { href: typeof props.to === 'string' ? props.to : props.to.path + (props.to.hash ?? '') },
+              slots.default?.(),
+            );
+        },
+      }),
+    );
+  }
+  app.mount(root);
   await nextTick();
   root.dataset.visualRenderer = 'vue-mounted';
 } else {

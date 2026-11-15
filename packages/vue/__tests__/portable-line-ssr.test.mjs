@@ -104,9 +104,23 @@ for (const [slug, component] of Object.entries(components)) {
       const slots = Object.fromEntries(
         Object.entries(definition.slots ?? {}).map(([name, content]) => [name, () => slotContent(content)]),
       );
-      const actual = await renderToString(
-        createSSRApp({ render: () => h(component, { ...definition.attributes, ...definition.props }, slots) }),
-      );
+      const app = createSSRApp({
+        render: () => h(component, { ...definition.attributes, ...definition.props }, slots),
+      });
+      if (definition.id === 'nav-menu-routes') {
+        app.component('RouterLink', {
+          props: { to: { type: [String, Object], required: true } },
+          setup(props, { slots }) {
+            return () =>
+              h(
+                'a',
+                { href: typeof props.to === 'string' ? props.to : props.to.path + (props.to.hash ?? '') },
+                slots.default?.(),
+              );
+          },
+        });
+      }
+      const actual = await renderToString(app);
       const comparison = compareSignificantDom(expected, actual);
 
       assert.equal(comparison.equal, true, comparison.difference);

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, type PropType } from 'vue';
+import { computed, resolveComponent, type Component, type PropType } from 'vue';
 
 import type { CmNavMenuItem } from './nav-menu.types';
 
@@ -11,14 +11,31 @@ const props = defineProps({
   level: { type: Number, required: true },
   activeValue: { type: String as PropType<string | null>, default: null },
   expandedValues: { type: Array as PropType<readonly string[]>, required: true },
+  linkComponent: { type: [String, Object, Function] as PropType<string | Component>, default: undefined },
 });
-defineEmits<{ toggle: [value: string]; select: [value: string] }>();
+defineEmits<{ toggle: [value: string]; select: [item: CmNavMenuItem] }>();
 
 const hasChildren = computed(() => (props.item.children?.length ?? 0) > 0);
 const isGroup = computed(() => props.item.kind === 'group');
 const isBranchItem = computed(() => hasChildren.value && !isGroup.value);
 const isExpanded = computed(() => isGroup.value || props.expandedValues.includes(props.item.value));
 const isActive = computed(() => props.item.value === props.activeValue);
+const isRouted = computed(() => props.item.to !== undefined && !props.item.disabled);
+const isLink = computed(() => props.item.to !== undefined || Boolean(props.item.href));
+const destination = computed(() =>
+  isRouted.value
+    ? { to: props.item.to }
+    : {
+        href: isLink.value && !props.item.disabled ? props.item.href : undefined,
+      },
+);
+const rel = computed(() => props.item.rel ?? (props.item.target === '_blank' ? 'noopener noreferrer' : undefined));
+
+function leafComponent() {
+  if (!isLink.value) return 'button';
+  if (!isRouted.value) return 'a';
+  return props.linkComponent ?? resolveComponent('RouterLink');
+}
 
 const nodeClasses = computed(() => [
   'cm-nav-menu__node',
@@ -65,20 +82,20 @@ const branchClasses = computed(() => [
       ><span class="cm-nav-menu__icon" aria-hidden="true"></span>
     </button>
     <component
-      :is="props.item.href ? 'a' : 'button'"
+      :is="leafComponent()"
       v-else
+      v-bind="destination"
       :class="leafClasses"
       :style="levelStyle"
-      :type="props.item.href ? undefined : 'button'"
-      :href="props.item.href && !props.item.disabled ? props.item.href : undefined"
-      :target="props.item.href ? props.item.target : undefined"
-      :rel="props.item.href ? props.item.rel : undefined"
+      :type="isLink ? undefined : 'button'"
+      :target="isLink ? props.item.target : undefined"
+      :rel="isLink ? rel : undefined"
       :data-cm-nav-menu-value="props.item.value"
       :aria-current="isActive ? 'page' : undefined"
-      :aria-disabled="props.item.href && props.item.disabled ? 'true' : undefined"
-      :tabindex="props.item.href && props.item.disabled ? -1 : undefined"
-      :disabled="!props.item.href && props.item.disabled ? true : undefined"
-      @click="props.item.disabled ? $event.preventDefault() : $emit('select', props.item.value)"
+      :aria-disabled="isLink && props.item.disabled ? 'true' : undefined"
+      :tabindex="isLink && props.item.disabled ? -1 : undefined"
+      :disabled="!isLink && props.item.disabled ? true : undefined"
+      @click="props.item.disabled ? $event.preventDefault() : $emit('select', props.item)"
     >
       <span class="cm-nav-menu__item-content"
         ><slot :name="`item${props.item.value}`" :item="props.item"
@@ -95,6 +112,7 @@ const branchClasses = computed(() => [
           :level="props.level + 1"
           :active-value="props.activeValue"
           :expanded-values="props.expandedValues"
+          :link-component="props.linkComponent"
           @toggle="$emit('toggle', $event)"
           @select="$emit('select', $event)"
         />

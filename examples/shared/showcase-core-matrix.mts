@@ -47,7 +47,7 @@ const examples: Record<string, readonly string[]> = {
   breadcrumbs: ['default'],
   menu: ['default'],
   'menu-bar': ['default', 'pills'],
-  'nav-menu': ['inline', 'pills', 'sidebar', 'collapsed', 'wrapping-labels'],
+  'nav-menu': ['inline', 'pills', 'sidebar', 'collapsed', 'wrapping-labels', 'routes'],
   'table-of-contents': ['default', 'pills'],
   stepper: ['horizontal', 'vertical'],
   tabs: ['release', 'release-overflow', 'disabled'],
@@ -128,6 +128,7 @@ function coreExampleSource(slug: string, name: string, read: (id: string) => str
       );
     case 'nav-menu': {
       if (name === 'pills') return read('nav-menu-pills');
+      if (name === 'routes') return read('nav-menu-routes')?.replaceAll('href="/', 'href="./');
       const source = read('nav-menu-default');
       if (name === 'inline') return source?.replace('cm-nav-menu--sidebar', 'cm-nav-menu--inline');
       if (name === 'wrapping-labels') {

@@ -173,8 +173,8 @@ Vanilla markup: [stepper HTML](../../contracts/stepper/cases/default.html).
 
 ## Nested navigation
 
-`CmNavMenu` renders a nested menu. Branches expand in place, and an uncontrolled menu opens the path
-to the active item itself — an active item nobody can see is the failure worth preventing.
+`CmNavMenu` renders a nested menu. Branches expand in place. With uncontrolled expansion, the menu
+opens the path to the active item on initial render and when selection changes.
 
 A collapsed branch stays in the markup. Its links leave the tab order until the branch opens.
 The open and closed states animate with `grid-template-rows`, so neither adapter measures height.
@@ -184,32 +184,40 @@ sidebar and inline variants.
 
 `kind: 'group'` renders a non-interactive section heading whose children are always shown.
 
-Two things differ from the VueForge component this replaces. A leading icon is a per-item slot
-rather than an `icon` prop, matching how Menu takes one, because this package does not depend on an
-icon library. And the sidebar variant narrows itself with a CSS container query instead of a resize
-observer, which means it also narrows correctly on a server-rendered page.
+Use `href` for a native link. Use `to` for a string or object route and register `RouterLink` in
+the Vue application. Pass `linkComponent` to supply another component that accepts `to` and
+forwards the navigation attributes to a focusable anchor. Disabled routes render without a
+destination and stay out of the tab sequence.
+
+Use `v-model` for controlled selection or `defaultValue` for initial uncontrolled selection.
+Existing `v-model:value` bindings take precedence when supplied. `select` returns the selected
+item. `change` and `valueChange` return its value. The sidebar variant narrows with a CSS container
+query that applies to server-rendered pages.
 
 ```vue
 <script setup lang="ts">
 import { CmNavMenu } from '@codemonster-ru/ui-vue';
+import { ref } from 'vue';
 
+const active = ref('active');
 const items = [
   { value: 'dashboard', label: 'Dashboard', href: '/dashboard' },
   {
     value: 'projects',
     label: 'Projects',
-    children: [{ value: 'active', label: 'Active', href: '/projects/active' }],
+    children: [{ value: 'active', label: 'Active', to: { path: '/projects/active' } }],
   },
 ];
 </script>
 
 <template>
-  <CmNavMenu :items="items" value="active" expand-mode="single" variant="pills" />
+  <CmNavMenu v-model="active" :items="items" expand-mode="single" variant="pills" />
 </template>
 ```
 
-Vanilla markup is available for [sidebar](../../contracts/nav-menu/cases/default.html) and
-[pills](../../contracts/nav-menu/cases/pills.html).
+Vanilla markup is available for [sidebar](../../contracts/nav-menu/cases/default.html),
+[pills](../../contracts/nav-menu/cases/pills.html), and
+[resolved routes](../../contracts/nav-menu/cases/routes.html).
 
 ## Menu bar
 

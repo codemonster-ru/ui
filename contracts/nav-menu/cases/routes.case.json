@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "nav-menu-routes",
+  "description": "A string route and an object route resolved to native links, with the selected branch open and a disabled route.",
+  "props": {
+    "ariaLabel": "Product guides",
+    "defaultValue": "grid",
+    "variant": "pills",
+    "items": [
+      { "value": "overview", "label": "Overview", "to": "/core/#actions" },
+      {
+        "value": "guides",
+        "label": "Guides",
+        "children": [
+          { "value": "grid", "label": "Grid", "to": { "path": "/layouts/", "hash": "#demo-grid" } },
+          { "value": "billing", "label": "Billing", "to": "/billing/", "disabled": true }
+        ]
+      },
+      { "value": "icons", "label": "Icons", "href": "/icons/", "target": "_blank" }
+    ]
+  },
+  "slots": {}
+}

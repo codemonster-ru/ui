@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, useAttrs, watch, type PropType } from 'vue';
+import { computed, ref, useAttrs, watch, type Component, type PropType } from 'vue';
 
 import { expandToActive, toggleBranchValue } from '@codemonster-ru/ui-runtime/core';
 import { useCmHydrated } from '../../internal/hydration';
@@ -10,7 +10,10 @@ import type { CmNavMenuExpandMode, CmNavMenuItem, CmNavMenuVariant } from './nav
 defineOptions({ inheritAttrs: false });
 const props = defineProps({
   items: { type: Array as PropType<readonly CmNavMenuItem[]>, required: true },
-  value: { type: String as PropType<string | null>, default: null },
+  value: { type: String as PropType<string | null>, default: undefined },
+  modelValue: { type: String as PropType<string | null>, default: undefined },
+  defaultValue: { type: String as PropType<string | null>, default: null },
+  linkComponent: { type: [String, Object, Function] as PropType<string | Component>, default: undefined },
   expandedValues: { type: Array as PropType<readonly string[] | null>, default: null },
   expandMode: {
     type: String as PropType<CmNavMenuExpandMode>,
@@ -27,18 +30,24 @@ const props = defineProps({
 const emit = defineEmits<{
   valueChange: [value: string];
   expandedChange: [values: string[]];
+  change: [value: string];
+  select: [item: CmNavMenuItem];
   'update:value': [value: string];
+  'update:modelValue': [value: string];
   'update:expandedValues': [values: string[]];
 }>();
 const attrs = useAttrs();
 
 const expandMode = computed(() => (props.expandMode === 'single' ? 'single' : 'multiple'));
 const variant = computed(() => (props.variant === 'inline' || props.variant === 'pills' ? props.variant : 'sidebar'));
+const localValue = ref(props.defaultValue);
+const controlledValue = computed(() => (props.value === undefined ? props.modelValue : props.value));
+const activeValue = computed(() => (controlledValue.value === undefined ? localValue.value : controlledValue.value));
 
 // Uncontrolled menus open the path to the active item themselves, because an active item nobody
 // can see is the failure that matters here.
 const localExpanded = ref<string[]>(
-  props.expandedValues === null ? expandToActive(props.items, [], props.value) : [...props.expandedValues],
+  props.expandedValues === null ? expandToActive(props.items, [], activeValue.value) : [...props.expandedValues],
 );
 watch(
   () => props.expandedValues,
@@ -46,12 +55,9 @@ watch(
     if (values !== null) localExpanded.value = [...values];
   },
 );
-watch(
-  () => props.value,
-  (value) => {
-    if (props.expandedValues === null) localExpanded.value = expandToActive(props.items, localExpanded.value, value);
-  },
-);
+watch(activeValue, (value) => {
+  if (props.expandedValues === null) localExpanded.value = expandToActive(props.items, localExpanded.value, value);
+});
 
 const expanded = computed(() => (props.expandedValues === null ? localExpanded.value : [...props.expandedValues]));
 const classes = computed(() => mergeCmClasses('cm-nav-menu', `cm-nav-menu--${variant.value}`, attrs.class));
@@ -64,9 +70,13 @@ function onToggle(value: string): void {
   emit('expandedChange', next);
 }
 
-function onSelect(value: string): void {
-  emit('update:value', value);
-  emit('valueChange', value);
+function onSelect(item: CmNavMenuItem): void {
+  if (controlledValue.value === undefined) localValue.value = item.value;
+  emit('update:value', item.value);
+  emit('update:modelValue', item.value);
+  emit('valueChange', item.value);
+  emit('change', item.value);
+  emit('select', item);
 }
 
 useCmHydrated();
@@ -80,8 +90,9 @@ useCmHydrated();
         :key="item.value"
         :item="item"
         :level="0"
-        :active-value="props.value"
+        :active-value="activeValue"
         :expanded-values="expanded"
+        :link-component="props.linkComponent"
         @toggle="onToggle"
         @select="onSelect"
       />
