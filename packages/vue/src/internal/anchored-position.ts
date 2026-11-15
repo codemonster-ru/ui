@@ -9,7 +9,7 @@ export type CmAnchoredStyle = {
 export function observeCmAnchoredPosition(
   anchor: HTMLElement,
   panel: HTMLElement,
-  placement: 'bottom-start' | 'bottom-end',
+  placement: 'top' | 'bottom-start' | 'bottom-end',
   gap: number,
   inlineContainer: HTMLElement | null | undefined,
   apply: (position: CmAnchoredStyle) => void,
@@ -22,7 +22,12 @@ export function observeCmAnchoredPosition(
       strategy: 'fixed',
       middleware: [
         offset(gap),
-        flip({ placements: [placement, placement === 'bottom-end' ? 'top-end' : 'top-start'] }),
+        flip({
+          placements: [
+            placement,
+            placement === 'top' ? 'bottom' : placement === 'bottom-end' ? 'top-end' : 'top-start',
+          ],
+        }),
         shift(),
       ],
     }).then(({ x, y }) => {

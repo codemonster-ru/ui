@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "popover-explicit-dismissal",
+  "case": "popover-explicit-dismissal",
+  "steps": [
+    { "expect": "visible", "target": "panel", "value": true },
+    { "action": "click", "target": "outside" },
+    { "expect": "visible", "target": "panel", "value": true },
+    { "action": "press", "target": "panel", "key": "Escape" },
+    { "expect": "visible", "target": "panel", "value": true },
+    { "action": "click", "target": "trigger" },
+    { "expect": "visible", "target": "panel", "value": false },
+    { "action": "click", "target": "trigger" },
+    { "expect": "visible", "target": "panel", "value": true }
+  ]
+}

@@ -1,3 +1,4 @@
+import { attachCmAnchoredPosition } from './anchored-position.js';
 import { cmFocusableSelector, popoverKeyAction, resolveDisclosureOpen } from './core/disclosure.js';
 import { dispatchCmEvent } from './events.js';
 import type { CmController, CmControllerFactory } from './runtime.js';
@@ -10,6 +11,7 @@ export class CmPopoverController implements CmController {
   readonly #panel: HTMLElement;
   readonly #root: Element;
   readonly #trigger: HTMLButtonElement;
+  #stopPlacement?: () => void;
 
   constructor(root: Element) {
     const trigger = root.querySelector<HTMLButtonElement>('.cm-popover__trigger');
@@ -33,6 +35,7 @@ export class CmPopoverController implements CmController {
     this.#root.removeEventListener('keydown', this.#handleKeydown);
     this.#root.removeEventListener('cm:popover-close-request', this.#handleCloseRequest);
     this.#root.ownerDocument.removeEventListener('click', this.#handleDocumentClick);
+    this.#releasePlacement();
   }
 
   setOpen(open: boolean, restoreFocus = false): void {
@@ -44,18 +47,24 @@ export class CmPopoverController implements CmController {
   }
 
   readonly #handleClick = (event: Event): void => {
-    if (event.target === this.#trigger && !this.#trigger.disabled) this.setOpen(this.#panel.hidden);
+    const Node_ = this.#root.ownerDocument.defaultView?.Node;
+    if (!Node_ || !(event.target instanceof Node_) || !this.#trigger.contains(event.target) || this.#trigger.disabled)
+      return;
+    const opens = this.#panel.hidden;
+    this.setOpen(opens);
+    if (opens && this.#root.getAttribute('data-cm-popover-focus-on-open') === 'true') this.#focusPanel();
   };
 
   readonly #handleKeydown = (event: Event): void => {
     const KeyboardEventConstructor = this.#root.ownerDocument.defaultView?.KeyboardEvent;
-    if (!KeyboardEventConstructor || !(event instanceof KeyboardEventConstructor)) return;
+    if (!KeyboardEventConstructor || !(event instanceof KeyboardEventConstructor) || event.defaultPrevented) return;
     const action = popoverKeyAction(event.key, {
       disabled: this.#trigger.disabled,
       onTrigger: event.target === this.#trigger,
       open: !this.#panel.hidden,
     });
-    if (!action) return;
+    if (!action || (action.type === 'close' && this.#root.getAttribute('data-cm-popover-close-on-escape') === 'false'))
+      return;
 
     event.preventDefault();
     if (action.type === 'close') {
@@ -63,21 +72,50 @@ export class CmPopoverController implements CmController {
       return;
     }
     this.setOpen(true);
-    if (action.focus === 'first') this.#panel.querySelector<HTMLElement>(cmFocusableSelector)?.focus();
+    if (action.focus === 'first') this.#focusPanel();
   };
 
   readonly #handleCloseRequest = (): void => this.setOpen(false, true);
 
   readonly #handleDocumentClick = (event: Event): void => {
+    if (this.#root.getAttribute('data-cm-popover-close-on-outside-click') === 'false') return;
     const NodeConstructor = this.#root.ownerDocument.defaultView?.Node;
     if (!NodeConstructor || !(event.target instanceof NodeConstructor) || this.#root.contains(event.target)) return;
     this.setOpen(false);
   };
 
+  #focusPanel(): void {
+    const candidates = [...this.#panel.querySelectorAll<HTMLElement>(cmFocusableSelector)].filter(
+      (item) => !item.matches(':disabled') && !item.closest('[hidden], [inert]'),
+    );
+    const autofocus = candidates.find((item) => item.matches('[autofocus], [data-autofocus]'));
+    (autofocus ?? candidates[0] ?? this.#panel).focus();
+  }
+
   #synchronize(open: boolean): void {
     this.#trigger.setAttribute('aria-expanded', String(open));
     this.#panel.hidden = !open;
     this.#root.classList.toggle('cm-popover--open', open);
+    if (open && !this.#stopPlacement) {
+      const classes = this.#root.classList;
+      const placement = classes.contains('cm-popover--top')
+        ? 'top'
+        : classes.contains('cm-popover--bottom-end')
+          ? 'bottom-end'
+          : 'bottom-start';
+      this.#stopPlacement = attachCmAnchoredPosition(
+        this.#trigger,
+        this.#panel,
+        placement,
+        10,
+        this.#panel.parentElement,
+      );
+    } else if (!open) this.#releasePlacement();
+  }
+
+  #releasePlacement(): void {
+    this.#stopPlacement?.();
+    this.#stopPlacement = undefined;
   }
 }
 

@@ -3,7 +3,7 @@ import { autoUpdate, computePosition, flip, offset, shift } from '@codemonster-r
 export function attachCmAnchoredPosition(
   anchor: HTMLElement,
   panel: HTMLElement,
-  placement: 'bottom-start' | 'bottom-end',
+  placement: 'top' | 'bottom-start' | 'bottom-end',
   gap: number,
   inlineContainer: HTMLElement | null,
 ): () => void {
@@ -15,7 +15,12 @@ export function attachCmAnchoredPosition(
       strategy: 'fixed',
       middleware: [
         offset(gap),
-        flip({ placements: [placement, placement === 'bottom-end' ? 'top-end' : 'top-start'] }),
+        flip({
+          placements: [
+            placement,
+            placement === 'top' ? 'bottom' : placement === 'bottom-end' ? 'top-end' : 'top-start',
+          ],
+        }),
         shift(),
       ],
     }).then(({ x, y }) => {
