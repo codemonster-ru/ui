@@ -33,6 +33,18 @@ nonempty placeholder (a single space is sufficient) on native text inputs and te
 tell whether the control has a value. See the [in](../../contracts/field/cases/floating-in.html),
 [on](../../contracts/field/cases/floating-on.html), and [over](../../contracts/field/cases/floating-over.html) examples.
 
+## Fieldset API
+
+`CmFieldset` groups native controls under a required `id` and a visible `label`. It accepts a
+`legend` slot for custom legend content. `VfFieldset` from `@codemonster-ru/ui-vue/historical`
+accepts an optional `label` prop or slot and generates SSR-safe message IDs. A fieldset
+without a legend can use `aria-label` or `aria-labelledby` to name the group.
+
+Both components accept `description` and `error` props or slots. Their default slot exposes
+`describedBy` and `invalid` so the application can bind those values to individual controls.
+`describedBy` lists only visible messages, with the description first. An error implies invalid
+presentation. Use native attributes such as `disabled` and `form` on the fieldset itself.
+
 ## Input API
 
 | Prop                | Values                                                        | Default         | Behavior                                     |
@@ -65,6 +77,11 @@ An explicit slot takes precedence over the corresponding icon prop.
 `Textarea` accepts the Input state and size props except `type`; its string `value` maps to Vue
 `modelValue` and renders as escaped textarea content in Vanilla HTML. Native attributes such as `name`,
 `rows`, `maxlength`, and `wrap` reach the `<textarea>`.
+
+`VfTextarea` from `@codemonster-ru/ui-vue/historical` also keeps a local draft while emitting
+`update:modelValue`. A changed `modelValue` replaces the draft. Inside a floating `CmField` or
+`VfField`, the label follows focus and the textarea's current text. Bind the Field's scoped
+`controlId`, `describedBy`, and `invalid` to associate the label and messages with the textarea.
 
 Checkbox and Switch share these props:
 

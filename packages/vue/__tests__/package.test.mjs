@@ -114,6 +114,7 @@ test('publishes the opt-in historical icon and Vue components', async () => {
     'VfDialog',
     'VfDrawer',
     'VfDropdown',
+    'VfFieldset',
     'VfIconButton',
     'VfInput',
     'VfMenu',
@@ -126,6 +127,7 @@ test('publishes the opt-in historical icon and Vue components', async () => {
     'VfSwitch',
     'VfTableOfContents',
     'VfTag',
+    'VfTextarea',
     'VueIconify',
     'useTableOfContents',
   ]);

@@ -20,6 +20,7 @@ export { default as VfDialog } from './components/dialog/VfDialog.vue';
 export type { VfDialogProps } from './components/dialog/dialog.types';
 export { default as VfDropdown } from './components/dropdown/VfDropdown.vue';
 export type { VfDropdownProps } from './components/dropdown/dropdown.types';
+export { default as VfFieldset } from './components/fieldset/VfFieldset.vue';
 export { default as VfDrawer } from './components/drawer/VfDrawer.vue';
 export type { VfDrawerPlacement, VfDrawerProps } from './components/drawer/drawer.types';
 export { default as VfPopover } from './components/popover/VfPopover.vue';
@@ -45,3 +46,4 @@ export { useTableOfContents } from './components/table-of-contents/use-table-of-
 export type { UseTableOfContentsOptions } from './components/table-of-contents/use-table-of-contents';
 export { default as VfTag } from './components/tag/CmTag.vue';
 export type { CmTagProps as VfTagProps } from './components/tag/tag.types';
+export { default as VfTextarea } from './components/textarea/VfTextarea.vue';
