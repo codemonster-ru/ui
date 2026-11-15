@@ -79,3 +79,28 @@ test('omits a disabled Select from form data rendered on the server', async (con
 
   assert.equal(new window.FormData(form).has('frequency'), false);
 });
+
+test('omits a disabled DatePicker and submits a readonly DatePicker as ISO', async (context) => {
+  const actual = await renderToString(
+    createSSRApp({
+      render: () =>
+        h('form', [
+          h(CmDatePicker, { id: 'launch', name: 'launch', modelValue: '2026-08-13', disabled: true }),
+          h(CmDatePicker, {
+            id: 'review',
+            name: 'review',
+            modelValue: '2026-09-02',
+            displayFormat: 'dd.MM.yyyy',
+            readonly: true,
+          }),
+        ]),
+    }),
+  );
+  const { window } = new JSDOM(actual);
+  context.after(() => window.close());
+  assert.match(actual, /02\.09\.2026/u);
+  assert.deepEqual(
+    [...new window.FormData(window.document.querySelector('form')).entries()],
+    [['review', '2026-09-02']],
+  );
+});

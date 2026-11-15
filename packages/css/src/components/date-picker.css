@@ -238,6 +238,11 @@
   gap: var(--cm-space-2);
 }
 
+.cm-date-picker__grid {
+  display: grid;
+  gap: var(--cm-space-2);
+}
+
 .cm-date-picker__month {
   font-weight: var(--cm-font-weight-medium);
   text-align: center;

@@ -48,7 +48,11 @@ export type {
   CmDataTableSortDirection,
 } from './components/data-table/data-table.types';
 export { default as CmDatePicker } from './components/date-picker/CmDatePicker.vue';
-export type { CmDatePickerProps, CmDatePickerSize } from './components/date-picker/date-picker.types';
+export type {
+  CmDatePickerLabels,
+  CmDatePickerProps,
+  CmDatePickerSize,
+} from './components/date-picker/date-picker.types';
 export { default as CmDivider } from './components/divider/CmDivider.vue';
 export type { CmDividerOrientation, CmDividerProps } from './components/divider/divider.types';
 export { default as CmDialog } from './components/dialog/CmDialog.vue';
