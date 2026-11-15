@@ -164,6 +164,7 @@ press Left or Right Arrow to move it 8 px, or double-click it to fit the widest 
 The separator reports its accessible name, current width and bounds. The two columns trade width
 within their `minWidth` and `maxWidth` limits. The final column and boundaries touching a column
 with `resizable: false` have no separator.
+Hovering, focusing with the keyboard, or dragging a separator shows its guide through the body.
 
 Use `defaultColumnWidths` for initial widths or `v-model:column-widths` to own the width map.
 `column-resize-end` reports the final widths once per completed interaction. Localize the separator

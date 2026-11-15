@@ -4,6 +4,7 @@ import {
   measureDataTableColumnContent,
   measureDataTableResizeBoundary,
   observeDataTablePins,
+  observeDataTableResizeGuide,
   resizedDataTableWidths,
   type CmDataTableResizeBoundary,
 } from '@codemonster-ru/ui-runtime/data-table-dom';
@@ -328,9 +329,14 @@ const fixedColumns = computed(
     visibleColumns.value.every((column) => /^\d+(?:\.\d+)?px$/u.test(activeColumnWidths.value[column.key] ?? '')),
 );
 const resizeValues = ref<Record<string, { minimum: number; maximum: number; value: number }>>({});
-let drag: { boundary: CmDataTableResizeBoundary; start: number; pointer: number } | null = null;
+let drag: { handle: HTMLElement; boundary: CmDataTableResizeBoundary; start: number; pointer: number } | null = null;
+
+watch([tableRef, () => props.resizableColumns], ([table, resizable], _, onCleanup) => {
+  if (table && resizable) onCleanup(observeDataTableResizeGuide(table));
+});
 
 watch([visibleColumns, () => props.resizableColumns], () => {
+  drag?.handle.removeAttribute('data-cm-data-table-resizing');
   drag = null;
   previewColumnWidths.value = null;
   resizeValues.value = {};
@@ -635,7 +641,8 @@ function startResize(event: PointerEvent): void {
   if (event.button !== 0 || drag || !(event.currentTarget instanceof HTMLElement)) return;
   const boundary = measureDataTableResizeBoundary(event.currentTarget);
   if (!boundary) return;
-  drag = { boundary, start: event.clientX, pointer: event.pointerId };
+  drag = { handle: event.currentTarget, boundary, start: event.clientX, pointer: event.pointerId };
+  drag.handle.setAttribute('data-cm-data-table-resizing', '');
   event.currentTarget.setPointerCapture?.(event.pointerId);
 }
 
@@ -646,6 +653,7 @@ function moveResize(event: PointerEvent): void {
 
 function finishResize(event: PointerEvent): void {
   if (!drag || drag.pointer !== event.pointerId) return;
+  drag.handle.removeAttribute('data-cm-data-table-resizing');
   drag = null;
   const widths = previewColumnWidths.value;
   previewColumnWidths.value = null;
