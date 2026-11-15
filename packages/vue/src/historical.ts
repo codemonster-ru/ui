@@ -6,6 +6,8 @@ export { default as VfAvatar } from './components/avatar/VfAvatar.vue';
 export type { VfAvatarProps } from './components/avatar/avatar.types';
 export { default as VfBadge } from './components/badge/CmBadge.vue';
 export type { CmBadgeProps as VfBadgeProps, CmBadgeTone as VfBadgeTone } from './components/badge/badge.types';
+export { default as VfBreadcrumbs } from './components/breadcrumbs/VfBreadcrumbs.vue';
+export type { VfBreadcrumbItem, VfBreadcrumbsProps } from './components/breadcrumbs/breadcrumbs.types';
 export { default as VfCheckbox } from './components/checkbox/VfCheckbox.vue';
 export type { VfCheckboxProps } from './components/checkbox/checkbox.types';
 export { default as VfDataTableColumnChooser } from './components/column-chooser/VfDataTableColumnChooser.vue';
