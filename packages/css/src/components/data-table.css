@@ -132,7 +132,10 @@
   z-index: 2;
 }
 
-.cm-data-table__table[data-cm-data-table-pins-ready] > :is(thead, tbody, tfoot) > tr > [data-cm-data-table-pin='start'] {
+.cm-data-table__table[data-cm-data-table-pins-ready]
+  > :is(thead, tbody, tfoot)
+  > tr
+  > [data-cm-data-table-pin='start'] {
   inset-inline-start: var(--cm-data-table-pin-offset);
 }
 
