@@ -1,7 +1,19 @@
 /* Each trigger includes both connector segments to keep its marker independent of the label. */
+.cm-stepper {
+  --cm-stepper-marker-size: calc(var(--cm-control-height-md) - 0.125rem);
+  --cm-stepper-rail-size: 2px;
+  --cm-stepper-rail-color: var(--cm-color-border-divider);
+  --cm-stepper-progress-color: var(--cm-color-interactive-primary-subtle-foreground);
+
+  display: flex;
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
 .cm-stepper__list {
   display: flex;
-  gap: 0;
+  inline-size: 100%;
+  min-inline-size: 0;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -15,12 +27,13 @@
 .cm-stepper__trigger {
   display: flex;
   flex-direction: column;
-  gap: var(--cm-space-1);
+  gap: calc(var(--cm-space-2) + 0.125rem);
   inline-size: 100%;
+  min-inline-size: 0;
   padding: 0;
   border: 0;
   background: none;
-  color: var(--cm-color-text-secondary);
+  color: var(--cm-color-text-primary);
   font: inherit;
   text-align: center;
   cursor: pointer;
@@ -28,19 +41,84 @@
 
 .cm-stepper__trigger:disabled {
   cursor: not-allowed;
-  opacity: 0.55;
 }
 
 .cm-stepper__rail {
   display: flex;
+  min-inline-size: 0;
   align-items: center;
-  gap: var(--cm-space-1);
 }
 
 .cm-stepper__connector {
-  flex: 1 1 auto;
-  block-size: var(--cm-border-width);
-  background: var(--cm-color-border-default);
+  flex: 1 1 0;
+  block-size: var(--cm-stepper-rail-size);
+  background: var(--cm-stepper-rail-color);
+  transition: background-color var(--cm-motion-duration-normal) var(--cm-motion-ease-standard);
+}
+
+.cm-stepper__marker {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--cm-stepper-marker-size);
+  block-size: var(--cm-stepper-marker-size);
+  border: var(--cm-border-width) solid var(--cm-color-border-interactive);
+  border-radius: var(--cm-radius-round);
+  background: var(--cm-color-background-surface);
+  color: var(--cm-color-icon-secondary);
+  font-size: var(--cm-text-caption-font-size);
+  font-weight: var(--cm-font-weight-semibold);
+  line-height: 1;
+  transition:
+    background-color var(--cm-motion-duration-fast) var(--cm-motion-ease-standard),
+    border-color var(--cm-motion-duration-fast) var(--cm-motion-ease-standard),
+    color var(--cm-motion-duration-fast) var(--cm-motion-ease-standard);
+}
+
+.cm-stepper__content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-inline-size: 0;
+}
+
+.cm-stepper__label {
+  font-size: var(--cm-text-body-font-size);
+  font-weight: var(--cm-font-weight-medium);
+  line-height: var(--cm-text-body-line-height);
+}
+
+.cm-stepper__description {
+  color: var(--cm-color-text-secondary);
+  font-size: var(--cm-text-caption-font-size);
+  line-height: var(--cm-text-caption-line-height);
+}
+
+.cm-stepper__item--complete .cm-stepper__marker {
+  border-color: var(--cm-color-interactive-primary-background);
+  background: var(--cm-color-interactive-primary-background);
+  color: var(--cm-color-interactive-primary-foreground);
+}
+
+.cm-stepper__item--complete .cm-stepper__connector,
+.cm-stepper__item--current .cm-stepper__connector--before {
+  background: var(--cm-stepper-progress-color);
+}
+
+.cm-stepper__item--current .cm-stepper__marker {
+  border-color: var(--cm-color-interactive-primary-border);
+  background: var(--cm-color-interactive-primary-subtle-background);
+  color: var(--cm-color-interactive-primary-subtle-foreground);
+  box-shadow: 0 0 0 2px var(--cm-color-interactive-primary-subtle-background);
+}
+
+.cm-stepper__item--upcoming :is(.cm-stepper__label, .cm-stepper__description) {
+  color: var(--cm-color-text-muted);
+}
+
+.cm-stepper__item--disabled .cm-stepper__connector {
+  background: var(--cm-color-border-disabled);
 }
 
 .cm-stepper__item:first-child .cm-stepper__connector--before,
@@ -48,70 +126,71 @@
   visibility: hidden;
 }
 
-.cm-stepper__marker {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  inline-size: 1.75rem;
-  block-size: 1.75rem;
-  border: var(--cm-border-width) solid var(--cm-color-border-default);
-  border-radius: 50%;
-  background: var(--cm-color-background-surface);
-  font-size: var(--cm-font-size-md);
-  line-height: 1;
+.cm-stepper__item--disabled .cm-stepper__marker {
+  border-color: var(--cm-color-border-disabled);
+  background: var(--cm-color-background-surface-disabled);
 }
 
-.cm-stepper__content {
-  display: flex;
-  flex-direction: column;
-  gap: var(--cm-space-0);
+.cm-stepper__item--disabled :is(.cm-stepper__marker, .cm-stepper__label, .cm-stepper__description) {
+  color: var(--cm-color-text-disabled);
 }
 
-.cm-stepper__label {
-  font-size: var(--cm-font-size-md);
-  line-height: var(--cm-line-height-tight);
+.cm-stepper__trigger:focus-visible {
+  outline: none;
 }
 
-.cm-stepper__description {
-  color: var(--cm-color-text-muted);
-  font-size: var(--cm-font-size-sm);
-  line-height: var(--cm-line-height-tight);
-}
-
-.cm-stepper__item--complete .cm-stepper__marker,
-.cm-stepper__item--current .cm-stepper__marker {
-  border-color: var(--cm-color-interactive-primary-border);
-  color: var(--cm-color-interactive-primary-subtle-foreground);
-}
-
-.cm-stepper__item--current .cm-stepper__trigger,
-.cm-stepper__item--complete .cm-stepper__trigger {
-  color: var(--cm-color-text-primary);
-}
-
-.cm-stepper__item--current .cm-stepper__marker {
-  background: var(--cm-color-interactive-primary-subtle-background);
+.cm-stepper__trigger:focus-visible .cm-stepper__marker {
+  box-shadow: 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
 }
 
 .cm-stepper--vertical .cm-stepper__list {
+  position: relative;
   flex-direction: column;
+  gap: var(--cm-space-3);
+}
+
+.cm-stepper--vertical .cm-stepper__list:has(> :nth-child(2))::before,
+.cm-stepper--vertical .cm-stepper__list:has(> :nth-child(2))::after {
+  position: absolute;
+  inset-block: calc(var(--cm-stepper-marker-size) / 2);
+  inset-inline-start: calc((var(--cm-stepper-marker-size) - var(--cm-stepper-rail-size)) / 2);
+  inline-size: var(--cm-stepper-rail-size);
+  border-radius: var(--cm-radius-round);
+  background: var(--cm-stepper-rail-color);
+  content: '';
+  pointer-events: none;
+}
+
+.cm-stepper--vertical .cm-stepper__list:has(> :nth-child(2))::after {
+  background: var(--cm-stepper-progress-color);
+  transform: scaleY(var(--cm-stepper-progress-factor, 0));
+  transform-origin: top;
+  transition: transform var(--cm-motion-duration-normal) var(--cm-motion-ease-standard);
+}
+
+.cm-stepper--vertical.cm-stepper--content-start .cm-stepper__list:has(> :nth-child(2))::before,
+.cm-stepper--vertical.cm-stepper--content-start .cm-stepper__list:has(> :nth-child(2))::after {
+  inset-inline: auto calc((var(--cm-stepper-marker-size) - var(--cm-stepper-rail-size)) / 2);
+}
+
+.cm-stepper--vertical .cm-stepper__item {
+  position: relative;
 }
 
 .cm-stepper--vertical .cm-stepper__trigger {
   flex-direction: row;
   align-items: center;
-  gap: var(--cm-space-2);
+  gap: var(--cm-space-3);
+  min-block-size: var(--cm-stepper-marker-size);
   text-align: start;
 }
 
 .cm-stepper--vertical .cm-stepper__rail {
-  flex-direction: column;
-  align-self: stretch;
+  flex: 0 0 var(--cm-stepper-marker-size);
 }
 
 .cm-stepper--vertical .cm-stepper__connector {
-  inline-size: var(--cm-border-width);
-  block-size: auto;
+  display: none;
 }
 
 .cm-stepper--content-inline .cm-stepper__trigger {
@@ -139,4 +218,18 @@
   align-items: flex-end;
   flex: 1 1 auto;
   text-align: end;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cm-stepper__connector,
+  .cm-stepper__marker,
+  .cm-stepper--vertical .cm-stepper__list:has(> :nth-child(2))::after {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .cm-stepper__trigger:focus-visible .cm-stepper__marker {
+    outline: var(--cm-focus-ring-width) solid Highlight;
+  }
 }

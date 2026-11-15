@@ -53,6 +53,7 @@ migration, including behavioral or visual differences. Do not claim parity from 
 | DONE | Restored historical DataTable typed keys and controlled selection, original cell and expansion scopes, and ordered sort models. Chrome verified the published Vue example at both widths: priority, tie order, one primary ARIA sort and reset to page one. The direct compatibility import measures 12.56 KiB gzip and carries no Vanilla controllers. |
 | DONE | Vanilla DataTable expands authored detail rows (`0924c05a`), scopes events to the nearest table, and leaves sorting, selection and paging independent. Chrome exercised keyboard expansion and focus in both adapters. |
 | DONE | Native modals now prevent background scrolling (`f0591f37`). Pinned Chrome verified classic and overlay scrollbars, internal scrolling, nested Escape and original page position in Vue, Vanilla, and a mixed pair. |
+| DONE | Stepper markers and progress now use the shared package CSS. Chrome matched the historical 34 px markers, 2 px rail, progress and placement in the Vue showcase at both widths. Both adapters passed six exact fixture comparisons, four behavior runs and reduced-motion keyboard checks in LTR and RTL. |
 | DONE | Aligned Vue Layouts with the shared guide (`f47727a5`): changed pixels against the pinned historical views fell from 11.96–18.05% to 1.09–3.20%. Controls and responsive previews passed at both widths and in both themes. |
 | DONE | Restored the Vue showcase's narrow navigation controls without shifting content when the system draws scrollbars. Shortened the shared Colors introduction to restore its mobile text rhythm. Pinned Chrome passed overflow, active-route and keyboard checks at 390 and 1280 px. |
 | IN PROGRESS | Run package checks, lint, type checks, tests, browser behavior and accessibility checks, production builds, and fresh packed consumers. See the exact snapshots below. |
@@ -148,6 +149,10 @@ from 13.20% to 1.91% (worst frame: 36.01% to 3.50%), and Vanilla's fell from 3.9
   to the starting revision's local capture; the stored-baseline comparison still counts 44 of
   48 changes per adapter. Evidence: `/private/tmp/cmui-browser-checkpoint.jmvofA` and
   `/private/tmp/cmui-fixture-recapture.0urDel`.
+- `1aef7bfd`, fresh copy at `/private/tmp/cmui-verify.BSTJH2`: all 20 checks passed, including
+  936 cold tests, both production showcases, accessibility for 178 authored cases, dependency
+  audits, and fresh packed consumers with npm, pnpm and Yarn. A direct historical DataTable
+  import was 12.56 KiB gzip. Add the Stepper and later slices to the next exact candidate.
 - The pinned browser ran 132 behavior scenarios across both adapters at `8ff4cecf` without failures
   or motion mismatches. The separate 48-frame showcase run reported no JavaScript errors and no
   horizontal page overflow. Vue Layouts was the largest remaining viewport difference in this run
