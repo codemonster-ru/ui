@@ -21,7 +21,9 @@ indeterminate bar visible with a stationary fill.
 
 The component clamps finite `value` input to `0..max`. An invalid or non-positive `max` falls back to `100`. Determinate bars render `aria-valuemin`, `aria-valuemax`, and `aria-valuenow`; indeterminate bars deliberately omit all three. `showValue` renders a rounded percentage only for determinate progress.
 
-Supported tones are `neutral`, `primary`, `success`, `info`, `warning`, `help`, `danger`, and `contrast`. Height, stripes, and consumer-controlled animation are intentionally outside the contract.
+Supported tones are `neutral`, `primary`, `success`, `info`, `warning`, `help`, `danger`,
+and `contrast`. Use `height` for a pixel number or a non-negative CSS length. The component
+reports progress supplied by the application and emits no progress events.
 
 ## Progress spinner
 

@@ -13,19 +13,9 @@ and CSS-only applications.
 
 ## Installation
 
-Use the package manager already used by the application:
-
-```bash
-npm install @codemonster-ru/ui-tokens
-```
-
-```bash
-pnpm add @codemonster-ru/ui-tokens
-```
-
-```bash
-yarn add @codemonster-ru/ui-tokens
-```
+For the 2.0 checkout, [pack the workspace and install its local archive](../getting-started.md#install-a-local-20-build).
+Applications that use only tokens need the Tokens workspace. Applications that also use shared
+components need the matching CSS package.
 
 ## CSS consumption
 
@@ -55,8 +45,9 @@ presets contain the complete token schema.
 
 ### Override tokens
 
-Load application overrides after `tokens.css`. Override primitive tokens to change every semantic
-role that references them, or override a semantic token for a narrower responsibility:
+Load application overrides after `tokens.css`. Override a primitive at the theme boundary
+where the consuming semantic roles are declared. Override a semantic role directly for a
+local exception, such as a focus ring inside an embedded app.
 
 ```css
 :root {
@@ -72,6 +63,42 @@ role that references them, or override a semantic token for a narrower responsib
 Prefer semantic properties in component CSS. Primitive palette properties are theme inputs and
 should not become component-level styling contracts.
 
+## Design tokens
+
+Use the shared roles in application compositions so surfaces, controls, and states behave
+consistently in both themes. The CSS variables and the typed registry use the same token graph.
+
+| Role | Tokens to start with | Where to use them |
+| --- | --- | --- |
+| Surfaces | `--cm-color-background-canvas`, `--cm-color-background-surface`, `--cm-color-background-surface-subtle` | Page canvas, content surfaces, quiet inset regions. |
+| Text | `--cm-color-text-primary`, `--cm-color-text-secondary`, `--cm-color-text-link` | Body and heading text, supporting text, functional links. |
+| Interaction | `--cm-color-border-interactive`, `--cm-color-focus-ring`, `--cm-color-background-surface-selected`, `--cm-color-selected-foreground` | Control boundary, keyboard focus, and the selected surface and text pair. |
+| Primary action | `--cm-color-interactive-primary-background`, `--cm-color-interactive-primary-foreground` | Pair the background and text. Use the matching hover and active background roles for interaction. |
+| Feedback | `--cm-color-status-danger-subtle-background`, `--cm-color-status-danger-subtle-foreground` and the corresponding Success, Warning, Info, and Help roles | Match the foreground to its solid or subtle surface. Use text or an accessible name to express the status. |
+| Disabled | `--cm-color-text-disabled`, `--cm-color-border-disabled` | Pair the visual state with the component's native or documented disabled behavior. |
+
+Typography uses `--cm-font-family-base` and `--cm-font-family-heading` for text and
+`--cm-font-family-mono` for code. Scope titles to the page's real heading levels and use
+the size, line-height, and weight variables in the `--cm-text-body-*`,
+`--cm-text-label-*`, and `--cm-text-caption-*` groups for their corresponding roles.
+The [optional Inter stylesheet](../css/getting-started.md#public-entries) loads the font files.
+
+Use the spacing scale for gaps and padding, for example `--cm-space-2` (0.5rem),
+`--cm-space-4` (1rem), and `--cm-space-6` (1.5rem). Use component size props or classes
+when aligning mixed controls. The shared small, medium, and large height tokens are
+1.75rem, 2.25rem, and 2.5rem. Keep content able to wrap or grow with user text settings.
+
+Use `--cm-radius-control`, `--cm-radius-surface`, and `--cm-radius-overlay` for their
+respective shapes. `--cm-radius-round` gives a pill or circle when the geometry allows it.
+Use `--cm-shadow-surface` for modest elevation and `--cm-shadow-overlay` for a separate
+floating layer. Pair elevation with an appropriate surface or border so the boundary
+still reads with shadows suppressed.
+
+Shared motion uses 220 ms for fast transitions, 320 ms for normal transitions, and
+`--cm-motion-ease-standard` for easing. Keep state changes usable when motion is skipped.
+The CSS foundation covers reduced motion and forced colors for library components.
+Check custom styles in both modes as well as both themes.
+
 ### Breakpoint entry
 
 Import only the breakpoint properties when the full theme is unnecessary:
@@ -80,10 +107,11 @@ Import only the breakpoint properties when the full theme is unnecessary:
 @import '@codemonster-ru/ui-tokens/breakpoints.css';
 ```
 
-This entry defines `--cm-breakpoint-xs` through `--cm-breakpoint-2xl`. CSS custom properties cannot
-be used as media-query conditions, so authored and distributed media queries must use the matching
-literal widths. The JavaScript registry is the source for build tools that generate those queries.
-The distributed package intentionally does not require custom-media processing.
+The thresholds are `xs` 480 px, `sm` 640 px, `md` 768 px, `lg` 1,024 px,
+`xl` 1,280 px, and `2xl` 1,536 px. Use the corresponding literal widths in media
+conditions. Custom properties such as `--cm-breakpoint-md` are values for declarations or
+layout helpers. Use the JavaScript registry for build tools that generate media queries.
+Start with flexible layouts that wrap at narrow widths, then add columns as room permits.
 
 ## TypeScript consumption
 

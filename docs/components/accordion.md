@@ -5,9 +5,10 @@ native buttons and labelled regions, supports one or many open items, skips disa
 managed focus navigation, and escapes every item string.
 
 Each item has a unique kebab-case `id`, a non-empty `title`, plain-text `content`, and an optional
-`disabled` flag. `id` supplies the stable prefix for trigger and panel relationships. Unknown and
-disabled ids in an initial open list are ignored; single mode keeps the first valid id in item
-order.
+`disabled` flag. The Accordion's own `id` supplies the stable prefix for trigger and panel
+relationships. Unknown and disabled item IDs in an initial open list are ignored. The default
+single-open mode keeps the first valid ID in item order. Use `multiple` in Vue or the
+[multiple-open HTML](../../contracts/accordion/cases/multiple-open.html) for independent panels.
 
 Trusted rich content uses per-item slots derived from the item id. For example, `account-details`
 uses `triggerAccountDetails` and `panelAccountDetails`. This keeps ordinary collection values

@@ -11,9 +11,7 @@ Current version: `@codemonster-ru/ui-utilities@2.0.0-dev.0` — in development, 
 
 ## Installation
 
-```bash
-npm install @codemonster-ru/ui-tokens@^2.0.0-dev.0 @codemonster-ru/ui-utilities@^2.0.0-dev.0
-```
+For 2.0, [pack and install the matching Tokens and Utilities archives](../../docs/getting-started.md#install-a-local-20-build).
 
 ```css
 @import '@codemonster-ru/ui-tokens/tokens.css';

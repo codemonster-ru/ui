@@ -52,7 +52,7 @@ presentation. Use native attributes such as `disabled` and `form` on the fieldse
 
 | Prop                | Values                                                        | Default         | Behavior                                     |
 | ------------------- | ------------------------------------------------------------- | --------------- | -------------------------------------------- |
-| `value`             | string                                                        | `''`            | Current value; Vue maps to `v-model`.        |
+| `modelValue`        | string                                                        | `''`            | Vue `v-model`; rendered as native `value`.   |
 | `type`              | `text`, `email`, `number`, `password`, `search`, `tel`, `url` | `text`          | Native single-line type.                     |
 | `size`              | `sm`, `md`, `lg`                                              | `md`            | Shared control size.                         |
 | `invalid`           | boolean                                                       | `false`         | Adds `aria-invalid` and invalid style.       |
@@ -77,9 +77,10 @@ An explicit slot takes precedence over the corresponding icon prop.
 
 ## Textarea and choice APIs
 
-`Textarea` accepts the Input state and size props except `type`; its string `value` maps to Vue
-`modelValue` and renders as escaped textarea content in Vanilla HTML. Native attributes such as `name`,
-`rows`, `maxlength`, and `wrap` reach the `<textarea>`.
+`CmTextarea` accepts `modelValue`, `size` (`sm`, `md`, or `lg`), `invalid`, `disabled`,
+`readonly`, and `required`. Vue `v-model` carries a string and emits `update:modelValue` on native
+input. Vanilla HTML renders the initial value as escaped textarea content. Native attributes such
+as `name`, `rows`, `maxlength`, and `wrap` reach the `<textarea>`.
 
 `VfTextarea` from `@codemonster-ru/ui-vue/historical` also keeps a local draft while emitting
 `update:modelValue`. A changed `modelValue` replaces the draft. Inside a floating `CmField` or
@@ -90,7 +91,7 @@ Checkbox and Switch share these props:
 
 | Prop            | Values           | Default | Behavior                                                     |
 | --------------- | ---------------- | ------- | ------------------------------------------------------------ |
-| `checked`       | boolean          | `false` | Current state; Vue maps this to boolean `v-model`.           |
+| `modelValue`    | boolean          | `false` | Vue `v-model`; rendered as native `checked`.                 |
 | `value`         | string           | `on`    | Native submitted value while checked.                        |
 | `label`         | string           | `''`    | Escaped fallback when the default slot is empty.             |
 | `size`          | `sm`, `md`, `lg` | `md`    | Shared label and control size.                               |
@@ -110,7 +111,8 @@ unchecked value is absent from submitted form data.
 Switch accepts trusted decorative content through its `thumb` slot. The wrapper is hidden from
 assistive technology, so keep the visible setting name in the default slot or `label` prop. Vue
 provides the current `{ checked }` state to the thumb slot; Vanilla templates render thumb content for the
-current server response.
+current server response. Use `static` to keep the track treatment consistent across states and
+`thumbContrast` to select `auto` or `inverse`.
 
 ## Vue binding
 
@@ -169,9 +171,10 @@ Render initial values and validation state using the canonical HTML for [field](
 
 ## Indeterminate Checkbox in Vanilla HTML
 
-HTML cannot serialize the native `indeterminate` DOM property. When Vanilla HTML renders
-`<cm-checkbox :indeterminate="true">`, register the framework-independent Checkbox controller in
-the frontend bundle:
+HTML cannot serialize the native `indeterminate` DOM property. Put
+`data-cm-controller="checkbox"` and `data-cm-checkbox-indeterminate="true"` on the root label in
+Vanilla HTML, as in the [indeterminate fixture](../../contracts/checkbox/cases/indeterminate.html).
+Then register the framework-independent Checkbox controller in the frontend bundle:
 
 ```ts
 import { CmRuntime, createCmCheckboxController } from '@codemonster-ru/ui-runtime';
@@ -220,12 +223,14 @@ const mode = ref<CmThemeMode>('system');
 </template>
 ```
 
-On the server, read the cookie and stamp the root before anything renders:
-
-Vanilla markup: [theme-switch HTML](../../contracts/theme-switch/cases/default.html).
+Use the [theme recipe](../recipes/theme-switch.md#server-rendering) to read the cookie and
+render the initial document preference. For Vanilla, render the
+[radio group](../../contracts/theme-switch/cases/default.html) and start its controller.
 
 `name` renames the radio group, `legend` labels it, and `cookieName` changes where the preference is
-stored when there is no provider. `VfThemeSwitch` restores the two-position Vue control as a
+stored when there is no provider. Supply `options` to localize the visible labels and retain
+their `light`, `dark`, or `system` values. In Vue, `v-model` uses `update:modelValue`; the
+`themeChange` event also carries the selected mode. `VfThemeSwitch` restores the two-position Vue control as a
 separate export. Inside a provider, use `variant="button"` for an icon or labeled button, or
 the default switch with optional `static` and `thumb-contrast="inverse"` styling. The static
 style keeps the track neutral as the thumb moves; the switch remains operable.

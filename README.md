@@ -12,8 +12,8 @@ npm install vue@^3.5.0 @codemonster-ru/ui-vue@^1.1.0 @codemonster-ru/ui-css@^1.1
 ```
 
 See the [CodeMonster UI 1.1 release notes](./docs/codemonster-ui-1.1-release-notes.md),
-[component documentation](./docs/components/button.md), and
-[CSS-only guide](./docs/css/getting-started.md).
+[2.0 checkout quick starts](./docs/getting-started.md), and
+[Vue and Vanilla component reference](./docs/components/index.md).
 
 ## Preview locally
 
@@ -44,8 +44,8 @@ shared styles, and standalone Vanilla integration.
 
 ### Documentation
 
-Start at [the documentation index](./docs/index.md) and see the
-[release notes](./docs/release-notes.md) for coordinated package changes.
+The [documentation index](./docs/index.md) links to integration guides, design tokens,
+application recipes, and [release notes](./docs/release-notes.md).
 
 ## License
 

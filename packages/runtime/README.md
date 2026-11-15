@@ -4,9 +4,9 @@ Framework-independent progressive enhancement for canonical CodeMonster UI marku
 
 Current version: `@codemonster-ru/ui-runtime@2.0.0-dev.0` — in development, not published; the published line is `1.x`.
 
-The package provides controller registration, scoped discovery, idempotent lifecycle management,
-optional mutation observation, typed `cm:*` custom-event helpers, Accordion interaction, and native
-indeterminate Checkbox restoration, Tabs, Menu, and Dropdown interaction for server-rendered markup.
+The package provides controller registration, scoped discovery, lifecycle management,
+optional mutation observation, and typed `cm:*` custom events for server-rendered markup.
+Component guides identify which controllers are required and the events they dispatch.
 
 The runtime does not render application content, import a component framework, or replace native
 HTML behavior.
@@ -18,13 +18,12 @@ HTML behavior.
 
 ## Installation
 
-```bash
-npm install @codemonster-ru/ui-runtime@^2.0.0-dev.0 @codemonster-ru/ui-css@^2.0.0-dev.0
-```
+For 2.0, [pack and install the matching Runtime, CSS, and Tokens archives](../../docs/getting-started.md#install-a-local-20-build).
 
 ## Quick start
 
 ```ts
+import '@codemonster-ru/ui-tokens/tokens.css';
 import '@codemonster-ru/ui-css/styles.css';
 import { CmRuntime, createCmAccordionController, createCmCheckboxController } from '@codemonster-ru/ui-runtime';
 
@@ -41,6 +40,9 @@ The disposer releases controllers that leave the runtime's observed roots. Scope
 initialization away from Vue-owned component trees.
 
 ## Documentation
+
+Follow the [Vanilla quick start](../../docs/vanilla.md#quick-start) for complete markup,
+or the [dynamic HTML guide](../../docs/vanilla.md#dynamic-html) for runtime lifecycle.
 
 See the cross-platform [Accordion guide](../../docs/components/accordion.md) for Vanilla rendering,
 events, keyboard behavior, and state ownership.

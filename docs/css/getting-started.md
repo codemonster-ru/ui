@@ -13,19 +13,8 @@ static HTML, and other platforms.
 
 ## Installation
 
-Install the CSS package. Its compatible token package is installed automatically:
-
-```bash
-npm install @codemonster-ru/ui-css
-```
-
-```bash
-pnpm add @codemonster-ru/ui-css
-```
-
-```bash
-yarn add @codemonster-ru/ui-css
-```
+For the 2.0 checkout, [pack and install the matching CSS and Tokens archives](../getting-started.md#install-a-local-20-build).
+The CSS package declares the compatible token range.
 
 ## Complete stylesheet
 
@@ -33,12 +22,16 @@ Load tokens first and the complete shared stylesheet second:
 
 ```css
 @import '@codemonster-ru/ui-tokens/tokens.css';
+@import '@codemonster-ru/ui-css/fonts.css';
 @import '@codemonster-ru/ui-css/styles.css';
 ```
 
 `styles.css` composes the document foundation and every published shared primitive and component
 style. Import it once. Do not combine it with `foundation.css` because the complete entry already
 includes the foundation.
+
+The optional `fonts.css` entry supplies Inter. Omit it when the application already
+provides Inter or uses the system fallback.
 
 ## Foundation-only stylesheet
 
@@ -125,3 +118,4 @@ runtime only when their behavior contract requires it.
 | --------------------------------------- | --------------------------------------------------------------------- |
 | `@codemonster-ru/ui-css/styles.css`     | Foundation plus all shared primitives and component styles            |
 | `@codemonster-ru/ui-css/foundation.css` | Reset, document, focus, reduced-motion, and forced-colors foundations |
+| `@codemonster-ru/ui-css/fonts.css`      | The optional bundled Inter font                                       |

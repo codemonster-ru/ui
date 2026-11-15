@@ -11,9 +11,8 @@ Current version: `@codemonster-ru/ui-layouts@2.0.0-dev.0` — in development, no
 
 ## Installation
 
-```bash
-npm install vue@^3.5.0 @codemonster-ru/ui-layouts@^2.0.0-dev.0 @codemonster-ru/ui-vue@^2.0.0-dev.0 @codemonster-ru/ui-css@^2.0.0-dev.0
-```
+For 2.0, [pack and install the Layouts archive with the Vue package group](../../docs/getting-started.md#install-a-local-20-build)
+in your Vue 3.5 app.
 
 ## Quick start
 

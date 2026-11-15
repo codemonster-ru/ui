@@ -5,9 +5,7 @@ helpers for Vue, Vanilla, plain HTML, and other CSS consumers. It has no framewo
 
 ## Installation
 
-```bash
-npm install @codemonster-ru/ui-tokens @codemonster-ru/ui-utilities
-```
+For the 2.0 checkout, [pack and install the matching Tokens and Utilities archives](../getting-started.md#install-a-local-20-build).
 
 Load theme tokens before utilities:
 
