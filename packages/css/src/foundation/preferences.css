@@ -3,7 +3,7 @@
   :where([class^='cm-'], [class*=' cm-'])::before,
   :where([class^='cm-'], [class*=' cm-'])::after {
     scroll-behavior: auto !important;
-    transition-duration: var(--cm-motion-duration-none) !important;
+    transition: none !important;
     animation-duration: var(--cm-motion-duration-none) !important;
     animation-iteration-count: 1 !important;
   }
