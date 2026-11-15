@@ -23,11 +23,23 @@ export interface CmCalendarDay {
 export type CmCalendarWeekday = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 export type CmCalendarLocale = string | string[];
 export type CmCalendarSelectionMode = 'single' | 'multiple' | 'range';
+export type CmCalendarPrecision = 'day' | 'month' | 'year';
+
+const yearRangeSize = 12;
+const periodColumns = 3;
 
 const isoPattern = /^(\d{4})-(\d{2})-(\d{2})$/u;
 const displayFormatter = new Intl.DateTimeFormat('en-US', { day: '2-digit', month: '2-digit', year: '2-digit' });
 const monthFormatter = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' });
 const weekdayFormatter = new Intl.DateTimeFormat('en-US', { weekday: 'short' });
+
+function localDate(year: number, month: number, day: number): Date {
+  // The multi-argument Date constructor interprets years 0–99 as 1900–1999.
+  const date = new Date(0);
+  date.setFullYear(year, month, day);
+  date.setHours(0, 0, 0, 0);
+  return date;
+}
 
 export function formatIsoDate(date: Date): string {
   const year = String(date.getFullYear()).padStart(4, '0');
@@ -38,9 +50,21 @@ export function formatIsoDate(date: Date): string {
 
 export function parseIsoDate(value: string): Date | null {
   const match = isoPattern.exec(value);
-  if (!match) return null;
-  const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+  if (!match || match[1] === '0000') return null;
+  const date = localDate(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
   return formatIsoDate(date) === value ? date : null;
+}
+
+export function parseCalendarValue(value: string, precision: CmCalendarPrecision): Date | null {
+  if (precision === 'month') return parseIsoDate(`${value}-01`);
+  if (precision === 'year') return parseIsoDate(`${value}-01-01`);
+  return parseIsoDate(value);
+}
+
+export function formatCalendarValue(date: Date, precision: CmCalendarPrecision): string {
+  if (precision === 'year') return String(date.getFullYear()).padStart(4, '0');
+  const day = formatIsoDate(date);
+  return precision === 'month' ? day.slice(0, -3) : day;
 }
 
 // Callers below need a real Date to build a grid from. The component sanitizes every value it
@@ -51,11 +75,16 @@ function requireIsoDate(value: string): Date {
 
 // The display and month names are pinned to one locale so a server-rendered control and the client
 // that later takes it over agree, and so a capture does not depend on the machine's language.
-export function formatDisplayDate(value: string, locale?: CmCalendarLocale, format?: string): string {
-  const date = parseIsoDate(value);
+export function formatDisplayDate(
+  value: string,
+  locale?: CmCalendarLocale,
+  format?: string,
+  precision: CmCalendarPrecision = 'day',
+): string {
+  const date = parseCalendarValue(value, precision);
   if (date === null) return value;
   if (format) {
-    const [year, month, day] = value.split('-');
+    const [year, month, day] = formatIsoDate(date).split('-');
     const tokens: Readonly<Record<string, string>> = {
       yyyy: year,
       yy: year.slice(-2),
@@ -67,9 +96,13 @@ export function formatDisplayDate(value: string, locale?: CmCalendarLocale, form
     return format.replace(/yyyy|yy|MM|M|dd|d/g, (token) => tokens[token]);
   }
   const formatter =
-    locale === undefined
+    locale === undefined && precision === 'day'
       ? displayFormatter
-      : new Intl.DateTimeFormat(locale, { day: '2-digit', month: '2-digit', year: '2-digit' });
+      : new Intl.DateTimeFormat(locale ?? 'en-US', {
+          year: precision === 'year' ? 'numeric' : '2-digit',
+          ...(precision !== 'year' ? { month: '2-digit' } : {}),
+          ...(precision === 'day' ? { day: '2-digit' } : {}),
+        });
   return formatter.format(date);
 }
 
@@ -86,8 +119,8 @@ export function weekdayLabels(firstDayOfWeek: CmCalendarWeekday = 0, locale?: Cm
 
 export function shiftMonth(value: string, delta: number): string {
   const date = requireIsoDate(value);
-  const shifted = new Date(date.getFullYear(), date.getMonth() + delta, 1);
-  const lastDay = new Date(shifted.getFullYear(), shifted.getMonth() + 1, 0).getDate();
+  const shifted = localDate(date.getFullYear(), date.getMonth() + delta, 1);
+  const lastDay = localDate(shifted.getFullYear(), shifted.getMonth() + 1, 0).getDate();
   shifted.setDate(Math.min(date.getDate(), lastDay));
   return formatIsoDate(shifted);
 }
@@ -127,6 +160,85 @@ export function calendarMonthAllowed(value: string, min?: string, max?: string):
   return (!min || month >= min.slice(0, 7)) && (!max || month <= max.slice(0, 7));
 }
 
+/** Keep the initial decade alignment when subsequent keyboard moves cross a 12-year boundary. */
+export function calendarYearRangeStart(value: string, currentStart?: number): number {
+  const year = Number(value.slice(0, 4));
+  return currentStart === undefined
+    ? Math.floor(year / 10) * 10
+    : currentStart + Math.floor((year - currentStart) / yearRangeSize) * yearRangeSize;
+}
+
+export function calendarGridTitle(
+  value: string,
+  precision: CmCalendarPrecision,
+  yearStart: number,
+  locale?: CmCalendarLocale,
+): string {
+  if (precision === 'year') return `${yearStart}–${yearStart + yearRangeSize - 1}`;
+  if (precision === 'month') {
+    const date = parseCalendarValue(value, 'month');
+    return date ? new Intl.DateTimeFormat(locale ?? 'en-US', { year: 'numeric' }).format(date) : '';
+  }
+  return monthLabel(value, locale);
+}
+
+export function calendarGridKeyTarget(
+  value: string,
+  key: string,
+  precision: CmCalendarPrecision,
+  firstDayOfWeek: CmCalendarWeekday,
+  yearStart: number,
+  rtl: boolean,
+): string | null {
+  if (precision === 'day') return calendarKeyTarget(value, key, firstDayOfWeek, rtl);
+  const date = parseCalendarValue(value, precision);
+  if (!date) return null;
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const months = precision === 'month';
+  if (key === 'Home') return formatCalendarValue(localDate(months ? year : yearStart, 0, 1), precision);
+  if (key === 'End') {
+    return formatCalendarValue(localDate(months ? year : yearStart + yearRangeSize - 1, months ? 11 : 0, 1), precision);
+  }
+  const offsets: Readonly<Record<string, number>> = {
+    ArrowLeft: rtl ? 1 : -1,
+    ArrowRight: rtl ? -1 : 1,
+    ArrowUp: -periodColumns,
+    ArrowDown: periodColumns,
+    PageUp: -yearRangeSize,
+    PageDown: yearRangeSize,
+  };
+  if (!Object.prototype.hasOwnProperty.call(offsets, key)) return null;
+  const amount = offsets[key];
+  return formatCalendarValue(localDate(year + (months ? 0 : amount), months ? month + amount : 0, 1), precision);
+}
+
+export function calendarAdjacentPeriod(
+  value: string,
+  delta: number,
+  precision: CmCalendarPrecision,
+  yearStart: number,
+  min?: string,
+  max?: string,
+): string | null {
+  if (precision === 'day') {
+    const target = shiftMonth(value, delta);
+    return calendarMonthAllowed(target, min, max) ? boundCalendarDate(target, min, max) : null;
+  }
+  const date = parseCalendarValue(value, precision);
+  if (!date) return null;
+  const months = precision === 'month';
+  const step = delta * (months ? 1 : yearRangeSize);
+  const year = date.getFullYear() + step;
+  const first = months ? year : yearStart + step;
+  const last = months ? year : first + yearRangeSize - 1;
+  const minimum = min ? Number(min.slice(0, 4)) : 1;
+  const maximum = max ? Number(max.slice(0, 4)) : 9999;
+  if (last < minimum || first > maximum) return null;
+  const boundedYear = Math.min(Math.max(year, minimum), maximum);
+  return boundCalendarDate(formatCalendarValue(localDate(boundedYear, date.getMonth(), 1), precision), min, max);
+}
+
 export function selectCalendarDate(
   selected: readonly string[],
   value: string,
@@ -138,41 +250,52 @@ export function selectCalendarDate(
   return [...selected, value];
 }
 
-export function buildCalendarMonth(options: {
+interface CalendarItemsOptions {
   max?: string | null;
   min?: string | null;
-  month: string;
   selected: string | readonly string[];
   range?: boolean;
-  firstDayOfWeek?: CmCalendarWeekday;
   locale?: CmCalendarLocale;
-}): CmCalendarDay[][] {
+}
+
+function calendarItemState(options: CalendarItemsOptions) {
+  const selected = typeof options.selected === 'string' ? [options.selected] : options.selected;
+  const values = new Set(selected);
+  const [rangeStart, rangeEnd] = options.range ? [...selected].sort() : [];
+  return (value: string) => ({
+    disabled: Boolean((options.min && value < options.min) || (options.max && value > options.max)),
+    selected: values.has(value),
+    rangeStart: value === rangeStart,
+    rangeEnd: value === rangeEnd,
+    inRange: Boolean(rangeStart && rangeEnd && value > rangeStart && value < rangeEnd),
+  });
+}
+
+export function buildCalendarMonth(
+  options: CalendarItemsOptions & { month: string; firstDayOfWeek?: CmCalendarWeekday },
+): CmCalendarDay[][] {
   const anchor = requireIsoDate(options.month);
   const today = formatIsoDate(new Date());
-  const firstOfMonth = new Date(anchor.getFullYear(), anchor.getMonth(), 1);
+  const firstOfMonth = localDate(anchor.getFullYear(), anchor.getMonth(), 1);
   const start = new Date(firstOfMonth);
   const leadingDays = (firstOfMonth.getDay() - (options.firstDayOfWeek ?? 0) + 7) % 7;
   start.setDate(1 - leadingDays);
   const accessibleFormatter = new Intl.DateTimeFormat(options.locale ?? 'en-US', { dateStyle: 'full' });
-  const selected = typeof options.selected === 'string' ? [options.selected] : options.selected;
-  const selectedDates = new Set(selected);
-  const [rangeStart, rangeEnd] = options.range ? [...selected].sort() : [];
+  const itemState = calendarItemState(options);
 
   const weeks: CmCalendarDay[][] = [];
   for (let week = 0; week < 6; week += 1) {
     const days: CmCalendarDay[] = [];
     for (let day = 0; day < 7; day += 1) {
-      const date = new Date(start.getFullYear(), start.getMonth(), start.getDate() + week * 7 + day);
+      const date = localDate(start.getFullYear(), start.getMonth(), start.getDate() + week * 7 + day);
       const value = formatIsoDate(date);
+      const state = itemState(value);
       days.push({
+        ...state,
         accessibleLabel: accessibleFormatter.format(date),
-        disabled: Boolean((options.min && value < options.min) || (options.max && value > options.max)),
-        inRange: Boolean(rangeStart && rangeEnd && value > rangeStart && value < rangeEnd),
+        disabled: state.disabled || date.getFullYear() < 1 || date.getFullYear() > 9999,
         label: String(date.getDate()),
         outside: date.getMonth() !== anchor.getMonth(),
-        rangeEnd: value === rangeEnd,
-        rangeStart: value === rangeStart,
-        selected: selectedDates.has(value),
         today: value === today,
         value,
       });
@@ -180,4 +303,39 @@ export function buildCalendarMonth(options: {
     weeks.push(days);
   }
   return weeks;
+}
+
+export function buildCalendarGrid(
+  options: CalendarItemsOptions & {
+    month: string;
+    firstDayOfWeek?: CmCalendarWeekday;
+    precision: CmCalendarPrecision;
+    yearStart: number;
+  },
+): CmCalendarDay[][] {
+  const { precision, locale, yearStart } = options;
+  if (precision === 'day') return buildCalendarMonth(options);
+  const year = precision === 'month' ? Number(options.month.slice(0, 4)) : yearStart;
+  const shortMonth = new Intl.DateTimeFormat(locale ?? 'en-US', { month: 'short' });
+  const fullMonth = new Intl.DateTimeFormat(locale ?? 'en-US', { month: 'long', year: 'numeric' });
+  const today = formatCalendarValue(new Date(), precision);
+  const itemState = calendarItemState(options);
+  const units = Array.from({ length: yearRangeSize }, (_, index) => {
+    const monthMode = precision === 'month';
+    const date = localDate(year + (monthMode ? 0 : index), monthMode ? index : 0, 1);
+    const value = formatCalendarValue(date, precision);
+    const state = itemState(value);
+    return {
+      ...state,
+      accessibleLabel: monthMode ? fullMonth.format(date) : value,
+      disabled: state.disabled || date.getFullYear() < 1 || date.getFullYear() > 9999,
+      label: monthMode ? shortMonth.format(date) : value,
+      outside: false,
+      today: value === today,
+      value,
+    };
+  });
+  return Array.from({ length: yearRangeSize / periodColumns }, (_, row) =>
+    units.slice(row * periodColumns, row * periodColumns + periodColumns),
+  );
 }

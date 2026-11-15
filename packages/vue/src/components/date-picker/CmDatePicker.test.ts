@@ -238,4 +238,61 @@ describe('CmDatePicker', () => {
     expect(new FormData(form).getAll('release_dates')).toEqual(['2026-08-13', '2026-08-20']);
     wrapper.unmount();
   });
+
+  it('moves through month choices by year and submits an ISO month', async () => {
+    const form = document.createElement('form');
+    document.body.append(form);
+    const wrapper = mount(CmDatePicker, {
+      attachTo: form,
+      props: {
+        id: 'billing-month',
+        monthPicker: true,
+        modelValue: '2026-08',
+        min: '2026-04',
+        max: '2027-09',
+      },
+      attrs: { name: 'billing_month' },
+    });
+    await wrapper.get('button.cm-date-picker').trigger('click');
+    expect(wrapper.findAll('[role="gridcell"]')).toHaveLength(12);
+    expect(wrapper.find('[role="columnheader"]').exists()).toBe(false);
+    expect(wrapper.get('.cm-date-picker__month').text()).toBe('2026');
+    expect(wrapper.get('[data-cm-date-picker-previous]').attributes('disabled')).toBe('');
+
+    const active = () => wrapper.get('[role="gridcell"][tabindex="0"]');
+    expect(active().attributes('aria-label')).toBe('August 2026');
+    await active().trigger('keydown', { key: 'PageDown' });
+    expect(active().attributes('aria-label')).toBe('August 2027');
+    await active().trigger('keydown', { key: 'ArrowRight' });
+    expect(active().attributes('data-cm-date-picker-value')).toBe('2027-09');
+    await active().trigger('click');
+    expect(new FormData(form).get('billing_month')).toBe('2027-09');
+    expect(wrapper.emitted('update:modelValue')).toEqual([['2027-09']]);
+    wrapper.unmount();
+  });
+
+  it('pages a bounded 12-year block and submits a chronological year range', async () => {
+    const form = document.createElement('form');
+    document.body.append(form);
+    const wrapper = mount(CmDatePicker, {
+      attachTo: form,
+      props: { id: 'year-window', yearPicker: true, range: true, modelValue: ['2026'], min: '2020', max: '2035' },
+      attrs: { name: 'year_window' },
+    });
+    const trigger = wrapper.get('button.cm-date-picker');
+    await trigger.trigger('click');
+    expect(wrapper.get('.cm-date-picker__month').text()).toBe('2020–2031');
+    const next = wrapper.get('[data-cm-date-picker-next]');
+    expect(next.attributes('aria-label')).toBe('Next decade');
+    await next.trigger('click');
+    expect(wrapper.get('.cm-date-picker__month').text()).toBe('2032–2043');
+    const active = wrapper.get('[role="gridcell"][tabindex="0"]');
+    expect(active.attributes('data-cm-date-picker-value')).toBe('2035');
+    expect(wrapper.get('[data-cm-date-picker-value="2036"]').attributes('disabled')).toBe('');
+    await active.trigger('click');
+    expect(wrapper.emitted('update:modelValue')).toEqual([[['2026', '2035']]]);
+    expect(new FormData(form).getAll('year_window')).toEqual(['2026', '2035']);
+    expect(trigger.attributes('aria-expanded')).toBe('false');
+    wrapper.unmount();
+  });
 });

@@ -5,7 +5,7 @@ Status: Active
 Component: `DatePicker`
 
 DatePicker opens a calendar dialog from a labelled combobox button. Its `value`, `min`, and
-`max` are empty or valid `YYYY-MM-DD` dates. Vue maps `value` to string `v-model`. Vanilla
+`max` are empty or valid `YYYY-MM-DD` dates in day mode. Vue maps `value` to string `v-model`. Vanilla
 HTML places the initial value in the hidden input alongside the trigger. A named hidden
 input submits one ISO value in single mode. Disabled values are omitted. Readonly values still submit.
 The application enforces required state and validates submitted values and range.
@@ -37,5 +37,11 @@ For an externally controlled Vue model, the adapter requests the reset through
 Locale and display formatting affect only presentation. Defaults are US English and a
 week starting on Sunday. Vue accepts `locale`, `displayFormat`, `firstDayOfWeek`, and
 `labels`. In Vanilla use the corresponding trigger `data-cm-*` attributes and author the
-dialog and navigation accessible names in HTML. Month/year and time modes remain outside
-this portable day selection contract.
+dialog and navigation accessible names in HTML.
+
+Month and year modes offer four rows of three choices. Models, min/max bounds, and form
+fields serialize as `YYYY-MM` or `YYYY` respectively. Month mode shows one year at a
+time. Year mode shows a 12-year block initially aligned to the decade of the selection.
+Up and Down move by three choices. Page Up and Page Down move through years in month
+mode and through 12-year blocks in year mode. Home and End move to the first and last
+choice in the visible period. Time-of-day selection remains outside this contract.

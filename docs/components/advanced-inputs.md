@@ -123,6 +123,18 @@ initial hidden input for each selected date. Use the `cm:date-picker-selection-c
 event, whose detail contains `mode` and `values`. Single mode retains its scalar
 `cm:date-picker-value-change` event.
 
+Use `monthPicker` with `YYYY-MM` values and bounds, or `yearPicker` with `YYYY` values
+and bounds. Year mode takes precedence when both flags are set. These modes support
+the same scalar, multiple, and range models as ordinary dates. The default display is
+localized. Month mode moves from year to year. The year grid initially starts at the
+selected decade and shows 12 years per page. Supply `previousYear` and `nextYear`, or
+`previousDecade` and `nextDecade`, in `labels` to customize the navigation names.
+
+Vanilla uses `data-cm-date-picker-precision="month"` or `"year"`. Match the
+[month markup](../../contracts/date-picker/cases/month.html) or
+[year markup](../../contracts/date-picker/cases/year.html) for the accessible grid labels
+and form fields. The serialized value contains only the selected month or year.
+
 An uncanceled reset of the associated form restores the initial selection. Vue requests
 the initial selection through its model event when the caller supplies another value.
 Vanilla restores the authored fields and updates the trigger text. Set `form` to associate

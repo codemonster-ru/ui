@@ -1,16 +1,17 @@
 import { autoUpdate, computePosition, flip, offset, shift } from '@codemonster-ru/floater.js';
 import {
   boundCalendarDate,
-  buildCalendarMonth,
-  calendarKeyTarget,
-  calendarMonthAllowed,
+  buildCalendarGrid,
+  calendarAdjacentPeriod,
+  calendarGridKeyTarget,
+  calendarGridTitle,
+  calendarYearRangeStart,
+  formatCalendarValue,
   formatDisplayDate,
-  formatIsoDate,
-  monthLabel,
-  parseIsoDate,
+  parseCalendarValue,
   selectCalendarDate,
-  shiftMonth,
   weekdayLabels,
+  type CmCalendarPrecision,
   type CmCalendarSelectionMode,
   type CmCalendarWeekday,
 } from './core/date-picker.js';
@@ -47,11 +48,13 @@ export class CmDatePickerController implements CmController {
   readonly #clear: HTMLButtonElement | null;
   readonly #input: HTMLInputElement | null;
   readonly #mode: CmCalendarSelectionMode;
+  readonly #precision: CmCalendarPrecision;
   readonly #fieldName: string;
   readonly #defaults: { dates: readonly string[]; formId: string | null };
   #selectedDates: string[];
   #visibleMonth: string;
   #focusedDate: string;
+  #yearStart: number;
   #stopAutoUpdate: (() => void) | null = null;
   #stopFormReset: (() => void) | null = null;
 
@@ -66,12 +69,14 @@ export class CmDatePickerController implements CmController {
     this.#input = root.querySelector<HTMLInputElement>(hiddenInputSelector);
     const mode = trigger.dataset.cmDatePickerMode;
     this.#mode = mode === 'multiple' || mode === 'range' ? mode : 'single';
+    const precision = trigger.dataset.cmDatePickerPrecision;
+    this.#precision = precision === 'month' || precision === 'year' ? precision : 'day';
     this.#fieldName = trigger.dataset.cmDatePickerName ?? this.#input?.name ?? '';
     const initial =
       this.#mode === 'single'
         ? [this.#input?.value ?? trigger.dataset.cmValue ?? '']
         : this.#arrayInputs().map((input) => input.value);
-    this.#selectedDates = initial.filter((date) => parseIsoDate(date) !== null);
+    this.#selectedDates = initial.filter((date) => parseCalendarValue(date, this.#precision) !== null);
     if (this.#mode === 'range') this.#selectedDates = this.#selectedDates.slice(0, 2).sort();
     if (this.#mode === 'multiple') this.#selectedDates = [...new Set(this.#selectedDates)];
     this.#defaults = authoredDefaults.get(root) ?? {
@@ -81,6 +86,7 @@ export class CmDatePickerController implements CmController {
     authoredDefaults.set(root, this.#defaults);
     this.#visibleMonth = this.#initialDate();
     this.#focusedDate = this.#visibleMonth;
+    this.#yearStart = calendarYearRangeStart(this.#visibleMonth);
   }
 
   connect(): void {
@@ -98,11 +104,15 @@ export class CmDatePickerController implements CmController {
       this.#calendar.querySelector('[role="grid"]')?.setAttribute('aria-multiselectable', 'true');
       this.#syncDisplay(this.#selectedDates);
     }
+    this.#calendar
+      .querySelector('[role="grid"]')
+      ?.classList.toggle('cm-date-picker__grid--period', this.#precision !== 'day');
     this.#synchronize(this.#trigger.getAttribute('aria-expanded') === 'true');
     this.#stopFormReset ??= observeFormReset(
       this.#trigger,
       () => {
-        this.#applySelection([...this.#defaults.dates]);
+        const dates = this.#defaults.dates.filter((date) => parseCalendarValue(date, this.#precision) !== null);
+        this.#applySelection(dates);
         this.#setOpen(false, false);
       },
       () => this.#associatedForm(),
@@ -123,7 +133,7 @@ export class CmDatePickerController implements CmController {
 
   #currentDates(): string[] {
     if (this.#mode !== 'single' || !this.#input) return this.#selectedDates;
-    return parseIsoDate(this.#input.value) ? [this.#input.value] : [];
+    return parseCalendarValue(this.#input.value, this.#precision) ? [this.#input.value] : [];
   }
 
   #arrayInputs(): HTMLInputElement[] {
@@ -158,15 +168,22 @@ export class CmDatePickerController implements CmController {
   }
 
   #initialDate(): string {
-    return this.#boundDate(this.#currentDates()[0] ?? formatIsoDate(new Date()));
+    return this.#boundDate(this.#currentDates()[0] ?? formatCalendarValue(new Date(), this.#precision));
   }
 
   #boundDate(value: string): string {
     return boundCalendarDate(value, this.#trigger.dataset.cmMin, this.#trigger.dataset.cmMax);
   }
 
-  #canChangeMonth(value: string): boolean {
-    return calendarMonthAllowed(value, this.#trigger.dataset.cmMin, this.#trigger.dataset.cmMax);
+  #adjacentPeriod(delta: number): string | null {
+    return calendarAdjacentPeriod(
+      this.#visibleMonth,
+      delta,
+      this.#precision,
+      this.#yearStart,
+      this.#trigger.dataset.cmMin,
+      this.#trigger.dataset.cmMax,
+    );
   }
 
   #firstDayOfWeek(): CmCalendarWeekday {
@@ -203,12 +220,12 @@ export class CmDatePickerController implements CmController {
     }
 
     if (target.closest(previousSelector)) {
-      this.#changeMonth(-1);
+      this.#changePeriod(-1);
       return;
     }
 
     if (target.closest(nextSelector)) {
-      this.#changeMonth(1);
+      this.#changePeriod(1);
       return;
     }
 
@@ -244,21 +261,22 @@ export class CmDatePickerController implements CmController {
     const value = day?.dataset.cmDatePickerValue;
     if (!day || !value) return;
     const rtl = day.ownerDocument.defaultView?.getComputedStyle(day).direction === 'rtl';
-    const target = calendarKeyTarget(value, key, this.#firstDayOfWeek(), rtl);
+    const target = calendarGridKeyTarget(value, key, this.#precision, this.#firstDayOfWeek(), this.#yearStart, rtl);
     if (target === null) return;
     event.preventDefault();
-    if (parseIsoDate(target) && this.#boundDate(target) === target) this.#moveFocus(target);
+    if (parseCalendarValue(target, this.#precision) && this.#boundDate(target) === target) this.#moveFocus(target);
   };
 
-  #changeMonth(delta: number): void {
-    const target = shiftMonth(this.#visibleMonth, delta);
-    if (this.#canChangeMonth(target)) this.#moveFocus(this.#boundDate(target));
+  #changePeriod(delta: number): void {
+    const target = this.#adjacentPeriod(delta);
+    if (target !== null) this.#moveFocus(target);
   }
 
   #moveFocus(value: string): void {
+    if (this.#precision === 'year') this.#yearStart = calendarYearRangeStart(value, this.#yearStart);
     this.#focusedDate = value;
     this.#visibleMonth = value;
-    this.#renderMonth();
+    this.#renderGrid();
     this.#focusDay();
   }
 
@@ -267,23 +285,25 @@ export class CmDatePickerController implements CmController {
     (day ?? this.#calendar).focus();
   }
 
-  #renderMonth(): void {
+  #renderGrid(): void {
     const days = this.#calendar.querySelector<HTMLElement>(daysSelector);
     if (!days) return;
 
     const month = this.#calendar.querySelector<HTMLElement>(monthSelector);
     const locale = this.#trigger.dataset.cmLocale;
-    if (month) month.textContent = monthLabel(this.#visibleMonth, locale);
-    const weekdays = weekdayLabels(this.#firstDayOfWeek(), locale);
-    this.#calendar.querySelectorAll<HTMLElement>('[role="columnheader"]').forEach((header, index) => {
-      if (weekdays[index] !== undefined) header.textContent = weekdays[index];
-    });
+    if (month) month.textContent = calendarGridTitle(this.#visibleMonth, this.#precision, this.#yearStart, locale);
+    if (this.#precision === 'day') {
+      const weekdays = weekdayLabels(this.#firstDayOfWeek(), locale);
+      this.#calendar.querySelectorAll<HTMLElement>('[role="columnheader"]').forEach((header, index) => {
+        if (weekdays[index] !== undefined) header.textContent = weekdays[index];
+      });
+    }
     const previous = this.#calendar.querySelector<HTMLButtonElement>(previousSelector);
     const next = this.#calendar.querySelector<HTMLButtonElement>(nextSelector);
-    if (previous) previous.disabled = !this.#canChangeMonth(shiftMonth(this.#visibleMonth, -1));
-    if (next) next.disabled = !this.#canChangeMonth(shiftMonth(this.#visibleMonth, 1));
+    if (previous) previous.disabled = this.#adjacentPeriod(-1) === null;
+    if (next) next.disabled = this.#adjacentPeriod(1) === null;
 
-    const weeks = buildCalendarMonth({
+    const weeks = buildCalendarGrid({
       max: this.#trigger.dataset.cmMax ?? null,
       min: this.#trigger.dataset.cmMin ?? null,
       month: this.#visibleMonth,
@@ -291,6 +311,8 @@ export class CmDatePickerController implements CmController {
       range: this.#mode === 'range',
       firstDayOfWeek: this.#firstDayOfWeek(),
       locale,
+      precision: this.#precision,
+      yearStart: this.#yearStart,
     });
 
     // The server renders the calendar's scaffolding only: a grid built from the current date would
@@ -298,11 +320,11 @@ export class CmDatePickerController implements CmController {
     const cells = [...days.querySelectorAll<HTMLButtonElement>(daySelector)];
     if (cells.length === 0) {
       const document_ = this.#root.ownerDocument;
-      for (let week = 0; week < weeks.length; week += 1) {
+      for (const week of weeks) {
         const row = document_.createElement('div');
         row.className = 'cm-date-picker__week';
         row.setAttribute('role', 'row');
-        for (let day = 0; day < 7; day += 1) {
+        for (let day = 0; day < week.length; day += 1) {
           const cell = document_.createElement('button');
           cell.className = 'cm-date-picker__day';
           cell.type = 'button';
@@ -364,7 +386,12 @@ export class CmDatePickerController implements CmController {
           ? (this.#trigger.dataset.cmPlaceholder ?? '')
           : dates
               .map((date) =>
-                formatDisplayDate(date, this.#trigger.dataset.cmLocale, this.#trigger.dataset.cmDisplayFormat),
+                formatDisplayDate(
+                  date,
+                  this.#trigger.dataset.cmLocale,
+                  this.#trigger.dataset.cmDisplayFormat,
+                  this.#precision,
+                ),
               )
               .join(this.#mode === 'range' ? ' – ' : '; ');
     }
@@ -380,6 +407,7 @@ export class CmDatePickerController implements CmController {
     if (changed && open) {
       this.#focusedDate = this.#initialDate();
       this.#visibleMonth = this.#focusedDate;
+      this.#yearStart = calendarYearRangeStart(this.#visibleMonth);
     }
     if (changed) this.#synchronize(open);
     if (changed && open) this.#focusDay();
@@ -392,7 +420,7 @@ export class CmDatePickerController implements CmController {
     this.#calendar.hidden = !open;
     if (open) {
       this.#calendar.tabIndex = -1;
-      this.#renderMonth();
+      this.#renderGrid();
       this.#holdPlacement();
     } else {
       this.#calendar.removeAttribute('tabindex');

@@ -7,20 +7,21 @@ import { assertCm, warnCm } from '../../internal/warn';
 import type { CmDatePickerLabels, CmDatePickerSize, CmDatePickerValue } from './date-picker.types';
 import {
   boundCalendarDate,
-  buildCalendarMonth,
-  calendarKeyTarget,
-  calendarMonthAllowed,
-  formatIsoDate,
+  buildCalendarGrid,
+  calendarAdjacentPeriod,
+  calendarGridKeyTarget,
+  calendarGridTitle,
+  calendarYearRangeStart,
+  formatCalendarValue,
   formatDisplayDate,
-  monthLabel,
-  parseIsoDate,
+  parseCalendarValue,
   selectCalendarDate,
-  shiftMonth,
   weekdayLabels,
   type CmCalendarLocale,
+  type CmCalendarPrecision,
   type CmCalendarSelectionMode,
   type CmCalendarWeekday,
-} from './date-picker.calendar';
+} from '@codemonster-ru/ui-runtime/core';
 
 defineOptions({ inheritAttrs: false });
 type ModelValue = CmDatePickerValue<Multiple, Range>;
@@ -29,6 +30,8 @@ const props = defineProps({
   modelValue: { type: [String, Array] as unknown as PropType<ModelValue>, default: '' },
   multiple: Boolean as PropType<Multiple>,
   range: Boolean as PropType<Range>,
+  monthPicker: Boolean,
+  yearPicker: Boolean,
   min: { type: String, default: null },
   max: { type: String, default: null },
   placeholder: { type: String, default: null },
@@ -56,11 +59,15 @@ const props = defineProps({
 });
 const emit = defineEmits<{ valueChange: [value: ModelValue]; 'update:modelValue': [value: ModelValue] }>();
 const attrs = useAttrs();
+const precision = computed<CmCalendarPrecision>(() =>
+  props.yearPicker ? 'year' : props.monthPicker ? 'month' : 'day',
+);
 
 assertCm(props.id.trim() !== '', 'DatePicker id must be a non-empty string.');
-function sanitizeIsoDate(value: string): string {
-  if (value === '' || parseIsoDate(value)) return value;
-  warnCm(`DatePicker value must be a valid YYYY-MM-DD date: ${value}. The value is ignored.`);
+function sanitizeDate(value: string): string {
+  if (value === '' || parseCalendarValue(value, precision.value)) return value;
+  const format = { day: 'YYYY-MM-DD', month: 'YYYY-MM', year: 'YYYY' }[precision.value];
+  warnCm(`DatePicker value must be a valid ${format} date: ${value}. The value is ignored.`);
   return '';
 }
 
@@ -75,15 +82,16 @@ const authoredDates = currentDates.value.slice();
 const firstDate = computed(() => currentDates.value[0] ?? '');
 const formValues = computed(() => (selectionMode.value === 'single' ? [firstDate.value] : currentDates.value));
 const isOpen = ref(false);
-const visibleMonth = ref(firstDate.value || formatIsoDate(new Date()));
+const visibleMonth = ref(firstDate.value || formatCalendarValue(new Date(), precision.value));
 const focusedDate = ref(visibleMonth.value);
+const yearStart = ref(calendarYearRangeStart(visibleMonth.value));
 
 function normalizeValues(value: string | string[]): string[] {
   if (selectionMode.value === 'single') {
-    const date = typeof value === 'string' ? sanitizeIsoDate(value) : '';
+    const date = typeof value === 'string' ? sanitizeDate(value) : '';
     return date === '' ? [] : [date];
   }
-  const dates = Array.isArray(value) ? value.map(sanitizeIsoDate).filter(Boolean) : [];
+  const dates = Array.isArray(value) ? value.map(sanitizeDate).filter(Boolean) : [];
   return selectionMode.value === 'range' ? dates.slice(0, 2).sort() : [...new Set(dates)];
 }
 
@@ -92,15 +100,17 @@ function datesMatch(left: readonly string[], right: readonly string[]): boolean 
 }
 
 watch(
-  [() => props.modelValue, selectionMode],
-  ([value]) => {
+  [() => props.modelValue, selectionMode, precision],
+  ([value, , currentPrecision], [, , previousPrecision]) => {
     const next = normalizeValues(value);
-    if (datesMatch(next, currentDates.value)) return;
+    if (currentPrecision === previousPrecision && datesMatch(next, currentDates.value)) return;
     currentDates.value = next;
-    if (firstDate.value !== '') {
+    if (firstDate.value !== '' || currentPrecision !== previousPrecision) {
       const calendar = calendarRef.value;
       const focusInCalendar = Boolean(calendar?.contains(calendar.ownerDocument.activeElement));
-      setFocusedDate(boundedDate(firstDate.value), focusInCalendar);
+      const anchor = initialPickerDate();
+      if (currentPrecision !== previousPrecision) yearStart.value = calendarYearRangeStart(anchor);
+      setFocusedDate(anchor, focusInCalendar);
     }
   },
   { deep: true },
@@ -116,19 +126,26 @@ const displayValue = computed(() =>
   currentDates.value.length === 0
     ? (props.placeholder ?? '')
     : currentDates.value
-        .map((date) => formatDisplayDate(date, props.locale, props.displayFormat))
+        .map((date) => formatDisplayDate(date, props.locale, props.displayFormat, precision.value))
         .join(selectionMode.value === 'range' ? ' – ' : '; '),
 );
-const minDate = computed(() => sanitizeIsoDate(props.min ?? '') || undefined);
-const maxDate = computed(() => sanitizeIsoDate(props.max ?? '') || undefined);
+const minDate = computed(() => sanitizeDate(props.min ?? '') || undefined);
+const maxDate = computed(() => sanitizeDate(props.max ?? '') || undefined);
 const firstDayOfWeek = computed(() =>
   Number.isInteger(props.firstDayOfWeek) && props.firstDayOfWeek >= 0 && props.firstDayOfWeek <= 6
     ? props.firstDayOfWeek
     : 0,
 );
 const weekdays = computed(() => weekdayLabels(firstDayOfWeek.value, props.locale));
+const navigationLabels = computed(() => {
+  const { labels } = props;
+  if (precision.value === 'year')
+    return [labels.previousDecade ?? 'Previous decade', labels.nextDecade ?? 'Next decade'];
+  if (precision.value === 'month') return [labels.previousYear ?? 'Previous year', labels.nextYear ?? 'Next year'];
+  return [labels.previousMonth ?? props.previousMonthLabel, labels.nextMonth ?? props.nextMonthLabel];
+});
 const weeks = computed(() =>
-  buildCalendarMonth({
+  buildCalendarGrid({
     month: visibleMonth.value,
     selected: currentDates.value,
     range: selectionMode.value === 'range',
@@ -136,6 +153,8 @@ const weeks = computed(() =>
     max: maxDate.value,
     firstDayOfWeek: firstDayOfWeek.value,
     locale: props.locale,
+    precision: precision.value,
+    yearStart: yearStart.value,
   }),
 );
 const classes = computed(() =>
@@ -159,10 +178,16 @@ function setOpen(open: boolean, restoreFocus = false): void {
   }
   isOpen.value = open;
   if (open) {
-    setFocusedDate(boundedDate(firstDate.value || formatIsoDate(new Date())), true);
+    const focus = initialPickerDate();
+    yearStart.value = calendarYearRangeStart(focus);
+    setFocusedDate(focus, true);
   } else if (restoreFocus) {
     void nextTick(() => triggerRef.value?.focus());
   }
+}
+
+function initialPickerDate(): string {
+  return boundedDate(firstDate.value || formatCalendarValue(new Date(), precision.value));
 }
 
 function boundedDate(value: string): string {
@@ -170,6 +195,7 @@ function boundedDate(value: string): string {
 }
 
 function setFocusedDate(value: string, focus: boolean): void {
+  if (precision.value === 'year') yearStart.value = calendarYearRangeStart(value, yearStart.value);
   focusedDate.value = value;
   visibleMonth.value = value;
   if (!focus) return;
@@ -181,8 +207,15 @@ function setFocusedDate(value: string, focus: boolean): void {
   });
 }
 
-function canChangeMonth(delta: number): boolean {
-  return calendarMonthAllowed(shiftMonth(visibleMonth.value, delta), minDate.value, maxDate.value);
+function adjacentPeriod(delta: number): string | null {
+  return calendarAdjacentPeriod(
+    visibleMonth.value,
+    delta,
+    precision.value,
+    yearStart.value,
+    minDate.value,
+    maxDate.value,
+  );
 }
 
 function reportValue(dates: string[]): void {
@@ -210,8 +243,9 @@ function clearValue(): void {
   setOpen(false, true);
 }
 
-function changeMonth(delta: number): void {
-  if (canChangeMonth(delta)) setFocusedDate(boundedDate(shiftMonth(visibleMonth.value, delta)), true);
+function changePeriod(delta: number): void {
+  const target = adjacentPeriod(delta);
+  if (target !== null) setFocusedDate(target, true);
 }
 
 function onTriggerKeydown(event: KeyboardEvent): void {
@@ -236,10 +270,10 @@ function onCalendarKeydown(event: KeyboardEvent): void {
 function onDayKeydown(event: KeyboardEvent, value: string): void {
   const day = event.currentTarget as HTMLElement;
   const rtl = day.ownerDocument.defaultView?.getComputedStyle(day).direction === 'rtl';
-  const target = calendarKeyTarget(value, event.key, firstDayOfWeek.value, rtl);
+  const target = calendarGridKeyTarget(value, event.key, precision.value, firstDayOfWeek.value, yearStart.value, rtl);
   if (target === null) return;
   event.preventDefault();
-  if (parseIsoDate(target) && boundedDate(target) === target) setFocusedDate(target, true);
+  if (parseCalendarValue(target, precision.value) && boundedDate(target) === target) setFocusedDate(target, true);
 }
 
 watch(isOpen, (open, _, onCleanup) => {
@@ -275,10 +309,11 @@ onMounted(() => {
       pending.delete(timer);
       if (event.defaultPrevented || !trigger.isConnected || trigger.form !== form) return;
       setOpen(false);
-      if (datesMatch(authoredDates, currentDates.value)) return;
+      const defaults = authoredDates.filter((date) => parseCalendarValue(date, precision.value) !== null);
+      if (datesMatch(defaults, currentDates.value)) return;
       // A caller supplying a different model value still owns that state.
-      if (datesMatch(authoredDates, normalizeValues(props.modelValue))) currentDates.value = authoredDates.slice();
-      reportValue(authoredDates.slice());
+      if (datesMatch(defaults, normalizeValues(props.modelValue))) currentDates.value = defaults;
+      reportValue(defaults);
     });
     pending.add(timer);
   };
@@ -324,6 +359,7 @@ useCmHydrated();
       :data-cm-placeholder="props.placeholder ?? undefined"
       :data-cm-filled="currentDates.length > 0 || undefined"
       :data-cm-date-picker-mode="selectionMode === 'single' ? undefined : selectionMode"
+      :data-cm-date-picker-precision="precision === 'day' ? undefined : precision"
       :data-cm-date-picker-name="selectionMode === 'single' ? undefined : (name ?? undefined)"
       :data-cm-locale="typeof props.locale === 'string' ? props.locale : undefined"
       :data-cm-display-format="props.displayFormat"
@@ -392,10 +428,10 @@ useCmHydrated();
         <button
           class="cm-date-picker__navigation"
           type="button"
-          :aria-label="props.labels.previousMonth ?? props.previousMonthLabel"
-          :disabled="isOpen && !canChangeMonth(-1) ? true : undefined"
+          :aria-label="navigationLabels[0]"
+          :disabled="isOpen && adjacentPeriod(-1) === null ? true : undefined"
           data-cm-date-picker-previous
-          @click="changeMonth(-1)"
+          @click="changePeriod(-1)"
         >
           <svg
             class="cm-date-picker__navigation-icon"
@@ -411,15 +447,15 @@ useCmHydrated();
           </svg>
         </button>
         <span :id="monthId" class="cm-date-picker__month" aria-live="polite" data-cm-date-picker-month>{{
-          isOpen ? monthLabel(visibleMonth, props.locale) : ''
+          isOpen ? calendarGridTitle(visibleMonth, precision, yearStart, props.locale) : ''
         }}</span>
         <button
           class="cm-date-picker__navigation"
           type="button"
-          :aria-label="props.labels.nextMonth ?? props.nextMonthLabel"
-          :disabled="isOpen && !canChangeMonth(1) ? true : undefined"
+          :aria-label="navigationLabels[1]"
+          :disabled="isOpen && adjacentPeriod(1) === null ? true : undefined"
           data-cm-date-picker-next
-          @click="changeMonth(1)"
+          @click="changePeriod(1)"
         >
           <svg
             class="cm-date-picker__navigation-icon"
@@ -437,11 +473,12 @@ useCmHydrated();
       </header>
       <div
         class="cm-date-picker__grid"
+        :class="{ 'cm-date-picker__grid--period': precision !== 'day' }"
         role="grid"
         :aria-labelledby="monthId"
         :aria-multiselectable="selectionMode !== 'single' || undefined"
       >
-        <div class="cm-date-picker__weekdays" role="row">
+        <div v-if="precision === 'day'" class="cm-date-picker__weekdays" role="row">
           <span v-for="(label, index) in weekdays" :key="index" class="cm-date-picker__weekday" role="columnheader">
             {{ label }}
           </span>

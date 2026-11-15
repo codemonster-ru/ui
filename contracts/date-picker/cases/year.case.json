@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "id": "date-picker-year",
+  "description": "Choose a license year across decade-based year ranges.",
+  "props": { "value": "2026", "min": "2020", "max": "2042", "yearPicker": true, "clearable": true },
+  "attributes": { "id": "license-year", "name": "license_year", "aria-label": "License year" },
+  "slots": {}
+}
