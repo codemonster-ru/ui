@@ -19,6 +19,7 @@ const runtimeLocale = Intl.DateTimeFormat().resolvedOptions().locale;
     v-bind="{ ...$attrs, ...props }"
     :id="props.id ?? generatedId"
     :locale="props.locale ?? runtimeLocale"
+    controlled-value
     @update:model-value="emit('update:modelValue', $event)"
   />
 </template>

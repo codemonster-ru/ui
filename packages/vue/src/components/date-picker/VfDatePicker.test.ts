@@ -72,3 +72,27 @@ it('preserves requested formatting, inline rendering and chronological ISO range
   expect(wrapper.emitted('update:modelValue')).toEqual([[['2026-08-10', '2026-08-13']]]);
   wrapper.unmount();
 });
+
+it('keeps the displayed and submitted date until the host accepts a selection', async () => {
+  const form = document.createElement('form');
+  document.body.append(form);
+  const wrapper = mount(VfDatePicker, {
+    attachTo: form,
+    attrs: { name: 'date' },
+    props: { modelValue: '2026-08-13', displayFormat: 'yyyy-MM-dd', teleportTo: false },
+  });
+  try {
+    const trigger = wrapper.get('[role="combobox"]');
+    await trigger.trigger('click');
+    await wrapper.get('[data-cm-date-picker-value="2026-08-14"]').trigger('click');
+    expect(wrapper.emitted('update:modelValue')).toEqual([['2026-08-14']]);
+    expect(trigger.text()).toBe('2026-08-13');
+    expect(new FormData(form).get('date')).toBe('2026-08-13');
+    await wrapper.setProps({ modelValue: '2026-08-14' });
+    expect(trigger.text()).toBe('2026-08-14');
+    expect(new FormData(form).get('date')).toBe('2026-08-14');
+  } finally {
+    wrapper.unmount();
+    form.remove();
+  }
+});
