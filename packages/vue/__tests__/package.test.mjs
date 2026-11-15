@@ -102,6 +102,7 @@ test('publishes the opt-in historical icon and Vue components', async () => {
     'VfAlert',
     'VfAvatar',
     'VfBadge',
+    'VfDatePicker',
     'VfDialog',
     'VfDrawer',
     'VfDropdown',

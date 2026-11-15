@@ -51,3 +51,14 @@ export interface CmDatePickerProps<Multiple extends boolean = false, Range exten
   previousMonthLabel?: string;
   nextMonthLabel?: string;
 }
+
+export type VfDatePickerLabels = CmDatePickerLabels;
+export type VfDatePickerProps = Omit<
+  CmDatePickerProps<boolean, boolean>,
+  'id' | 'min' | 'max' | 'placeholder' | 'clearLabel' | 'previousMonthLabel' | 'nextMonthLabel'
+> & {
+  id?: string;
+  min?: string;
+  max?: string;
+  placeholder?: string;
+};
