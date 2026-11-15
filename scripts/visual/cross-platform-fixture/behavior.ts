@@ -84,6 +84,7 @@ export function initializeBehavior(root: HTMLElement, slug: string) {
     'tabs-value-change',
     'command-palette-select',
     'command-palette-query-change',
+    'command-palette-submit',
     'data-table-page-change',
     'data-table-page-size-change',
     'data-table-selection-change',

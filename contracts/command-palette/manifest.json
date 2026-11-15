@@ -8,13 +8,22 @@
     "title": { "type": "string", "required": true },
     "commands": { "type": "collection", "required": true, "valueContract": "command-palette-item" },
     "open": { "type": "boolean", "required": false, "default": false },
+    "defaultOpen": { "type": "boolean", "required": false, "default": false },
     "query": { "type": "string", "required": false, "default": "" },
+    "defaultQuery": { "type": "string", "required": false, "default": "" },
     "loading": { "type": "boolean", "required": false, "default": false },
     "placeholder": { "type": "string", "required": false, "default": "Search commands" },
     "loadingText": { "type": "string", "required": false, "default": "Loading commands…" },
     "idleText": { "type": "string", "required": false, "default": "Start typing to search." },
     "emptyText": { "type": "string", "required": false, "default": "No commands found." },
-    "closeLabel": { "type": "string", "required": false, "default": "Close" }
+    "closeLabel": { "type": "string", "required": false, "default": "Close" },
+    "filter": { "type": "boolean", "required": false, "default": true },
+    "autoActivate": { "type": "boolean", "required": false, "default": true },
+    "closeOnSelect": { "type": "boolean", "required": false, "default": true },
+    "closeOnOverlayClick": { "type": "boolean", "required": false, "default": false },
+    "closeOnEscape": { "type": "boolean", "required": false, "default": true },
+    "dividers": { "type": "boolean", "required": false, "default": true },
+    "maxHeight": { "type": "nullable-css-length", "required": false }
   },
   "slots": {
     "actions": { "required": false, "description": "Trusted header actions beside the title." },
@@ -23,6 +32,8 @@
       "description": "Trusted per-command content inside the component-owned option.",
       "scopeContract": "command-palette-item-state"
     },
+    "item": { "required": false, "description": "Vue fallback renderer for each command." },
+    "results": { "required": false, "description": "Vue scoped replacement for the results area." },
     "loading": { "required": false, "description": "Trusted loading status content." },
     "idle": { "required": false, "description": "Trusted idle status content." },
     "empty": { "required": false, "description": "Trusted no-results content." },
@@ -31,7 +42,8 @@
   "events": {
     "openChange": { "description": "Reports the next modal state.", "payloadContract": "boolean" },
     "queryChange": { "description": "Reports the current plain-text query.", "payloadContract": "string" },
-    "select": { "description": "Reports the selected enabled command id.", "payloadContract": "command-id" }
+    "select": { "description": "Reports the selected enabled command id.", "payloadContract": "command-id" },
+    "submit": { "description": "Reports the current query when no command is active.", "payloadContract": "string" }
   },
   "states": ["closed", "open", "loading", "idle", "filtered", "empty"]
 }

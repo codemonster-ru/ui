@@ -31,7 +31,26 @@ does the same. Disabled commands never become active or select. Escape and the c
 and restore prior focus. Tab remains inside the modal.
 
 Vue owns interaction directly. Vanilla HTML uses the shared controller and may request opening with
-`cm:command-palette-open-request`. The component does not execute commands, implement global
-shortcuts, persist history, perform fuzzy ranking or match highlighting, submit an unmatched query,
-or expose teleport, maximum-height, default-open, and close-policy controls. Applications that need
-an arbitrary results renderer own that composition outside the portable component contract.
+`cm:command-palette-open-request`. Both preserve order when filtering is disabled for host-ranked
+results. Both can leave selection inactive until the user navigates, submit an unmatched query,
+keep the dialog open on selection, or control Escape and backdrop dismissal independently.
+Vanilla opts in with attributes on the dialog:
+
+| Vue prop or event | Vanilla HTML attribute or event |
+| --- | --- |
+| `defaultOpen` | `open` |
+| `defaultQuery` | `value` on the search input |
+| `:filter="false"` | `data-cm-command-palette-filter="false"` |
+| `:auto-activate="false"` | `data-cm-command-palette-auto-activate="false"` |
+| `:close-on-select="false"` | `data-cm-command-palette-close-on-select="false"` |
+| `:close-on-escape="false"` | `data-cm-command-palette-close-on-escape="false"` |
+| `:close-on-overlay-click="true"` | `data-cm-command-palette-close-on-overlay-click="true"` |
+| `:dividers="false"` | `data-cm-command-palette-dividers="false"` |
+| `maxHeight` | `--cm-command-palette-max-height` |
+| `submit(query)` | `cm:command-palette-submit` with `detail.query` |
+
+`VfCommandPalette` supports the historical `v-model` query, caller-supplied items and object
+selection payload, a scoped default result renderer and item slot, and default footer keyboard
+hints. Its result renderer highlights text matches without inserting HTML. The native modal is
+shown in the browser's top layer; this entry does not move it to an authored Teleport target.
+The component does not execute commands, implement global shortcuts or persist command history.

@@ -114,6 +114,7 @@ if (platform === 'vue') {
             'value-change',
             'select',
             'query-change',
+            ...(componentSlug === 'command-palette' ? ['submit'] : []),
             'theme-change',
             'page-change',
             'page-size-change',

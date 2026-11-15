@@ -38,6 +38,7 @@ export class CmCommandPaletteController implements CmController {
       closeSelector: '[data-cm-command-palette-close]',
       eventName: 'command-palette',
       stateAttribute: 'cmCommandPaletteState',
+      allowEscape: () => this.#root.getAttribute('data-cm-command-palette-close-on-escape') !== 'false',
     });
   }
 
@@ -48,6 +49,7 @@ export class CmCommandPaletteController implements CmController {
     this.#input.addEventListener('input', this.#handleInput);
     this.#input.addEventListener('keydown', this.#handleKeydown);
     this.#root.addEventListener('click', this.#handleClick);
+    this.#root.addEventListener('pointermove', this.#handlePointerMove);
     this.#root.addEventListener('cm:command-palette-open-change', this.#handleOpenChange);
   }
 
@@ -55,6 +57,7 @@ export class CmCommandPaletteController implements CmController {
     this.#input.removeEventListener('input', this.#handleInput);
     this.#input.removeEventListener('keydown', this.#handleKeydown);
     this.#root.removeEventListener('click', this.#handleClick);
+    this.#root.removeEventListener('pointermove', this.#handlePointerMove);
     this.#root.removeEventListener('cm:command-palette-open-change', this.#handleOpenChange);
     this.#modal.disconnect();
   }
@@ -67,10 +70,19 @@ export class CmCommandPaletteController implements CmController {
   };
 
   readonly #handleKeydown = (event: KeyboardEvent): void => {
+    if (event.isComposing) return;
     const enabled = this.#enabledVisibleOptions();
     const activeIndex = enabled.findIndex((option) => option.getAttribute('aria-selected') === 'true');
     const action = commandPaletteKeyAction(event.key, { activeIndex, count: enabled.length });
-    if (!action) return;
+    if (!action) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        dispatchCmEvent<CommandPaletteQueryChangeDetail>(this.#root, 'command-palette-submit', {
+          query: this.#input.value,
+        });
+      }
+      return;
+    }
 
     event.preventDefault();
     if (action.type === 'commit') {
@@ -83,10 +95,30 @@ export class CmCommandPaletteController implements CmController {
   };
 
   readonly #handleClick = (event: Event): void => {
-    const ElementConstructor = this.#root.ownerDocument.defaultView?.Element;
+    const view = this.#root.ownerDocument.defaultView;
+    if (
+      view &&
+      event instanceof view.MouseEvent &&
+      event.target === this.#root &&
+      this.#root.getAttribute('data-cm-command-palette-close-on-overlay-click') === 'true'
+    ) {
+      const { left, top, right, bottom } = this.#root.getBoundingClientRect();
+      if (event.clientX < left || event.clientX > right || event.clientY < top || event.clientY > bottom)
+        this.#modal.setOpen(false);
+      return;
+    }
+    const ElementConstructor = view?.Element;
     if (!ElementConstructor || !(event.target instanceof ElementConstructor)) return;
     const option = event.target.closest<HTMLElement>(optionSelector);
     if (option && this.#root.contains(option) && option.getAttribute('aria-disabled') !== 'true') this.#select(option);
+  };
+
+  readonly #handlePointerMove = (event: Event): void => {
+    if (this.#root.getAttribute('data-cm-command-palette-auto-activate') !== 'false') return;
+    const ElementConstructor = this.#root.ownerDocument.defaultView?.Element;
+    if (!ElementConstructor || !(event.target instanceof ElementConstructor)) return;
+    const option = event.target.closest<HTMLElement>(optionSelector);
+    if (option && this.#enabledVisibleOptions().includes(option)) this.#activate(option);
   };
 
   readonly #handleOpenChange = (event: Event): void => {
@@ -96,16 +128,20 @@ export class CmCommandPaletteController implements CmController {
 
   #filter(query: string): void {
     if (this.#root.getAttribute('data-cm-command-palette-loading') === 'true') return;
+    const filter = this.#root.getAttribute('data-cm-command-palette-filter') !== 'false';
     const needle = normalizeCommandQuery(query);
     let visibleCount = 0;
     for (const option of this.#options) {
       const haystack = `${option.textContent ?? ''} ${option.dataset.cmCommandKeywords ?? ''}`.toLocaleLowerCase();
-      option.hidden = needle !== '' && !haystack.includes(needle);
+      option.hidden = filter && needle !== '' && !haystack.includes(needle);
       if (!option.hidden) visibleCount += 1;
     }
     this.#empty.hidden = needle === '' || visibleCount > 0;
     if (this.#idle) this.#idle.hidden = needle !== '' || this.#options.length > 0;
-    const active = this.#enabledVisibleOptions()[0];
+    const active =
+      this.#root.getAttribute('data-cm-command-palette-auto-activate') === 'false'
+        ? undefined
+        : this.#enabledVisibleOptions()[0];
     if (active) this.#activate(active);
     else {
       this.#options.forEach((option) => this.#setActive(option, false));
@@ -132,7 +168,7 @@ export class CmCommandPaletteController implements CmController {
     const value = option.dataset.cmCommandValue;
     if (!value) return;
     dispatchCmEvent<CommandPaletteSelectDetail>(this.#root, 'command-palette-select', { value });
-    this.#modal.setOpen(false);
+    if (this.#root.getAttribute('data-cm-command-palette-close-on-select') !== 'false') this.#modal.setOpen(false);
   }
 }
 

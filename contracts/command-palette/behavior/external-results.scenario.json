@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "command-palette-external-results",
+  "case": "command-palette-external-results",
+  "steps": [
+    { "expect": "visible", "target": "root", "value": true },
+    { "expect": "visible", "target": "option-first", "value": true },
+    { "action": "press", "target": "input", "key": "Enter" },
+    { "expect": "eventCount", "target": "root", "name": "cm:command-palette-submit", "count": 1 },
+    { "action": "press", "target": "input", "key": "ArrowDown" },
+    { "action": "press", "target": "input", "key": "Enter" },
+    { "expect": "eventCount", "target": "root", "name": "cm:command-palette-select", "count": 1 },
+    { "action": "press", "target": "input", "key": "Escape" },
+    { "expect": "visible", "target": "root", "value": true }
+  ]
+}

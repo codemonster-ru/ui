@@ -24,6 +24,7 @@ for (const scenarioFile of scenarioFiles) {
       'cm:command-palette-open-change',
       'cm:command-palette-query-change',
       'cm:command-palette-select',
+      'cm:command-palette-submit',
     ]) {
       root.addEventListener(name, () => events.set(name, (events.get(name) ?? 0) + 1));
     }
