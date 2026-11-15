@@ -3,8 +3,15 @@ import {
   formatTemplate,
   nextSortState,
   sortLabelFor,
+  type CmDataTableColumnWidths,
   type CmDataTableSortState,
 } from './core/data-table.js';
+import {
+  measureDataTableColumnContent,
+  measureDataTableResizeBoundary,
+  resizedDataTableWidths,
+  type CmDataTableResizeBoundary,
+} from './data-table-resize.js';
 import { dispatchCmEvent } from './events.js';
 import type { CmController, CmControllerFactory } from './runtime.js';
 
@@ -37,6 +44,7 @@ const rowInputSelector = '[data-cm-data-table-select-row]';
 const selectAllSelector = '[data-cm-data-table-select-all]';
 const pageSelector = '[data-cm-data-table-page-action]';
 const pageSizeSelector = '[data-cm-data-table-page-size-control]';
+const resizeSelector = '[data-cm-data-table-resize]';
 
 function positiveInteger(value: string | null, fallback: number): number {
   const parsed = Number(value);
@@ -50,26 +58,147 @@ function nonNegativeInteger(value: string | null): number | null {
 
 export class CmDataTableController implements CmController {
   readonly #root: Element;
+  readonly #table: HTMLTableElement;
+  #drag:
+    | {
+        handle: HTMLElement;
+        boundary: CmDataTableResizeBoundary;
+        start: number;
+        pointer: number;
+        widths?: CmDataTableColumnWidths;
+      }
+    | undefined;
 
   constructor(root: Element) {
-    if (!root.querySelector('.cm-data-table__table')) {
+    const table = root.querySelector<HTMLTableElement>('.cm-data-table__table');
+    if (!table) {
       throw new TypeError('DataTable controller requires a table.');
     }
     this.#root = root;
+    this.#table = table;
   }
 
   connect(): void {
     this.#synchronizeSort();
     this.#synchronizeSelection();
     this.#synchronizePage();
+    for (const handle of this.#table.querySelectorAll<HTMLElement>(resizeSelector)) {
+      if (handle.closest('table') !== this.#table) continue;
+      const boundary = measureDataTableResizeBoundary(handle);
+      if (boundary) this.#resizeAria(handle, boundary);
+    }
     this.#root.addEventListener('click', this.#handleClick);
     this.#root.addEventListener('change', this.#handleChange);
+    this.#root.addEventListener('focusin', this.#handleResizeFocus);
+    this.#root.addEventListener('keydown', this.#handleResizeKey);
+    this.#root.addEventListener('dblclick', this.#handleResizeDoubleClick);
+    this.#root.addEventListener('pointerdown', this.#startResize);
+    this.#root.addEventListener('pointermove', this.#moveResize);
+    for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) {
+      this.#root.addEventListener(type, this.#finishResize);
+    }
   }
 
   disconnect(): void {
     this.#root.removeEventListener('click', this.#handleClick);
     this.#root.removeEventListener('change', this.#handleChange);
+    this.#root.removeEventListener('focusin', this.#handleResizeFocus);
+    this.#root.removeEventListener('keydown', this.#handleResizeKey);
+    this.#root.removeEventListener('dblclick', this.#handleResizeDoubleClick);
+    this.#root.removeEventListener('pointerdown', this.#startResize);
+    this.#root.removeEventListener('pointermove', this.#moveResize);
+    for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) {
+      this.#root.removeEventListener(type, this.#finishResize);
+    }
+    this.#drag = undefined;
   }
+
+  #resizeHandle(event: Event): HTMLElement | null {
+    const handle = this.#eventElement(event)?.closest<HTMLElement>(resizeSelector);
+    return handle?.closest('table') === this.#table ? handle : null;
+  }
+
+  #resizeAria(handle: HTMLElement, boundary: CmDataTableResizeBoundary, width = boundary.value): void {
+    handle.setAttribute('aria-valuemin', String(boundary.minimum));
+    handle.setAttribute('aria-valuemax', String(boundary.maximum));
+    handle.setAttribute('aria-valuenow', String(width));
+  }
+
+  #applyResize(handle: HTMLElement, boundary: CmDataTableResizeBoundary, delta: number): CmDataTableColumnWidths {
+    const widths = resizedDataTableWidths(boundary, delta);
+    for (const cell of this.#table.querySelectorAll<HTMLElement>('[data-cm-data-table-column]')) {
+      const width = widths[cell.dataset.cmDataTableColumn ?? ''];
+      if (cell.closest('table') === this.#table && typeof width === 'string') cell.style.inlineSize = width;
+    }
+    this.#table.setAttribute('data-cm-data-table-fixed-columns', '');
+    this.#resizeAria(handle, boundary, Number.parseFloat(widths[boundary.column]));
+    dispatchCmEvent(this.#root, 'data-table-column-widths-change', { columnWidths: { ...widths } });
+    return widths;
+  }
+
+  readonly #handleResizeFocus = (event: Event): void => {
+    const handle = this.#resizeHandle(event);
+    const boundary = handle && measureDataTableResizeBoundary(handle);
+    if (handle && boundary) this.#resizeAria(handle, boundary);
+  };
+
+  readonly #handleResizeKey = (event: Event): void => {
+    const KeyboardEvent_ = this.#root.ownerDocument.defaultView?.KeyboardEvent;
+    if (!KeyboardEvent_ || !(event instanceof KeyboardEvent_)) return;
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+    const handle = this.#resizeHandle(event);
+    const boundary = handle && measureDataTableResizeBoundary(handle);
+    if (!handle || !boundary) return;
+    event.preventDefault();
+    const columnWidths = this.#applyResize(
+      handle,
+      boundary,
+      (event.key === 'ArrowRight' ? 8 : -8) * boundary.direction,
+    );
+    dispatchCmEvent(this.#root, 'data-table-column-resize-end', { columnWidths });
+  };
+
+  readonly #handleResizeDoubleClick = (event: Event): void => {
+    const handle = this.#resizeHandle(event);
+    const boundary = handle && measureDataTableResizeBoundary(handle);
+    if (!handle || !boundary) return;
+    const columnWidths = this.#applyResize(handle, boundary, measureDataTableColumnContent(handle) - boundary.value);
+    dispatchCmEvent(this.#root, 'data-table-column-resize-end', { columnWidths });
+  };
+
+  #pointerEvent(event: Event): PointerEvent | null {
+    const PointerEvent_ = this.#root.ownerDocument.defaultView?.PointerEvent;
+    return PointerEvent_ && event instanceof PointerEvent_ ? event : null;
+  }
+
+  readonly #startResize = (event: Event): void => {
+    const pointer = this.#pointerEvent(event);
+    if (pointer?.button !== 0 || this.#drag) return;
+    const handle = this.#resizeHandle(event);
+    const boundary = handle && measureDataTableResizeBoundary(handle);
+    if (!handle || !boundary) return;
+    this.#drag = { handle, boundary, start: pointer.clientX, pointer: pointer.pointerId };
+    handle.setPointerCapture?.(pointer.pointerId);
+  };
+
+  readonly #moveResize = (event: Event): void => {
+    const pointer = this.#pointerEvent(event);
+    const drag = this.#drag;
+    if (!pointer || !drag || pointer.pointerId !== drag.pointer) return;
+    drag.widths = this.#applyResize(
+      drag.handle,
+      drag.boundary,
+      (pointer.clientX - drag.start) * drag.boundary.direction,
+    );
+  };
+
+  readonly #finishResize = (event: Event): void => {
+    const pointer = this.#pointerEvent(event);
+    if (!pointer || !this.#drag || pointer.pointerId !== this.#drag.pointer) return;
+    const columnWidths = this.#drag.widths;
+    this.#drag = undefined;
+    if (columnWidths) dispatchCmEvent(this.#root, 'data-table-column-resize-end', { columnWidths });
+  };
 
   readonly #handleClick = (event: Event): void => {
     const target = this.#eventElement(event);

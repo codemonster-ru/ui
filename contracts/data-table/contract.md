@@ -67,3 +67,10 @@ plain data and is contextually escaped; executable accessors and raw markup are 
 
 The stable loading status is the portable DataTable fallback. Applications that require skeleton
 rows compose `Skeleton` with an authored `Table`; DataTable does not own a second layout model.
+
+With resizable columns, each adjacent resizable pair has a focusable vertical separator.
+Pointer drag, Left or Right Arrow, and double-click redistribute the pair's combined width,
+within the two columns' size bounds. Double-click fits the first column to its widest
+rendered cell. The Vue adapter reports `update:columnWidths` during a resize and
+`column-resize-end` at the end. Vanilla dispatches the corresponding
+`cm:data-table-column-widths-change` and `cm:data-table-column-resize-end` events.

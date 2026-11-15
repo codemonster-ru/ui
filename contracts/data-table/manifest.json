@@ -12,6 +12,10 @@
     "striped": { "type": "boolean", "required": false, "default": false },
     "columnDividers": { "type": "boolean", "required": false, "default": false },
     "stickyHeader": { "type": "boolean", "required": false, "default": false },
+    "resizableColumns": { "type": "boolean", "required": false, "default": false },
+    "columnWidths": { "type": "structured", "required": false, "valueContract": "data-table-column-widths" },
+    "defaultColumnWidths": { "type": "structured", "required": false, "valueContract": "data-table-column-widths" },
+    "resizeColumnLabelTemplate": { "type": "string", "required": false, "default": "Resize {column} column" },
     "visibleColumnKeys": {
       "type": "nullable",
       "required": false,
@@ -56,6 +60,10 @@
   },
   "slots": {},
   "events": {
+    "columnResizeEnd": {
+      "description": "Reports the final current CSS widths by column key.",
+      "payloadContract": "data-table-column-widths"
+    },
     "sortChange": {
       "description": "Reports the next single-column sort state or null.",
       "payloadContract": "nullable-data-table-sort"

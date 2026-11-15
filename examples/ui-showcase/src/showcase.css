@@ -584,33 +584,6 @@
   }
 }
 
-.core-resizable-table .cm-table {
-  min-inline-size: 36rem;
-  table-layout: fixed;
-}
-
-.core-resizable-table th {
-  position: relative;
-  overflow-wrap: anywhere;
-}
-
-.core-column-divider {
-  position: absolute;
-  inset-block: 0;
-  inset-inline-end: 0;
-  inline-size: var(--cm-space-3);
-  padding: 0;
-  border: 0;
-  background: transparent;
-  cursor: col-resize;
-  touch-action: none;
-}
-
-.core-column-divider:hover,
-.core-column-divider:focus-visible {
-  background: var(--cm-color-background-surface-selected);
-}
-
 .core-nav-with-icons [data-cm-nav-menu-branch='getting-started'] {
   --core-nav-icon: var(--core-nav-icon-getting-started);
 }

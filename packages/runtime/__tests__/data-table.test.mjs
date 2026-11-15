@@ -12,6 +12,31 @@ const scenarioFiles = (await readdir(resolve(contractDirectory, 'behavior')))
   .filter((file) => file.endsWith('.scenario.json'))
   .sort();
 
+test('Vanilla keyboard resize preserves the paired width and reports the completed action', async () => {
+  const html = await readFile(resolve(contractDirectory, 'cases/resizable.html'), 'utf8');
+  const { window } = new JSDOM(html);
+  const root = window.document.querySelector('.cm-data-table');
+  const headers = [...root.querySelectorAll('th[data-cm-data-table-column]')];
+  const handle = root.querySelector('[role="separator"]');
+  for (const header of headers) {
+    header.getBoundingClientRect = () => ({ width: Number.parseFloat(header.style.inlineSize) });
+  }
+  const changes = [];
+  const ends = [];
+  root.addEventListener('cm:data-table-column-widths-change', (event) => changes.push(event.detail.columnWidths));
+  root.addEventListener('cm:data-table-column-resize-end', (event) => ends.push(event.detail.columnWidths));
+  new CmRuntime().register('data-table', createCmDataTableController).start(window.document);
+  handle.focus();
+  assert.equal(handle.getAttribute('aria-valuenow'), '240');
+  handle.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+  assert.equal(handle.getAttribute('aria-valuenow'), '248');
+  assert.equal(handle.getAttribute('aria-valuemin'), '96');
+  assert.deepEqual(changes, [{ name: '248px', status: '328px' }]);
+  assert.deepEqual(ends, changes);
+  assert.equal(root.querySelector('td[data-cm-data-table-column="name"]').style.inlineSize, '248px');
+  assert.equal(window.document.activeElement, handle);
+});
+
 for (const scenarioFile of scenarioFiles) {
   test(`passes DataTable progressive enhancement scenario ${scenarioFile}`, async () => {
     const scenario = JSON.parse(await readFile(resolve(contractDirectory, 'behavior', scenarioFile), 'utf8'));

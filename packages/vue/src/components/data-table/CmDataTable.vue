@@ -1,6 +1,22 @@
 <script setup lang="ts">
 import { chevronDown } from '@codemonster-ru/ui-icons';
-import { computed, ref, useAttrs, watch, watchEffect, type CSSProperties, type PropType } from 'vue';
+import {
+  measureDataTableColumnContent,
+  measureDataTableResizeBoundary,
+  resizedDataTableWidths,
+  type CmDataTableResizeBoundary,
+} from '@codemonster-ru/ui-runtime';
+import {
+  computed,
+  nextTick,
+  onMounted,
+  ref,
+  useAttrs,
+  watch,
+  watchEffect,
+  type CSSProperties,
+  type PropType,
+} from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
@@ -21,6 +37,7 @@ import CmSkeleton from '../skeleton/CmSkeleton.vue';
 import type {
   CmDataTableCellValue,
   CmDataTableColumn,
+  CmDataTableColumnWidths,
   CmDataTableDensity,
   CmDataTableMode,
   CmDataTableRow,
@@ -47,7 +64,10 @@ const props = defineProps({
   stickyHeader: Boolean,
   visibleColumnKeys: { type: Array as PropType<readonly string[] | null>, default: null },
   columnOrder: { type: Array as PropType<readonly string[] | null>, default: null },
-  columnWidths: { type: Object as PropType<Readonly<Record<string, string>>>, default: () => ({}) },
+  columnWidths: { type: Object as PropType<Readonly<CmDataTableColumnWidths> | null>, default: null },
+  defaultColumnWidths: { type: Object as PropType<Readonly<CmDataTableColumnWidths>>, default: () => ({}) },
+  resizableColumns: Boolean,
+  resizeColumnLabelTemplate: { type: String, default: 'Resize {column} column' },
   selectable: Boolean,
   rowSelectable: {
     type: Function as PropType<(row: CmDataTableRow, rowIndex: number) => boolean>,
@@ -110,6 +130,8 @@ const emit = defineEmits<{
   'update:pageSize': [pageSize: number];
   'update:selectedRowIds': [selectedRowIds: string[]];
   'update:expandedRowKeys': [expandedRowKeys: string[]];
+  'update:columnWidths': [columnWidths: CmDataTableColumnWidths];
+  'column-resize-end': [columnWidths: CmDataTableColumnWidths];
   'update:sort': [sort: CmDataTableSort | null];
 }>();
 defineSlots<{
@@ -211,6 +233,24 @@ const visibleColumns = computed(() => {
     return [column];
   });
   return [...ordered, ...columns.values()];
+});
+const localColumnWidths = ref<CmDataTableColumnWidths>({ ...props.defaultColumnWidths });
+const tableRef = ref<HTMLTableElement | null>(null);
+const previewColumnWidths = ref<CmDataTableColumnWidths | null>(null);
+const activeColumnWidths = computed(() => previewColumnWidths.value ?? props.columnWidths ?? localColumnWidths.value);
+const fixedColumns = computed(
+  () =>
+    props.resizableColumns &&
+    visibleColumns.value.length > 0 &&
+    visibleColumns.value.every((column) => /^\d+(?:\.\d+)?px$/u.test(activeColumnWidths.value[column.key] ?? '')),
+);
+const resizeValues = ref<Record<string, { minimum: number; maximum: number; value: number }>>({});
+let drag: { boundary: CmDataTableResizeBoundary; start: number; pointer: number } | null = null;
+
+watch([visibleColumns, () => props.resizableColumns], () => {
+  drag = null;
+  previewColumnWidths.value = null;
+  resizeValues.value = {};
 });
 
 assertCm(idPattern.test(props.id), 'DataTable id must use lowercase kebab-case.');
@@ -434,7 +474,7 @@ function cellAttrs(column: CmDataTableColumn): { class?: string; style?: CSSProp
 }
 
 function cellStyle(column: CmDataTableColumn): CSSProperties | undefined {
-  const width = props.columnWidths[column.key] ?? column.width;
+  const width = activeColumnWidths.value[column.key] ?? column.width;
   const { minWidth, maxWidth, verticalAlign, nowrap } = column;
   if (!(width || minWidth || maxWidth || verticalAlign || nowrap)) return undefined;
   return {
@@ -444,6 +484,82 @@ function cellStyle(column: CmDataTableColumn): CSSProperties | undefined {
     verticalAlign,
     whiteSpace: nowrap ? 'nowrap' : undefined,
   };
+}
+
+function canResize(column: CmDataTableColumn, index: number): boolean {
+  const adjacent = visibleColumns.value[index + 1];
+  return props.resizableColumns && column.resizable !== false && !!adjacent && adjacent.resizable !== false;
+}
+
+function measureResizeValues(handle: HTMLElement): void {
+  const boundary = measureDataTableResizeBoundary(handle);
+  if (boundary) resizeValues.value[boundary.column] = boundary;
+}
+
+function updateResizeValues(event: Event): void {
+  if (event.currentTarget instanceof HTMLElement) measureResizeValues(event.currentTarget);
+}
+
+onMounted(() => {
+  for (const handle of tableRef.value?.querySelectorAll<HTMLElement>('[data-cm-data-table-resize]') ?? []) {
+    if (handle.closest('table') === tableRef.value) measureResizeValues(handle);
+  }
+});
+
+function reportColumnWidths(boundary: CmDataTableResizeBoundary, delta: number, preview: boolean): void {
+  const widths = { ...activeColumnWidths.value, ...resizedDataTableWidths(boundary, delta) };
+  if (preview) previewColumnWidths.value = widths;
+  if (props.columnWidths === null) localColumnWidths.value = widths;
+  if (preview || props.columnWidths === null) {
+    resizeValues.value[boundary.column] = { ...boundary, value: Number.parseFloat(widths[boundary.column]) };
+  }
+  emit('update:columnWidths', { ...widths });
+  if (!preview) emit('column-resize-end', { ...widths });
+}
+
+function startResize(event: PointerEvent): void {
+  if (event.button !== 0 || drag || !(event.currentTarget instanceof HTMLElement)) return;
+  const boundary = measureDataTableResizeBoundary(event.currentTarget);
+  if (!boundary) return;
+  drag = { boundary, start: event.clientX, pointer: event.pointerId };
+  event.currentTarget.setPointerCapture?.(event.pointerId);
+}
+
+function moveResize(event: PointerEvent): void {
+  if (!drag || drag.pointer !== event.pointerId) return;
+  reportColumnWidths(drag.boundary, (event.clientX - drag.start) * drag.boundary.direction, true);
+}
+
+function finishResize(event: PointerEvent): void {
+  if (!drag || drag.pointer !== event.pointerId) return;
+  drag = null;
+  const widths = previewColumnWidths.value;
+  previewColumnWidths.value = null;
+  if (widths) emit('column-resize-end', { ...widths });
+  const handle = event.currentTarget;
+  if (props.columnWidths !== null && handle instanceof HTMLElement) {
+    void nextTick(() => measureResizeValues(handle));
+  }
+}
+
+function resizeWithKeyboard(event: KeyboardEvent): void {
+  if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+  if (!(event.currentTarget instanceof HTMLElement)) return;
+  const handle = event.currentTarget;
+  const boundary = measureDataTableResizeBoundary(handle);
+  if (!boundary) return;
+  event.preventDefault();
+  reportColumnWidths(boundary, (event.key === 'ArrowRight' ? 8 : -8) * boundary.direction, false);
+  if (props.columnWidths !== null) void nextTick(() => measureResizeValues(handle));
+}
+
+function autosizeColumn(event: MouseEvent): void {
+  if (!(event.currentTarget instanceof HTMLElement)) return;
+  const handle = event.currentTarget;
+  const boundary = measureDataTableResizeBoundary(handle);
+  if (!boundary) return;
+  reportColumnWidths(boundary, measureDataTableColumnContent(handle) - boundary.value, false);
+  if (props.columnWidths !== null) void nextTick(() => measureResizeValues(handle));
 }
 
 function toggleExpandedRow(id: string): void {
@@ -537,7 +653,12 @@ useCmHydrated();
     :data-cm-data-table-selected-count="localSelectedRowIds.length"
   >
     <div class="cm-data-table__scroll">
-      <table class="cm-data-table__table" :inert="maskLoading || undefined">
+      <table
+        ref="tableRef"
+        class="cm-data-table__table"
+        :inert="maskLoading || undefined"
+        :data-cm-data-table-fixed-columns="fixedColumns ? '' : undefined"
+      >
         <caption v-if="props.caption || $slots.caption" class="cm-data-table__caption">
           <slot name="caption">{{ props.caption }}</slot>
         </caption>
@@ -556,11 +677,12 @@ useCmHydrated();
             </th>
             <th v-if="$slots['expanded-row']" class="cm-data-table__expansion" scope="col" aria-label="Row details" />
             <th
-              v-for="column in visibleColumns"
+              v-for="(column, index) in visibleColumns"
               :key="column.key"
               v-bind="cellAttrs(column)"
               :scope="column.scope ?? 'col'"
               :aria-sort="column.sortable ? columnAriaSort(column) : undefined"
+              :data-cm-data-table-column="props.resizableColumns ? column.key : undefined"
             >
               <button
                 v-if="column.sortable"
@@ -579,6 +701,26 @@ useCmHydrated();
               <template v-else>
                 <slot :name="`header-${column.key}`" :column="column">{{ column.header }}</slot>
               </template>
+              <span
+                v-if="canResize(column, index)"
+                class="cm-data-table__column-resizer"
+                role="separator"
+                aria-orientation="vertical"
+                :aria-label="formatTemplate(props.resizeColumnLabelTemplate, { column: column.header })"
+                :aria-valuemin="resizeValues[column.key]?.minimum"
+                :aria-valuemax="resizeValues[column.key]?.maximum"
+                :aria-valuenow="resizeValues[column.key]?.value ?? 0"
+                tabindex="0"
+                data-cm-data-table-resize
+                @focus="updateResizeValues"
+                @pointerdown="startResize"
+                @pointermove="moveResize"
+                @pointerup="finishResize"
+                @pointercancel="finishResize"
+                @lostpointercapture="finishResize"
+                @keydown="resizeWithKeyboard"
+                @dblclick="autosizeColumn"
+              />
             </th>
           </tr>
         </thead>
@@ -587,7 +729,12 @@ useCmHydrated();
             <tr v-for="row in skeletonRowCount" :key="row" aria-hidden="true">
               <td v-if="props.selectable" class="cm-data-table__selection" />
               <td v-if="$slots['expanded-row']" class="cm-data-table__expansion" />
-              <td v-for="column in visibleColumns" :key="column.key" v-bind="cellAttrs(column)">
+              <td
+                v-for="column in visibleColumns"
+                :key="column.key"
+                v-bind="cellAttrs(column)"
+                :data-cm-data-table-column="props.resizableColumns ? column.key : undefined"
+              >
                 <CmSkeleton class="cm-data-table__skeleton" radius="control" />
               </td>
             </tr>
@@ -634,7 +781,12 @@ useCmHydrated();
                     <CmIcon :icon="chevronDown" />
                   </CmIconButton>
                 </td>
-                <td v-for="column in visibleColumns" :key="column.key" v-bind="cellAttrs(column)">
+                <td
+                  v-for="column in visibleColumns"
+                  :key="column.key"
+                  v-bind="cellAttrs(column)"
+                  :data-cm-data-table-column="props.resizableColumns ? column.key : undefined"
+                >
                   <slot
                     :name="`cell-${column.key}`"
                     :row="row"

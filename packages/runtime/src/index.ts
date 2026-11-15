@@ -14,6 +14,12 @@ export type { ColumnChooserVisibleColumnsChangeDetail } from './column-chooser.j
 export { CmCommandPaletteController, createCmCommandPaletteController } from './command-palette.js';
 export type { CommandPaletteQueryChangeDetail, CommandPaletteSelectDetail } from './command-palette.js';
 export { CmDataTableController, createCmDataTableController } from './data-table.js';
+export {
+  measureDataTableColumnContent,
+  measureDataTableResizeBoundary,
+  resizedDataTableWidths,
+} from './data-table-resize.js';
+export type { CmDataTableResizeBoundary } from './data-table-resize.js';
 export type {
   DataTablePageChangeDetail,
   DataTablePageSizeChangeDetail,

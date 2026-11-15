@@ -32,6 +32,42 @@
   line-height: var(--cm-line-height-normal);
 }
 
+.cm-data-table__table[data-cm-data-table-fixed-columns] {
+  table-layout: fixed;
+}
+
+.cm-data-table__table[data-cm-data-table-fixed-columns] :where(th, td) {
+  overflow-wrap: anywhere;
+}
+
+.cm-data-table__head th[data-cm-data-table-column] {
+  position: relative;
+  box-sizing: border-box;
+}
+
+.cm-data-table__column-resizer {
+  position: absolute;
+  z-index: 1;
+  inset-block: 0;
+  inset-inline-end: 0;
+  inline-size: var(--cm-space-4);
+  cursor: col-resize;
+  touch-action: none;
+}
+
+.cm-data-table__column-resizer::after {
+  position: absolute;
+  inset-block: var(--cm-space-1);
+  inset-inline-end: var(--cm-space-1);
+  border-inline-end: var(--cm-border-width-thick) solid var(--cm-color-border-interactive);
+  content: '';
+  pointer-events: none;
+}
+
+.cm-data-table__column-resizer:is(:hover, :focus-visible)::after {
+  border-color: var(--cm-color-focus-ring);
+}
+
 .cm-data-table__caption {
   padding: var(--cm-field-padding-lg);
   border-block-end: var(--cm-border-width) solid var(--cm-color-border-divider);

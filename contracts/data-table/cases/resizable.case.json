@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "id": "data-table-resizable",
+  "description": "Resizable adjacent columns with an accessible vertical divider.",
+  "props": {
+    "id": "resizable-projects",
+    "caption": "Projects",
+    "columns": [
+      {
+        "key": "name",
+        "header": "Name",
+        "sortable": true,
+        "minWidth": "96px"
+      },
+      {
+        "key": "status",
+        "header": "Status",
+        "minWidth": "96px"
+      }
+    ],
+    "rows": [
+      {
+        "id": "apollo",
+        "cells": {
+          "name": "Apollo",
+          "status": "Active"
+        }
+      },
+      {
+        "id": "zephyr",
+        "cells": {
+          "name": "Zephyr",
+          "status": "Paused"
+        }
+      }
+    ],
+    "resizableColumns": true,
+    "defaultColumnWidths": {
+      "name": "240px",
+      "status": "336px"
+    }
+  },
+  "slots": {}
+}

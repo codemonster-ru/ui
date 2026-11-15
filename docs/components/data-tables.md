@@ -113,6 +113,23 @@ Localize selection and sorting accessible names with `selectAllLabel`, `selectRo
 template must contain `{row}`; each sort template must contain `{column}`. Vanilla HTML uses the equivalent
 kebab-case props and the shared runtime preserves those labels as sorting cycles.
 
+### Resizing columns
+
+Set `resizable-columns` to expose a focusable separator between two resizable columns. Drag it,
+press Left or Right Arrow to move it 8 px, or double-click it to fit the widest rendered cell.
+The separator reports its accessible name, current width and bounds. The two columns trade width
+within their `minWidth` and `maxWidth` limits. The final column and boundaries touching a column
+with `resizable: false` have no separator.
+
+Use `defaultColumnWidths` for initial widths or `v-model:column-widths` to own the width map.
+`column-resize-end` reports the final widths once per completed interaction. Localize the separator
+name with `resizeColumnLabelTemplate` and the `{column}` placeholder.
+
+In Vanilla, use the [resizable fixture](../../contracts/data-table/cases/resizable.html) and the
+DataTable controller. It updates the header and body cell widths and dispatches
+`cm:data-table-column-widths-change` and `cm:data-table-column-resize-end`, each with
+`detail.columnWidths`.
+
 ## Vanilla HTML and progressive enhancement
 
 Vanilla HTML renders the current server-owned page and state:
