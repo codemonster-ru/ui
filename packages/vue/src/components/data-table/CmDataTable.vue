@@ -425,8 +425,12 @@ const paginationSummary = computed(() => {
 });
 const columnCount = computed(() => visibleColumns.value.length + (props.selectable ? 1 : 0));
 
-function cellAttrs(column: CmDataTableColumn): Record<string, string> {
-  return column.align && column.align !== 'start' ? { class: `cm-data-table__cell--${column.align}` } : {};
+function cellAttrs(column: CmDataTableColumn): { class?: string; style?: CSSProperties } {
+  const style = cellStyle(column);
+  return {
+    ...(column.align && column.align !== 'start' ? { class: `cm-data-table__cell--${column.align}` } : {}),
+    ...(style ? { style } : {}),
+  };
 }
 
 function cellStyle(column: CmDataTableColumn): CSSProperties | undefined {
@@ -555,7 +559,6 @@ useCmHydrated();
               v-for="column in visibleColumns"
               :key="column.key"
               v-bind="cellAttrs(column)"
-              :style="cellStyle(column)"
               :scope="column.scope ?? 'col'"
               :aria-sort="column.sortable ? columnAriaSort(column) : undefined"
             >
@@ -584,7 +587,7 @@ useCmHydrated();
             <tr v-for="row in skeletonRowCount" :key="row" aria-hidden="true">
               <td v-if="props.selectable" class="cm-data-table__selection" />
               <td v-if="$slots['expanded-row']" class="cm-data-table__expansion" />
-              <td v-for="column in visibleColumns" :key="column.key" :style="cellStyle(column)">
+              <td v-for="column in visibleColumns" :key="column.key" v-bind="cellAttrs(column)">
                 <CmSkeleton class="cm-data-table__skeleton" radius="control" />
               </td>
             </tr>
@@ -635,7 +638,6 @@ useCmHydrated();
                   v-for="column in visibleColumns"
                   :key="column.key"
                   v-bind="cellAttrs(column)"
-                  :style="cellStyle(column)"
                 >
                   <slot
                     :name="`cell-${column.key}`"
