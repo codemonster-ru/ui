@@ -182,6 +182,7 @@ test('popover toggles, focuses panel content, and dismisses outside', () => {
   assert.equal(dom.window.document.activeElement, action);
   dom.window.document.querySelector('#outside').click();
   assert.equal(panel.hidden, true);
+  assert.notEqual(dom.window.document.activeElement, action);
   assert.deepEqual(states, [true, false]);
 });
 
@@ -240,6 +241,48 @@ test('tooltip enhances an authored link with a delayed portal and returns its pa
   await delay(20);
   assert.equal(content.parentElement, target);
   runtime.stop();
+  assert.equal(content.parentElement, root);
+  assert.equal(content.hasAttribute('data-cm-tooltip-floating'), false);
+});
+
+test('keeps a closing tooltip at its portal until the current exit finishes', async (context) => {
+  const dom = new JSDOM(
+    tooltipHtml().replace('data-cm-controller=', 'data-cm-tooltip-teleport-to="body" data-cm-controller='),
+  );
+  const document = dom.window.document;
+  const root = document.querySelector('.cm-tooltip');
+  const trigger = root.querySelector('button');
+  const content = root.querySelector('[role="tooltip"]');
+  const runtime = new CmRuntime().register('tooltip', createCmTooltipController);
+  context.after(() => {
+    runtime.stop();
+    dom.window.close();
+  });
+  runtime.start(document);
+  const first = Promise.withResolvers();
+  const second = Promise.withResolvers();
+  let finished = first.promise;
+  let painted = true;
+  content.getAnimations = () => [{ transitionProperty: 'display', finished }];
+  content.getClientRects = () => (painted ? [{}] : []);
+
+  trigger.focus();
+  press(dom, trigger, 'Escape');
+  assert.equal(content.hidden, true);
+  assert.equal(content.parentElement, document.body);
+  assert.equal(document.activeElement, trigger);
+
+  root.dispatchEvent(new dom.window.Event('pointerenter'));
+  assert.equal(content.hidden, false);
+  finished = second.promise;
+  press(dom, trigger, 'Escape');
+  first.reject(new Error('Exit canceled by reopening'));
+  await first.promise.catch(() => {});
+  assert.equal(content.parentElement, document.body);
+
+  painted = false;
+  second.resolve();
+  await second.promise;
   assert.equal(content.parentElement, root);
   assert.equal(content.hasAttribute('data-cm-tooltip-floating'), false);
 });

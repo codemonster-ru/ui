@@ -7,6 +7,7 @@ import {
   type CmAnchoredStyle,
 } from '@codemonster-ru/ui-runtime/anchored-position';
 import { authoredTriggerElement, CmAuthoredTrigger, disclosureTriggerActions } from '../../internal/disclosure-trigger';
+import { useCmFloatingPaint } from '../../internal/floating-paint';
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
 import { dropdownKeyAction, resolveDisclosureOpen } from '@codemonster-ru/ui-runtime/core';
@@ -65,11 +66,12 @@ const menuElement = computed(() => {
 const coordinates = shallowRef<CmAnchoredStyle>();
 const portalWidth = ref(0);
 const localOpen = ref(resolveDisclosureOpen(props.open ?? props.defaultOpen, props.disabled));
+const painted = useCmFloatingPaint(localOpen, menuElement);
 const placement = computed(() =>
   ['bottom-start', 'bottom-end'].includes(props.placement) ? props.placement : 'bottom-start',
 );
 const teleportTarget = computed(() =>
-  localOpen.value ? resolveCmAnchoredTarget(root.value, props.disableTeleport ? null : props.teleportTo) : null,
+  painted.value ? resolveCmAnchoredTarget(root.value, props.disableTeleport ? null : props.teleportTo) : null,
 );
 const menuAttrs = computed(() => ({
   ...(teleportTarget.value && props.variant === 'pills' ? { 'data-cm-dropdown-menu-variant': 'pills' } : {}),
@@ -183,9 +185,9 @@ function onDocumentClick(event: MouseEvent): void {
 }
 
 watch(
-  [localOpen, teleportTarget, placement, trigger, menuElement, () => props.showArrow],
-  ([open, target, placement, anchor, panel], _, onCleanup) => {
-    if (!open || !anchor || !panel) return;
+  [painted, teleportTarget, placement, trigger, menuElement, () => props.showArrow],
+  ([visible, target, placement, anchor, panel], _, onCleanup) => {
+    if (!visible || !anchor || !panel) return;
     const document = anchor.ownerDocument;
     const stop = observeCmAnchoredPosition(anchor, panel, placement, 10, target ? null : root.value, (style) => {
       if (target) portalWidth.value = anchor.offsetWidth;

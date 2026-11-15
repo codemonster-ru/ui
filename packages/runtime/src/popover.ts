@@ -1,4 +1,4 @@
-import { attachCmAnchoredPosition } from './anchored-position.js';
+import { afterCmFloatingExit, attachCmAnchoredPosition } from './anchored-position.js';
 import { cmFocusableSelector, popoverKeyAction, resolveDisclosureOpen } from './core/disclosure.js';
 import { dispatchCmEvent } from './events.js';
 import type { CmController, CmControllerFactory } from './runtime.js';
@@ -93,6 +93,7 @@ export class CmPopoverController implements CmController {
   }
 
   #synchronize(open: boolean): void {
+    const closing = !open && !this.#panel.hidden;
     this.#trigger.setAttribute('aria-expanded', String(open));
     this.#panel.hidden = !open;
     this.#root.classList.toggle('cm-popover--open', open);
@@ -110,7 +111,7 @@ export class CmPopoverController implements CmController {
         10,
         this.#panel.parentElement,
       );
-    } else if (!open) this.#releasePlacement();
+    } else if (closing) afterCmFloatingExit(this.#panel, () => this.#releasePlacement());
   }
 
   #releasePlacement(): void {

@@ -1,16 +1,33 @@
 @media (prefers-reduced-motion: no-preference) {
-  :is(.cm-dropdown__menu, .cm-menu-bar__submenu, .cm-popover__panel, .cm-tooltip__content):not([hidden]) {
+  :is(
+    .cm-date-picker__calendar,
+    .cm-dropdown__menu,
+    .cm-menu-bar__submenu,
+    .cm-popover__panel,
+    .cm-select__listbox,
+    .cm-tooltip__content
+  ) {
     opacity: 1;
     transition-duration: var(--cm-motion-duration-normal);
     transition-property: opacity, translate, scale;
     transition-timing-function: var(--cm-motion-ease-standard);
-  }
 
-  @starting-style {
-    :is(.cm-dropdown__menu, .cm-menu-bar__submenu, .cm-popover__panel, .cm-tooltip__content):not([hidden]) {
+    @starting-style {
       opacity: 0;
       scale: 0.97;
       translate: 0 var(--cm-space-1);
+    }
+
+    @supports (interactivity: inert) {
+      transition-property: opacity, translate, scale, display;
+      transition-behavior: allow-discrete;
+
+      &[hidden] {
+        opacity: 0;
+        interactivity: inert;
+        scale: 0.97;
+        translate: 0 var(--cm-space-1);
+      }
     }
   }
 }

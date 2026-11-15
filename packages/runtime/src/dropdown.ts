@@ -1,4 +1,4 @@
-import { attachCmAnchoredPosition } from './anchored-position.js';
+import { afterCmFloatingExit, attachCmAnchoredPosition } from './anchored-position.js';
 import { dropdownKeyAction, resolveDisclosureOpen } from './core/disclosure.js';
 import { dispatchCmEvent } from './events.js';
 import type { MenuSelectDetail } from './menu.js';
@@ -100,11 +100,12 @@ export class CmDropdownController implements CmController {
   }
 
   #synchronize(open: boolean): void {
+    const closing = !open && !this.#menu.hidden;
     this.#trigger.setAttribute('aria-expanded', String(open));
     this.#menu.hidden = !open;
     this.#root.classList.toggle('cm-dropdown--open', open);
     if (open) this.#holdPlacement();
-    else this.#releasePlacement();
+    else if (closing) afterCmFloatingExit(this.#menu, () => this.#releasePlacement());
   }
 
   #holdPlacement(): void {

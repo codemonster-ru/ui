@@ -6,6 +6,7 @@ import {
   resolveCmAnchoredTarget,
   type CmAnchoredStyle,
 } from '@codemonster-ru/ui-runtime/anchored-position';
+import { useCmFloatingPaint } from '../../internal/floating-paint';
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
 import { assertCm, warnCm } from '../../internal/warn';
@@ -118,10 +119,11 @@ const authoredDates = currentDates.value.slice();
 const firstDate = computed(() => currentDates.value[0] ?? '');
 const formValues = computed(() => (selectionMode.value === 'single' ? [firstDate.value] : currentDates.value));
 const isOpen = ref(false);
+const painted = useCmFloatingPaint(isOpen, calendarRef);
 const calendarPosition = ref<CmAnchoredStyle>();
 const placement = computed(() => (props.placement === 'bottom-end' ? 'bottom-end' : 'bottom-start'));
 const portal = computed(() => (props.disableTeleport ? null : (props.teleportTo ?? null)));
-const teleportTarget = computed(() => (isOpen.value ? resolveCmAnchoredTarget(rootRef.value, portal.value) : null));
+const teleportTarget = computed(() => (painted.value ? resolveCmAnchoredTarget(rootRef.value, portal.value) : null));
 const visibleMonth = ref(dayValue(firstDate.value) || formatCalendarValue(new Date(), precision.value));
 const focusedDate = ref(visibleMonth.value);
 const yearStart = ref(calendarYearRangeStart(visibleMonth.value));
@@ -426,9 +428,9 @@ watch(isOpen, (open, _, onCleanup) => {
 });
 
 watch(
-  [isOpen, calendarRef, triggerRef, teleportTarget, placement],
-  ([open, calendar, trigger, target, preferredPlacement], _, onCleanup) => {
-    if (!open || !calendar || !trigger) return;
+  [painted, calendarRef, triggerRef, teleportTarget, placement],
+  ([visible, calendar, trigger, target, preferredPlacement], _, onCleanup) => {
+    if (!visible || !calendar || !trigger) return;
     const stop = observeCmAnchoredPosition(
       trigger,
       calendar,

@@ -1,5 +1,5 @@
 import { cmFocusableSelector } from '@codemonster-ru/ui-runtime/core';
-import { enterCmNativeModal } from '@codemonster-ru/ui-runtime/native-modal';
+import { enterCmNativeModal, releaseCmOverlayFocus } from '@codemonster-ru/ui-runtime/native-modal';
 import { nextTick, onBeforeUnmount, onMounted, ref, watch, type Ref } from 'vue';
 
 function availableFocusCandidates(dialog: HTMLDialogElement, selector: string): HTMLElement[] {
@@ -92,6 +92,7 @@ export function useCmModal(
       if (typeof element.close === 'function' && element.open) element.close();
       else element.open = false;
       if (restoreFocus && returnFocus?.isConnected) returnFocus.focus();
+      releaseCmOverlayFocus(element);
       returnFocus = null;
       releaseScroll?.();
       releaseScroll = undefined;
@@ -111,7 +112,8 @@ export function useCmModal(
   function onKeydown(event: KeyboardEvent, allowEscape = true): void {
     const element = dialog.value;
     const ElementConstructor = element?.ownerDocument.defaultView?.Element;
-    if (!element || !localOpen.value || !ElementConstructor || !(event.target instanceof ElementConstructor)) return;
+    if (!element?.open || !localOpen.value || !ElementConstructor || !(event.target instanceof ElementConstructor))
+      return;
     if (event.target.closest('dialog') !== element) return;
     if (event.key === 'Escape') {
       if (event.defaultPrevented) return;

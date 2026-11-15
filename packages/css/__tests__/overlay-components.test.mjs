@@ -38,37 +38,47 @@ test('preserves modal, focus, hidden, and logical-placement hooks', async () => 
   assert.doesNotMatch(`${dialog}${drawer}${popover}${tooltip}`, /^\s*(?:(?:margin|padding|border)-)?(?:left|right):/mu);
 });
 
-test('starts native modal reveal motion from each standalone stylesheet', async () => {
-  const [dialog, drawer] = await Promise.all(['dialog', 'drawer'].map(readBuiltStyles));
-  assert.match(dialog, /@media \(prefers-reduced-motion: no-preference\) \{\s+\.cm-dialog:modal/u);
-  assert.match(dialog, /cm-dialog-enter var\(--cm-motion-duration-fast\)/u);
-  assert.match(dialog, /translate: 0 var\(--cm-space-3\)/u);
-  assert.match(drawer, /\.cm-drawer:modal \{\s+animation: cm-drawer-enter var\(--cm-motion-duration-normal\)/u);
-  assert.match(drawer, /\.cm-drawer:modal::backdrop \{\s+animation-duration: var\(--cm-motion-duration-normal\)/u);
-  assert.match(drawer, /\.cm-drawer--start:dir\(ltr\), \.cm-drawer--end:dir\(rtl\)\) \{\s+--cm-drawer-enter: -100%/u);
-  for (const css of [dialog, drawer]) {
+test('keeps native modal motion and exit safety in each standalone stylesheet', async () => {
+  const [dialog, drawer, palette] = await Promise.all(['dialog', 'drawer', 'command-palette'].map(readBuiltStyles));
+  for (const css of [dialog, drawer, palette]) {
+    assert.match(css, /@media \(prefers-reduced-motion: no-preference\)/u);
+    assert.match(css, /@starting-style \{\s+:is\(\.cm-command-palette, \.cm-dialog, \.cm-drawer\):modal/u);
+    assert.match(css, /transition-duration: var\(--cm-modal-duration\)/u);
+    assert.match(css, /--cm-modal-duration: var\(--cm-motion-duration-fast\)/u);
+    assert.match(css, /--cm-modal-duration: var\(--cm-motion-duration-normal\)/u);
+    assert.match(css, /--cm-modal-shift: 0 var\(--cm-space-3\)/u);
     assert.match(
       css,
-      /:modal:has\(\.cm-dropdown, \.cm-menu-bar, \.cm-popover, \.cm-tooltip\) \{\s+animation-name: cm-backdrop-enter;/u,
+      /:has\(\s*\.cm-date-picker-wrap,\s*\.cm-dropdown,\s*\.cm-menu-bar,\s*\.cm-popover,\s*\.cm-select-wrap,\s*\.cm-tooltip\s*\) \{\s+--cm-modal-shift: none;/u,
     );
-    assert.match(css, /@keyframes cm-backdrop-enter \{\s+from \{\s+opacity: 0;\s+\}\s+\}/u);
+    const exit = css.slice(css.indexOf('@supports (overlay: auto) and (interactivity: inert)'));
+    assert.match(exit, /^@supports \(overlay: auto\) and \(interactivity: inert\)/u);
+    assert.match(
+      exit,
+      /transition-behavior: allow-discrete;\s+transition-property: opacity, translate, display, overlay;/u,
+    );
+    assert.match(exit, /:not\(\[open\]\) \{\s+interactivity: inert;/u);
+    assert.match(exit, /:not\(\[open\]\)::backdrop \{\s+pointer-events: none;/u);
   }
+  assert.match(palette, /--cm-modal-shift: 0 calc\(0px - var\(--cm-space-2\)\)/u);
+  assert.match(drawer, /\.cm-drawer--start:dir\(ltr\), \.cm-drawer--end:dir\(rtl\)\) \{\s+--cm-drawer-enter: -100%/u);
 });
 
-test('makes reveal motion available in each standalone anchored overlay stylesheet', async () => {
+test('makes reveal and safe exit motion available in each standalone anchored overlay stylesheet', async () => {
   for (const [slug, part] of [
+    ['date-picker', 'calendar'],
     ['dropdown', 'menu'],
     ['menu-bar', 'submenu'],
     ['popover', 'panel'],
+    ['select', 'listbox'],
     ['tooltip', 'content'],
   ]) {
     const css = await readBuiltStyles(slug);
     assert.match(css, /@media \(prefers-reduced-motion: no-preference\) \{\s+:is\(/u);
-    assert.match(
-      css,
-      new RegExp(`@starting-style\\s*\\{\\s*:is\\([^)]*\\.cm-${slug}__${part}[^)]*\\):not\\(\\[hidden\\]\\)`, 'u'),
-    );
-    assert.match(css, /transition-property: opacity, translate, scale/u);
+    assert.match(css, new RegExp(`:is\\([^)]*\\.cm-${slug}__${part}[^)]*\\) \\{[^{}]*@starting-style`, 'u'));
+    assert.match(css, /@supports \(interactivity: inert\)[\s\S]*?transition-behavior: allow-discrete/u);
+    assert.match(css, /transition-property: opacity, translate, scale, display/u);
+    assert.match(css, /&\[hidden\] \{[^{}]*interactivity: inert/u);
   }
 });
 

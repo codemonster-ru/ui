@@ -1,4 +1,5 @@
 import { autoUpdate, computePosition, flip, offset, shift } from '@codemonster-ru/floater.js';
+import { releaseCmOverlayFocus } from './overlay-focus.js';
 
 type CmAnchoredPlacement = 'top' | 'bottom-start' | 'bottom-end';
 const arrowX = '--cm-floating-arrow-x';
@@ -29,6 +30,20 @@ export function resolveCmAnchoredTarget(
   } catch {
     return null;
   }
+}
+
+export function afterCmFloatingExit(panel: HTMLElement | null | undefined, release: () => void): void {
+  if (!panel) return release();
+  releaseCmOverlayFocus(panel);
+  const exit = panel
+    .getAnimations?.()
+    .find((animation) => (animation as CSSTransition).transitionProperty === 'display');
+  if (!exit) return release();
+  const finish = () => {
+    // A quick reopen or a second close may cancel this exit while the panel is still painted.
+    if (panel.hidden && panel.getClientRects().length === 0) release();
+  };
+  void exit.finished.then(finish, finish);
 }
 
 export function observeCmAnchoredPosition(

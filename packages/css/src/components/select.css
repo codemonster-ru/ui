@@ -1,3 +1,5 @@
+@import '../primitives/floating-reveal.css';
+
 /* stylelint-disable no-descending-specificity -- Select states intentionally share one interaction matrix. */
 
 .cm-select {

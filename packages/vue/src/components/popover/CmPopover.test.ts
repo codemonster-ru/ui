@@ -71,3 +71,52 @@ it('preserves the historical wrapper Escape default and returns focus to the aut
     wrapper.unmount();
   }
 });
+
+it('releases focus on controlled close and keeps the portal positioned until the latest exit finishes', async () => {
+  const wrapper = mount(CmPopover, {
+    attachTo: document.body,
+    props: { id: 'help', label: 'Help', open: true, teleportTo: 'body' },
+    slots: { default: () => h('button', 'Apply') },
+  });
+  try {
+    await nextTick();
+    const panel = document.querySelector<HTMLElement>('#help-panel')!;
+    const action = panel.querySelector('button')!;
+    let cancelFirstExit!: () => void;
+    let finishSecondExit!: () => void;
+    const first = new Promise<void>((_resolve, reject) => {
+      cancelFirstExit = () => reject(new Error('Exit canceled by reopening'));
+    });
+    const second = new Promise<void>((resolve) => {
+      finishSecondExit = resolve;
+    });
+    let finished = first;
+    let painted = true;
+    panel.getAnimations = () => [{ transitionProperty: 'display', finished }] as unknown as CSSTransition[];
+    panel.getClientRects = () => (painted ? [{}] : []) as unknown as DOMRectList;
+    action.focus();
+
+    await wrapper.setProps({ open: false });
+    expect(panel.hidden).toBe(true);
+    expect(document.activeElement).not.toBe(action);
+    expect(panel.parentElement).toBe(document.body);
+    expect(panel.hasAttribute('data-cm-popover-portaled')).toBe(true);
+
+    await wrapper.setProps({ open: true });
+    expect(panel.hidden).toBe(false);
+    finished = second;
+    await wrapper.setProps({ open: false });
+    cancelFirstExit();
+    await first.catch(() => {});
+    expect(panel.parentElement).toBe(document.body);
+
+    painted = false;
+    finishSecondExit();
+    await second;
+    await nextTick();
+    expect(wrapper.get('#help-panel').element).toBe(panel);
+    expect(panel.hasAttribute('data-cm-popover-portaled')).toBe(false);
+  } finally {
+    wrapper.unmount();
+  }
+});

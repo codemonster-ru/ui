@@ -1,4 +1,4 @@
-import { attachCmAnchoredPosition, resolveCmAnchoredTarget } from './anchored-position.js';
+import { afterCmFloatingExit, attachCmAnchoredPosition, resolveCmAnchoredTarget } from './anchored-position.js';
 import {
   boundCalendarDate,
   buildCalendarGrid,
@@ -566,6 +566,7 @@ export class CmDatePickerController implements CmController {
   }
 
   #synchronize(open: boolean): void {
+    const closing = !open && !this.#calendar.hidden;
     this.#trigger.setAttribute('aria-expanded', String(open));
     this.#calendar.hidden = !open;
     if (open) {
@@ -581,7 +582,7 @@ export class CmDatePickerController implements CmController {
       this.#holdPlacement();
     } else {
       this.#calendar.removeAttribute('tabindex');
-      this.#releasePlacement();
+      if (closing) afterCmFloatingExit(this.#calendar, () => this.#releasePlacement());
     }
   }
 

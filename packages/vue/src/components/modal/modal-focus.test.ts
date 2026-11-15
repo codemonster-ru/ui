@@ -72,6 +72,28 @@ it('synchronizes a native close with v-model and ignores a delayed close after r
   }
 });
 
+it('releases a default-open dialog without an opener or a tab trap after native close', async () => {
+  const wrapper = mount(CmDialog, {
+    attachTo: document.body,
+    props: { id: 'native', title: 'Initially open', defaultOpen: true },
+  });
+
+  try {
+    await nextTick();
+    const dialog = wrapper.get('dialog');
+    const close = wrapper.get('[data-cm-dialog-close]').element;
+    expect(document.activeElement).toBe(close);
+    dialog.element.open = false;
+    const tab = new KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true });
+    close.dispatchEvent(tab);
+    expect(tab.defaultPrevented).toBe(false);
+    await dialog.trigger('close');
+    expect(dialog.element.contains(document.activeElement)).toBe(false);
+  } finally {
+    wrapper.unmount();
+  }
+});
+
 it.each([CmDialog, CmDrawer])(
   'restores the invoking focus when an open %s unmounts without emitting',
   async (Modal) => {

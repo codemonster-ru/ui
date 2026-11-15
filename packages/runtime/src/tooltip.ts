@@ -1,5 +1,5 @@
 import { autoUpdate, computePosition, flip, offset, shift } from '@codemonster-ru/floater.js';
-import { resolveCmAnchoredTarget } from './anchored-position.js';
+import { afterCmFloatingExit, resolveCmAnchoredTarget } from './anchored-position.js';
 import { resolveTooltipDelay } from './core/disclosure.js';
 import type { CmController, CmControllerFactory } from './runtime.js';
 
@@ -110,10 +110,11 @@ export class CmTooltipController implements CmController {
   }
 
   #synchronize(visible: boolean): void {
+    const closing = !visible && !this.#content.hidden;
     this.#content.hidden = !visible;
     this.#root.classList.toggle('cm-tooltip--visible', visible);
     if (visible) this.#holdFloating();
-    else this.#releaseFloating();
+    else if (closing) afterCmFloatingExit(this.#content, () => this.#releaseFloating());
   }
 
   #holdFloating(): void {

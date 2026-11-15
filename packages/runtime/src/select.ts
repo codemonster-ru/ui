@@ -1,4 +1,4 @@
-import { attachCmAnchoredPosition } from './anchored-position.js';
+import { afterCmFloatingExit, attachCmAnchoredPosition } from './anchored-position.js';
 import { selectClosedKeyAction, selectOpenKeyAction } from './core/select.js';
 import { dispatchCmEvent } from './events.js';
 import { observeFormReset } from './form-reset.js';
@@ -182,10 +182,11 @@ export class CmSelectController implements CmController {
   }
 
   #synchronize(open: boolean): void {
+    const closing = !open && !this.#listbox.hidden;
     this.#trigger.setAttribute('aria-expanded', String(open));
     this.#listbox.hidden = !open;
     if (open) this.#holdPlacement();
-    else this.#releasePlacement();
+    else if (closing) afterCmFloatingExit(this.#listbox, () => this.#releasePlacement());
   }
 
   #holdPlacement(): void {

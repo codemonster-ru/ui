@@ -6,6 +6,7 @@ import {
   resolveCmAnchoredTarget,
   type CmAnchoredStyle,
 } from '@codemonster-ru/ui-runtime/anchored-position';
+import { useCmFloatingPaint } from '../../internal/floating-paint';
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
 import { selectClosedKeyAction, selectOpenKeyAction } from '@codemonster-ru/ui-runtime/core';
@@ -44,6 +45,7 @@ const triggerRef = ref<HTMLButtonElement | null>(null);
 const listboxRef = ref<HTMLElement | null>(null);
 const currentValue = ref(props.modelValue);
 const isOpen = ref(false);
+const painted = useCmFloatingPaint(isOpen, listboxRef);
 const mounted = ref(false);
 const portalWidth = ref<number>();
 const positionStyle = shallowRef<CmAnchoredStyle>();
@@ -185,9 +187,9 @@ function onDocumentClick(event: MouseEvent): void {
 }
 
 watch(
-  [isOpen, teleportTarget, () => props.placement, listboxRef, triggerRef],
-  ([open, target, placement, listbox, trigger], _, onCleanup) => {
-    if (!open || !trigger || !listbox) return;
+  [painted, teleportTarget, () => props.placement, listboxRef, triggerRef],
+  ([visible, target, placement, listbox, trigger], _, onCleanup) => {
+    if (!visible || !trigger || !listbox) return;
     const document = trigger.ownerDocument;
     document.addEventListener('click', onDocumentClick);
     const stop = observeCmAnchoredPosition(

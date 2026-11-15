@@ -183,6 +183,8 @@ and `closeLabel`.
 The historical `VfCommandPalette` moves to `body` after mount. Pass `teleportTo` to use a selector
 or element in the same document. Use `disableTeleport`, `false`, or `null` to keep it inline.
 Server markup stays inline for hydration, and the open palette uses the native modal top layer.
+The palette fades and shifts upward when it closes on browsers that support native modal exit
+motion. Closing returns focus immediately. [Modal motion and reduced motion](./overlays.md#apis)
 
 ```vue
 <script setup lang="ts">
