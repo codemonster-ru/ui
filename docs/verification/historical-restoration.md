@@ -191,7 +191,7 @@ from 13.20% to 1.91% (worst frame: 36.01% to 3.50%), and Vanilla's fell from 3.9
   in-progress MenuBar change; its type is present in `823edcaa`. Format check reported only
   `CmDataTable.vue`. Re-run from a coherent committed candidate after these corrections.
 
-## Acceptance candidate
+## Acceptance at 0a93f598
 
 **Status: PARTIAL.** The clean package and local paired browser gates passed. Historical package
 and behavior differences are documented, and the hosted stored-fixture gate is unverified.
@@ -235,3 +235,78 @@ The next gate is the `visual` job from [CI](../../.github/workflows/ci.yml) on a
 Record the renderer and the exact result before changing the hosted visual status. This gate
 compares the 12 stored component cases; it is separate from both the whole showcase comparison
 and the paired Vue/Vanilla visuals.
+
+## Continuation from 0a93f598
+
+**Status remains PARTIAL.** Local package, browser behavior and adapter parity checks passed.
+The affected components and the stored fixture set were recaptured from the final product source.
+The exact hosted gate remains unverified, and the compatibility differences below remain open.
+
+- Vue and Layouts share ESM and CommonJS component instances on supported Node versions
+  (`8cae4010`). The 63 historical deep entries (`dc88b534`) load shared foundation and
+  component CSS in browser bundlers. Node keeps these imports CSS-free. Packed npm, pnpm,
+  and Yarn consumers, Node 22 and 24 SSR, and the pinned browser consumer passed.
+  [Migration guide](../migrate-from-vueforge.md)
+- Historical Dialog and Drawer accept authored portals (`65e81268`). Drawer accepts a
+  custom scroll region or explicit lock opt-out (`5cd4173b`). Chrome verified live portal
+  moves, native top-layer state, Escape and form dismissal, wheel locking, and focus return.
+  Historical CommandPalette restores the body default and authored destinations (`23b86438`).
+  A live move preserves the active query, focus, and native modality.
+  The shared anchored control lookup falls back inline for malformed or self-referential
+  destinations (`d333261f`).
+- Historical DatePicker displays and submits only the host-accepted model (`67accda2`). In
+  both adapters, the DataTable guide spans the table body during resize (`ca385dde`). Pointer
+  checks confirmed the guide in LTR and RTL and verified that the active marker clears on release.
+- The shared document foundation follows system and explicit light or dark preferences for
+  native controls (`27b60bfe`). Pinned Chrome inspected all six historical and starting Vue
+  showcase routes at 390 and 1280 px. The CodeBlock replay now keeps all 20 examples and
+  preserves the long sample's scroll position (`05eb5804`, `f1d36874`). At both widths the
+  heading uses the historical 23 px size and the first placeholder matches its 521 px height.
+  The route keeps its page-level heading and uses the shared compact replay control.
+- The renderer audit reproduced all 520 changed glyph pixels with exact `d9879116` on this
+  Mac and matched its 48 font-normalized PNGs byte for byte to each current adapter. The
+  capture lineage and older passing hosted job exclude a restoration regression and stale
+  fixture dimensions for the verified matrix. The precise text rasterization difference is
+  unresolved. [Stored visual renderer evidence](stored-visual-renderer.md)
+
+The full local browser matrix at `5cd4173b` passed 144 behavior runs and 362 adapter fixture
+pairs with no pixel or motion differences. It had zero script errors or overflow in 48 whole
+showcase frames. Compared with the historical showcase at the four-level RGB threshold, the
+largest changed areas were 3.50% in Vue and 3.44% in Vanilla. The same run captured all 96
+stored fixtures and matched the starting revision's local output byte for byte. The complete
+package gate also passed on that revision. Package and browser evidence lives at
+`/private/tmp/cmui-verify.ouEZHK` and `/private/tmp/cmui-browser-checkpoint.cfsizN`.
+
+The final product checkpoint is `23b86438378abd8394c7d40ed2b4bb9ae0cb7fd4`. All 20 clean package
+checks passed, including 973 cold tests, 181 accessibility cases, both production builds, and
+fresh npm, pnpm, and Yarn tarball installs. The production release audit found no vulnerabilities.
+The historical namespace meets the unchanged 82,944-byte gzip limit. The exact package archive
+is `/private/tmp/cmui-verify.kD2jpO`.
+
+The final modal changes passed 22 focused behavior runs with equal motion, and 32 paired
+fixture and theme comparisons with zero differing pixels. On the production Core route, the
+historical palette accepted a query and returned focus to the launcher on Escape at both 390
+and 1280 px. All 96 strict local fixture captures matched the starting revision again. Compared
+with the stored set, each adapter has the same 44 of 48 differences and no missing images. The
+browser evidence is `/private/tmp/cmui-final-restoration-browser.skV7MI`.
+
+### Remaining compatibility differences
+
+- The original package names and raw preset engine remain in the archived releases. The new
+  paths preserve the component subpaths, browser styles, and Node loading conditions. Applications
+  can use shared token overrides for current Vue and Vanilla styles. Old `.vf-*` selectors and
+  theme tokens are tied to the archived component markup. [Migration guide](../migrate-from-vueforge.md)
+- MenuBar uses a compact in-flow layout and a wide inline cascade. The historical portal and
+  horizontal controls depend on a different layout strategy. An isolated hover and close-delay
+  trial passed its interaction tests. The combined implementation exceeded the unchanged
+  historical bundle limit, so the existing keyboard and click behavior remains in the release.
+- Native overlay dismissal, close animations, and some presentation details differ from the
+  reference. Native modal components use the top layer and manage focus immediately on close.
+  DatePicker uses native clock selects. DataTable restores reordering and its resize guide, with
+  current reorder motion. [Vue contract trace](historical-vue-core.md)
+
+The next external action for the **UNVERIFIED** hosted gate is to publish an authorized
+verification ref at the final SHA. Dispatch it with `gh workflow run ci.yml --ref <verification-ref>`.
+Confirm that the `visual` job checked out that SHA on `macos-26`. Record the runner image, pinned
+Chrome version and both strict comparisons against the existing stored images.
+[CI workflow](../../.github/workflows/ci.yml)
