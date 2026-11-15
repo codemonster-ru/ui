@@ -1,4 +1,5 @@
-export type CmInputType = 'text' | 'email' | 'password' | 'search' | 'tel' | 'url';
+export const cmInputTypes = ['text', 'email', 'number', 'password', 'search', 'tel', 'url'] as const;
+export type CmInputType = (typeof cmInputTypes)[number];
 export type CmInputSize = 'sm' | 'md' | 'lg';
 
 export interface CmInputProps {
@@ -14,4 +15,9 @@ export interface CmInputProps {
   clearLabel?: string;
   showPasswordLabel?: string;
   hidePasswordLabel?: string;
+}
+
+export interface VfInputProps extends CmInputProps {
+  leadingIcon?: string;
+  trailingIcon?: string;
 }
