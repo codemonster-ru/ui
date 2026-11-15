@@ -29,8 +29,8 @@ const props = withDefaults(
   },
 );
 const slots = defineSlots<{
-  default?(): unknown;
-  thumb?(props: { checked: boolean }): unknown;
+  default?: () => unknown;
+  thumb?: (props: { checked: boolean }) => unknown;
 }>();
 const attrs = useAttrs();
 const { resolvedTheme, setTheme, toggleTheme } = useCmTheme();

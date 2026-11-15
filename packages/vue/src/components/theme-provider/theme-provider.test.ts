@@ -27,7 +27,7 @@ function systemPreference() {
   vi.stubGlobal('matchMedia', () => media);
   return {
     media,
-    setDark(dark: boolean) {
+    setDark: (dark: boolean) => {
       matches = dark;
       media.addEventListener.mock.calls[0]?.[1]();
     },
