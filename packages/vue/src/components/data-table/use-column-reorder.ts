@@ -39,9 +39,50 @@ export function useDataTableColumnReorder(options: ReorderOptions) {
     return ['start', undefined, 'end'].flatMap((pin) => keys.filter((key) => columns.get(key)?.pinned === pin));
   });
   const preview = ref<string[]>();
+  const order = computed(() => preview.value ?? committed.value);
   const movingKey = ref<string>();
   const announcement = ref('');
+  const animations = new Map<HTMLElement, Animation>();
+  let table: HTMLTableElement | null = null;
+  let motionRevision = 0;
   let cancel: (() => void) | undefined;
+
+  function stopMotion(): void {
+    motionRevision++;
+    for (const animation of animations.values()) animation.cancel();
+    animations.clear();
+  }
+
+  watch(order, (next, previous) => {
+    const view = table?.ownerDocument.defaultView;
+    if (!table || !view || !options.enabled() || next.every((key, index) => key === previous[index])) return;
+    if (view.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return stopMotion();
+    const cells = table.querySelectorAll<HTMLElement>(':scope > :is(thead, tbody) > tr > :is(th, td)');
+    if (cells.length > 200) return stopMotion();
+    const positions = Array.from(cells, (cell) => cell.getBoundingClientRect().left);
+    const style = view.getComputedStyle(table);
+    const time = style.getPropertyValue('--cm-motion-duration-fast').trim();
+    const duration = Number.parseFloat(time) * (time.endsWith('ms') ? 1 : 1000);
+    const easing = style.getPropertyValue('--cm-motion-ease-standard').trim() || 'ease';
+    stopMotion();
+    const revision = motionRevision;
+    void nextTick(() => {
+      if (revision !== motionRevision) return;
+      cells.forEach((cell, index) => {
+        if (!cell.isConnected || !cell.animate) return;
+        const delta = positions[index] - cell.getBoundingClientRect().left;
+        if (Math.abs(delta) < 0.5) return;
+        const animation = cell.animate([{ translate: `${delta}px` }, { translate: '0px' }], {
+          duration: Number.isFinite(duration) ? duration : 220,
+          easing,
+        });
+        animations.set(cell, animation);
+        animation.onfinish = animation.oncancel = () => {
+          if (animations.get(cell) === animation) animations.delete(cell);
+        };
+      });
+    });
+  });
 
   function commit(next: string[], column: CmDataTableColumn, visible: readonly CmDataTableColumn[]): void {
     if (next.every((key, index) => key === committed.value[index])) return;
@@ -63,6 +104,7 @@ export function useDataTableColumnReorder(options: ReorderOptions) {
     const step = header.ownerDocument.defaultView?.getComputedStyle(header).direction === 'rtl' ? -delta : delta;
     const target = peers[peers.findIndex(({ key }) => key === column.key) + step];
     if (!target) return;
+    table = header.closest('table');
     event.preventDefault();
     commit(moveColumn(committed.value, column.key, target.key, step > 0), column, visible);
     preserveFocus(header);
@@ -78,6 +120,7 @@ export function useDataTableColumnReorder(options: ReorderOptions) {
     const group = visible.filter(({ pinned }) => pinned === column.pinned).map(({ key }) => key);
     const peers = new Set(group);
     if (peers.size < 2) return;
+    table = header.closest('table');
 
     const { pointerId, clientX: startX, clientY: startY } = event;
     const rect = header.getBoundingClientRect();
@@ -85,7 +128,7 @@ export function useDataTableColumnReorder(options: ReorderOptions) {
     const rtl = view.getComputedStyle(header).direction === 'rtl';
     const original = committed.value;
 
-    function move(event: PointerEvent): void {
+    const move = (event: PointerEvent): void => {
       if (event.pointerId !== pointerId) return;
       if (!movingKey.value && Math.hypot(event.clientX - startX, event.clientY - startY) < 4) return;
       if (event.cancelable) event.preventDefault();
@@ -93,7 +136,11 @@ export function useDataTableColumnReorder(options: ReorderOptions) {
       const center = event.clientX + centerOffset;
       const cells = Array.from(row.cells).filter((cell) => peers.has(cell.dataset.cmDataTableReorderColumn ?? ''));
       if (cells.length !== peers.size) return;
-      const bounds = cells.map((cell) => cell.getBoundingClientRect());
+      const bounds = cells.map((cell) => {
+        const { left, right } = cell.getBoundingClientRect();
+        const shift = animations.has(cell) ? Number.parseFloat(view.getComputedStyle(cell).translate) || 0 : 0;
+        return { left: left - shift, right: right - shift };
+      });
       const insertion = bounds.slice(0, -1).filter((left, index) => {
         const right = bounds[index + 1];
         return rtl ? center < (left.left + right.right) / 2 : center > (left.right + right.left) / 2;
@@ -109,7 +156,7 @@ export function useDataTableColumnReorder(options: ReorderOptions) {
       if (next.every((key, index) => key === order[index])) return;
       preview.value = next;
       preserveFocus(header);
-    }
+    };
 
     function end(event: PointerEvent): void {
       if (event.pointerId !== pointerId) return;
@@ -164,8 +211,18 @@ export function useDataTableColumnReorder(options: ReorderOptions) {
     };
   };
 
-  watch([committed, options.visibleKeys, options.enabled], () => cancel?.(), { deep: true });
-  onBeforeUnmount(() => cancel?.());
+  watch(
+    [committed, options.visibleKeys, options.enabled],
+    () => {
+      cancel?.();
+      if (!options.enabled()) stopMotion();
+    },
+    { deep: true },
+  );
+  onBeforeUnmount(() => {
+    cancel?.();
+    stopMotion();
+  });
 
-  return { order: computed(() => preview.value ?? committed.value), headerAttrs: attrs, announcement };
+  return { order, headerAttrs: attrs, announcement };
 }
