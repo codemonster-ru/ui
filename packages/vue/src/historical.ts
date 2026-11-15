@@ -1,3 +1,7 @@
+export { default as VfAlert } from './components/alert/VfAlert.vue';
+export type { VfAlertProps, VfAlertTone } from './components/alert/alert.types';
+export { default as VfAvatar } from './components/avatar/VfAvatar.vue';
+export type { VfAvatarProps } from './components/avatar/avatar.types';
 export { default as VueIconify } from './components/icon/VueIconify.vue';
 export type { VueIconifyProps } from './components/icon/icon.types';
 export { default as VfIconButton } from './components/icon-button/VfIconButton.vue';

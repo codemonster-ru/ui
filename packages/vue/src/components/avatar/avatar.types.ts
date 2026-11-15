@@ -8,3 +8,7 @@ export interface CmAvatarProps {
   size?: CmAvatarSize;
   shape?: CmAvatarShape;
 }
+
+export interface VfAvatarProps extends CmAvatarProps {
+  icon?: string;
+}

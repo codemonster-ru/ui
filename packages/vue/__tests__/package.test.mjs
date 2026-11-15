@@ -96,7 +96,16 @@ test('publishes the Vue component adapter entries', async () => {
 test('publishes the opt-in historical icon and Vue components', async () => {
   const entry = await import('@codemonster-ru/ui-vue/historical');
 
-  assert.deepEqual(Object.keys(entry), ['VfIconButton', 'VfInput', 'VfMenu', 'VfMenuItem', 'VfSelect', 'VueIconify']);
+  assert.deepEqual(Object.keys(entry), [
+    'VfAlert',
+    'VfAvatar',
+    'VfIconButton',
+    'VfInput',
+    'VfMenu',
+    'VfMenuItem',
+    'VfSelect',
+    'VueIconify',
+  ]);
   assert.match(await renderToString(h(entry.VfMenu, null, () => 'Actions')), /role="menu"[\s\S]*Actions/u);
   assert.match(await renderToString(h(entry.VueIconify)), /<svg[^>]+aria-hidden="true"/u);
   const button = await renderToString(
