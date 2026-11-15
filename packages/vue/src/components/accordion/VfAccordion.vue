@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { computed, ref, useId, watch } from 'vue';
+import { ref, watch } from 'vue';
+import { useDisclosure } from '../../composables/disclosure';
+import { useId } from '../../composables/id';
 import type { VfAccordionProps } from './accordion.types';
 
 const props = withDefaults(defineProps<VfAccordionProps>(), { open: undefined, title: undefined });
@@ -8,19 +10,18 @@ const slots = defineSlots<{
   trigger?(scope: { open: boolean }): unknown;
   default?(scope: { open: boolean }): unknown;
 }>();
-const id = useId();
+const triggerId = useId({ prefix: 'vf-accordion-trigger' });
+const panelId = useId({ prefix: 'vf-accordion-content' });
 const trigger = ref<HTMLButtonElement>();
 const region = ref<HTMLElement>();
-const localOpen = ref(props.defaultOpen);
-const isOpen = computed(() => props.open ?? localOpen.value);
-
-function toggle(): void {
-  if (props.disabled) return;
-  const next = !isOpen.value;
-  if (props.open === undefined) localOpen.value = next;
-  emit('update:open', next);
-  emit('openChange', next);
-}
+const { isOpen, toggle } = useDisclosure({
+  defaultOpen: props.defaultOpen,
+  open: () => props.open,
+  onOpenChange(open) {
+    emit('update:open', open);
+    emit('openChange', open);
+  },
+});
 
 watch(isOpen, (open) => {
   if (!open && region.value?.contains(region.value.ownerDocument.activeElement)) trigger.value?.focus();
@@ -31,25 +32,25 @@ watch(isOpen, (open) => {
   <section class="cm-accordion">
     <div class="cm-accordion__item">
       <button
-        :id="`${id}-trigger`"
+        :id="triggerId"
         ref="trigger"
         type="button"
         class="cm-accordion__trigger"
-        :aria-controls="`${id}-panel`"
+        :aria-controls="panelId"
         :aria-expanded="isOpen"
         :aria-label="!props.title && !slots.trigger ? 'Toggle section' : undefined"
         :disabled="props.disabled"
-        @click="toggle"
+        @click="!props.disabled && toggle()"
       >
         <slot name="trigger" :open="isOpen"
           ><span>{{ props.title }}</span></slot
         >
       </button>
       <div
-        :id="`${id}-panel`"
+        :id="panelId"
         ref="region"
         role="region"
-        :aria-labelledby="`${id}-trigger`"
+        :aria-labelledby="triggerId"
         :aria-hidden="!isOpen || undefined"
         :inert="!isOpen"
       >

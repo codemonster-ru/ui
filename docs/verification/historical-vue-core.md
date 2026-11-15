@@ -67,9 +67,11 @@ been restored in `packages/vue/src/async.ts`. It also exports `VueForgeCore`, `c
 `useDisclosure`, `useEscapeKey`, `useFloating`, `useFocusTrap`, `useId`, `useTableOfContents`,
 `useBreakpoint`, `useBreakpoints`, `useBreakpointValue` and `useScrollLock`. The current split
 keeps pure rules in `ui-runtime/core` and shared themes in `ui-tokens`, with no automatic Vue
-plugin registration. These boundaries require a separate export and consumer check. Historical
-component subpaths, auto-applied CSS, `critical.css`, CJS and theme entries cannot be inferred
-from the current root-only ESM Vue export.
+plugin registration. The opt-in Vue entry restores `useDisclosure`, reactive `useId` and
+`useTableOfContents`; `useTheme` is available from the Vue root. The historical Accordion uses
+the restored disclosure and ID functions, which were verified in source and packed SSR tests.
+Historical component subpaths, auto-applied CSS, `critical.css`, CJS, and theme entries are
+separate package contracts.
 
 ## Evidence and next executable tasks
 
