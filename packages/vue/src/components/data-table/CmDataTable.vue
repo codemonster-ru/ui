@@ -634,11 +634,7 @@ useCmHydrated();
                     <CmIcon :icon="chevronDown" />
                   </CmIconButton>
                 </td>
-                <td
-                  v-for="column in visibleColumns"
-                  :key="column.key"
-                  v-bind="cellAttrs(column)"
-                >
+                <td v-for="column in visibleColumns" :key="column.key" v-bind="cellAttrs(column)">
                   <slot
                     :name="`cell-${column.key}`"
                     :row="row"
