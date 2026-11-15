@@ -18,6 +18,7 @@ export interface CmModalBinding {
   onClose: () => void;
   onKeydown: (event: KeyboardEvent, allowEscape?: boolean) => void;
   setOpen: (open: boolean, restoreFocus?: boolean) => void;
+  restoreAfterMove: () => (() => void) | undefined;
 }
 
 export function useCmModal(
@@ -47,6 +48,26 @@ export function useCmModal(
     emitOpen(next);
   }
 
+  function enter(element: HTMLDialogElement): void {
+    releaseScroll = enterCmNativeModal(element, releaseScroll);
+    if (!releaseScroll) element.open = true;
+  }
+
+  function restoreAfterMove(): (() => void) | undefined {
+    const element = dialog.value;
+    if (!element || !localOpen.value) return;
+    const owner = element.ownerDocument;
+    const focused = owner.activeElement;
+    const HTMLElementConstructor = owner.defaultView?.HTMLElement;
+    return () => {
+      if (!localOpen.value || element !== dialog.value || !element.isConnected) return;
+      enter(element);
+      if (HTMLElementConstructor && focused instanceof HTMLElementConstructor && element.contains(focused)) {
+        focused.focus({ preventScroll: true });
+      }
+    };
+  }
+
   function synchronize(next: boolean, restoreFocus = true): void {
     const element = dialog.value;
     localOpen.value = next;
@@ -57,8 +78,7 @@ export function useCmModal(
       if (HTMLElementConstructor && active instanceof HTMLElementConstructor && !element.contains(active)) {
         returnFocus = active;
       }
-      releaseScroll = enterCmNativeModal(element, releaseScroll);
-      if (!releaseScroll) element.open = true;
+      enter(element);
       void nextTick(() => {
         if (!localOpen.value) return;
         (
@@ -117,5 +137,5 @@ export function useCmModal(
     }
   }
 
-  return { dialog, localOpen, onCancel, onClose, onKeydown, setOpen };
+  return { dialog, localOpen, onCancel, onClose, onKeydown, setOpen, restoreAfterMove };
 }

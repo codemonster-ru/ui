@@ -1,3 +1,5 @@
+import type { VfModalPortalProps } from '../modal/modal-portal';
+
 export type CmDrawerSide = 'start' | 'end' | 'left' | 'right' | 'top' | 'bottom';
 export type CmDrawerSize = 'sm' | 'md' | 'lg' | 'full';
 
@@ -25,7 +27,7 @@ export interface CmDrawerProps {
 }
 
 export type VfDrawerPlacement = Exclude<CmDrawerSide, 'start' | 'end'>;
-export interface VfDrawerProps extends Omit<CmDrawerProps, 'id' | 'side'> {
+export interface VfDrawerProps extends Omit<CmDrawerProps, 'id' | 'side'>, VfModalPortalProps {
   id?: string;
   placement?: VfDrawerPlacement;
 }
