@@ -14,17 +14,21 @@ migration, including behavioral or visual differences. Do not claim parity from 
 | Status | Work and acceptance evidence |
 | --- | --- |
 | DONE | Repository preflight: clean tree, both commits present, npm workspaces and eight CI jobs inspected. |
-| IN PROGRESS | [Vue core contract trace](historical-vue-core.md) inventories the 46 historical components. Initial compositions and variants (`0fb58ad8`), Link routing (`72dc5ceb`), and DataTable slots, selection, expansion and loading (`0b8ecc8d`, `2fafc9cf`) passed targeted checks. Continue DatePicker and remaining API gaps from the trace. |
+| IN PROGRESS | [Vue core contract trace](historical-vue-core.md) inventories the 46 historical components. Initial compositions and variants (`0fb58ad8`), Link routing (`72dc5ceb`), and DataTable slots, selection, expansion and loading (`0b8ecc8d`, `2fafc9cf`) passed targeted checks. Continue raw DataTable rows, historical Switch and the remaining API gaps in the trace. |
 | IN PROGRESS | [Layout and icon trace](historical-vue-ecosystem.md) records shell, icon and static layout restoration (`172297ec`, `f6781197`). The Vue theme provider and switch variants (`a235eb36`) passed 10 focused tests, including SSR and cross-tab storage. Check final package entry points and remaining composables against the reference. |
 | DONE | Restored the Playground section through the historical published releases (`vueforge-playground@3.0.1`, runtime `2.1.0`, Vite plugin `1.0.0`). The private showcase builds against real package entry points. Chrome verified both script-sandboxed frames, the direct Vue preview, both Vite modules, source tabs, console output, theme and mobile width. |
 | DONE | Restored the CodeBlock section with the published `vueforge-codeblock@4.0.1` package and all 20 historical examples. Vue showcase lint, typecheck, and production build passed. Chrome verified the direct route at 390 px, highlighting, 1,000 line numbers, copy, dark theme, and loading replay. |
 | IN PROGRESS | [Vanilla contract trace](historical-vanilla.md) records CSS and controller coverage. Standalone packed CSS-only and CSS+JS npm consumers passed without resolving any framework. Check missing contracts and repeat final consumer verification. |
 | DONE | Added the Vanilla ColumnChooser enhancement and its contract trace. Runtime checks passed 209 tests. Chromium verified default light and dark visual parity with Vue and both chooser behavior scenarios. |
+| DONE | Restored `VfDataTableColumnChooser` with its gear trigger, authored trigger scope, body portal, and ordered model updates (`679b43e5`). All 49 built package/canonical/behavior tests passed. Pinned Chrome passed six behavior runs and exact light/dark fixtures in both adapters; production Vue passed 390 and 1280 px keyboard, focus and table visibility checks. |
 | DONE | Fixed Vanilla runtime observation of transient removals, cross-root moves and attribute changes. Runtime lint, typecheck, build and 206 tests passed on Node 24. |
+| DONE | Fixed mixed-page ownership during SSR hydration in Vue and standalone Vanilla (`f647d6a6`), scoped nested HTML shell controls (`c8db7e48`), and returned focus when an open Vue modal unmounts (`4693aab3`). Pinned Chrome exercised hydration handoff, nested Escape and modal teardown. |
+| DONE | Added a [standalone Vanilla CodeBlock recipe](../recipes/code-block.md) with semantic no-script output and optional copy feedback (`d26e3cb0`). Three enhancement tests and the Vanilla build passed. The Chrome check covered light/dark, 390/1280 px, keyboard scrolling and clipboard responses stubbed at the browser API boundary. |
 | IN PROGRESS | Vanilla table of contents (`7f5c3bbe`), GroupBox (`f6781197`), native Input clear/reset (`217155af`), and disabled selection form submission (`27ccb81b`) passed targeted interaction and form checks. Add remaining portable contracts. |
 | IN PROGRESS | Build the exact historical reference in isolation, compare both themes and viewports against the current showcases, and investigate visual differences. |
 | DONE | The shared showcase shell and native composition demos built and passed the Chrome interaction check. It exercised mobile navigation, keyboard theme toggling and persistence in both adapters, and Vue confirmation focus restoration, GroupBox and SkeletonGate. |
 | DONE | Restored DatePicker keyboard, locale, multiple/range selection, native reset, month/year precision, and timezone-free minute selection in both adapters (`5b3f5403`, `454f9d0b`, `b86bd276`, `9fa2361a`, `e53dc22f`). Added calendar portals and placement (`6fd91b5f`). Chrome exercised selection, pagination, focus, clock bounds and value serialization. |
+| DONE | Exposed `VfDatePicker` with the historical locale, Monday-first calendar and body portal defaults (`62df67a1`). Focused Vue, native-picker and built SSR/advanced input tests passed. The trace records differences in post-selection display, native time inputs and scoped Field IDs. |
 | DONE | Restored top/bottom Drawer, native open/close synchronization, ProgressBar stripes and height, and Field floating labels (`f6bfddf7`, `55a5f7c2`, `0916b9cc`, `3c3057c9`). Chrome exercised both adapters, including backdrop modality, Escape, native dialog form close, reduced motion and label focus. |
 | DONE | Restored NavMenu and MenuBar pills plus MenuBar roving focus (`823edcaa`). Their paired light/dark browser fixture screenshots matched exactly; both adapters passed the expanded keyboard and selection scenarios. |
 | DONE | Restored Dropdown pills and scoped actions (`2a104970`), IconButton tones and name-based icons (`4d3850a1`), historical Input and Select (`79bd0800`, `4334b223`), and authored Tooltip triggers, delays and portals (`f26a5679`). Chrome checked canonical contracts, Select portal geometry, resize, and native dialog focus, and Tooltip focus and Escape in both adapters. |
@@ -41,6 +45,7 @@ migration, including behavioral or visual differences. Do not claim parity from 
 | DONE | Restored Dialog and Drawer initial state, naming and dismissal independently. Drawer adds fixed physical sides in RTL and LTR plus offset and padding. Both adapters passed all four native geometry/dismissal runs, six pinned behavior runs, and eight exact paired screenshots. |
 | DONE | Restored Tabs custom IDs and scoped content (`1cb29a1f`), NavMenu named icons and compact mode (`62c48b06`), and DataTable column pinning (`06d2ca4a`). Chrome checked panel focus, compact accessible names, and sticky geometry after scrolling and resize at 390 px. |
 | DONE | Aligned Vue Layouts with the shared guide (`f47727a5`): changed pixels against the pinned historical views fell from 11.96–18.05% to 1.09–3.20%. Controls and responsive previews passed at both widths and in both themes. |
+| DONE | Restored the Vue showcase's narrow navigation controls without shifting content when the system draws scrollbars. Shortened the shared Colors introduction to restore its mobile text rhythm. Pinned Chrome passed overflow, active-route and keyboard checks at 390 and 1280 px. |
 | IN PROGRESS | Run package checks, lint, type checks, tests, browser behavior and accessibility checks, production builds, and fresh packed consumers. See the exact snapshots below. |
 | IN PROGRESS | The independent review verified dependency direction and reproduced native close and form reset integration defects. Those fixes were verified separately. Review the final committed candidate and reconcile remaining historical contract and visual gaps. |
 | TODO | Finish the acceptance report and verify that all assignment edits are committed and the tree is clean. |
@@ -80,6 +85,16 @@ first palette at both sizes and in both themes. Changed-pixel ratios were 3.62�
 and 0.89–0.95% at 1280 px across both adapters, down from 22.84–22.95% and 6.42–6.51%.
 The product name, mobile top bar and related copy remain visible differences. See
 `/private/tmp/cmui-acceptance.Uyf8RO/{colors-before,colors-built}`.
+
+The pinned browser with classic scrollbars exposed an 11 px height increase in Vue's narrow
+navigation, and the longer Colors text wrapped to an extra line. The 48 captures before and
+after those fixes used the same capture settings; neither run reported script errors or
+horizontal page overflow. Across 16 comparisons per adapter at threshold 4, Vue's mean fell
+from 13.20% to 1.91% (worst frame: 36.01% to 3.50%), and Vanilla's fell from 3.98% to 1.86%
+(worst: 20.67% to 3.44%). All frames still have nonzero differences. Viewport evidence:
+`/private/tmp/cmui-browser-checkpoint.7GfdFS/showcase` and
+`/private/tmp/cmui-browser-checkpoint.Acuv2H/showcase`. The Vue navigation keyboard log is
+`/private/tmp/cmui-shell-mobile-smoke.log`.
 
 ## Verification checkpoints
 

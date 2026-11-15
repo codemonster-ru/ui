@@ -14,10 +14,10 @@ import { iconIntro, renderOperations } from '../../shared/showcase-reference.mts
 import { actionMatrices, buttonMatrices } from '../../shared/showcase-matrices.mts';
 import type { CmButtonProps, CmIconButtonProps, CmLinkProps } from '@codemonster-ru/ui-vue';
 import typography from '../../shared/showcase-typography.html?raw';
-import { defineAsyncComponent, nextTick, onUnmounted, ref, type Component } from 'vue';
+import { defineAsyncComponent, nextTick, onMounted, onUnmounted, ref, type Component } from 'vue';
 import { CmRuntime, createCmTabsController } from '@codemonster-ru/ui-runtime';
 import { mountOperations } from '../../shared/showcase-reference.js';
-import { gear, moon, sun } from '@codemonster-ru/ui-icons';
+import { chevronRight, gear, moon, sun } from '@codemonster-ru/ui-icons';
 import LayoutShowcase from './LayoutShowcase.vue';
 import { CmButton, CmIcon, CmIconButton, CmLink, useCmTheme } from '@codemonster-ru/ui-vue';
 
@@ -71,6 +71,50 @@ onUnmounted(() => {
 });
 
 const currentPage = pages.find(({ id }) => location.pathname.split('/')[1] === id)?.id ?? 'core';
+const navigation = ref<HTMLElement>();
+const navigationEdges = ref({ start: false, end: false });
+let navigationResize: ResizeObserver | undefined;
+
+function updateNavigationEdges(): void {
+  const viewport = navigation.value;
+  const first = viewport?.querySelector('li:first-child');
+  const last = viewport?.querySelector('li:last-child');
+  if (!viewport || !first || !last) return;
+  const isRtl = viewport.matches(':dir(rtl)');
+  const bounds = viewport.getBoundingClientRect();
+  const start = first.getBoundingClientRect();
+  const end = last.getBoundingClientRect();
+  navigationEdges.value = {
+    start: isRtl ? start.right - bounds.right > 1 : bounds.left - start.left > 1,
+    end: isRtl ? bounds.left - end.left > 1 : end.right - bounds.right > 1,
+  };
+}
+
+function scrollNavigation(edge: 'start' | 'end', event: MouseEvent): void {
+  const viewport = navigation.value;
+  if (!viewport) return;
+  const direction = (edge === 'start' ? -1 : 1) * (viewport.matches(':dir(rtl)') ? -1 : 1);
+  viewport.scrollBy({ left: direction * viewport.clientWidth * 0.75 });
+  updateNavigationEdges();
+  if (!navigationEdges.value[edge] && event.currentTarget === document.activeElement) {
+    viewport
+      .querySelector<HTMLElement>(`li:${edge === 'start' ? 'first' : 'last'}-child a`)
+      ?.focus({ preventScroll: true });
+  }
+}
+
+onMounted(() => {
+  const viewport = navigation.value;
+  const list = viewport?.querySelector('ul');
+  if (!viewport || !list) return;
+  viewport.querySelector('[aria-current="page"]')?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  updateNavigationEdges();
+  navigationResize = new ResizeObserver(updateNavigationEdges);
+  navigationResize.observe(viewport);
+  navigationResize.observe(list);
+});
+onUnmounted(() => navigationResize?.disconnect());
+
 const buttonExamples = buttonMatrices as Record<
   string,
   Record<string, (Pick<CmButtonProps, 'variant' | 'size' | 'disabled' | 'loading'> & { label: string })[]>
@@ -89,14 +133,41 @@ const { theme: themeMode, resolvedTheme, setTheme: selectTheme, toggleTheme } = 
   <header class="showcase-topbar">
     <div class="showcase-header">
       <a class="showcase-brand" href="/core/">CodeMonster UI · Vue</a>
-      <nav class="showcase-navigation" aria-label="Showcase sections">
-        <ul>
-          <li v-for="page in pages" :key="page.id">
-            <a :href="`/${page.id}/`" :aria-current="currentPage === page.id ? 'page' : undefined">
-              {{ page.label }}
-            </a>
-          </li>
-        </ul>
+      <nav class="showcase-navigation showcase-navigation--scrollable" aria-label="Showcase sections">
+        <button
+          v-show="navigationEdges.start"
+          class="showcase-navigation__scroll showcase-navigation__scroll--start"
+          type="button"
+          aria-label="Scroll to earlier sections"
+          aria-controls="showcase-sections"
+          @click="scrollNavigation('start', $event)"
+        >
+          <CmIcon :icon="chevronRight" :size="12" />
+        </button>
+        <div
+          id="showcase-sections"
+          ref="navigation"
+          class="showcase-navigation__viewport"
+          @scroll.passive="updateNavigationEdges"
+        >
+          <ul>
+            <li v-for="page in pages" :key="page.id">
+              <a :href="`/${page.id}/`" :aria-current="currentPage === page.id ? 'page' : undefined">
+                {{ page.label }}
+              </a>
+            </li>
+          </ul>
+        </div>
+        <button
+          v-show="navigationEdges.end"
+          class="showcase-navigation__scroll showcase-navigation__scroll--end"
+          type="button"
+          aria-label="Scroll to later sections"
+          aria-controls="showcase-sections"
+          @click="scrollNavigation('end', $event)"
+        >
+          <CmIcon :icon="chevronRight" :size="12" />
+        </button>
       </nav>
       <CmIconButton class="showcase-theme" label="Toggle color theme" variant="secondary" @click="toggleTheme">
         <CmIcon :icon="resolvedTheme === 'dark' ? moon : sun" />
