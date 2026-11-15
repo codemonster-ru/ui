@@ -84,6 +84,66 @@ it('restores sort models, client sorting, omitted headers, and one-based paging 
   }
 });
 
+it('uses historical action labels for displayed rows and the next column action', async () => {
+  const table = mount(VfDataTable, {
+    props: {
+      columns: [{ key: 'name', header: 'Customer', sortable: true }, { key: 'score' }],
+      rows: [
+        { id: 1, name: 'Zoe', score: 7 },
+        { id: 2, name: 'Ada', score: 6 },
+        { id: 3, name: 'Kim', score: 9 },
+      ],
+      rowKey: 'id',
+      selectable: true,
+      resizableColumns: true,
+      pagination: true,
+      defaultPageSize: 2,
+      labels: {
+        selectRow: (index) => `Check record ${index}`,
+        expandRow: (index) => `Show record ${index}`,
+        collapseRow: (index) => `Hide record ${index}`,
+        sortAscending: (column) => `First to last: ${column}`,
+        sortDescending: (column) => `Last to first: ${column}`,
+        clearSort: (column) => `Reset order: ${column}`,
+        resizeColumn: (column) => `Change width: ${column}`,
+      },
+    },
+    slots: { 'expanded-row': ({ rowKey }) => `Details for ${rowKey}` },
+  });
+
+  try {
+    const rows = () => table.findAll('[data-cm-data-table-row]');
+    const sort = () => table.get('[data-cm-data-table-sort="name"]');
+    const expand = () => rows()[1].get('[data-cm-data-table-expand]');
+    expect(rows()[1].get('input').attributes('aria-label')).toBe('Check record 2');
+    expect(expand().attributes('aria-label')).toBe('Show record 2');
+    await expand().trigger('click');
+    expect(expand().attributes('aria-label')).toBe('Hide record 2');
+    expect(table.get('.cm-data-table__expanded-row').text()).toBe('Details for 2');
+    expect(table.get('[role="separator"]').attributes('aria-label')).toBe('Change width: Customer');
+    expect(sort().attributes('aria-label')).toBe('First to last: Customer');
+    await sort().trigger('click');
+    expect(sort().attributes('aria-label')).toBe('Last to first: Customer');
+    expect(rows()[0].text()).toBe('Ada6');
+    expect(rows()[0].get('input').attributes('aria-label')).toBe('Check record 1');
+    await sort().trigger('click');
+    expect(sort().attributes('aria-label')).toBe('Reset order: Customer');
+    await sort().trigger('click');
+    expect(sort().attributes('aria-label')).toBe('First to last: Customer');
+    await table.get('[data-cm-data-table-page-action="next"]').trigger('click');
+    expect(rows()).toHaveLength(1);
+    expect(rows()[0].text()).toBe('Kim9');
+    expect(rows()[0].get('input').attributes('aria-label')).toBe('Check record 1');
+
+    await table.setProps({ labels: { selectRow: (index) => `Mark ${index}` } });
+    expect(rows()[0].get('input').attributes('aria-label')).toBe('Mark 1');
+    expect(rows()[0].get('[data-cm-data-table-expand]').attributes('aria-label')).toBe('Expand row 1');
+    expect(sort().attributes('aria-label')).toBe('Sort Customer ascending');
+  } finally {
+    table.unmount();
+  }
+});
+
 it('shows the exact numbered ranges and preserves a focused page across changes', async () => {
   const table = mount(VfDataTable, {
     attachTo: document.body,

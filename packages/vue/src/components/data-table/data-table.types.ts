@@ -47,6 +47,16 @@ export interface CmDataTableSort {
   direction: CmDataTableSortDirection;
 }
 
+export interface CmDataTableActionLabels {
+  selectRow?: (rowIndex: number) => string;
+  expandRow?: (rowIndex: number) => string;
+  collapseRow?: (rowIndex: number) => string;
+  sortAscending?: (column: string) => string;
+  sortDescending?: (column: string) => string;
+  clearSort?: (column: string) => string;
+  resizeColumn?: (column: string) => string;
+}
+
 export interface CmDataTableProps<Row extends object = CmDataTableRow> {
   id: string;
   columns: readonly CmDataTableColumn[];
@@ -68,6 +78,7 @@ export interface CmDataTableProps<Row extends object = CmDataTableRow> {
   selectedRowIds?: readonly string[];
   controlledSelection?: boolean;
   rowLabelResolver?: (rowIndex: number) => string;
+  actionLabels?: CmDataTableActionLabels;
   expandedRowKeys?: readonly string[] | null;
   defaultExpandedRowKeys?: readonly string[];
   expandRowLabelTemplate?: string;

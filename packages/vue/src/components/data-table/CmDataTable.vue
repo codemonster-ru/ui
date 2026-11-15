@@ -37,6 +37,7 @@ import CmProgressSpinner from '../progress-spinner/CmProgressSpinner.vue';
 import CmSkeleton from '../skeleton/CmSkeleton.vue';
 import { tableRowField } from './row-field';
 import type {
+  CmDataTableActionLabels,
   CmDataTableCellValue,
   CmDataTableColumn,
   CmDataTableColumnWidths,
@@ -82,6 +83,7 @@ const props = defineProps({
   selectedRowIds: { type: Array as PropType<readonly string[]>, default: () => [] },
   controlledSelection: Boolean,
   rowLabelResolver: { type: Function as PropType<(rowIndex: number) => string>, default: undefined },
+  actionLabels: { type: Object as PropType<CmDataTableActionLabels>, default: undefined },
   expandedRowKeys: { type: Array as PropType<readonly string[] | null>, default: null },
   defaultExpandedRowKeys: { type: Array as PropType<readonly string[]>, default: () => [] },
   sort: { type: Object as PropType<CmDataTableSort | null>, default: null },
@@ -683,10 +685,21 @@ function toggleExpandedRow(id: string): void {
   emit('update:expandedRowKeys', keys);
 }
 
+function selectionLabel(id: string, index: number): string {
+  return (
+    props.actionLabels?.selectRow?.(index + 1) ??
+    formatTemplate(props.selectRowLabelTemplate, { row: rowLabel(id, index) })
+  );
+}
+
 function expansionLabel(id: string, expanded: boolean, index: number): string {
-  return formatTemplate(expanded ? props.collapseRowLabelTemplate : props.expandRowLabelTemplate, {
-    row: rowLabel(id, index),
-  });
+  const label = expanded ? props.actionLabels?.collapseRow : props.actionLabels?.expandRow;
+  return (
+    label?.(index + 1) ??
+    formatTemplate(expanded ? props.collapseRowLabelTemplate : props.expandRowLabelTemplate, {
+      row: rowLabel(id, index),
+    })
+  );
 }
 
 function expansionSlot(): 'expanded-row' | 'expandedRow' | undefined {
@@ -711,15 +724,23 @@ function expandedContentId(id: string): string {
 
 function sortLabel(column: CmDataTableColumn): string {
   const entry = sortOrder.value.get(column.key);
+  const action = sortLabelFor(entry?.sort ?? null, column.key);
+  const labels = props.actionLabels;
+  const label = {
+    ascending: labels?.sortAscending,
+    clear: labels?.clearSort,
+    descending: labels?.sortDescending,
+  }[action]?.(column.header);
+  if (label !== undefined) return label;
   const template = {
     ascending: props.sortAscendingLabelTemplate,
     clear: props.clearSortLabelTemplate,
     descending: props.sortDescendingLabelTemplate,
-  }[sortLabelFor(entry?.sort ?? null, column.key)];
-  const action = formatTemplate(template, { column: column.header });
+  }[action];
+  const fallback = formatTemplate(template, { column: column.header });
   return activeSort.value.length > 1 && entry
-    ? `${action}, sorted ${entry.sort.direction}, priority ${entry.priority}`
-    : action;
+    ? `${fallback}, sorted ${entry.sort.direction}, priority ${entry.priority}`
+    : fallback;
 }
 
 function columnAriaSort(column: CmDataTableColumn): CmDataTableSortDirection | 'none' {
@@ -863,7 +884,10 @@ useCmHydrated();
                 class="cm-data-table__column-resizer"
                 role="separator"
                 aria-orientation="vertical"
-                :aria-label="formatTemplate(props.resizeColumnLabelTemplate, { column: column.header })"
+                :aria-label="
+                  props.actionLabels?.resizeColumn?.(column.header) ??
+                  formatTemplate(props.resizeColumnLabelTemplate, { column: column.header })
+                "
                 :aria-valuemin="resizeValues[column.key]?.minimum"
                 :aria-valuemax="resizeValues[column.key]?.maximum"
                 :aria-valuenow="resizeValues[column.key]?.value ?? 0"
@@ -909,7 +933,7 @@ useCmHydrated();
                 <td v-if="props.selectable" class="cm-data-table__selection">
                   <input
                     type="checkbox"
-                    :aria-label="formatTemplate(props.selectRowLabelTemplate, { row: rowLabel(row.id, rowIndex) })"
+                    :aria-label="selectionLabel(row.id, rowIndex)"
                     :value="row.id"
                     :checked="selectedIds.has(row.id)"
                     :disabled="!enabledIds.has(row.id)"
