@@ -45,6 +45,7 @@ type ModelValue = CmDatePickerValue<Multiple, Range>;
 const props = defineProps({
   id: { type: String, required: true },
   modelValue: { type: [String, Array] as unknown as PropType<ModelValue>, default: '' },
+  controlledValue: Boolean,
   multiple: Boolean as PropType<Multiple>,
   range: Boolean as PropType<Range>,
   monthPicker: Boolean,
@@ -166,6 +167,8 @@ watch(
     const next = normalizeValues(value);
     if (currentPrecision === previousPrecision && time === previousTime && datesMatch(next, currentDates.value)) return;
     currentDates.value = next;
+    if (props.controlledValue && isOpen.value && currentPrecision === previousPrecision && time === previousTime)
+      return;
     if (firstDate.value !== '' || currentPrecision !== previousPrecision) {
       const calendar = calendarRef.value;
       const focusInCalendar = Boolean(calendar?.contains(calendar.ownerDocument.activeElement));
@@ -326,7 +329,7 @@ function reportValue(dates: string[]): void {
 }
 
 function commit(dates: string[]): void {
-  currentDates.value = dates;
+  if (!props.controlledValue) currentDates.value = dates;
   reportValue(dates);
 }
 

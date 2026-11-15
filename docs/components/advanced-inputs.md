@@ -165,7 +165,8 @@ Intl locale, Monday week start, and body portal defaults. It can generate the tr
 `displayFormat`, `firstDayOfWeek`, and `teleportTo` override the defaults. For matching server
 and browser output across different runtime locales, pass the same `locale` explicitly.
 
-The wrapper uses the native DatePicker's immediate selection display and native hour and minute
+The selected value and submitted form fields follow the supplied `modelValue`. Handle
+`update:modelValue` or bind `v-model` to apply a selection. The clock uses native hour and minute
 selects. To connect it to Field, pass the scoped `controlId` as the trigger `id`.
 When Field uses `label-placement="floating"`, its label raises while focused, open, or filled.
 This includes calendars portaled outside the Field.
