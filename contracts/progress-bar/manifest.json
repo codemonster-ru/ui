@@ -4,11 +4,14 @@
   "slug": "progress-bar",
   "description": "A labelled linear indicator for determinate or indeterminate progress.",
   "props": {
-    "label": { "type": "string", "required": true },
+    "label": { "type": "string", "required": false, "default": "Progress" },
     "value": { "type": "number", "required": false, "default": 0 },
     "max": { "type": "number", "required": false, "default": 100 },
     "indeterminate": { "type": "boolean", "required": false, "default": false },
     "showValue": { "type": "boolean", "required": false, "default": false },
+    "height": { "type": "nullable-css-length", "required": false, "default": null },
+    "striped": { "type": "boolean", "required": false, "default": false },
+    "animated": { "type": "boolean", "required": false, "default": false },
     "tone": {
       "type": "enum",
       "required": false,

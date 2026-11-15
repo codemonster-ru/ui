@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "progress-bar-striped",
+  "description": "A striped determinate bar with animated stripes and a custom height.",
+  "props": {
+    "label": "Installing modules",
+    "value": 64,
+    "height": 16,
+    "striped": true,
+    "animated": true,
+    "showValue": true
+  },
+  "slots": {}
+}

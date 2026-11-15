@@ -152,4 +152,8 @@
     transition: none;
     animation: none;
   }
+
+  .cm-progress-bar--indeterminate .cm-progress-bar__value::before {
+    inset-inline: 0 70%;
+  }
 }

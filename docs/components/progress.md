@@ -4,14 +4,20 @@
 
 ## Progress bar
 
-Use `CmProgressBar` for a bounded task with a known value, or set `indeterminate` while the total is unknown. `label` is required and must describe the task rather than repeat its numeric value.
+Use `CmProgressBar` (also `VfProgressBar`) for a bounded task with a known value, or set `indeterminate` while the total is unknown. Supply a task-specific `label` when the default name, “Progress,” would be ambiguous.
 
 ```html
 <CmProgressBar label="Uploading report" :value="42" :max="100" show-value />
 <CmProgressBar label="Synchronizing account" indeterminate tone="warning" />
+<CmProgressBar label="Installing modules" :value="64" :height="16" striped animated show-value />
 ```
 
 Vanilla markup: [progress-bar HTML](../../contracts/progress-bar/cases/determinate.html).
+
+The [striped HTML case](../../contracts/progress-bar/cases/striped.html) uses
+`--cm-progress-bar-height`, `cm-progress-bar--striped`, and `cm-progress-bar--animated`.
+Animation applies only to the striped style. Reduced motion stops the stripes and keeps an
+indeterminate bar visible with a stationary fill.
 
 The component clamps finite `value` input to `0..max`. An invalid or non-positive `max` falls back to `100`. Determinate bars render `aria-valuemin`, `aria-valuemax`, and `aria-valuenow`; indeterminate bars deliberately omit all three. `showValue` renders a rounded percentage only for determinate progress.
 

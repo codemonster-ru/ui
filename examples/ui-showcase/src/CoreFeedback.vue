@@ -125,23 +125,15 @@ onUnmounted(() => clearInterval(timer));
     <div class="core-matrix-cell">
       <h4>Progress bar</h4>
       <CmProgressBar label="Import progress" :value="42" />
-      <CmProgressBar class="core-progress-roomy" label="Step progress" :value="7" :max="12" show-value />
+      <CmProgressBar :height="16" label="Step progress" :value="7" :max="12" show-value />
 
-      <CmProgressBar class="core-progress-roomy" label="Dynamic progress" :value="progress" show-value tone="success" />
+      <CmProgressBar :height="16" label="Dynamic progress" :value="progress" show-value tone="success" />
+      <CmProgressBar :height="16" striped label="Striped progress" :value="64" tone="info" />
+      <CmProgressBar :height="16" striped animated label="Animated striped progress" :value="64" tone="info" />
       <CmProgressBar
-        class="core-progress-roomy cm-progress-bar--striped"
-        label="Striped progress"
-        :value="64"
-        tone="info"
-      />
-      <CmProgressBar
-        class="core-progress-roomy cm-progress-bar--striped cm-progress-bar--animated"
-        label="Animated striped progress"
-        :value="64"
-        tone="info"
-      />
-      <CmProgressBar
-        class="core-progress-roomy cm-progress-bar--striped cm-progress-bar--animated"
+        :height="16"
+        striped
+        animated
         label="Installing module progress"
         :value="progress"
         tone="info"

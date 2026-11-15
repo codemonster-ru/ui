@@ -659,10 +659,6 @@
   cursor: pointer;
 }
 
-.showcase-core .core-progress-roomy {
-  --cm-progress-bar-height: 1rem;
-}
-
 .core-floating-field {
   position: relative;
   padding-block-start: var(--cm-space-2);
