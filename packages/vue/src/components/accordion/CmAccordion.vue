@@ -79,14 +79,15 @@ function toggle(item: CmAccordionItem): void {
 function moveFocus(event: KeyboardEvent): void {
   const root = event.currentTarget as HTMLElement;
   const trigger = (event.target as HTMLElement).closest<HTMLButtonElement>('.cm-accordion__trigger');
-  const currentId = trigger?.closest<HTMLElement>('[data-cm-accordion-item]')?.dataset.cmAccordionItem;
+  if (trigger?.closest('.cm-accordion') !== root) return;
+  const currentId = trigger.closest('section')?.dataset.cmAccordionItem;
   if (currentId === undefined) return;
 
   const nextId = nextAccordionItem(normalizedItems.value, currentId, event.key);
   if (nextId === null) return;
 
   event.preventDefault();
-  root.querySelector<HTMLButtonElement>(`[data-cm-accordion-item="${nextId}"] .cm-accordion__trigger`)?.focus();
+  root.querySelector<HTMLButtonElement>(`:scope > [data-cm-accordion-item="${nextId}"] > h3 > button`)?.focus();
 }
 
 useCmHydrated();

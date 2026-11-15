@@ -5,10 +5,9 @@ import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes
 import { useCmHydrated } from '../../internal/hydration';
 import { assertCm } from '../../internal/warn';
 import { useCmModal } from '../modal/use-modal';
-import type { CmDrawerSide, CmDrawerSize } from './drawer.types';
+import { cmDrawerSides, cmDrawerSizes, type CmDrawerSide, type CmDrawerSize } from './drawer.types';
 
 defineOptions({ inheritAttrs: false });
-const sides: readonly CmDrawerSide[] = ['start', 'end', 'left', 'right', 'top', 'bottom'];
 const props = defineProps({
   id: { type: String, required: true },
   title: { type: String, default: undefined },
@@ -21,7 +20,7 @@ const props = defineProps({
   side: {
     type: String as PropType<CmDrawerSide>,
     default: 'end',
-    validator: (value: string) => ['start', 'end', 'left', 'right', 'top', 'bottom'].includes(value),
+    validator: (value: CmDrawerSide) => cmDrawerSides.includes(value),
   },
   closeLabel: { type: String, default: 'Close' },
   dismissible: { type: Boolean, default: true },
@@ -34,7 +33,7 @@ const props = defineProps({
   size: {
     type: String as PropType<CmDrawerSize>,
     default: 'md',
-    validator: (value: string) => ['sm', 'md', 'lg', 'full'].includes(value),
+    validator: (value: CmDrawerSize) => cmDrawerSizes.includes(value),
   },
   dividers: Boolean,
   rounded: Boolean,
@@ -50,8 +49,8 @@ assertCm(
   'Drawer id and closeLabel must be non-empty strings.',
 );
 assertCm(Boolean(hasHeading() || ariaLabel.value || explicitLabelledby.value), 'Drawer requires an accessible name.');
-const side = computed(() => (sides.includes(props.side) ? props.side : 'end'));
-const size = computed(() => (['sm', 'md', 'lg', 'full'].includes(props.size) ? props.size : 'md'));
+const side = computed(() => (cmDrawerSides.includes(props.side) ? props.side : 'end'));
+const size = computed(() => (cmDrawerSizes.includes(props.size) ? props.size : 'md'));
 const modal = useCmModal(
   () => props.open,
   (open) => {
@@ -86,19 +85,7 @@ function cssLength(value: string | number): string {
   return typeof value === 'number' ? `${value}px` : value;
 }
 const rootAttrs = computed(() => {
-  const forwarded = omitCmOwnedAttrs(attrs, [
-    'id',
-    'open',
-    'aria-label',
-    'aria-labelledby',
-    'aria-describedby',
-    'data-cm-controller',
-    'data-cm-drawer-state',
-    'data-cm-drawer-dismissible',
-    'data-cm-drawer-closable',
-    'data-cm-drawer-close-on-escape',
-    'data-cm-drawer-close-on-overlay-click',
-  ]);
+  const forwarded = omitCmOwnedAttrs(attrs, []);
   const style: CSSProperties = {};
   if (props.offsetTop !== undefined) style['--cm-drawer-offset-top'] = cssLength(props.offsetTop);
   if (props.bodyPadding !== undefined) style['--cm-drawer-body-padding'] = cssLength(props.bodyPadding);
@@ -111,9 +98,9 @@ useCmHydrated();
 
 <template>
   <dialog
-    :id="`${props.id}-drawer`"
     ref="dialog"
     v-bind="rootAttrs"
+    :id="`${props.id}-drawer`"
     :class="classes"
     :open="localOpen || undefined"
     :aria-label="ariaLabel"

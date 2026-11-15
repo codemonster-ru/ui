@@ -1,15 +1,11 @@
 <script setup lang="ts">
-import { resolveCmAnchoredTarget } from '@codemonster-ru/ui-runtime/anchored-position';
+import { observeCmAnchoredPosition, resolveCmAnchoredTarget } from '@codemonster-ru/ui-runtime/anchored-position';
+import { triggerNodes } from '../../internal/disclosure-trigger';
 import { useCmFloatingPaint } from '../../internal/floating-paint';
-import { autoUpdate, computePosition, flip, offset, shift } from '@codemonster-ru/floater.js';
 import {
-  Comment,
-  Fragment,
-  Text,
   cloneVNode,
   computed,
   h,
-  isVNode,
   onBeforeUnmount,
   ref,
   useAttrs,
@@ -18,7 +14,6 @@ import {
   watch,
   type FunctionalComponent,
   type PropType,
-  type VNode,
 } from 'vue';
 import { resolveTooltipDelay } from '@codemonster-ru/ui-runtime/core';
 
@@ -79,19 +74,8 @@ const portal = computed(() => (!props.disableTeleport ? props.teleportTo || null
 const painted = useCmFloatingPaint(visible, panelRef);
 const teleportTarget = computed(() => (painted.value ? resolveCmAnchoredTarget(root.value, portal.value) : null));
 
-function triggerChildren(children: VNode[]): VNode[] {
-  return children.flatMap((child) => {
-    if (child.type === Fragment && Array.isArray(child.children)) {
-      return triggerChildren(child.children.filter(isVNode));
-    }
-    if (child.type === Comment) return [];
-    if (child.type === Text && typeof child.children === 'string' && !child.children.trim()) return [];
-    return [child];
-  });
-}
-
 const CustomTrigger: FunctionalComponent<{ descriptionId?: string }> = ({ descriptionId }, { slots }) => {
-  const children = triggerChildren(slots.default?.() ?? []);
+  const children = triggerNodes(slots.default?.() ?? []);
   const child = children[0];
   const customAttrs = {
     class: 'cm-tooltip__trigger',
@@ -143,11 +127,14 @@ function hide(): void {
 }
 
 function onPointerEnter(): void {
+  if (hovered) return;
   hovered = true;
   show();
 }
 
-function onPointerLeave(): void {
+function onPointerLeave(event: PointerEvent): void {
+  const next = event.relatedTarget;
+  if (next instanceof Node && (root.value?.contains(next) || panelRef.value?.contains(next))) return;
   hovered = false;
   if (!focused) hide();
 }
@@ -164,11 +151,21 @@ function onFocusOut(event: FocusEvent): void {
 }
 
 function onKeydown(event: KeyboardEvent): void {
-  if (event.key !== 'Escape' || !hasTooltip() || (!visible.value && timer === undefined)) return;
+  if (event.isComposing || event.key !== 'Escape' || !hasTooltip() || (!visible.value && timer === undefined)) return;
   event.preventDefault();
   event.stopPropagation();
   hide();
 }
+
+watch([visible, root], ([open, element], _, onCleanup) => {
+  if (!open || !element) return;
+  const document = element.ownerDocument;
+  const onEscape = (event: KeyboardEvent): void => {
+    if (hovered && !event.isComposing && event.key === 'Escape' && !event.composedPath().includes(element)) hide();
+  };
+  document.addEventListener('keydown', onEscape, true);
+  onCleanup(() => document.removeEventListener('keydown', onEscape, true));
+});
 
 watch(
   [teleportTarget, panelRef, placement],
@@ -178,23 +175,10 @@ watch(
 
     const rtl = trigger.ownerDocument.defaultView?.getComputedStyle(trigger).direction === 'rtl';
     const direction = side === 'start' ? (rtl ? 'right' : 'left') : side === 'end' ? (rtl ? 'left' : 'right') : side;
-    const opposite = { top: 'bottom', bottom: 'top', left: 'right', right: 'left' } as const;
-    let active = true;
-    const place = (): void => {
-      void computePosition(trigger, panel, {
-        placement: direction,
-        strategy: 'fixed',
-        middleware: [offset(10), flip({ placements: [direction, opposite[direction]] }), shift()],
-      }).then(({ placement: resolvedSide, x, y }) => {
-        if (active) {
-          position.value = { side: resolvedSide, style: { left: `${x}px`, top: `${y}px` } };
-        }
-      });
-    };
-    const stop = autoUpdate(trigger, place, panel);
-    place();
+    const stop = observeCmAnchoredPosition(trigger, panel, direction, 10, null, ({ left, top }, resolvedSide) => {
+      position.value = { side: resolvedSide, style: { left, top } };
+    });
     onCleanup(() => {
-      active = false;
       stop();
       position.value = undefined;
     });
@@ -243,6 +227,8 @@ useCmHydrated();
         :hidden="!visible"
         :data-cm-tooltip-floating="teleportTarget ? (position?.side ?? '') : undefined"
         v-bind="position ? { style: position.style } : {}"
+        @pointerenter="onPointerEnter"
+        @pointerleave="onPointerLeave"
       >
         <slot name="content">{{ props.content ?? props.text }}</slot>
       </span>

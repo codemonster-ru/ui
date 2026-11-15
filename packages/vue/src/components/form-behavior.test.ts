@@ -1,8 +1,9 @@
 import { mount } from '@vue/test-utils';
-import { defineComponent, h, ref } from 'vue';
+import { defineComponent, h, nextTick, ref } from 'vue';
 import { describe, expect, it } from 'vitest';
 
 import CmCheckbox from './checkbox/CmCheckbox.vue';
+import CmInput from './input/CmInput.vue';
 import CmRadio from './radio/CmRadio.vue';
 import CmSwitch from './switch/CmSwitch.vue';
 import CmTextarea from './textarea/CmTextarea.vue';
@@ -15,6 +16,85 @@ const FormHarness = defineComponent({
 });
 
 describe('Vue native form behavior', () => {
+  it('resets values and models of native fields without reporting application input or change', async () => {
+    const title = ref('Original');
+    const notes = ref('Notes');
+    const checked = ref(true);
+    const enabled = ref(false);
+    const selected = ref('daily');
+    const invalid = ref(false);
+    const events: Event[] = [];
+    const wrapper = mount(
+      {
+        setup: () => () =>
+          h('form', [
+            h(CmInput, {
+              name: 'title',
+              modelValue: title.value,
+              invalid: invalid.value,
+              'onUpdate:modelValue': (value: string) => (title.value = value),
+              onInput: (event: Event) => events.push(event),
+            }),
+            h(CmTextarea, {
+              name: 'notes',
+              modelValue: notes.value,
+              'onUpdate:modelValue': (value: string) => (notes.value = value),
+            }),
+            h(CmCheckbox, {
+              name: 'checked',
+              modelValue: checked.value,
+              'onUpdate:modelValue': (value: boolean) => (checked.value = value),
+            }),
+            h(CmSwitch, {
+              name: 'enabled',
+              modelValue: enabled.value,
+              'onUpdate:modelValue': (value: boolean) => (enabled.value = value),
+              onChange: (event: Event) => events.push(event),
+            }),
+            ...['daily', 'weekly'].map((value) =>
+              h(CmRadio, {
+                name: 'frequency',
+                value,
+                modelValue: selected.value,
+                'onUpdate:modelValue': (next: string) => (selected.value = next),
+              }),
+            ),
+          ]),
+      },
+      { attachTo: document.body },
+    );
+    try {
+      const form = wrapper.get('form').element;
+      await wrapper.get('input[name="title"]').setValue('Edited');
+      await wrapper.get('textarea').setValue('Edited notes');
+      await wrapper.get('input[name="checked"]').setValue(false);
+      await wrapper.get('input[name="enabled"]').setValue(true);
+      await wrapper.get('input[value="weekly"]').setValue(true);
+      invalid.value = true;
+      await nextTick();
+      const eventCount = events.length;
+      form.reset();
+      expect(Object.fromEntries(new FormData(form))).toEqual({
+        title: 'Original',
+        notes: 'Notes',
+        checked: 'on',
+        frequency: 'daily',
+      });
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      expect([title.value, notes.value, checked.value, enabled.value, selected.value]).toEqual([
+        'Original',
+        'Notes',
+        true,
+        false,
+        'daily',
+      ]);
+      expect(wrapper.get('input[name="enabled"]').attributes('aria-checked')).toBe('false');
+      expect(events).toHaveLength(eventCount);
+    } finally {
+      wrapper.unmount();
+    }
+  });
+
   it('updates checkbox binding and successful form data after native activation', async () => {
     const selected = ref(false);
     const wrapper = mount(FormHarness, {

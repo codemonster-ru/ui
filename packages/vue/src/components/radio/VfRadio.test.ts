@@ -1,5 +1,6 @@
 import { mount } from '@vue/test-utils';
 import { expect, it } from 'vitest';
+import { h, ref } from 'vue';
 
 import VfRadio from './VfRadio.vue';
 
@@ -44,4 +45,39 @@ it('derives checked state before stringifying the native radio value', async () 
 
   await wrapper.setProps({ modelValue: 1 });
   expect(input.checked).toBe(true);
+});
+
+it('restores the original typed model on native reset without reporting a change', async () => {
+  const selected = ref<string | number>(1);
+  const changes: (string | number | boolean)[] = [];
+  const wrapper = mount(
+    {
+      setup: () => () =>
+        h(
+          'form',
+          [1, '1'].map((value, index) =>
+            h(VfRadio, {
+              value,
+              name: 'option',
+              id: `option-${index}`,
+              modelValue: selected.value,
+              'onUpdate:modelValue': (next: string | number | boolean) => (selected.value = next as string | number),
+              onChange: (next: string | number | boolean) => changes.push(next),
+            }),
+          ),
+        ),
+    },
+    { attachTo: document.body },
+  );
+  try {
+    await wrapper.get('#option-1').setValue(true);
+    expect(selected.value).toBe('1');
+    wrapper.get('form').element.reset();
+    expect(wrapper.get<HTMLInputElement>('#option-0').element.checked).toBe(true);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(selected.value).toBe(1);
+    expect(changes).toEqual(['1']);
+  } finally {
+    wrapper.unmount();
+  }
 });

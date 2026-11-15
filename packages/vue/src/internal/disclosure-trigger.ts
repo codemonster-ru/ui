@@ -23,7 +23,7 @@ interface TriggerProps {
   onTriggerKeydown?: (event: KeyboardEvent) => void;
 }
 
-function triggerNodes(nodes: readonly VNode[]): VNode[] {
+export function triggerNodes(nodes: readonly VNode[]): VNode[] {
   return nodes.flatMap((node) => {
     if (node.type === Fragment && Array.isArray(node.children)) return triggerNodes(node.children.filter(isVNode));
     if (node.type === Comment || (node.type === Text && typeof node.children === 'string' && !node.children.trim()))

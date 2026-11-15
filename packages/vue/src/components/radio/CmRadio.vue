@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, useAttrs, type PropType } from 'vue';
+import { computed, useAttrs, useTemplateRef, type PropType } from 'vue';
 
+import { useCmNativeFormReset } from '../../internal/form-reset';
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import type { CmRadioSize } from './radio.types';
 
@@ -25,6 +26,16 @@ const emit = defineEmits<{
   'update:modelValue': [value: string];
 }>();
 const attrs = useAttrs();
+const input = useTemplateRef<HTMLInputElement>('input');
+const initialValue = props.modelValue;
+const checked = computed(() => props.modelValue === props.value);
+useCmNativeFormReset(
+  input,
+  () => checked.value,
+  () => {
+    if (checked.value && initialValue !== undefined) emit('update:modelValue', initialValue);
+  },
+);
 const size = computed(() => (sizes.includes(props.size) ? props.size : 'md'));
 const classes = computed(() =>
   mergeCmClasses('cm-radio', `cm-radio--${size.value}`, props.invalid ? 'cm-radio--invalid' : undefined, attrs.class),
@@ -43,11 +54,12 @@ function selectValue(event: Event): void {
 <template>
   <label v-bind="rootAttrs" :class="classes">
     <input
+      ref="input"
       v-bind="controlAttrs"
       class="cm-radio__input"
       type="radio"
       :value="props.value"
-      :checked="props.modelValue === props.value"
+      :checked="checked"
       :disabled="props.disabled || undefined"
       :required="props.required || undefined"
       :aria-invalid="props.invalid ? 'true' : undefined"

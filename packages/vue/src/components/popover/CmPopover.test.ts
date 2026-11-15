@@ -4,6 +4,28 @@ import { expect, it } from 'vitest';
 import CmPopover from './CmPopover.vue';
 import VfPopover from './VfPopover.vue';
 
+it('moves keyboard focus past a hidden form field to the first interactive control', async () => {
+  const wrapper = mount(CmPopover, {
+    attachTo: document.body,
+    props: { id: 'filters', label: 'Filters' },
+    slots: {
+      default: () => [
+        h('input', { type: 'hidden', name: 'filter', value: 'active', tabindex: 0 }),
+        h('button', 'Apply'),
+      ],
+    },
+  });
+  try {
+    const trigger = wrapper.get<HTMLButtonElement>('#filters-trigger');
+    trigger.element.focus();
+    await trigger.trigger('keydown', { key: 'ArrowDown' });
+    await nextTick();
+    expect(document.activeElement).toBe(wrapper.get('#filters-panel button').element);
+  } finally {
+    wrapper.unmount();
+  }
+});
+
 it('focuses the authored target in a portal and exposes a scoped close action', async () => {
   const host = document.createElement('dialog');
   host.open = true;

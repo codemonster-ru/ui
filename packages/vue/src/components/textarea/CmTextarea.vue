@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, inject, useAttrs, type PropType } from 'vue';
+import { computed, inject, useAttrs, useTemplateRef, type PropType } from 'vue';
 
+import { useCmNativeFormReset } from '../../internal/form-reset';
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { cmFloatingFieldKey } from '../field/floating-field';
 import type { CmTextareaSize } from './textarea.types';
@@ -25,6 +26,12 @@ const emit = defineEmits<{
   'update:modelValue': [value: string];
 }>();
 const attrs = useAttrs();
+const input = useTemplateRef<HTMLTextAreaElement>('input');
+useCmNativeFormReset(
+  input,
+  () => props.modelValue,
+  (value) => emit('update:modelValue', value),
+);
 const floatingLabel = inject(cmFloatingFieldKey, null);
 const size = computed(() => (sizes.includes(props.size) ? props.size : 'md'));
 const classes = computed(() =>
@@ -48,6 +55,7 @@ function updateValue(event: Event): void {
 
 <template>
   <textarea
+    ref="input"
     v-bind="rootAttrs"
     :class="classes"
     :value="props.modelValue"
