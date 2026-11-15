@@ -20,6 +20,8 @@ the same Button, IconButton, and Link variant matrices in both integrations. Ope
 examples** on a component card to compare the same cases and supported size, tone, and shape
 variants in Vue and Vanilla.
 
-The Vue showcase also serves `/codeblock/`. It uses the historical published VueForge CodeBlock
-package to show syntax highlighting, line numbers, copying, long files, and skeleton replay.
-The package is loaded only for this page; it is not a dependency of the CodeMonster UI library.
+The Vue showcase also serves `/codeblock/` and `/playground/`. CodeBlock shows syntax highlighting,
+line numbers, copying, long files, and skeleton replay. Playground shows single-file HTML,
+multi-file JavaScript and CSS, a trusted Vue component, and two Vite virtual module previews.
+The published VueForge packages power these two examples and are dependencies of the private
+showcase workspace only.

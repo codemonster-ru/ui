@@ -16,9 +16,10 @@ migration, including behavioral or visual differences. Do not claim parity from 
 | DONE | Repository preflight: clean tree, both commits present, npm workspaces and eight CI jobs inspected. |
 | IN PROGRESS | Inventory historical Vue core exports and component contracts; implement missing native components first, then reconcile existing behavior, types, and styles. |
 | IN PROGRESS | Trace layouts, icons, themes, composables, styles and package entry points. Restore supported native contracts and test the new behavior. |
-| IN PROGRESS | Restore CodeBlock and Playground showcase sections using their real packages. Verify source, editor, preview, and assets from a production build. |
+| DONE | Restored the Playground section through the historical published releases (`vueforge-playground@3.0.1`, runtime `2.1.0`, Vite plugin `1.0.0`). The private showcase builds against real package entry points. Chrome verified both script-sandboxed frames, the direct Vue preview, both Vite modules, source tabs, console output, theme and mobile width. |
 | DONE | Restored the CodeBlock section with the published `vueforge-codeblock@4.0.1` package and all 20 historical examples. Vue showcase lint, typecheck, and production build passed. Chrome verified the direct route at 390 px, highlighting, 1,000 line numbers, copy, dark theme, and loading replay. |
 | IN PROGRESS | Track Vanilla coverage against historical Vue and current contracts. Verify repeat initialization, mutations, destruction, and event cleanup. |
+| DONE | Added the Vanilla ColumnChooser enhancement and its contract trace. Runtime checks passed 209 tests. Chromium verified default light and dark visual parity with Vue and both chooser behavior scenarios. |
 | DONE | Fixed Vanilla runtime observation of transient removals, cross-root moves and attribute changes. Runtime lint, typecheck, build and 206 tests passed on Node 24. |
 | TODO | Extend Vanilla markup and enhancements for applicable restored contracts; verify keyboard and form behavior. |
 | IN PROGRESS | Build the exact historical reference in isolation, compare both themes and viewports against the current showcases, and investigate visual differences. |

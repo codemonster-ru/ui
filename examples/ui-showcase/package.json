@@ -19,9 +19,12 @@
     "@codemonster-ru/ui-utilities": "file:../../packages/utilities",
     "@codemonster-ru/ui-vue": "file:../../packages/vue",
     "@codemonster-ru/vueforge-codeblock": "4.0.1",
+    "@codemonster-ru/vueforge-core": "2.4.0",
+    "@codemonster-ru/vueforge-playground": "3.0.1",
     "vue": "^3.5.20"
   },
   "devDependencies": {
+    "@codemonster-ru/vueforge-playground-vite-plugin": "1.0.0",
     "@vitejs/plugin-vue": "^5.2.4",
     "eslint": "^10.8.0",
     "typescript": "^5.8.2",
