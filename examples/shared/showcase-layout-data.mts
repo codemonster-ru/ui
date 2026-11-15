@@ -27,11 +27,31 @@ export function previewClass(width: number) {
 }
 
 export const panels = [
-  { slug: 'app-shell', title: 'App shell' },
-  { slug: 'document-layout', title: 'Document layout' },
-  { slug: 'admin-layout', title: 'Admin layout' },
-  { slug: 'admin-shell', title: 'Admin shell' },
-  { slug: 'setup-layout', title: 'Setup layout' },
+  {
+    slug: 'setup-layout',
+    title: 'CmSetupLayout',
+    description: 'Structures an initial configuration flow with progress, content, and actions.',
+  },
+  {
+    slug: 'app-shell',
+    title: 'CmAppShell and shell areas',
+    description: 'Composes header, sidebar, content, aside, and footer regions into an application frame.',
+  },
+  {
+    slug: 'admin-layout',
+    title: 'CmAdminLayout',
+    description: 'Provides responsive admin navigation with collapsible desktop and mobile sidebars.',
+  },
+  {
+    slug: 'admin-shell',
+    title: 'CmAdminShell',
+    description: 'Provides an opinionated product shell for dense administration workflows.',
+  },
+  {
+    slug: 'document-layout',
+    title: 'CmDocumentLayout',
+    description: 'Organizes documentation with optional navigation, article content, and an aside.',
+  },
 ] as const;
 export const nav = [
   { value: 'dashboard', label: 'Dashboard' },

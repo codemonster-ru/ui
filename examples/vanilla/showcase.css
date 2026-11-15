@@ -2,6 +2,7 @@
   display: grid;
   gap: 0.5rem;
   max-inline-size: 26rem;
+  margin-block: var(--cm-space-4);
 }
 
 .showcase-catalog,

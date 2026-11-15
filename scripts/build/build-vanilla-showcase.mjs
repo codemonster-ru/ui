@@ -1,5 +1,9 @@
 import { coreComponentTitle, coreRecipesFor, renderCoreMatrix } from '../../examples/shared/showcase-core-matrix.mts';
-import { layoutSamples, renderLayoutRecipes } from '../../examples/shared/showcase-layout-samples.mts';
+import {
+  renderLayoutGuideEntry,
+  renderLayoutPrimitives,
+  renderLayoutRecipes,
+} from '../../examples/shared/showcase-layout-samples.mts';
 import { renderLayoutPreview } from './render-showcase-layout.mjs';
 import { panels } from '../../examples/shared/showcase-layout-data.mts';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
@@ -293,33 +297,48 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
   <details class="showcase-contracts"><summary>Contract examples and palette samples</summary>
     <div class="showcase-grid">${contractExamples}${themeSamples}</div>
   </details>`;
+  const renderCases = (slug) => {
+    const manifest = bySlug.get(slug);
+    const variants = casesByComponent.get(slug);
+    if (!variants?.length) throw new Error(`Missing Vanilla showcase cases for ${slug}.`);
+    return expandedExamples(variants, icons)
+      .map((variant) => renderExample(variant, manifest.name))
+      .join('\n');
+  };
   const sections = new Map(
     groups.map(({ id, title, description, components: slugs, matrix: matrixTitle, recipeAfter }) => {
-      const isCore = id !== 'layouts' && id !== 'icons';
-      const shellSlugs = panels.map(({ slug }) => slug);
-      const layoutOrder = [...Object.keys(layoutSamples), ...shellSlugs];
-      const ordered =
-        id === 'layouts' ? [...layoutOrder, ...slugs.filter((slug) => !layoutOrder.includes(slug))] : slugs;
-      const cards = ordered.map((slug) => {
+      if (id === 'layouts') {
+        const shellPreviews = panels.map(({ slug, title, description }) =>
+          renderLayoutGuideEntry(
+            slug,
+            title,
+            description,
+            renderLayoutPreview(slug, caseMarkup.get(`${slug}-default`), caseMarkup.get('input-enhanced')),
+            true,
+          ),
+        );
+        const layoutContracts = slugs.map(
+          (slug) => `<section class="showcase-card showcase-panel">
+          <h3>${escapeHtml(bySlug.get(slug).name)}</h3><div class="showcase-variants">${renderCases(slug)}</div>
+        </section>`,
+        );
+        return [
+          id,
+          `<div class="layout-guide">${renderLayoutPrimitives()}${renderLayoutRecipes()}${shellPreviews.join('\n')}</div>
+        <details class="showcase-contracts" data-layout-contracts><summary>Layout contract examples</summary>
+          <div class="showcase-filter">
+            <label for="showcase-search">Filter components</label>
+            <input class="cm-input" type="search" id="showcase-search" />
+          </div>
+          <p id="showcase-empty" role="status" hidden>No matching components.</p>
+          <div class="showcase-grid">${layoutContracts.join('\n')}</div>
+        </details>`,
+        ];
+      }
+      const isCore = id !== 'icons';
+      const cards = slugs.map((slug) => {
         const manifest = bySlug.get(slug);
-        const variants = casesByComponent.get(slug);
-        if (!variants?.length) throw new Error(`Missing Vanilla showcase cases for ${slug}.`);
-        const wide =
-          slug in layoutSamples ||
-          [
-            'admin-layout',
-            'admin-shell',
-            'app-shell',
-            'document-layout',
-            'setup-layout',
-            'button',
-            'table',
-            'data-table',
-          ].includes(slug);
-        const panel = panels.find((panel) => panel.slug === slug);
-        const composition = panel
-          ? renderLayoutPreview(slug, caseMarkup.get(`${slug}-default`), caseMarkup.get('input-enhanced'))
-          : '';
+        const wide = ['button', 'table', 'data-table'].includes(slug);
         const matrix = isCore ? renderCoreMatrix(slug, (caseId) => caseMarkup.get(caseId), './avatar.png') : '';
         const actions =
           slug === 'button'
@@ -336,28 +355,16 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
           ? 'core-component core-group-cell'
           : `${isCore ? 'core-component' : 'showcase-card'} showcase-panel${wide ? ' showcase-panel--wide' : ''}`;
         const heading = matrixTitle ? 'h4' : 'h3';
-        return `<section ${panel ? `id="demo-${slug}" data-layout-preview="${slug}"` : isCore || slug === 'icon' ? `id="demo-${slug}"` : ''} class="${cardClass}" aria-labelledby="component-${slug}">
-        <${heading} id="component-${slug}"${matrixTitle ? ' class="showcase-label"' : slug === 'icon' ? ' class="showcase-icon-intro-heading"' : ''}>${escapeHtml(panel?.title ?? (isCore ? coreComponentTitle(slug) : manifest.name))}</${heading}>
-        ${layoutSamples[slug] ?? composition}
+        return `<section id="demo-${slug}" class="${cardClass}" aria-labelledby="component-${slug}">
+        <${heading} id="component-${slug}"${matrixTitle ? ' class="showcase-label"' : slug === 'icon' ? ' class="showcase-icon-intro-heading"' : ''}>${escapeHtml(isCore ? coreComponentTitle(slug) : manifest.name)}</${heading}>
         ${slug === 'icon' ? renderIconIntro() : ''}
         ${actions}
         ${matrix ? `<div data-core-matrix>${matrix}</div>` : ''}
-        <details class="showcase-contracts"><summary>Contract examples</summary><div class="showcase-variants">${expandedExamples(
-          variants,
-          icons,
-        )
-          .map((variant) => renderExample(variant, manifest.name))
-          .join('\n')}</div></details>
+        <details class="showcase-contracts"><summary>Contract examples</summary><div class="showcase-variants">${renderCases(slug)}</div></details>
       </section>`;
       });
-      if (id === 'layouts')
-        cards.splice(
-          Object.keys(layoutSamples).length,
-          0,
-          renderLayoutRecipes().replace('/vueforge-logo-icon.svg', './vueforge-logo-icon.svg'),
-        );
       const recipes = coreRecipesFor(coreSamples, id);
-      if (recipeAfter) cards.splice(ordered.indexOf(recipeAfter) + 1, 0, recipes);
+      if (recipeAfter) cards.splice(slugs.indexOf(recipeAfter) + 1, 0, recipes);
       const grid =
         id === 'theme'
           ? themeCards(cards.join('\n'))
@@ -407,16 +414,7 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
       <button class="cm-icon-button cm-icon-button--secondary cm-icon-button--md showcase-theme" id="showcase-theme" type="button" aria-label="Toggle color theme" hidden>${themeIcons.join('')}</button>
     </div>
   </header>
-  <main class="showcase-content">
-    ${
-      current === 'layouts'
-        ? `<div class="showcase-filter">
-      <label for="showcase-search">Filter components</label>
-      <input class="cm-input" type="search" id="showcase-search" />
-    </div>
-    <p id="showcase-empty" role="status" hidden>No matching components.</p>`
-        : ''
-    }
+  <main ${current === 'layouts' ? 'class="showcase-content showcase-content--layout-guide" aria-label="Layouts"' : 'class="showcase-content"'}>
     <div class="showcase-catalog${current === 'core' ? ' showcase-core' : ''}">${pages[current]}</div>
   </main>`,
       'showcase.js',
