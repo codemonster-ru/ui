@@ -8,6 +8,7 @@
  */
 
 export interface CmCalendarDay {
+  accessibleLabel: string;
   disabled: boolean;
   label: string;
   outside: boolean;
@@ -15,6 +16,9 @@ export interface CmCalendarDay {
   today: boolean;
   value: string;
 }
+
+export type CmCalendarWeekday = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+export type CmCalendarLocale = string | string[];
 
 const isoPattern = /^(\d{4})-(\d{2})-(\d{2})$/u;
 const displayFormatter = new Intl.DateTimeFormat('en-US', { day: '2-digit', month: '2-digit', year: '2-digit' });
@@ -43,17 +47,37 @@ function requireIsoDate(value: string): Date {
 
 // The display and month names are pinned to one locale so a server-rendered control and the client
 // that later takes it over agree, and so a capture does not depend on the machine's language.
-export function formatDisplayDate(value: string): string {
+export function formatDisplayDate(value: string, locale?: CmCalendarLocale, format?: string): string {
   const date = parseIsoDate(value);
-  return date === null ? value : displayFormatter.format(date);
+  if (date === null) return value;
+  if (format) {
+    const [year, month, day] = value.split('-');
+    const tokens: Readonly<Record<string, string>> = {
+      yyyy: year,
+      yy: year.slice(-2),
+      MM: month,
+      M: String(Number(month)),
+      dd: day,
+      d: String(Number(day)),
+    };
+    return format.replace(/yyyy|yy|MM|M|dd|d/g, (token) => tokens[token]);
+  }
+  const formatter =
+    locale === undefined
+      ? displayFormatter
+      : new Intl.DateTimeFormat(locale, { day: '2-digit', month: '2-digit', year: '2-digit' });
+  return formatter.format(date);
 }
 
-export function monthLabel(value: string): string {
-  return monthFormatter.format(requireIsoDate(value));
+export function monthLabel(value: string, locale?: CmCalendarLocale): string {
+  const formatter =
+    locale === undefined ? monthFormatter : new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' });
+  return formatter.format(requireIsoDate(value));
 }
 
-export function weekdayLabels(): string[] {
-  return Array.from({ length: 7 }, (_, index) => weekdayFormatter.format(new Date(2024, 0, 7 + index)));
+export function weekdayLabels(firstDayOfWeek: CmCalendarWeekday = 0, locale?: CmCalendarLocale): string[] {
+  const formatter = locale === undefined ? weekdayFormatter : new Intl.DateTimeFormat(locale, { weekday: 'short' });
+  return Array.from({ length: 7 }, (_, index) => formatter.format(new Date(2024, 0, 7 + firstDayOfWeek + index)));
 }
 
 export function shiftMonth(value: string, delta: number): string {
@@ -64,17 +88,56 @@ export function shiftMonth(value: string, delta: number): string {
   return formatIsoDate(shifted);
 }
 
+export function calendarKeyTarget(
+  value: string,
+  key: string,
+  firstDayOfWeek: CmCalendarWeekday = 0,
+  rtl = false,
+): string | null {
+  const date = parseIsoDate(value);
+  if (date === null) return null;
+  if (key === 'PageUp' || key === 'PageDown') return shiftMonth(value, key === 'PageUp' ? -1 : 1);
+  const weekIndex = (date.getDay() - firstDayOfWeek + 7) % 7;
+  const deltas: Readonly<Record<string, number>> = {
+    ArrowLeft: rtl ? 1 : -1,
+    ArrowRight: rtl ? -1 : 1,
+    ArrowUp: -7,
+    ArrowDown: 7,
+    Home: -weekIndex,
+    End: 6 - weekIndex,
+  };
+  if (!Object.prototype.hasOwnProperty.call(deltas, key)) return null;
+  date.setDate(date.getDate() + deltas[key]);
+  return formatIsoDate(date);
+}
+
+export function boundCalendarDate(value: string, min?: string, max?: string): string {
+  if (min && value < min) return min;
+  if (max && value > max) return max;
+  return value;
+}
+
+export function calendarMonthAllowed(value: string, min?: string, max?: string): boolean {
+  if (parseIsoDate(value) === null) return false;
+  const month = value.slice(0, 7);
+  return (!min || month >= min.slice(0, 7)) && (!max || month <= max.slice(0, 7));
+}
+
 export function buildCalendarMonth(options: {
   max?: string | null;
   min?: string | null;
   month: string;
   selected: string;
+  firstDayOfWeek?: CmCalendarWeekday;
+  locale?: CmCalendarLocale;
 }): CmCalendarDay[][] {
   const anchor = requireIsoDate(options.month);
   const today = formatIsoDate(new Date());
   const firstOfMonth = new Date(anchor.getFullYear(), anchor.getMonth(), 1);
   const start = new Date(firstOfMonth);
-  start.setDate(1 - firstOfMonth.getDay());
+  const leadingDays = (firstOfMonth.getDay() - (options.firstDayOfWeek ?? 0) + 7) % 7;
+  start.setDate(1 - leadingDays);
+  const accessibleFormatter = new Intl.DateTimeFormat(options.locale ?? 'en-US', { dateStyle: 'full' });
 
   const weeks: CmCalendarDay[][] = [];
   for (let week = 0; week < 6; week += 1) {
@@ -83,6 +146,7 @@ export function buildCalendarMonth(options: {
       const date = new Date(start.getFullYear(), start.getMonth(), start.getDate() + week * 7 + day);
       const value = formatIsoDate(date);
       days.push({
+        accessibleLabel: accessibleFormatter.format(date),
         disabled: Boolean((options.min && value < options.min) || (options.max && value > options.max)),
         label: String(date.getDate()),
         outside: date.getMonth() !== anchor.getMonth(),

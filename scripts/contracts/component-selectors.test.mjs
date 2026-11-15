@@ -261,6 +261,7 @@ for (const [slug, approved] of [
       'cm-date-picker__clear-icon',
       'cm-date-picker--placeholder',
       'cm-date-picker__calendar',
+      'cm-date-picker__grid',
       'cm-date-picker__header',
       'cm-date-picker__month',
       'cm-date-picker__navigation',

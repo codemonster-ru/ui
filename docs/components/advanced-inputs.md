@@ -91,6 +91,23 @@ The calendar limits selectable days according to `min` and `max`. The trigger an
 `required` through `aria-required`. Validate the range and required state in the application
 because the hidden input does not participate in native constraint validation.
 
+Use `locale` to choose a locale for the date and calendar labels, `displayFormat` to format
+the trigger value with `yyyy`, `yy`, `MM`, `M`, `dd`, or `d`, and `firstDayOfWeek` to
+set the first column (0 for Sunday through 6 for Saturday). Current defaults are
+`en-US` and Sunday so server and browser output agree. Set the application locale and
+`firstDayOfWeek` to 1 for the historical Monday-start behavior. The optional `labels`
+object sets `calendar`, `clear`, `previousMonth`, and `nextMonth` names.
+
+The Vanilla trigger accepts `data-cm-locale`, `data-cm-display-format`, and
+`data-cm-first-day-of-week`. Render the initial text and accessible names with the
+desired labels in HTML. Without a form input, use `data-cm-value` to supply an initial
+ISO date. Configuration does not change the submitted format.
+
+The keyboard opens the calendar with Arrow Down, Enter, or Space. The grid has one
+day tab stop. Use arrows, Home/End, and Page Up/Down to navigate, and Enter or Space
+to select. Escape returns focus to the trigger. Clicking outside or tabbing to another
+control dismisses the calendar.
+
 ## CommandPalette
 
 CommandPalette requires `id`, `title`, and ordered `commands` with unique kebab-case `id`, `label`,

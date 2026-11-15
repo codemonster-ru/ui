@@ -4,15 +4,20 @@ import { computed, nextTick, ref, useAttrs, watch, type PropType } from 'vue';
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
 import { assertCm, warnCm } from '../../internal/warn';
-import type { CmDatePickerSize } from './date-picker.types';
+import type { CmDatePickerLabels, CmDatePickerSize } from './date-picker.types';
 import {
+  boundCalendarDate,
   buildCalendarMonth,
+  calendarKeyTarget,
+  calendarMonthAllowed,
   formatIsoDate,
   formatDisplayDate,
   monthLabel,
   parseIsoDate,
   shiftMonth,
   weekdayLabels,
+  type CmCalendarLocale,
+  type CmCalendarWeekday,
 } from './date-picker.calendar';
 
 defineOptions({ inheritAttrs: false });
@@ -22,6 +27,14 @@ const props = defineProps({
   min: { type: String, default: null },
   max: { type: String, default: null },
   placeholder: { type: String, default: null },
+  locale: { type: [String, Array] as PropType<CmCalendarLocale>, default: undefined },
+  displayFormat: { type: String, default: undefined },
+  firstDayOfWeek: {
+    type: Number as PropType<CmCalendarWeekday>,
+    default: 0,
+    validator: (value: number) => Number.isInteger(value) && value >= 0 && value <= 6,
+  },
+  labels: { type: Object as PropType<CmDatePickerLabels>, default: () => ({}) },
   size: {
     type: String as PropType<CmDatePickerSize>,
     default: 'md',
@@ -46,35 +59,53 @@ function sanitizeIsoDate(value: string): string {
   return '';
 }
 
+const rootRef = ref<HTMLElement | null>(null);
 const triggerRef = ref<HTMLButtonElement | null>(null);
+const calendarRef = ref<HTMLElement | null>(null);
 const currentValue = ref(sanitizeIsoDate(props.modelValue));
 const isOpen = ref(false);
 const visibleMonth = ref(currentValue.value === '' ? formatIsoDate(new Date()) : currentValue.value);
+const focusedDate = ref(visibleMonth.value);
 
 watch(
   () => props.modelValue,
   (value) => {
     const sanitized = sanitizeIsoDate(value);
     currentValue.value = sanitized;
-    if (sanitized !== '') visibleMonth.value = sanitized;
+    if (sanitized !== '') {
+      const calendar = calendarRef.value;
+      const focusInCalendar = Boolean(calendar?.contains(calendar.ownerDocument.activeElement));
+      setFocusedDate(boundedDate(sanitized), focusInCalendar);
+    }
   },
 );
 
 const size = computed(() => (['sm', 'md', 'lg'].includes(props.size) ? props.size : 'md'));
 const calendarId = computed(() => `${props.id}-calendar`);
+const monthId = computed(() => `${calendarId.value}-month`);
 const name = computed(() => (typeof attrs.name === 'string' ? attrs.name : null));
 const hasClear = computed(() => props.clearable && !props.disabled && !props.readonly);
 const displayValue = computed(() =>
-  currentValue.value === '' ? (props.placeholder ?? '') : formatDisplayDate(currentValue.value),
+  currentValue.value === ''
+    ? (props.placeholder ?? '')
+    : formatDisplayDate(currentValue.value, props.locale, props.displayFormat),
 );
 const minDate = computed(() => sanitizeIsoDate(props.min ?? '') || undefined);
 const maxDate = computed(() => sanitizeIsoDate(props.max ?? '') || undefined);
+const firstDayOfWeek = computed(() =>
+  Number.isInteger(props.firstDayOfWeek) && props.firstDayOfWeek >= 0 && props.firstDayOfWeek <= 6
+    ? props.firstDayOfWeek
+    : 0,
+);
+const weekdays = computed(() => weekdayLabels(firstDayOfWeek.value, props.locale));
 const weeks = computed(() =>
   buildCalendarMonth({
     month: visibleMonth.value,
     selected: currentValue.value,
     min: minDate.value,
     max: maxDate.value,
+    firstDayOfWeek: firstDayOfWeek.value,
+    locale: props.locale,
   }),
 );
 const classes = computed(() =>
@@ -92,8 +123,36 @@ const triggerAttrs = computed(() =>
 
 function setOpen(open: boolean, restoreFocus = false): void {
   if (props.disabled || props.readonly) open = false;
+  if (isOpen.value === open) {
+    if (restoreFocus) void nextTick(() => triggerRef.value?.focus());
+    return;
+  }
   isOpen.value = open;
-  if (restoreFocus) void nextTick(() => triggerRef.value?.focus());
+  if (open) {
+    setFocusedDate(boundedDate(currentValue.value || formatIsoDate(new Date())), true);
+  } else if (restoreFocus) {
+    void nextTick(() => triggerRef.value?.focus());
+  }
+}
+
+function boundedDate(value: string): string {
+  return boundCalendarDate(value, minDate.value, maxDate.value);
+}
+
+function setFocusedDate(value: string, focus: boolean): void {
+  focusedDate.value = value;
+  visibleMonth.value = value;
+  if (!focus) return;
+  void nextTick(() => {
+    const calendar = calendarRef.value;
+    if (!isOpen.value || focusedDate.value !== value || !calendar) return;
+    const day = calendar.querySelector<HTMLButtonElement>(`[data-cm-date-picker-value="${value}"]:not(:disabled)`);
+    (day ?? calendar).focus();
+  });
+}
+
+function canChangeMonth(delta: number): boolean {
+  return calendarMonthAllowed(shiftMonth(visibleMonth.value, delta), minDate.value, maxDate.value);
 }
 
 function commit(value: string): void {
@@ -104,7 +163,7 @@ function commit(value: string): void {
 }
 
 function selectDay(value: string, disabled: boolean): void {
-  if (disabled) return;
+  if (disabled || props.disabled || props.readonly) return;
   commit(value);
   setOpen(false, true);
 }
@@ -115,11 +174,15 @@ function clearValue(): void {
 }
 
 function changeMonth(delta: number): void {
-  visibleMonth.value = shiftMonth(visibleMonth.value, delta);
+  if (canChangeMonth(delta)) setFocusedDate(boundedDate(shiftMonth(visibleMonth.value, delta)), true);
 }
 
 function onTriggerKeydown(event: KeyboardEvent): void {
   if (props.disabled || props.readonly) return;
+  if (isOpen.value && event.key === 'Escape') {
+    onCalendarKeydown(event);
+    return;
+  }
   if (!isOpen.value && ['ArrowDown', 'Enter', ' '].includes(event.key)) {
     event.preventDefault();
     setOpen(true);
@@ -129,15 +192,44 @@ function onTriggerKeydown(event: KeyboardEvent): void {
 function onCalendarKeydown(event: KeyboardEvent): void {
   if (event.key !== 'Escape') return;
   event.preventDefault();
+  event.stopPropagation();
   setOpen(false, true);
 }
+
+function onDayKeydown(event: KeyboardEvent, value: string): void {
+  const day = event.currentTarget as HTMLElement;
+  const rtl = day.ownerDocument.defaultView?.getComputedStyle(day).direction === 'rtl';
+  const target = calendarKeyTarget(value, event.key, firstDayOfWeek.value, rtl);
+  if (target === null) return;
+  event.preventDefault();
+  if (parseIsoDate(target) && boundedDate(target) === target) setFocusedDate(target, true);
+}
+
+watch(isOpen, (open, _, onCleanup) => {
+  const root = rootRef.value;
+  if (!open || !root) return;
+  const document = root.ownerDocument;
+  const dismissOutside = (event: Event) => {
+    if (!event.composedPath().includes(root)) setOpen(false);
+  };
+  document.addEventListener('click', dismissOutside, true);
+  document.addEventListener('focusin', dismissOutside);
+  onCleanup(() => {
+    document.removeEventListener('click', dismissOutside, true);
+    document.removeEventListener('focusin', dismissOutside);
+  });
+});
+
+watch([() => props.disabled, () => props.readonly], ([disabled, readonly]) => {
+  if (disabled || readonly) setOpen(false);
+});
 
 useCmHydrated();
 </script>
 
 <template>
-  <div class="cm-date-picker-wrap" data-cm-controller="date-picker">
-    <input v-if="name" type="hidden" :name="name" :value="currentValue" />
+  <div ref="rootRef" class="cm-date-picker-wrap" data-cm-controller="date-picker">
+    <input v-if="name" type="hidden" :name="name" :value="currentValue" :disabled="props.disabled || undefined" />
     <button
       :id="props.id"
       ref="triggerRef"
@@ -183,7 +275,7 @@ useCmHydrated();
       v-if="hasClear"
       class="cm-date-picker__clear"
       type="button"
-      :aria-label="props.clearLabel"
+      :aria-label="props.labels.clear ?? props.clearLabel"
       :hidden="currentValue === ''"
       data-cm-date-picker-clear
       @mousedown.prevent
@@ -207,9 +299,11 @@ useCmHydrated();
     </button>
     <div
       :id="calendarId"
+      ref="calendarRef"
       class="cm-date-picker__calendar"
       role="dialog"
-      aria-label="Choose date"
+      :aria-label="props.labels.calendar ?? 'Choose date'"
+      :tabindex="isOpen ? -1 : undefined"
       :hidden="!isOpen"
       @keydown="onCalendarKeydown"
     >
@@ -217,7 +311,8 @@ useCmHydrated();
         <button
           class="cm-date-picker__navigation"
           type="button"
-          :aria-label="props.previousMonthLabel"
+          :aria-label="props.labels.previousMonth ?? props.previousMonthLabel"
+          :disabled="isOpen && !canChangeMonth(-1) ? true : undefined"
           data-cm-date-picker-previous
           @click="changeMonth(-1)"
         >
@@ -234,13 +329,14 @@ useCmHydrated();
             <polyline points="15 5.75 8.75 12 15 18.25" />
           </svg>
         </button>
-        <span class="cm-date-picker__month" data-cm-date-picker-month>{{
-          isOpen ? monthLabel(visibleMonth) : ''
+        <span :id="monthId" class="cm-date-picker__month" aria-live="polite" data-cm-date-picker-month>{{
+          isOpen ? monthLabel(visibleMonth, props.locale) : ''
         }}</span>
         <button
           class="cm-date-picker__navigation"
           type="button"
-          :aria-label="props.nextMonthLabel"
+          :aria-label="props.labels.nextMonth ?? props.nextMonthLabel"
+          :disabled="isOpen && !canChangeMonth(1) ? true : undefined"
           data-cm-date-picker-next
           @click="changeMonth(1)"
         >
@@ -258,30 +354,38 @@ useCmHydrated();
           </svg>
         </button>
       </header>
-      <div class="cm-date-picker__weekdays" role="row">
-        <span v-for="label in weekdayLabels()" :key="label" class="cm-date-picker__weekday" role="columnheader">
-          {{ label }}
-        </span>
-      </div>
-      <div class="cm-date-picker__days" data-cm-date-picker-days>
-        <div v-for="(week, index) in isOpen ? weeks : []" :key="index" class="cm-date-picker__week" role="row">
-          <button
-            v-for="day in week"
-            :key="day.value"
-            class="cm-date-picker__day"
-            :class="{
-              'cm-date-picker__day--outside': day.outside,
-              'cm-date-picker__day--today': day.today,
-              'cm-date-picker__day--selected': day.selected,
-            }"
-            type="button"
-            :aria-pressed="day.selected"
-            :disabled="day.disabled || undefined"
-            :data-cm-date-picker-value="day.value"
-            @click="selectDay(day.value, day.disabled)"
-          >
-            {{ day.label }}
-          </button>
+      <div class="cm-date-picker__grid" role="grid" :aria-labelledby="monthId">
+        <div class="cm-date-picker__weekdays" role="row">
+          <span v-for="(label, index) in weekdays" :key="index" class="cm-date-picker__weekday" role="columnheader">
+            {{ label }}
+          </span>
+        </div>
+        <div class="cm-date-picker__days" role="rowgroup" data-cm-date-picker-days>
+          <div v-for="(week, index) in isOpen ? weeks : []" :key="index" class="cm-date-picker__week" role="row">
+            <button
+              v-for="day in week"
+              :key="day.value"
+              class="cm-date-picker__day"
+              :class="{
+                'cm-date-picker__day--outside': day.outside,
+                'cm-date-picker__day--today': day.today,
+                'cm-date-picker__day--selected': day.selected,
+              }"
+              type="button"
+              role="gridcell"
+              :aria-label="day.accessibleLabel"
+              :aria-selected="day.selected"
+              :aria-current="day.today ? 'date' : undefined"
+              :tabindex="!day.disabled && day.value === focusedDate ? 0 : -1"
+              :disabled="day.disabled || undefined"
+              :data-cm-date-picker-value="day.value"
+              @click="selectDay(day.value, day.disabled)"
+              @focus="focusedDate = day.value"
+              @keydown="onDayKeydown($event, day.value)"
+            >
+              {{ day.label }}
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -26,7 +26,10 @@ export type {
   CmDataTableSortState,
 } from './data-table.js';
 export {
+  boundCalendarDate,
   buildCalendarMonth,
+  calendarKeyTarget,
+  calendarMonthAllowed,
   formatDisplayDate,
   formatIsoDate,
   monthLabel,
@@ -34,7 +37,7 @@ export {
   shiftMonth,
   weekdayLabels,
 } from './date-picker.js';
-export type { CmCalendarDay } from './date-picker.js';
+export type { CmCalendarDay, CmCalendarLocale, CmCalendarWeekday } from './date-picker.js';
 export { commandPaletteKeyAction, filterCommands, normalizeCommandQuery } from './command-palette.js';
 export type { CmCommandCoreItem, CmCommandPaletteAction } from './command-palette.js';
 export {
