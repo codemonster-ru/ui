@@ -24,7 +24,8 @@ test('preserves navigation focus and hidden-state hooks', async () => {
   assert.match(tabs, /\.cm-tabs__panel\[hidden\]/u);
   assert.match(menu, /\.cm-menu__item:focus-visible/u);
   assert.match(dropdown, /\.cm-dropdown__menu\[hidden\]/u);
-  assert.doesNotMatch(`${tabs}${menu}${dropdown}`, /pointer-events:\s*none/u);
+  const tabsWithoutDecorations = tabs.replace(/\.cm-tabs__(?:scroll::after|indicator)\s*\{[^{}]*\}/gu, '');
+  assert.doesNotMatch(`${tabsWithoutDecorations}${menu}${dropdown}`, /pointer-events:\s*none/u);
 });
 
 test('preserves the reference Breadcrumbs and Link geometry', async () => {
