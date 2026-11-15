@@ -268,7 +268,9 @@ inside. The horizontal pair swaps under `rtl` and the vertical pair does not, be
 drops downward in both directions. Those rules are one function in the shared core rather than
 nested conditions in each adapter.
 
-Submenus are positioned by CSS and stay in the markup while closed, hidden rather than absent.
+Submenus are positioned by CSS and stay in the markup while closed. Long top-level bars wrap.
+At viewport widths up to 640 px, open branches expand within the bar so even trailing nested
+links stay reachable with a pointer. Wider viewports keep the sideways cascade.
 The menu bar has one tab stop. Arrow keys skip disabled commands, and Escape closes the open menu
 and restores focus to its top-level trigger. Use `variant="pills"` for the historical control
 geometry and selected surfaces. Set `defaultValue` for an initial selection or bind `v-model`.
