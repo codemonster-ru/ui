@@ -10,8 +10,18 @@
   text-size-adjust: 100%;
 }
 
-:root[data-cm-theme='dark'] {
+[data-cm-theme='light'] {
+  color-scheme: light;
+}
+
+[data-cm-theme='dark'] {
   color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-cm-theme='light']) {
+    color-scheme: dark;
+  }
 }
 
 body {
