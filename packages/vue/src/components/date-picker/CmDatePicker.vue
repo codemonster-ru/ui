@@ -9,13 +9,23 @@ import {
   boundCalendarDate,
   buildCalendarGrid,
   calendarAdjacentPeriod,
+  calendarDateHasTime,
   calendarGridKeyTarget,
   calendarGridTitle,
+  calendarMinuteStep,
+  calendarNearestAvailableDay,
+  calendarTimesForDay,
+  calendarTimeValue,
   calendarYearRangeStart,
   formatCalendarValue,
+  formatCalendarDateTime,
   formatDisplayDate,
+  nearestCalendarTime,
+  normalizeCalendarDateTime,
   parseCalendarValue,
   selectCalendarDate,
+  selectCalendarDateTime,
+  updateCalendarDateTime,
   weekdayLabels,
   type CmCalendarLocale,
   type CmCalendarPrecision,
@@ -32,6 +42,8 @@ const props = defineProps({
   range: Boolean as PropType<Range>,
   monthPicker: Boolean,
   yearPicker: Boolean,
+  showTime: Boolean,
+  minuteStep: { type: Number, default: 1 },
   min: { type: String, default: null },
   max: { type: String, default: null },
   placeholder: { type: String, default: null },
@@ -62,11 +74,16 @@ const attrs = useAttrs();
 const precision = computed<CmCalendarPrecision>(() =>
   props.yearPicker ? 'year' : props.monthPicker ? 'month' : 'day',
 );
+const hasTime = computed(() => props.showTime && precision.value === 'day');
+const minuteStep = computed(() => calendarMinuteStep(props.minuteStep));
 
 assertCm(props.id.trim() !== '', 'DatePicker id must be a non-empty string.');
 function sanitizeDate(value: string): string {
   if (value === '' || parseCalendarValue(value, precision.value)) return value;
-  const format = { day: 'YYYY-MM-DD', month: 'YYYY-MM', year: 'YYYY' }[precision.value];
+  if (precision.value === 'day' && calendarTimeValue(value) !== null) return value;
+  const format = hasTime.value
+    ? 'YYYY-MM-DDTHH:mm'
+    : { day: 'YYYY-MM-DD', month: 'YYYY-MM', year: 'YYYY' }[precision.value];
   warnCm(`DatePicker value must be a valid ${format} date: ${value}. The value is ignored.`);
   return '';
 }
@@ -82,16 +99,28 @@ const authoredDates = currentDates.value.slice();
 const firstDate = computed(() => currentDates.value[0] ?? '');
 const formValues = computed(() => (selectionMode.value === 'single' ? [firstDate.value] : currentDates.value));
 const isOpen = ref(false);
-const visibleMonth = ref(firstDate.value || formatCalendarValue(new Date(), precision.value));
+const visibleMonth = ref(dayValue(firstDate.value) || formatCalendarValue(new Date(), precision.value));
 const focusedDate = ref(visibleMonth.value);
 const yearStart = ref(calendarYearRangeStart(visibleMonth.value));
+const draftDay = ref('');
+const draftTime = ref<number | null>(null);
+
+function dayValue(value: string): string {
+  return precision.value === 'day' ? value.slice(0, 10) : value;
+}
+
+function modelDate(value: string): string {
+  const date = sanitizeDate(value);
+  if (hasTime.value) return normalizeCalendarDateTime(date) ?? '';
+  return dayValue(date);
+}
 
 function normalizeValues(value: string | string[]): string[] {
   if (selectionMode.value === 'single') {
-    const date = typeof value === 'string' ? sanitizeDate(value) : '';
+    const date = typeof value === 'string' ? modelDate(value) : '';
     return date === '' ? [] : [date];
   }
-  const dates = Array.isArray(value) ? value.map(sanitizeDate).filter(Boolean) : [];
+  const dates = Array.isArray(value) ? value.map(modelDate).filter(Boolean) : [];
   return selectionMode.value === 'range' ? dates.slice(0, 2).sort() : [...new Set(dates)];
 }
 
@@ -100,10 +129,10 @@ function datesMatch(left: readonly string[], right: readonly string[]): boolean 
 }
 
 watch(
-  [() => props.modelValue, selectionMode, precision],
-  ([value, , currentPrecision], [, , previousPrecision]) => {
+  [() => props.modelValue, selectionMode, precision, hasTime],
+  ([value, , currentPrecision, time], [, , previousPrecision, previousTime]) => {
     const next = normalizeValues(value);
-    if (currentPrecision === previousPrecision && datesMatch(next, currentDates.value)) return;
+    if (currentPrecision === previousPrecision && time === previousTime && datesMatch(next, currentDates.value)) return;
     currentDates.value = next;
     if (firstDate.value !== '' || currentPrecision !== previousPrecision) {
       const calendar = calendarRef.value;
@@ -111,6 +140,7 @@ watch(
       const anchor = initialPickerDate();
       if (currentPrecision !== previousPrecision) yearStart.value = calendarYearRangeStart(anchor);
       setFocusedDate(anchor, focusInCalendar);
+      if (isOpen.value && time) setTimeDraft(anchor, calendarTimeValue(firstDate.value) ?? draftTime.value ?? 0);
     }
   },
   { deep: true },
@@ -119,6 +149,7 @@ watch(
 const size = computed(() => (['sm', 'md', 'lg'].includes(props.size) ? props.size : 'md'));
 const calendarId = computed(() => `${props.id}-calendar`);
 const monthId = computed(() => `${calendarId.value}-month`);
+const timeLabelId = computed(() => `${calendarId.value}-time`);
 const name = computed(() => (typeof attrs.name === 'string' ? attrs.name : null));
 const formId = computed(() => (typeof attrs.form === 'string' ? attrs.form : undefined));
 const hasClear = computed(() => props.clearable && !props.disabled && !props.readonly);
@@ -129,8 +160,22 @@ const displayValue = computed(() =>
         .map((date) => formatDisplayDate(date, props.locale, props.displayFormat, precision.value))
         .join(selectionMode.value === 'range' ? ' – ' : '; '),
 );
-const minDate = computed(() => sanitizeDate(props.min ?? '') || undefined);
-const maxDate = computed(() => sanitizeDate(props.max ?? '') || undefined);
+const minValue = computed(() => sanitizeDate(props.min ?? '') || undefined);
+const maxValue = computed(() => sanitizeDate(props.max ?? '') || undefined);
+const minDate = computed(() => dayValue(minValue.value ?? '') || undefined);
+const maxDate = computed(() => dayValue(maxValue.value ?? '') || undefined);
+const timeSettings = computed(() => ({ min: minValue.value, max: maxValue.value, minuteStep: minuteStep.value }));
+const timesForDraft = computed(() => (draftDay.value ? calendarTimesForDay(draftDay.value, timeSettings.value) : []));
+const hours = computed(() => new Set(timesForDraft.value.map((value) => Math.floor(value / 60))));
+const hour = computed(() => (draftTime.value === null ? undefined : Math.floor(draftTime.value / 60)));
+const minute = computed(() => (draftTime.value === null ? undefined : draftTime.value % 60));
+const minutes = computed(
+  () =>
+    new Set(timesForDraft.value.filter((value) => Math.floor(value / 60) === hour.value).map((value) => value % 60)),
+);
+const minuteChoices = computed(() =>
+  Array.from({ length: Math.ceil(60 / minuteStep.value) }, (_, index) => index * minuteStep.value),
+);
 const firstDayOfWeek = computed(() =>
   Number.isInteger(props.firstDayOfWeek) && props.firstDayOfWeek >= 0 && props.firstDayOfWeek <= 6
     ? props.firstDayOfWeek
@@ -144,10 +189,10 @@ const navigationLabels = computed(() => {
   if (precision.value === 'month') return [labels.previousYear ?? 'Previous year', labels.nextYear ?? 'Next year'];
   return [labels.previousMonth ?? props.previousMonthLabel, labels.nextMonth ?? props.nextMonthLabel];
 });
-const weeks = computed(() =>
-  buildCalendarGrid({
+const weeks = computed(() => {
+  const grid = buildCalendarGrid({
     month: visibleMonth.value,
-    selected: currentDates.value,
+    selected: hasTime.value ? currentDates.value.map(dayValue) : currentDates.value,
     range: selectionMode.value === 'range',
     min: minDate.value,
     max: maxDate.value,
@@ -155,8 +200,12 @@ const weeks = computed(() =>
     locale: props.locale,
     precision: precision.value,
     yearStart: yearStart.value,
-  }),
-);
+  });
+  if (!hasTime.value) return grid;
+  return grid.map((row) =>
+    row.map((day) => ({ ...day, disabled: day.disabled || !calendarDateHasTime(day.value, timeSettings.value) })),
+  );
+});
 const classes = computed(() =>
   mergeCmClasses(
     'cm-date-picker',
@@ -181,13 +230,18 @@ function setOpen(open: boolean, restoreFocus = false): void {
     const focus = initialPickerDate();
     yearStart.value = calendarYearRangeStart(focus);
     setFocusedDate(focus, true);
+    if (hasTime.value) {
+      const now = new Date();
+      setTimeDraft(focus, calendarTimeValue(firstDate.value) ?? now.getHours() * 60 + now.getMinutes());
+    }
   } else if (restoreFocus) {
     void nextTick(() => triggerRef.value?.focus());
   }
 }
 
 function initialPickerDate(): string {
-  return boundedDate(firstDate.value || formatCalendarValue(new Date(), precision.value));
+  const date = boundedDate(dayValue(firstDate.value) || formatCalendarValue(new Date(), precision.value));
+  return hasTime.value ? calendarNearestAvailableDay(date, timeSettings.value) : date;
 }
 
 function boundedDate(value: string): string {
@@ -208,7 +262,7 @@ function setFocusedDate(value: string, focus: boolean): void {
 }
 
 function adjacentPeriod(delta: number): string | null {
-  return calendarAdjacentPeriod(
+  const target = calendarAdjacentPeriod(
     visibleMonth.value,
     delta,
     precision.value,
@@ -216,6 +270,11 @@ function adjacentPeriod(delta: number): string | null {
     minDate.value,
     maxDate.value,
   );
+  if (!hasTime.value || target === null) return target;
+  const available = calendarNearestAvailableDay(target, timeSettings.value);
+  return available.slice(0, 7) !== visibleMonth.value.slice(0, 7) && calendarDateHasTime(available, timeSettings.value)
+    ? available
+    : null;
 }
 
 function reportValue(dates: string[]): void {
@@ -232,11 +291,44 @@ function commit(dates: string[]): void {
 function selectDay(value: string, disabled: boolean): void {
   if (disabled || props.disabled || props.readonly) return;
   const mode = selectionMode.value;
+  if (hasTime.value) {
+    setTimeDraft(value, draftTime.value ?? 0);
+    if (draftTime.value === null) return;
+    commit(selectCalendarDateTime(currentDates.value, formatCalendarDateTime(value, draftTime.value), mode));
+    setFocusedDate(value, true);
+    return;
+  }
   const dates = selectCalendarDate(currentDates.value, value, mode);
   commit(dates);
   if (mode === 'single' || (mode === 'range' && dates.length === 2)) setOpen(false, true);
   else setFocusedDate(value, true);
 }
+
+function setTimeDraft(day: string, preferred: number): void {
+  draftDay.value = day;
+  draftTime.value = nearestCalendarTime(timesForDraft.value, preferred);
+}
+
+function updateTime(value: number): void {
+  if (!timesForDraft.value.includes(value)) return;
+  draftTime.value = value;
+  const next = updateCalendarDateTime(
+    currentDates.value,
+    formatCalendarDateTime(draftDay.value, value),
+    selectionMode.value,
+  );
+  if (next) commit(next);
+}
+
+function updateHour(value: number): void {
+  const options = timesForDraft.value.filter((time) => Math.floor(time / 60) === value);
+  const next = nearestCalendarTime(options, value * 60 + (minute.value ?? 0));
+  if (next !== null) updateTime(next);
+}
+
+watch(timeSettings, () => {
+  if (hasTime.value && isOpen.value && draftDay.value) setTimeDraft(draftDay.value, draftTime.value ?? 0);
+});
 
 function clearValue(): void {
   commit([]);
@@ -273,7 +365,13 @@ function onDayKeydown(event: KeyboardEvent, value: string): void {
   const target = calendarGridKeyTarget(value, event.key, precision.value, firstDayOfWeek.value, yearStart.value, rtl);
   if (target === null) return;
   event.preventDefault();
-  if (parseCalendarValue(target, precision.value) && boundedDate(target) === target) setFocusedDate(target, true);
+  if (
+    parseCalendarValue(target, precision.value) &&
+    boundedDate(target) === target &&
+    (!hasTime.value || calendarDateHasTime(target, timeSettings.value))
+  ) {
+    setFocusedDate(target, true);
+  }
 }
 
 watch(isOpen, (open, _, onCleanup) => {
@@ -309,7 +407,9 @@ onMounted(() => {
       pending.delete(timer);
       if (event.defaultPrevented || !trigger.isConnected || trigger.form !== form) return;
       setOpen(false);
-      const defaults = authoredDates.filter((date) => parseCalendarValue(date, precision.value) !== null);
+      const defaults = authoredDates.filter((date) =>
+        hasTime.value ? calendarTimeValue(date) !== null : parseCalendarValue(date, precision.value) !== null,
+      );
       if (datesMatch(defaults, currentDates.value)) return;
       // A caller supplying a different model value still owns that state.
       if (datesMatch(defaults, normalizeValues(props.modelValue))) currentDates.value = defaults;
@@ -354,12 +454,14 @@ useCmHydrated();
       :aria-required="props.required || undefined"
       :aria-readonly="props.readonly || undefined"
       :disabled="props.disabled || undefined"
-      :data-cm-min="minDate"
-      :data-cm-max="maxDate"
+      :data-cm-min="hasTime ? minValue : minDate"
+      :data-cm-max="hasTime ? maxValue : maxDate"
       :data-cm-placeholder="props.placeholder ?? undefined"
       :data-cm-filled="currentDates.length > 0 || undefined"
       :data-cm-date-picker-mode="selectionMode === 'single' ? undefined : selectionMode"
       :data-cm-date-picker-precision="precision === 'day' ? undefined : precision"
+      :data-cm-date-picker-show-time="hasTime || undefined"
+      :data-cm-date-picker-minute-step="hasTime ? minuteStep : undefined"
       :data-cm-date-picker-name="selectionMode === 'single' ? undefined : (name ?? undefined)"
       :data-cm-locale="typeof props.locale === 'string' ? props.locale : undefined"
       :data-cm-display-format="props.displayFormat"
@@ -512,6 +614,46 @@ useCmHydrated();
               {{ day.label }}
             </button>
           </div>
+        </div>
+      </div>
+      <div v-if="hasTime" class="cm-date-picker__time" data-cm-date-picker-time>
+        <span :id="timeLabelId" class="cm-date-picker__time-label">{{ props.labels.time ?? 'Time' }}</span>
+        <div class="cm-date-picker__time-controls" role="group" :aria-labelledby="timeLabelId">
+          <select
+            class="cm-date-picker__time-select"
+            :aria-label="props.labels.hour ?? 'Hour'"
+            :disabled="isOpen && draftTime === null ? true : undefined"
+            :value="hour"
+            data-cm-date-picker-hour
+            @change="updateHour(Number(($event.target as HTMLSelectElement).value))"
+          >
+            <option
+              v-for="number in isOpen ? 24 : 0"
+              :key="number"
+              :value="number - 1"
+              :disabled="!hours.has(number - 1)"
+            >
+              {{ String(number - 1).padStart(2, '0') }}
+            </option>
+          </select>
+          <span aria-hidden="true">:</span>
+          <select
+            class="cm-date-picker__time-select"
+            :aria-label="props.labels.minute ?? 'Minute'"
+            :disabled="isOpen && draftTime === null ? true : undefined"
+            :value="minute"
+            data-cm-date-picker-minute
+            @change="hour !== undefined && updateTime(hour * 60 + Number(($event.target as HTMLSelectElement).value))"
+          >
+            <option
+              v-for="choice in isOpen ? minuteChoices : []"
+              :key="choice"
+              :value="choice"
+              :disabled="!minutes.has(choice)"
+            >
+              {{ String(choice).padStart(2, '0') }}
+            </option>
+          </select>
         </div>
       </div>
     </div>

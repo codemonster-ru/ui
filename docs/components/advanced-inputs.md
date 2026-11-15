@@ -135,6 +135,19 @@ Vanilla uses `data-cm-date-picker-precision="month"` or `"year"`. Match the
 [year markup](../../contracts/date-picker/cases/year.html) for the accessible grid labels
 and form fields. The serialized value contains only the selected month or year.
 
+Set `showTime` to include hour and minute selectors with the ordinary date grid.
+Values and form fields use `YYYY-MM-DDTHH:mm` with no timezone conversion. A date-only
+bound includes the whole day, while a bound with time restricts that day's available
+options. `minuteStep` controls the available minutes in each hour and defaults to 1.
+The picker stays open while the user chooses a day or adjusts the time. Use `HH`,
+`H`, `mm`, and `m` with the date format tokens to customize the display.
+
+For Vanilla use `data-cm-date-picker-show-time="true"` and
+`data-cm-date-picker-minute-step` on the trigger. Reuse the labelled native selects
+in the [time example](../../contracts/date-picker/cases/time.html). Month and year modes
+take precedence over time. The native hour and minute controls use the shared CSS
+and keep the browser's keyboard and assistive technology behavior.
+
 An uncanceled reset of the associated form restores the initial selection. Vue requests
 the initial selection through its model event when the caller supplies another value.
 Vanilla restores the authored fields and updates the trigger text. Set `form` to associate

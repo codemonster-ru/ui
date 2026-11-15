@@ -10,6 +10,9 @@ export interface CmDatePickerLabels {
   nextYear?: string;
   previousDecade?: string;
   nextDecade?: string;
+  time?: string;
+  hour?: string;
+  minute?: string;
 }
 
 export type CmDatePickerValue<Multiple extends boolean = false, Range extends boolean = false> = Multiple extends true
@@ -25,6 +28,8 @@ export interface CmDatePickerProps<Multiple extends boolean = false, Range exten
   range?: Range;
   monthPicker?: boolean;
   yearPicker?: boolean;
+  showTime?: boolean;
+  minuteStep?: number;
   min?: string | null;
   max?: string | null;
   placeholder?: string | null;

@@ -3,16 +3,27 @@ import {
   boundCalendarDate,
   buildCalendarGrid,
   calendarAdjacentPeriod,
+  calendarDateHasTime,
   calendarGridKeyTarget,
   calendarGridTitle,
+  calendarMinuteStep,
+  calendarNearestAvailableDay,
+  calendarTimesForDay,
+  calendarTimeValue,
   calendarYearRangeStart,
   formatCalendarValue,
+  formatCalendarDateTime,
   formatDisplayDate,
+  nearestCalendarTime,
+  normalizeCalendarDateTime,
   parseCalendarValue,
   selectCalendarDate,
+  selectCalendarDateTime,
+  updateCalendarDateTime,
   weekdayLabels,
   type CmCalendarPrecision,
   type CmCalendarSelectionMode,
+  type CmCalendarTimeOptions,
   type CmCalendarWeekday,
 } from './core/date-picker.js';
 import { dispatchCmEvent } from './events.js';
@@ -38,6 +49,8 @@ const hiddenInputSelector = 'input[type="hidden"]';
 const daySelector = '[data-cm-date-picker-value]';
 const previousSelector = '[data-cm-date-picker-previous]';
 const nextSelector = '[data-cm-date-picker-next]';
+const hourSelector = '[data-cm-date-picker-hour]';
+const minuteSelector = '[data-cm-date-picker-minute]';
 
 const authoredDefaults = new WeakMap<Element, { dates: readonly string[]; formId: string | null }>();
 
@@ -49,12 +62,17 @@ export class CmDatePickerController implements CmController {
   readonly #input: HTMLInputElement | null;
   readonly #mode: CmCalendarSelectionMode;
   readonly #precision: CmCalendarPrecision;
+  readonly #hasTime: boolean;
+  readonly #hourSelect: HTMLSelectElement | null;
+  readonly #minuteSelect: HTMLSelectElement | null;
   readonly #fieldName: string;
   readonly #defaults: { dates: readonly string[]; formId: string | null };
   #selectedDates: string[];
   #visibleMonth: string;
   #focusedDate: string;
   #yearStart: number;
+  #draftDay = '';
+  #draftTime: number | null = null;
   #stopAutoUpdate: (() => void) | null = null;
   #stopFormReset: (() => void) | null = null;
 
@@ -71,12 +89,18 @@ export class CmDatePickerController implements CmController {
     this.#mode = mode === 'multiple' || mode === 'range' ? mode : 'single';
     const precision = trigger.dataset.cmDatePickerPrecision;
     this.#precision = precision === 'month' || precision === 'year' ? precision : 'day';
+    this.#hasTime = this.#precision === 'day' && trigger.dataset.cmDatePickerShowTime === 'true';
+    this.#hourSelect = calendar.querySelector<HTMLSelectElement>(hourSelector);
+    this.#minuteSelect = calendar.querySelector<HTMLSelectElement>(minuteSelector);
+    if (this.#hasTime && (!this.#hourSelect || !this.#minuteSelect)) {
+      throw new TypeError('DatePicker time selection requires hour and minute controls.');
+    }
     this.#fieldName = trigger.dataset.cmDatePickerName ?? this.#input?.name ?? '';
     const initial =
       this.#mode === 'single'
         ? [this.#input?.value ?? trigger.dataset.cmValue ?? '']
         : this.#arrayInputs().map((input) => input.value);
-    this.#selectedDates = initial.filter((date) => parseCalendarValue(date, this.#precision) !== null);
+    this.#selectedDates = initial.map((date) => this.#modelDate(date)).filter(Boolean);
     if (this.#mode === 'range') this.#selectedDates = this.#selectedDates.slice(0, 2).sort();
     if (this.#mode === 'multiple') this.#selectedDates = [...new Set(this.#selectedDates)];
     this.#defaults = authoredDefaults.get(root) ?? {
@@ -94,10 +118,12 @@ export class CmDatePickerController implements CmController {
     this.#root.addEventListener('keydown', this.#handleKeydown);
     this.#root.addEventListener('mousedown', this.#handleMouseDown);
     this.#root.addEventListener('focusin', this.#handleDayFocus);
+    if (this.#hasTime) this.#root.addEventListener('change', this.#handleTimeChange);
     this.#root.ownerDocument.addEventListener('click', this.#dismissOutside, true);
     this.#root.ownerDocument.addEventListener('focusin', this.#dismissOutside);
     if (this.#mode === 'single') {
       if (this.#input && this.#trigger.disabled) this.#input.disabled = true;
+      if (this.#hasTime) this.#applySelection(this.#selectedDates);
     } else {
       if (this.#fieldName) this.#trigger.dataset.cmDatePickerName = this.#fieldName;
       this.#writeArrayInputs(this.#selectedDates);
@@ -111,7 +137,7 @@ export class CmDatePickerController implements CmController {
     this.#stopFormReset ??= observeFormReset(
       this.#trigger,
       () => {
-        const dates = this.#defaults.dates.filter((date) => parseCalendarValue(date, this.#precision) !== null);
+        const dates = this.#defaults.dates.map((date) => this.#modelDate(date)).filter(Boolean);
         this.#applySelection(dates);
         this.#setOpen(false, false);
       },
@@ -124,6 +150,7 @@ export class CmDatePickerController implements CmController {
     this.#root.removeEventListener('keydown', this.#handleKeydown);
     this.#root.removeEventListener('mousedown', this.#handleMouseDown);
     this.#root.removeEventListener('focusin', this.#handleDayFocus);
+    this.#root.removeEventListener('change', this.#handleTimeChange);
     this.#root.ownerDocument.removeEventListener('click', this.#dismissOutside, true);
     this.#root.ownerDocument.removeEventListener('focusin', this.#dismissOutside);
     this.#releasePlacement();
@@ -133,7 +160,25 @@ export class CmDatePickerController implements CmController {
 
   #currentDates(): string[] {
     if (this.#mode !== 'single' || !this.#input) return this.#selectedDates;
-    return parseCalendarValue(this.#input.value, this.#precision) ? [this.#input.value] : [];
+    const date = this.#modelDate(this.#input.value);
+    return date ? [date] : [];
+  }
+
+  #modelDate(date: string): string {
+    if (this.#hasTime) return normalizeCalendarDateTime(date) ?? '';
+    return parseCalendarValue(date, this.#precision) ? date : '';
+  }
+
+  #dayValue(value: string | undefined): string | undefined {
+    return this.#precision === 'day' ? value?.slice(0, 10) : value;
+  }
+
+  #timeSettings(): CmCalendarTimeOptions {
+    return {
+      min: this.#trigger.dataset.cmMin,
+      max: this.#trigger.dataset.cmMax,
+      minuteStep: calendarMinuteStep(Number(this.#trigger.dataset.cmDatePickerMinuteStep)),
+    };
   }
 
   #arrayInputs(): HTMLInputElement[] {
@@ -168,22 +213,35 @@ export class CmDatePickerController implements CmController {
   }
 
   #initialDate(): string {
-    return this.#boundDate(this.#currentDates()[0] ?? formatCalendarValue(new Date(), this.#precision));
+    const date = this.#boundDate(
+      this.#dayValue(this.#currentDates()[0]) ?? formatCalendarValue(new Date(), this.#precision),
+    );
+    return this.#hasTime ? calendarNearestAvailableDay(date, this.#timeSettings()) : date;
   }
 
   #boundDate(value: string): string {
-    return boundCalendarDate(value, this.#trigger.dataset.cmMin, this.#trigger.dataset.cmMax);
+    return boundCalendarDate(
+      value,
+      this.#dayValue(this.#trigger.dataset.cmMin),
+      this.#dayValue(this.#trigger.dataset.cmMax),
+    );
   }
 
   #adjacentPeriod(delta: number): string | null {
-    return calendarAdjacentPeriod(
+    const target = calendarAdjacentPeriod(
       this.#visibleMonth,
       delta,
       this.#precision,
       this.#yearStart,
-      this.#trigger.dataset.cmMin,
-      this.#trigger.dataset.cmMax,
+      this.#dayValue(this.#trigger.dataset.cmMin),
+      this.#dayValue(this.#trigger.dataset.cmMax),
     );
+    if (!this.#hasTime || target === null) return target;
+    const times = this.#timeSettings();
+    const available = calendarNearestAvailableDay(target, times);
+    return available.slice(0, 7) !== this.#visibleMonth.slice(0, 7) && calendarDateHasTime(available, times)
+      ? available
+      : null;
   }
 
   #firstDayOfWeek(): CmCalendarWeekday {
@@ -232,6 +290,15 @@ export class CmDatePickerController implements CmController {
     const day = target.closest<HTMLButtonElement>(daySelector);
     const value = day?.dataset.cmDatePickerValue;
     if (day && !day.disabled && value) {
+      if (this.#hasTime) {
+        this.#prepareTime(value, this.#draftTime ?? 0);
+        if (this.#draftTime === null) return;
+        this.#commit(
+          selectCalendarDateTime(this.#currentDates(), formatCalendarDateTime(value, this.#draftTime), this.#mode),
+        );
+        this.#moveFocus(value);
+        return;
+      }
       const next = selectCalendarDate(this.#currentDates(), value, this.#mode);
       this.#commit(next);
       if (this.#mode === 'single' || (this.#mode === 'range' && next.length === 2)) this.#setOpen(false, true);
@@ -264,8 +331,84 @@ export class CmDatePickerController implements CmController {
     const target = calendarGridKeyTarget(value, key, this.#precision, this.#firstDayOfWeek(), this.#yearStart, rtl);
     if (target === null) return;
     event.preventDefault();
-    if (parseCalendarValue(target, this.#precision) && this.#boundDate(target) === target) this.#moveFocus(target);
+    if (
+      parseCalendarValue(target, this.#precision) &&
+      this.#boundDate(target) === target &&
+      (!this.#hasTime || calendarDateHasTime(target, this.#timeSettings()))
+    ) {
+      this.#moveFocus(target);
+    }
   };
+
+  readonly #handleTimeChange = (event: Event): void => {
+    if (
+      this.#calendar.hidden ||
+      this.#draftTime === null ||
+      this.#trigger.disabled ||
+      this.#trigger.getAttribute('aria-readonly') === 'true'
+    ) {
+      return;
+    }
+    const times = calendarTimesForDay(this.#draftDay, this.#timeSettings());
+    let time: number | null = null;
+    if (event.target === this.#hourSelect && this.#hourSelect) {
+      const hour = Number(this.#hourSelect.value);
+      time = nearestCalendarTime(
+        times.filter((value) => Math.floor(value / 60) === hour),
+        hour * 60 + (this.#draftTime % 60),
+      );
+    } else if (event.target === this.#minuteSelect && this.#minuteSelect) {
+      time = Math.floor(this.#draftTime / 60) * 60 + Number(this.#minuteSelect.value);
+    }
+    if (time === null || !times.includes(time)) return;
+    this.#draftTime = time;
+    this.#renderTime(times);
+    const dates = updateCalendarDateTime(
+      this.#currentDates(),
+      formatCalendarDateTime(this.#draftDay, time),
+      this.#mode,
+    );
+    if (dates) this.#commit(dates);
+  };
+
+  #prepareTime(day: string, preferred: number): void {
+    this.#draftDay = day;
+    const times = calendarTimesForDay(day, this.#timeSettings());
+    this.#draftTime = nearestCalendarTime(times, preferred);
+    this.#renderTime(times);
+  }
+
+  #renderTime(times: readonly number[]): void {
+    if (!this.#hourSelect || !this.#minuteSelect) return;
+    const hour = this.#draftTime === null ? -1 : Math.floor(this.#draftTime / 60);
+    const minute = this.#draftTime === null ? -1 : this.#draftTime % 60;
+    const hours = new Set(times.map((time) => Math.floor(time / 60)));
+    const minutes = new Set(times.filter((time) => Math.floor(time / 60) === hour).map((time) => time % 60));
+    this.#timeOptions(this.#hourSelect, 24, 1, hours, hour);
+    this.#timeOptions(this.#minuteSelect, 60, this.#timeSettings().minuteStep, minutes, minute);
+  }
+
+  #timeOptions(
+    select: HTMLSelectElement,
+    limit: number,
+    step: number,
+    allowed: ReadonlySet<number>,
+    selected: number,
+  ): void {
+    const count = Math.ceil(limit / step);
+    for (let index = 0; index < count; index += 1) {
+      const value = index * step;
+      const existing = select.options[index];
+      const option = existing ?? select.ownerDocument.createElement('option');
+      option.value = String(value);
+      option.textContent = String(value).padStart(2, '0');
+      option.disabled = !allowed.has(value);
+      if (!existing) select.append(option);
+    }
+    while (select.options.length > count) select.remove(select.options.length - 1);
+    select.value = String(selected);
+    select.disabled = selected < 0;
+  }
 
   #changePeriod(delta: number): void {
     const target = this.#adjacentPeriod(delta);
@@ -304,10 +447,10 @@ export class CmDatePickerController implements CmController {
     if (next) next.disabled = this.#adjacentPeriod(1) === null;
 
     const weeks = buildCalendarGrid({
-      max: this.#trigger.dataset.cmMax ?? null,
-      min: this.#trigger.dataset.cmMin ?? null,
+      max: this.#dayValue(this.#trigger.dataset.cmMax),
+      min: this.#dayValue(this.#trigger.dataset.cmMin),
       month: this.#visibleMonth,
-      selected: this.#currentDates(),
+      selected: this.#currentDates().map((date) => this.#dayValue(date) ?? date),
       range: this.#mode === 'range',
       firstDayOfWeek: this.#firstDayOfWeek(),
       locale,
@@ -341,7 +484,7 @@ export class CmDatePickerController implements CmController {
       if (!cell) return;
       cell.dataset.cmDatePickerValue = day.value;
       cell.textContent = day.label;
-      cell.disabled = day.disabled;
+      cell.disabled = day.disabled || (this.#hasTime && !calendarDateHasTime(day.value, this.#timeSettings()));
       cell.classList.toggle('cm-date-picker__day--outside', day.outside);
       cell.classList.toggle('cm-date-picker__day--today', day.today);
       cell.classList.toggle('cm-date-picker__day--selected', day.selected);
@@ -352,7 +495,7 @@ export class CmDatePickerController implements CmController {
       cell.setAttribute('aria-selected', String(day.selected || day.inRange));
       if (day.today) cell.setAttribute('aria-current', 'date');
       else cell.removeAttribute('aria-current');
-      cell.tabIndex = !day.disabled && day.value === this.#focusedDate ? 0 : -1;
+      cell.tabIndex = !cell.disabled && day.value === this.#focusedDate ? 0 : -1;
     });
   }
 
@@ -420,6 +563,13 @@ export class CmDatePickerController implements CmController {
     this.#calendar.hidden = !open;
     if (open) {
       this.#calendar.tabIndex = -1;
+      if (this.#hasTime) {
+        const now = new Date();
+        this.#prepareTime(
+          this.#focusedDate,
+          calendarTimeValue(this.#currentDates()[0] ?? '') ?? now.getHours() * 60 + now.getMinutes(),
+        );
+      }
       this.#renderGrid();
       this.#holdPlacement();
     } else {

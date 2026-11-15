@@ -3,7 +3,15 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { URL } from 'node:url';
 import { JSDOM } from 'jsdom';
-import { calendarKeyTarget, calendarYearRangeStart, parseIsoDate } from '../dist/core/index.js';
+import {
+  calendarDateHasTime,
+  calendarKeyTarget,
+  calendarTimesForDay,
+  calendarTimeValue,
+  calendarYearRangeStart,
+  formatDisplayDate,
+  parseIsoDate,
+} from '../dist/core/index.js';
 import { CmRuntime, createCmDatePickerController } from '../dist/index.js';
 
 const markup = readFileSync(new URL('../../../contracts/date-picker/cases/default.html', import.meta.url), 'utf8');
@@ -192,3 +200,53 @@ for (const [name, id, initialLabel, selection, field] of [
     assert.equal(document.activeElement, trigger);
   });
 }
+
+test('aligns wall time to the configured minute step without converting timezone', () => {
+  assert.equal(calendarTimeValue('2026-03-08T02:30'), 150);
+  assert.equal(calendarTimeValue('2026-03-08T02:30Z'), null);
+  assert.equal(formatDisplayDate('2026-03-08T02:30', 'en-US', 'yyyy-MM-dd HH:mm'), '2026-03-08 02:30');
+  assert.deepEqual(
+    calendarTimesForDay('2026-08-13', { min: '2026-08-13T09:25', max: '2026-08-13T09:55', minuteStep: 15 }),
+    [570, 585],
+  );
+  assert.equal(
+    calendarDateHasTime('2026-08-13', { min: '2026-08-13T09:31', max: '2026-08-13T09:44', minuteStep: 15 }),
+    false,
+  );
+});
+
+test('Vanilla time controls submit ISO wall time and keep time bounds after a date selection', (context) => {
+  const markup = readFileSync(new URL('../../../contracts/date-picker/cases/time.html', import.meta.url), 'utf8');
+  const { window } = new JSDOM(`<form>${markup}</form>`);
+  const { document } = window;
+  const runtime = new CmRuntime().register('date-picker', createCmDatePickerController);
+  context.after(() => {
+    runtime.stop();
+    window.close();
+  });
+  runtime.start(document);
+  const trigger = document.getElementById('release-time');
+  trigger.click();
+  const hour = document.querySelector('[data-cm-date-picker-hour]');
+  const minute = document.querySelector('[data-cm-date-picker-minute]');
+  assert.equal(hour.value, '9');
+  assert.equal(minute.value, '30');
+  assert.equal(hour.querySelector('option[value="8"]').disabled, true);
+  assert.equal(minute.querySelector('option[value="0"]').disabled, true);
+
+  const change = (select, value) => {
+    select.value = value;
+    select.dispatchEvent(new window.Event('change', { bubbles: true }));
+  };
+  const tenOClock = hour.querySelector('option[value="10"]');
+  change(hour, '10');
+  assert.equal(hour.querySelector('option[value="10"]'), tenOClock);
+  change(minute, '45');
+  const submitted = () => new window.FormData(document.querySelector('form')).get('release_time');
+  assert.equal(submitted(), '2026-08-13T10:45');
+  document.querySelector('[data-cm-date-picker-value="2026-08-14"]').click();
+  assert.equal(minute.value, '30');
+  assert.equal(submitted(), '2026-08-14T10:30');
+  assert.equal(trigger.getAttribute('aria-expanded'), 'true');
+  assert.equal(trigger.textContent.trim(), '14.08.2026 10:30');
+});
