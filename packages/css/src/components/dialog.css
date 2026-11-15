@@ -32,8 +32,8 @@
   padding: var(--cm-space-4);
 }
 
-.cm-dialog__header {
-  justify-content: space-between;
+.cm-dialog__header:not(:has(> .cm-dialog__title)) {
+  justify-content: flex-end;
 }
 
 .cm-dialog__title {

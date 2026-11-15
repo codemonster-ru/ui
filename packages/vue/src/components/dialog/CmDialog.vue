@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, useAttrs, type PropType } from 'vue';
+import { computed, useAttrs, useSlots, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
@@ -11,13 +11,18 @@ defineOptions({ inheritAttrs: false });
 
 const props = defineProps({
   id: { type: String, required: true },
-  title: { type: String, required: true },
+  title: { type: String, default: undefined },
   description: { type: String, default: null },
-  open: Boolean,
+  open: { type: Boolean, default: undefined },
+  defaultOpen: Boolean,
+  ariaLabel: { type: String, default: undefined },
+  ariaLabelledby: { type: String, default: undefined },
+  ariaDescribedby: { type: String, default: undefined },
   closeLabel: { type: String, default: 'Close' },
   dismissible: { type: Boolean, default: true },
   closable: { type: Boolean, default: true },
   closeOnOverlayClick: Boolean,
+  closeOnEscape: { type: Boolean, default: true },
   focusDialog: Boolean,
   size: {
     type: String as PropType<CmDialogSize>,
@@ -28,9 +33,17 @@ const props = defineProps({
 });
 const emit = defineEmits<{ openChange: [open: boolean]; 'update:open': [open: boolean] }>();
 const attrs = useAttrs();
+const slots = useSlots();
+const hasHeading = (): boolean => Boolean(props.title?.trim() || slots.header);
+const ariaLabel = computed(() => props.ariaLabel?.trim() || undefined);
+const explicitLabelledby = computed(() => props.ariaLabelledby?.trim() || undefined);
 assertCm(
-  [props.id, props.title, props.closeLabel].every((value) => value.trim() !== ''),
-  'Dialog id, title, and closeLabel must be non-empty strings.',
+  [props.id, props.closeLabel].every((value) => value.trim() !== ''),
+  'Dialog id and closeLabel must be non-empty strings.',
+);
+assertCm(
+  Boolean(hasHeading() || ariaLabel.value || explicitLabelledby.value),
+  'Dialog requires a title, header slot, aria-label, or aria-labelledby.',
 );
 const modal = useCmModal(
   () => props.open,
@@ -38,8 +51,10 @@ const modal = useCmModal(
     emit('update:open', open);
     emit('openChange', open);
   },
+  props.defaultOpen,
 );
 const { dialog, localOpen, onCancel, onClose, onKeydown, setOpen } = modal;
+const allowEscape = computed(() => props.dismissible && props.closeOnEscape);
 function requestClose(): void {
   if (props.dismissible) setOpen(false);
 }
@@ -57,11 +72,13 @@ const rootAttrs = computed(() =>
   omitCmOwnedAttrs(attrs, [
     'id',
     'open',
+    'aria-label',
     'aria-labelledby',
     'aria-describedby',
     'data-cm-controller',
     'data-cm-dialog-state',
     'data-cm-dialog-dismissible',
+    'data-cm-dialog-close-on-escape',
   ]),
 );
 
@@ -75,14 +92,18 @@ useCmHydrated();
     v-bind="rootAttrs"
     :class="classes"
     :open="localOpen || undefined"
-    :aria-labelledby="`${props.id}-title`"
-    :aria-describedby="props.description || $slots.description ? `${props.id}-description` : undefined"
+    :aria-label="ariaLabel"
+    :aria-labelledby="explicitLabelledby ?? (!ariaLabel && hasHeading() ? `${props.id}-title` : undefined)"
+    :aria-describedby="
+      props.ariaDescribedby?.trim() || (props.description || $slots.description ? `${props.id}-description` : undefined)
+    "
     data-cm-controller="dialog"
     :data-cm-dialog-state="localOpen ? 'open' : 'closed'"
     :data-cm-dialog-dismissible="props.dismissible ? 'true' : 'false'"
-    @cancel="props.dismissible ? onCancel($event) : $event.preventDefault()"
+    :data-cm-dialog-close-on-escape="props.closeOnEscape ? undefined : 'false'"
+    @cancel="onCancel($event, allowEscape)"
     @close="onClose"
-    @keydown="onKeydown($event, props.dismissible)"
+    @keydown="onKeydown($event, allowEscape)"
     @click.self="props.closeOnOverlayClick ? requestClose() : undefined"
   >
     <div
@@ -90,8 +111,8 @@ useCmHydrated();
       :tabindex="props.focusDialog ? -1 : undefined"
       :data-autofocus="props.focusDialog ? '' : undefined"
     >
-      <header class="cm-dialog__header">
-        <h2 :id="`${props.id}-title`" class="cm-dialog__title">
+      <header v-if="hasHeading() || $slots.actions || props.closable" class="cm-dialog__header">
+        <h2 v-if="hasHeading()" :id="`${props.id}-title`" class="cm-dialog__title">
           <slot name="header" :title-id="`${props.id}-title`">{{ props.title }}</slot>
         </h2>
         <div v-if="$slots.actions" class="cm-dialog__actions">

@@ -5,11 +5,16 @@
   "description": "A native modal dialog with deterministic focus management.",
   "props": {
     "id": { "type": "string", "required": true },
-    "title": { "type": "string", "required": true },
+    "title": { "type": "string", "required": false },
+    "ariaLabel": { "type": "string", "required": false },
+    "ariaLabelledby": { "type": "string", "required": false },
+    "ariaDescribedby": { "type": "string", "required": false },
     "description": { "type": "nullable", "required": false, "default": null },
     "open": { "type": "boolean", "required": false, "default": false },
+    "defaultOpen": { "type": "boolean", "required": false, "default": false },
     "closeLabel": { "type": "string", "required": false, "default": "Close" },
     "dismissible": { "type": "boolean", "required": false, "default": true },
+    "closeOnEscape": { "type": "boolean", "required": false, "default": true },
     "size": { "type": "enum", "required": false, "default": "md", "values": ["sm", "md", "lg"] },
     "dividers": { "type": "boolean", "required": false, "default": false }
   },

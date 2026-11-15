@@ -77,19 +77,21 @@ export class CmModalController implements CmController {
   readonly #handleClick = (event: Event): void => {
     const ElementConstructor = this.#dialog.ownerDocument.defaultView?.Element;
     if (!ElementConstructor || !(event.target instanceof ElementConstructor)) return;
+    if (event.target.closest('dialog') !== this.#dialog) return;
     if (event.target.closest(this.#options.closeSelector) && this.#isDismissible()) this.setOpen(false);
   };
 
   readonly #handleKeydown = (event: Event): void => {
-    const KeyboardEventConstructor = this.#dialog.ownerDocument.defaultView?.KeyboardEvent;
-    if (!KeyboardEventConstructor || !(event instanceof KeyboardEventConstructor)) return;
+    const view = this.#dialog.ownerDocument.defaultView;
+    if (!view || !(event instanceof view.KeyboardEvent) || !(event.target instanceof view.Element)) return;
+    if (!this.#dialog.open || event.target.closest('dialog') !== this.#dialog) return;
     if (event.key === 'Escape') {
       if (event.defaultPrevented) return;
       event.preventDefault();
       if (this.#isDismissible() && this.#options.allowEscape?.() !== false) this.setOpen(false);
       return;
     }
-    if (event.key !== 'Tab' || !this.#dialog.open) return;
+    if (event.key !== 'Tab') return;
     const focusable = this.#availableFocusCandidates(cmFocusableSelector).filter((element) => element.tabIndex >= 0);
     if (focusable.length === 0) {
       event.preventDefault();
@@ -145,6 +147,7 @@ export class CmModalController implements CmController {
   #availableFocusCandidates(selector: string): HTMLElement[] {
     return [...this.#dialog.querySelectorAll<HTMLElement>(selector)].filter(
       (element) =>
+        element.closest('dialog') === this.#dialog &&
         !element.matches(':disabled, input[type="hidden"]') &&
         !element.closest('[hidden], [inert], [aria-hidden="true"]'),
     );
