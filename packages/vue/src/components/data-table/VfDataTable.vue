@@ -106,6 +106,7 @@ const native = computed(() => ({
   defaultExpandedRowKeys: props.defaultExpandedRowKeys?.map(encodeKey),
   selectRowLabelTemplate: 'Select {row}',
   rowLabelResolver: (index: number) => `row ${index + 1}`,
+  actionLabels: props.labels,
   sortList: (props.sort ?? sort.value).map(toNativeSort),
   multiSort: props.multiSort,
   sortingMode: props.sortingMode,

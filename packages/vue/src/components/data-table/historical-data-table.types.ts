@@ -1,4 +1,5 @@
 import type {
+  CmDataTableActionLabels,
   CmDataTableAlign,
   CmDataTableColumn,
   CmDataTableColumnPin,
@@ -30,7 +31,7 @@ export interface VfDataTableColumn extends Omit<CmDataTableColumn, 'header'> {
   header?: string;
 }
 
-export interface VfDataTableLabels {
+export interface VfDataTableLabels extends Required<CmDataTableActionLabels> {
   empty: string;
   error: string;
   loading: string;
@@ -53,6 +54,7 @@ export interface VfDataTableProps<Row extends VfDataTableRow = VfDataTableRow> e
   | 'id'
   | 'columns'
   | 'rowKey'
+  | 'actionLabels'
   | 'sort'
   | 'sortList'
   | 'selectedRowIds'

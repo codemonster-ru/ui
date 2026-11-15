@@ -65,6 +65,44 @@ test('server-renders the historical page window, custom labels and current page'
   assert.match(html, />91–91 of 200<\/span>/u);
 });
 
+test('server-renders and escapes historical row action labels and the next sorting action', async () => {
+  const html = await renderToString(
+    h(
+      VfDataTable,
+      {
+        columns: [
+          { key: 'name', sortable: true },
+          { key: 'score', header: '<Rating>', sortable: true },
+        ],
+        rows: [{ name: 'Ada', score: 9 }],
+        selectable: true,
+        resizableColumns: true,
+        multiSort: true,
+        defaultSort: [
+          { key: 'name', direction: 'asc' },
+          { key: 'score', direction: 'desc' },
+        ],
+        labels: {
+          selectRow: (index) => `Select & review ${index}`,
+          expandRow: (index) => `Show "record ${index}"`,
+          collapseRow: (index) => `Hide "record ${index}"`,
+          sortDescending: (column) => `Descending ${column}`,
+          clearSort: (column) => `Clear ${column}`,
+          resizeColumn: (column) => `Resize "${column}"`,
+        },
+      },
+      { 'expanded-row': () => 'Details' },
+    ),
+  );
+
+  assert.match(html, /aria-label="Select &amp; review 1"/u);
+  assert.match(html, /aria-label="Show &quot;record 1&quot;"/u);
+  assert.match(html, /data-cm-data-table-collapse-label="Hide &quot;record 1&quot;"/u);
+  assert.match(html, /aria-label="Descending name"/u);
+  assert.match(html, /aria-label="Clear &lt;Rating&gt;"/u);
+  assert.match(html, /aria-label="Resize &quot;name&quot;"/u);
+});
+
 for (const [slug, component] of Object.entries({ 'data-table': CmDataTable, table: CmTable })) {
   const casesDirectory = resolve(packageDirectory, `../../contracts/${slug}/cases`);
   const caseFiles = (await readdir(casesDirectory)).filter((file) => file.endsWith('.case.json')).sort();

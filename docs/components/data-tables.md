@@ -174,6 +174,15 @@ DataTable controller. It updates the header and body cell widths and dispatches
 `cm:data-table-column-widths-change` and `cm:data-table-column-resize-end`, each with
 `detail.columnWidths`.
 
+### Action labels in Vue
+
+`VfDataTable` accepts `labels.selectRow`, `labels.expandRow`, and `labels.collapseRow` callbacks.
+Each receives a one-based row position on the displayed page. `labels.sortAscending`,
+`labels.sortDescending`, `labels.clearSort`, and `labels.resizeColumn` receive the column's
+header text or its key when the header is omitted. Sort labels describe the next action.
+Omitted callbacks use the built-in labels. `CmDataTable` accepts the same optional callbacks
+through `actionLabels`, with its label templates as fallbacks.
+
 ### Reordering columns in Vue
 
 Set `reorderableColumns` on `VfDataTable`. Drag a header or focus it and press Left or Right
