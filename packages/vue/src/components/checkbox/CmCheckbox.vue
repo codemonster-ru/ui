@@ -46,6 +46,8 @@ function syncIndeterminate(): void {
   if (input.value) input.value.indeterminate = props.indeterminate;
 }
 
+// The previous controller clears indeterminate when it relinquishes the root.
+useCmHydrated();
 onMounted(syncIndeterminate);
 watch(() => props.indeterminate, syncIndeterminate, { flush: 'post' });
 
@@ -53,8 +55,6 @@ function updateChecked(event: Event): void {
   emit('update:modelValue', (event.target as HTMLInputElement).checked);
   emit('change', event);
 }
-
-useCmHydrated();
 </script>
 
 <template>

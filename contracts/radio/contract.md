@@ -21,6 +21,10 @@ plus this radio's string `value`, derives checked equality, and emits the option
 change. Vanilla HTML receives the server-derived `checked` state. Radio-group exclusivity remains
 native and depends on consumers assigning the same non-empty `name` to related options.
 
+`VfRadio` from `@codemonster-ru/ui-vue/historical` accepts string, number, and boolean values,
+compares them by strict equality, and emits the original value for both `update:modelValue` and
+`change` when an option is checked. Native HTML form submission uses the string representation.
+
 ## Validation and submission
 
 `disabled` and `required` map to native attributes. `invalid` adds `cm-radio--invalid` and

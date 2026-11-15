@@ -10,3 +10,5 @@ export interface CmCheckboxProps {
   required?: boolean;
   indeterminate?: boolean;
 }
+
+export type VfCheckboxProps = CmCheckboxProps;
