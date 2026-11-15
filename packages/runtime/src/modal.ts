@@ -16,6 +16,7 @@ export interface ModalControllerOptions {
 export class CmModalController implements CmController {
   readonly #dialog: HTMLDialogElement;
   readonly #options: ModalControllerOptions;
+  #isOpen = false;
   #returnFocus: HTMLElement | null = null;
 
   constructor(root: Element, options: ModalControllerOptions) {
@@ -37,6 +38,7 @@ export class CmModalController implements CmController {
     this.#dialog.addEventListener('click', this.#handleClick);
     this.#dialog.addEventListener('keydown', this.#handleKeydown);
     this.#dialog.addEventListener('cancel', this.#handleCancel);
+    this.#dialog.addEventListener('close', this.#handleClose);
     this.#dialog.addEventListener(`cm:${this.#options.eventName}-open-request`, this.#handleOpenRequest);
     this.#dialog.addEventListener(`cm:${this.#options.eventName}-close-request`, this.#handleCloseRequest);
     if (open) this.#focusInitial();
@@ -46,23 +48,24 @@ export class CmModalController implements CmController {
     this.#dialog.removeEventListener('click', this.#handleClick);
     this.#dialog.removeEventListener('keydown', this.#handleKeydown);
     this.#dialog.removeEventListener('cancel', this.#handleCancel);
+    this.#dialog.removeEventListener('close', this.#handleClose);
     this.#dialog.removeEventListener(`cm:${this.#options.eventName}-open-request`, this.#handleOpenRequest);
     this.#dialog.removeEventListener(`cm:${this.#options.eventName}-close-request`, this.#handleCloseRequest);
     this.#returnFocus = null;
   }
 
   setOpen(open: boolean, restoreFocus = true): void {
-    if (this.#dialog.open === open) return;
-
     if (open) {
+      if (this.#dialog.open) return;
       const active = this.#dialog.ownerDocument.activeElement;
       this.#returnFocus = active instanceof this.#dialog.ownerDocument.defaultView!.HTMLElement ? active : null;
       this.#enterModal();
       this.#synchronize(true);
       this.#focusInitial();
     } else {
+      if (!this.#dialog.open && !this.#isOpen) return;
+      this.#isOpen = false;
       if (typeof this.#dialog.close === 'function' && this.#dialog.open) this.#dialog.close();
-      else this.#dialog.open = false;
       this.#synchronize(false);
       if (restoreFocus && this.#returnFocus?.isConnected) this.#returnFocus.focus();
       this.#returnFocus = null;
@@ -107,6 +110,11 @@ export class CmModalController implements CmController {
     if (this.#isDismissible()) this.setOpen(false);
   };
 
+  readonly #handleClose = (): void => {
+    // Native close is queued and may arrive after the dialog has already reopened.
+    if (!this.#dialog.open) this.setOpen(false);
+  };
+
   readonly #handleOpenRequest = (): void => this.setOpen(true);
   readonly #handleCloseRequest = (): void => this.setOpen(false);
 
@@ -141,6 +149,7 @@ export class CmModalController implements CmController {
   }
 
   #synchronize(open: boolean): void {
+    this.#isOpen = open;
     this.#dialog.open = open;
     this.#dialog.dataset[this.#options.stateAttribute] = open ? 'open' : 'closed';
     this.#dialog.classList.toggle(this.#options.className, open);

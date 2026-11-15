@@ -44,7 +44,7 @@ const modal = useCmModal(
     emit('openChange', open);
   },
 );
-const { dialog, localOpen, onCancel, onKeydown, setOpen } = modal;
+const { dialog, localOpen, onCancel, onClose, onKeydown, setOpen } = modal;
 function requestClose(): void {
   if (props.dismissible) setOpen(false);
 }
@@ -87,6 +87,7 @@ useCmHydrated();
     :data-cm-drawer-state="localOpen ? 'open' : 'closed'"
     :data-cm-drawer-dismissible="props.dismissible ? 'true' : 'false'"
     @cancel="props.dismissible ? onCancel($event) : $event.preventDefault()"
+    @close="onClose"
     @keydown="props.dismissible ? onKeydown($event) : undefined"
   >
     <div class="cm-drawer__surface">

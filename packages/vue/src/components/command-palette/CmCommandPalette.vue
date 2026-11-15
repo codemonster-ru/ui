@@ -81,7 +81,7 @@ const modal = useCmModal(
     emit('openChange', open);
   },
 );
-const { dialog, localOpen, onCancel, onKeydown: onModalKeydown, setOpen } = modal;
+const { dialog, localOpen, onCancel, onClose, onKeydown: onModalKeydown, setOpen } = modal;
 const classes = computed(() =>
   mergeCmClasses('cm-command-palette', localOpen.value ? 'cm-command-palette--open' : undefined, attrs.class),
 );
@@ -156,6 +156,7 @@ useCmHydrated();
     :data-cm-command-palette-state="localOpen ? 'open' : 'closed'"
     :data-cm-command-palette-loading="props.loading ? 'true' : undefined"
     @cancel="onCancel"
+    @close="onClose"
     @keydown="onModalKeydown"
   >
     <div class="cm-command-palette__surface">

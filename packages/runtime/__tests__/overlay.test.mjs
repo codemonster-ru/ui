@@ -101,6 +101,40 @@ test('repeated open requests preserve the opener and current focus', (context) =
   assert.equal(document.activeElement, opener);
 });
 
+test('reports a native close once and ignores delayed close after reopening', (context) => {
+  const dom = new JSDOM(`<button id="opener">Open</button>${modalHtml('dialog')}`);
+  const { document, CustomEvent, Event } = dom.window;
+  const root = document.querySelector('dialog');
+  const opener = document.querySelector('#opener');
+  const runtime = new CmRuntime().register('dialog', createCmDialogController);
+  const states = [];
+  root.addEventListener('cm:dialog-open-change', (event) => states.push(event.detail.open));
+  context.after(() => {
+    runtime.stop();
+    dom.window.close();
+  });
+  runtime.start(document);
+  opener.focus();
+  root.dispatchEvent(new CustomEvent('cm:dialog-open-request'));
+
+  // Native close() and form method="dialog" clear open before dispatching close.
+  root.open = false;
+  root.dispatchEvent(new Event('close'));
+  assert.equal(root.dataset.cmDialogState, 'closed');
+  assert.equal(root.classList.contains('cm-dialog--open'), false);
+  assert.equal(document.activeElement, opener);
+  assert.deepEqual(states, [true, false]);
+
+  root.dispatchEvent(new CustomEvent('cm:dialog-open-request'));
+  root.dispatchEvent(new CustomEvent('cm:dialog-close-request'));
+  root.dispatchEvent(new Event('close'));
+  root.dispatchEvent(new CustomEvent('cm:dialog-open-request'));
+  root.dispatchEvent(new Event('close'));
+  assert.equal(root.open, true);
+  assert.equal(root.dataset.cmDialogState, 'open');
+  assert.deepEqual(states, [true, false, true, false, true]);
+});
+
 test('modal focus skips disabled, hidden, inert and negative-tabindex descendants', (context) => {
   const dom = new JSDOM(`
     <dialog data-cm-controller="dialog">
