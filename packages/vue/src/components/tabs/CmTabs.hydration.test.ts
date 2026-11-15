@@ -120,43 +120,51 @@ describe('CmTabs under a running CmRuntime', () => {
     }
   });
 
-  it('hydrates overflow controls and the moving indicator after a browser-measured runtime enhancement', async () => {
-    const container = document.createElement('div');
-    document.body.append(container);
-    const view = { render: () => h(CmTabs, { id: 'account', items, scrollControls: true }) };
-    container.innerHTML = await renderToString(createSSRApp(view));
-    const list = container.querySelector<HTMLElement>('[role="tablist"]')!;
-    const indicator = list.querySelector<HTMLElement>('.cm-tabs__indicator')!;
-    const end = container.querySelector<HTMLButtonElement>('[data-cm-tabs-scroll="end"]')!;
-    Object.defineProperties(list, { clientWidth: { value: 160 }, scrollWidth: { value: 240 } });
-    for (const tab of list.querySelectorAll<HTMLElement>('[role="tab"]')) {
-      tab.getBoundingClientRect = () => new DOMRect(0, 0, 120, 36);
-    }
-    expect(end.hidden).toBe(true);
-    expect(indicator.hidden).toBe(true);
-    expect(indicator.hasAttribute('style')).toBe(false);
-    const runtime = startRuntime();
-    expect(end.hidden).toBe(false);
-    expect(indicator.hidden).toBe(false);
-    expect(indicator.style.width).toBe('120px');
+  it.each([true, undefined])(
+    'hydrates the browser-measured indicator with scrollControls=%s',
+    async (scrollControls) => {
+      const container = document.createElement('div');
+      document.body.append(container);
+      const view = { render: () => h(CmTabs, { id: 'account', items, scrollControls }) };
+      container.innerHTML = await renderToString(createSSRApp(view));
+      const list = container.querySelector<HTMLElement>('[role="tablist"]')!;
+      const authoredIndicator = list.querySelector<HTMLElement>('.cm-tabs__indicator');
+      const authoredEnd = container.querySelector<HTMLButtonElement>('[data-cm-tabs-scroll="end"]');
+      Object.defineProperties(list, { clientWidth: { value: 160 }, scrollWidth: { value: 240 } });
+      for (const tab of list.querySelectorAll<HTMLElement>('[role="tab"]')) {
+        tab.getBoundingClientRect = () => new DOMRect(0, 0, 120, 36);
+      }
+      expect(authoredEnd?.hidden).toBe(scrollControls);
+      expect(authoredIndicator?.hidden).toBe(scrollControls);
+      expect(authoredIndicator?.hasAttribute('style')).toBe(scrollControls ? false : undefined);
+      const runtime = startRuntime();
+      const runtimeIndicator = list.querySelector<HTMLElement>('.cm-tabs__indicator')!;
+      expect(runtimeIndicator.getAttribute('aria-hidden')).toBe('true');
+      expect(runtimeIndicator.hidden).toBe(false);
+      expect(runtimeIndicator.style.width).toBe('120px');
+      expect(authoredEnd?.hidden).toBe(scrollControls ? false : undefined);
 
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
-    const app = createSSRApp(view);
-    try {
-      app.mount(container);
-      await nextTick();
-      expect(warn).not.toHaveBeenCalled();
-      expect(error).not.toHaveBeenCalled();
-      expect(container.firstElementChild?.hasAttribute('data-cm-hydrated')).toBe(true);
-      expect(end.hidden).toBe(false);
-      expect(indicator.hidden).toBe(false);
-      expect(indicator.style.width).toBe('120px');
-    } finally {
-      app.unmount();
-      runtime.stop();
-      warn.mockRestore();
-      error.mockRestore();
-    }
-  });
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const app = createSSRApp(view);
+      try {
+        app.mount(container);
+        await nextTick();
+        expect(warn).not.toHaveBeenCalled();
+        expect(error).not.toHaveBeenCalled();
+        expect(container.firstElementChild?.hasAttribute('data-cm-hydrated')).toBe(true);
+        expect(container.querySelector<HTMLButtonElement>('[data-cm-tabs-scroll="end"]')?.hidden).toBe(false);
+        expect(list.querySelectorAll('.cm-tabs__indicator')).toHaveLength(1);
+        const indicator = list.querySelector<HTMLElement>('.cm-tabs__indicator')!;
+        expect(indicator.hidden).toBe(false);
+        expect(indicator.style.width).toBe('120px');
+        expect(runtimeIndicator === indicator).toBe(Boolean(scrollControls));
+      } finally {
+        app.unmount();
+        runtime.stop();
+        warn.mockRestore();
+        error.mockRestore();
+      }
+    },
+  );
 });
