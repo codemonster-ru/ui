@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { renderToString } from '@vue/server-renderer';
-import { h, ref } from 'vue';
+import { createSSRApp, h, ref } from 'vue';
 
 test('publishes the Vue component adapter entries', async () => {
   const entry = await import('@codemonster-ru/ui-vue');
@@ -130,7 +130,10 @@ test('publishes the opt-in historical icon and Vue components', async () => {
     'VfTableOfContents',
     'VfTag',
     'VfTextarea',
+    'VueForgeCore',
     'VueIconify',
+    'createVueForgeCore',
+    'default',
     'useBreakpoint',
     'useBreakpointValue',
     'useBreakpoints',
@@ -191,6 +194,26 @@ test('publishes the opt-in historical icon and Vue components', async () => {
   assert.match(contents, /data-cm-toc-scroll-offset="64"/u);
   assert.match(contents, /href="#intro" aria-current="location">Intro/u);
   assert.match(contents, /href="\/appendix">Appendix/u);
+});
+
+test('installs the published historical plugin on independent server-rendered apps', async () => {
+  const { default: plugin, createVueForgeCore, VueForgeCore } = await import('@codemonster-ru/ui-vue/historical');
+  const { VfThemeProvider, useTheme } = await import('@codemonster-ru/ui-vue');
+  const status = {
+    setup() {
+      const theme = useTheme();
+      assert.deepEqual(Object.keys(theme), ['theme', 'resolvedTheme', 'setTheme', 'toggleTheme']);
+      return () => h('output', theme.theme.value);
+    },
+  };
+  const root = { render: () => h(VfThemeProvider, {}, { default: () => h(status) }) };
+
+  assert.equal(plugin, VueForgeCore);
+  const dark = createSSRApp(root).use(plugin, { defaultTheme: 'dark' });
+  const light = createSSRApp(root).use(createVueForgeCore(), { defaultTheme: 'light' });
+  assert.equal(dark.component('VfButton'), undefined);
+  assert.match(await renderToString(dark), /<output>dark<\/output>/u);
+  assert.match(await renderToString(light), /<output>light<\/output>/u);
 });
 
 test('renders a component using the historical focus trap and scroll lock without a browser', async () => {

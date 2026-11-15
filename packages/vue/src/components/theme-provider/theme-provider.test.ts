@@ -9,6 +9,7 @@ import CmThemeSwitch from '../theme-switch/CmThemeSwitch.vue';
 import VfThemeSwitch from '../theme-switch/VfThemeSwitch.vue';
 import CmThemeProvider from './CmThemeProvider.vue';
 import { useCmTheme } from './use-theme';
+import { createVueForgeCore, VueForgeCore } from './vueforge-core';
 
 const Consumer = defineComponent({
   setup() {
@@ -41,9 +42,91 @@ afterEach(() => {
   document.documentElement.removeAttribute('data-cm-theme');
   document.documentElement.removeAttribute('data-test-theme');
   document.documentElement.removeAttribute('data-vf-theme');
+  document.documentElement.removeAttribute('data-plugin-theme');
   document.cookie = 'cm-theme=; Path=/; Max-Age=0';
   localStorage.removeItem('test-theme');
+  localStorage.removeItem('plugin-theme');
   localStorage.removeItem('vf-theme');
+});
+
+describe('VueForgeCore', () => {
+  it('keeps installation options local to each app and leaves component registration and the document alone', async () => {
+    const root = defineComponent({ render: () => h(VfThemeProvider, {}, { default: () => h(Consumer) }) });
+    const installed = createSSRApp(root).use(VueForgeCore, { defaultTheme: 'dark' });
+    const configured = createSSRApp(root).use(createVueForgeCore(), { defaultTheme: 'light' });
+    const plain = createSSRApp(root);
+
+    expect(installed.component('VfButton')).toBeUndefined();
+    await expect(renderToString(installed)).resolves.toContain('dark:dark');
+    await expect(renderToString(configured)).resolves.toContain('light:light');
+    await expect(renderToString(plain)).resolves.toContain('system:light');
+    expect(document.documentElement.hasAttribute('data-cm-theme')).toBe(false);
+    expect(document.documentElement.hasAttribute('data-vf-theme')).toBe(false);
+  });
+
+  it('supplies storage and attribute defaults when the provider has no explicit props', async () => {
+    systemPreference();
+    localStorage.setItem('plugin-theme', 'dark');
+    const wrapper = mount(VfThemeProvider, {
+      global: {
+        plugins: [
+          [
+            VueForgeCore,
+            { defaultTheme: 'light', themeStorageKey: 'plugin-theme', themeAttribute: 'data-plugin-theme' },
+          ],
+        ],
+      },
+      slots: { default: Consumer },
+    });
+    try {
+      await nextTick();
+      expect(wrapper.text()).toBe('dark:dark');
+      expect(document.documentElement.getAttribute('data-plugin-theme')).toBe('dark');
+      await wrapper.get('button').trigger('click');
+      expect(localStorage.getItem('plugin-theme')).toBe('light');
+      expect(localStorage.getItem('vf-theme')).toBeNull();
+    } finally {
+      wrapper.unmount();
+    }
+  });
+
+  it('gives provider props precedence and keeps CmThemeProvider independent', async () => {
+    systemPreference();
+    localStorage.setItem('plugin-theme', 'dark');
+    const plugin = createVueForgeCore();
+    const options = {
+      defaultTheme: 'dark' as const,
+      themeStorageKey: 'plugin-theme',
+      themeAttribute: 'data-plugin-theme',
+    };
+    const wrapper = mount(VfThemeProvider, {
+      props: { defaultTheme: 'light', storageKey: 'test-theme', attribute: 'data-test-theme' },
+      global: { plugins: [[plugin, options]] },
+      slots: { default: Consumer },
+    });
+    try {
+      expect(wrapper.text()).toBe('light:light');
+      await wrapper.get('button').trigger('click');
+      expect(document.documentElement.getAttribute('data-test-theme')).toBe('dark');
+      expect(document.documentElement.hasAttribute('data-plugin-theme')).toBe(false);
+      expect(localStorage.getItem('test-theme')).toBe('dark');
+    } finally {
+      wrapper.unmount();
+    }
+    const modern = createSSRApp({ render: () => h(CmThemeProvider, {}, { default: () => h(Consumer) }) }).use(
+      plugin,
+      options,
+    );
+    await expect(renderToString(modern)).resolves.toContain('system:light');
+  });
+
+  it('rejects the historical raw theme option with the supported migration path', () => {
+    const app = createSSRApp({ render: () => h('main') });
+    expect(() => {
+      // @ts-expect-error Raw VueForge token configuration is invalid for this entry.
+      app.use(VueForgeCore, { theme: { light: { fieldBackground: 'black' } } });
+    }).toThrow(/require a stylesheet using CodeMonster UI --cm-\* tokens/u);
+  });
 });
 
 describe('VfThemeProvider', () => {
