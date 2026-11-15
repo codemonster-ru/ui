@@ -36,7 +36,9 @@ runtime.start(document);
 
 Repeated `start()` calls are safe. Call `runtime.stop(container)` before permanently removing an
 enhanced subtree, or use `const dispose = runtime.observe(container)` for automatic discovery and
-disposal. Scope runtime initialization away from Vue-owned component trees.
+disposal. A DOM move between roots observed by the same runtime retains the existing controllers.
+The disposer releases controllers that leave the runtime's observed roots. Scope runtime
+initialization away from Vue-owned component trees.
 
 ## Documentation
 

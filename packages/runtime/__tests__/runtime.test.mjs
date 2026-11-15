@@ -123,6 +123,98 @@ test('optionally observes inserted removed and retargeted controllers', async ()
   assert.deepEqual(calls, ['connect:first', 'disconnect:first', 'connect:second', 'disconnect:second']);
 });
 
+test('ignores a subtree inserted and removed in the same mutation batch', async () => {
+  const dom = new JSDOM('<main></main>');
+  const calls = [];
+  const runtime = new CmRuntime().register('demo', controllerFactory('demo', calls));
+  const main = dom.window.document.querySelector('main');
+  const dispose = runtime.observe(main);
+  const element = dom.window.document.createElement('section');
+  element.dataset.cmController = 'demo';
+
+  main.append(element);
+  element.remove();
+  await mutations(dom);
+  dispose();
+  runtime.stop();
+
+  assert.deepEqual(calls, []);
+});
+
+test('releases a controller moved out of a subtree after the subtree was removed', async () => {
+  const dom = new JSDOM('<main><section><button data-cm-controller="demo"></button></section></main>');
+  const calls = [];
+  const runtime = new CmRuntime().register('demo', controllerFactory('demo', calls));
+  const main = dom.window.document.querySelector('main');
+  const section = main.firstElementChild;
+  const dispose = runtime.observe(main);
+
+  section.remove();
+  section.firstElementChild.remove();
+  await mutations(dom);
+
+  assert.deepEqual(calls, ['connect:demo', 'disconnect:demo']);
+  dispose();
+});
+
+test('keeps controllers connected for DOM moves between observed roots', async () => {
+  const dom = new JSDOM('<main><section data-cm-controller="demo"></section></main><aside></aside>');
+  const calls = [];
+  const runtime = new CmRuntime().register('demo', controllerFactory('demo', calls));
+  const document = dom.window.document;
+  const main = document.querySelector('main');
+  const aside = document.querySelector('aside');
+  const disposeAside = runtime.observe(aside);
+  const disposeMain = runtime.observe(main);
+
+  aside.append(document.querySelector('section'));
+  await mutations(dom);
+  disposeMain();
+
+  assert.deepEqual(calls, ['connect:demo']);
+
+  disposeAside();
+  assert.deepEqual(calls, ['connect:demo', 'disconnect:demo']);
+});
+
+test('updates only changed controller names on the affected element', async () => {
+  const dom = new JSDOM('<main data-cm-controller="old own"><section data-cm-controller="child"></section></main>');
+  const calls = [];
+  const runtime = new CmRuntime()
+    .register('old', controllerFactory('old', calls))
+    .register('own', controllerFactory('own', calls))
+    .register('new', controllerFactory('new', calls))
+    .register('child', controllerFactory('child', calls));
+  const main = dom.window.document.querySelector('main');
+  const dispose = runtime.observe(main);
+
+  main.dataset.cmController = 'own new';
+  await mutations(dom);
+
+  assert.deepEqual(calls, ['connect:old', 'connect:own', 'connect:child', 'disconnect:old', 'connect:new']);
+  dispose();
+});
+
+test('disposes pending removals and leaves a restarted observation active', async () => {
+  const dom = new JSDOM('<main><section data-cm-controller="demo"></section></main>');
+  const calls = [];
+  const runtime = new CmRuntime().register('demo', controllerFactory('demo', calls));
+  const main = dom.window.document.querySelector('main');
+  const dispose = runtime.observe(main);
+  const element = main.firstElementChild;
+
+  element.remove();
+  dispose();
+
+  const disposeAgain = runtime.observe(main);
+  dispose();
+  main.append(element);
+  await mutations(dom);
+  disposeAgain();
+
+  assert.deepEqual(calls, ['connect:demo', 'disconnect:demo', 'connect:demo', 'disconnect:demo']);
+});
+
 test('reports roots without a MutationObserver implementation', () => {
   const root = { nodeType: 11, ownerDocument: null, querySelectorAll: () => [] };
 
