@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { resolveCmAnchoredTarget } from '@codemonster-ru/ui-runtime/anchored-position';
+import { useCmFloatingPaint } from '../../internal/floating-paint';
 import { autoUpdate, computePosition, flip, offset, shift } from '@codemonster-ru/floater.js';
 import {
   Comment,
@@ -75,7 +76,8 @@ const rootAttrs = computed(() =>
   omitCmOwnedAttrs(attrs, ['data-cm-controller', 'data-cm-tooltip-open-delay', 'data-cm-tooltip-teleport-to']),
 );
 const portal = computed(() => (!props.disableTeleport ? props.teleportTo || null : null));
-const teleportTarget = computed(() => (visible.value ? resolveCmAnchoredTarget(root.value, portal.value) : null));
+const painted = useCmFloatingPaint(visible, panelRef);
+const teleportTarget = computed(() => (painted.value ? resolveCmAnchoredTarget(root.value, portal.value) : null));
 
 function triggerChildren(children: VNode[]): VNode[] {
   return children.flatMap((child) => {

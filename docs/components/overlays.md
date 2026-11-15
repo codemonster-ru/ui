@@ -33,15 +33,20 @@ Individual styles are also available from the `dialog.css`, `drawer.css`, `dropd
   `defaultVisible` sets the initial rendering state. The Vue `VfTooltip` export uses top placement,
   an 80 ms delay, and a body portal by default.
 
-Dropdown, Popover, and Tooltip reveal their content with the shared overlay motion. The content
-becomes hidden immediately on dismissal. A reduced-motion preference or a browser without CSS
-starting styles displays the content immediately. [CSS starting styles](https://www.w3.org/TR/css-transitions-2/#defining-before-change-style)
+Dropdown, Popover, Tooltip, Select, and DatePicker reveal their content with shared overlay motion. Dismissal
+immediately releases focus and makes the panel unavailable to pointer and keyboard input. Browsers
+with discrete display transitions and CSS inertness keep the panel's paint and placement through
+the reverse motion, including in a portal. Reduced motion skips the transition. Other browsers
+hide the panel immediately. [Entry and exit transitions](https://developer.chrome.com/docs/modern-web-guidance/guides/ui-behaviors/animate-element-entry-exit)
 
 Dialog fades in with a short upward motion. Drawer slides in from its selected edge. Both fade
-in their backdrops and move focus inside as soon as the native modal opens. A modal containing
-Dropdown, MenuBar, Popover, or Tooltip fades in without moving to preserve viewport positioning
-for its nested overlays. A reduced-motion preference skips entry motion. Closing leaves the
-native modal stack immediately and returns focus to the opener.
+in their backdrops and move focus inside as soon as the native modal opens. A modal with nested
+DatePicker, Dropdown, MenuBar, Popover, Select, or Tooltip fades in place to preserve viewport
+positioning for their panels. Closing releases native modality and restores focus immediately. Browsers that
+support discrete top-layer transitions and CSS inertness keep the closing surface and backdrop
+painting through the reverse motion while exposing the page to pointer and keyboard input. A
+reduced-motion preference skips motion. Other browsers hide the surface immediately on close.
+[Top-layer transitions](https://developer.chrome.com/docs/modern-web-guidance/guides/ui-behaviors/animate-to-from-top-layer)
 
 `VfDialog` and `VfDrawer` accept `teleportTo` as a selector or element in their document.
 They render inline on the server and move to the target after mounting, defaulting to `body`.

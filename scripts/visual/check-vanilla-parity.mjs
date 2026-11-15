@@ -101,6 +101,30 @@ try {
         Number.isFinite(animation.effect?.getComputedTiming().endTime));
       await Promise.allSettled(finiteAnimations.map(animation => animation.finished));
     })()`;
+    const observeModalExit = `(() => {
+      const dialog = document.querySelector('#visual-root dialog');
+      const observer = new MutationObserver(() => {
+        if (dialog.open) return;
+        observer.disconnect();
+        const dialogStyle = getComputedStyle(dialog);
+        const rect = dialog.getBoundingClientRect();
+        const panelHit = document.elementFromPoint(
+          (Math.max(rect.left, 0) + Math.min(rect.right, innerWidth)) / 2,
+          (Math.max(rect.top, 0) + Math.min(rect.bottom, innerHeight)) / 2,
+        );
+        const active = document.activeElement;
+        dialog.querySelector('button').focus();
+        window.modalExit = {
+          modal: dialog.matches(':modal'),
+          focused: dialog.contains(active) || dialog.contains(document.activeElement),
+          hit: dialog.contains(panelHit) || dialog.contains(document.elementFromPoint(innerWidth - 2, innerHeight - 2)),
+          locked: document.documentElement.hasAttribute('data-cm-modal-scroll'),
+          painting: dialogStyle.display !== 'none',
+          supported: CSS.supports('overlay', 'auto') && CSS.supports('interactivity', 'inert'),
+        };
+      });
+      observer.observe(dialog, { attributes: true, attributeFilter: ['open'] });
+    })()`;
     const result = [];
     for (const { componentSlug, data } of scenarios.filter(
       ({ data }) => !process.argv[2] || process.argv.slice(2).includes(data.id),
@@ -109,6 +133,9 @@ try {
         const row = { scenario: data.id, platform, failures: [], motion: [] };
         result.push(row);
         try {
+          const verifyModalExit = ['dialog-escape', 'drawer-close-button', 'command-palette-navigation'].includes(
+            data.id,
+          );
           const url = new URL('/', origin);
           url.search = new URLSearchParams({
             case: data.case,
@@ -125,6 +152,7 @@ try {
           );
           await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 350, y: 650 });
           await evaluate(settleMotion);
+          if (verifyModalExit) await evaluate(observeModalExit);
           await evaluate(`(() => {
             window.motionTrace = [];
             for (const type of ['transitionrun','animationstart']) document.addEventListener(type, event => {
@@ -206,6 +234,32 @@ try {
             }
           }
           row.motion = await evaluate('window.motionTrace');
+          if (verifyModalExit) {
+            const exit = await evaluate('window.modalExit');
+            if (!exit || exit.modal || exit.focused || exit.hit || exit.locked || exit.painting !== exit.supported) {
+              row.failures.push({
+                error: 'Native modal exit paint or interaction differs from its expected state.',
+                exit,
+              });
+            }
+            await send('Emulation.setEmulatedMedia', {
+              features: [{ name: 'prefers-reduced-motion', value: 'reduce' }],
+            });
+            try {
+              const instant = await evaluate(`(() => {
+                const dialog = document.querySelector('#visual-root dialog');
+                dialog.showModal();
+                const shown = dialog.getBoundingClientRect().width > 0;
+                dialog.close();
+                return shown && !dialog.matches(':modal') && getComputedStyle(dialog).display === 'none';
+              })()`);
+              if (!instant) row.failures.push({ error: 'Reduced motion did not hide the native modal immediately.' });
+            } finally {
+              await send('Emulation.setEmulatedMedia', {
+                features: [{ name: 'prefers-reduced-motion', value: 'no-preference' }],
+              });
+            }
+          }
         } catch (error) {
           row.failures.push({ error: error.message });
         }

@@ -7,6 +7,7 @@ import {
   type CmAnchoredStyle,
 } from '@codemonster-ru/ui-runtime/anchored-position';
 import { authoredTriggerElement, CmAuthoredTrigger, disclosureTriggerActions } from '../../internal/disclosure-trigger';
+import { useCmFloatingPaint } from '../../internal/floating-paint';
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
 import { cmFocusableSelector, popoverKeyAction, resolveDisclosureOpen } from '@codemonster-ru/ui-runtime/core';
@@ -60,8 +61,9 @@ const rootAttrs = computed(() =>
     'data-cm-popover-focus-on-open',
   ]),
 );
+const painted = useCmFloatingPaint(localOpen, panel);
 const teleportTarget = computed(() =>
-  localOpen.value ? resolveCmAnchoredTarget(root.value, props.disableTeleport ? null : props.teleportTo) : null,
+  painted.value ? resolveCmAnchoredTarget(root.value, props.disableTeleport ? null : props.teleportTo) : null,
 );
 watch(
   () => [props.open, props.disabled] as const,
@@ -135,9 +137,9 @@ function onDocumentClick(event: MouseEvent): void {
 }
 
 watch(
-  [localOpen, teleportTarget, placement, trigger, panel, () => props.showArrow],
-  ([open, target, preferred, anchor, content], _, onCleanup) => {
-    if (!open || !anchor || !content) return;
+  [painted, teleportTarget, placement, trigger, panel, () => props.showArrow],
+  ([visible, target, preferred, anchor, content], _, onCleanup) => {
+    if (!visible || !anchor || !content) return;
     const document = anchor.ownerDocument;
     const stop = observeCmAnchoredPosition(anchor, content, preferred, 10, target ? null : root.value, (style) => {
       panelStyle.value = style;

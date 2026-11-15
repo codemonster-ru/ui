@@ -1,3 +1,5 @@
+export { releaseCmOverlayFocus } from './overlay-focus.js';
+
 const scrollLockAttribute = 'data-cm-modal-scroll';
 
 interface NativeModalScrollState {

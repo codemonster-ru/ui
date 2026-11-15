@@ -1,6 +1,6 @@
 import { cmFocusableSelector } from './core/disclosure.js';
 import { dispatchCmEvent } from './events.js';
-import { enterCmNativeModal } from './native-modal.js';
+import { enterCmNativeModal, releaseCmOverlayFocus } from './native-modal.js';
 import type { CmController } from './runtime.js';
 
 export interface ModalOpenChangeDetail {
@@ -74,6 +74,7 @@ export class CmModalController implements CmController {
       if (typeof this.#dialog.close === 'function' && this.#dialog.open) this.#dialog.close();
       this.#synchronize(false);
       if (restoreFocus && this.#returnFocus?.isConnected) this.#returnFocus.focus();
+      releaseCmOverlayFocus(this.#dialog);
       this.#returnFocus = null;
       this.#releaseScroll?.();
       this.#releaseScroll = undefined;

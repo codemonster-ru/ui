@@ -1,0 +1,76 @@
+@media (prefers-reduced-motion: no-preference) {
+  :is(.cm-command-palette, .cm-dialog, .cm-drawer) {
+    --cm-modal-duration: var(--cm-motion-duration-fast);
+    --cm-modal-shift: 0 var(--cm-space-3);
+    --cm-modal-opacity: 0;
+  }
+
+  .cm-command-palette {
+    --cm-modal-shift: 0 calc(0px - var(--cm-space-2));
+  }
+
+  .cm-drawer {
+    --cm-modal-duration: var(--cm-motion-duration-normal);
+    --cm-modal-shift: var(--cm-drawer-enter, 100%);
+    --cm-modal-opacity: 1;
+  }
+
+  :is(.cm-command-palette, .cm-dialog, .cm-drawer):has(
+    .cm-date-picker-wrap,
+    .cm-dropdown,
+    .cm-menu-bar,
+    .cm-popover,
+    .cm-select-wrap,
+    .cm-tooltip
+  ) {
+    --cm-modal-shift: none;
+    --cm-modal-opacity: 0;
+  }
+
+  :is(.cm-command-palette, .cm-dialog, .cm-drawer),
+  :is(.cm-command-palette, .cm-dialog, .cm-drawer)::backdrop {
+    transition-duration: var(--cm-modal-duration);
+    transition-property: opacity, translate;
+    transition-timing-function: var(--cm-motion-ease-standard);
+  }
+
+  :is(.cm-command-palette, .cm-dialog, .cm-drawer):not([open]) {
+    opacity: var(--cm-modal-opacity);
+    translate: var(--cm-modal-shift);
+  }
+
+  :is(.cm-command-palette, .cm-dialog, .cm-drawer)::backdrop {
+    opacity: 0;
+  }
+
+  :is(.cm-command-palette, .cm-dialog, .cm-drawer):modal::backdrop {
+    opacity: 1;
+  }
+
+  @starting-style {
+    :is(.cm-command-palette, .cm-dialog, .cm-drawer):modal {
+      opacity: var(--cm-modal-opacity);
+      translate: var(--cm-modal-shift);
+    }
+
+    :is(.cm-command-palette, .cm-dialog, .cm-drawer):modal::backdrop {
+      opacity: 0;
+    }
+  }
+
+  @supports (overlay: auto) and (interactivity: inert) {
+    :is(.cm-command-palette, .cm-dialog, .cm-drawer),
+    :is(.cm-command-palette, .cm-dialog, .cm-drawer)::backdrop {
+      transition-behavior: allow-discrete;
+      transition-property: opacity, translate, display, overlay;
+    }
+
+    :is(.cm-command-palette, .cm-dialog, .cm-drawer):not([open]) {
+      interactivity: inert;
+    }
+
+    :is(.cm-command-palette, .cm-dialog, .cm-drawer):not([open])::backdrop {
+      pointer-events: none;
+    }
+  }
+}
