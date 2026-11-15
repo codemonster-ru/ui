@@ -1,4 +1,4 @@
-import { isInputClearVisible, resolvePasswordReveal } from './core/input.js';
+import { isInputClearVisible, resolveInputClearable, resolvePasswordReveal } from './core/input.js';
 import type { CmController, CmControllerFactory } from './runtime.js';
 
 const controlSelector = '[data-cm-input-control]';
@@ -10,6 +10,7 @@ export class CmInputController implements CmController {
   readonly #input: HTMLInputElement;
   readonly #clear: HTMLButtonElement | null;
   readonly #password: HTMLButtonElement | null;
+  #resetTimer: number | undefined;
 
   constructor(root: Element) {
     const input = root.querySelector<HTMLInputElement>(controlSelector);
@@ -24,6 +25,7 @@ export class CmInputController implements CmController {
     this.#root.addEventListener('click', this.#handleClick);
     this.#root.addEventListener('mousedown', this.#handleMouseDown);
     this.#input.addEventListener('input', this.#synchronizeClear);
+    if (this.#clear) this.#root.ownerDocument.addEventListener('reset', this.#handleReset);
     this.#synchronizeClear();
   }
 
@@ -31,15 +33,24 @@ export class CmInputController implements CmController {
     this.#root.removeEventListener('click', this.#handleClick);
     this.#root.removeEventListener('mousedown', this.#handleMouseDown);
     this.#input.removeEventListener('input', this.#synchronizeClear);
+    this.#root.ownerDocument.removeEventListener('reset', this.#handleReset);
+    this.#cancelReset();
   }
 
   readonly #handleClick = (event: Event): void => {
     const target = event.target;
-    if (!(target instanceof this.#root.ownerDocument.defaultView!.Element)) return;
+    const view = this.#root.ownerDocument.defaultView;
+    if (!view || !(target instanceof view.Element)) return;
 
     if (this.#clear && target.closest(clearSelector) === this.#clear) {
+      const canClear = resolveInputClearable({
+        clearable: !this.#clear.matches(':disabled'),
+        disabled: this.#input.matches(':disabled'),
+        readonly: this.#input.readOnly,
+      });
+      if (!canClear) return;
       this.#input.value = '';
-      this.#input.dispatchEvent(new this.#root.ownerDocument.defaultView!.Event('input', { bubbles: true }));
+      this.#input.dispatchEvent(new view.Event('input', { bubbles: true }));
       this.#input.focus();
       return;
     }
@@ -61,6 +72,22 @@ export class CmInputController implements CmController {
   readonly #synchronizeClear = (): void => {
     if (this.#clear) this.#clear.hidden = !isInputClearVisible(true, this.#input.value);
   };
+
+  readonly #handleReset = (event: Event): void => {
+    if (event.target !== this.#input.form) return;
+    this.#cancelReset();
+    // The reset event is sent before the browser restores the default value.
+    this.#resetTimer = this.#root.ownerDocument.defaultView?.setTimeout(() => {
+      this.#resetTimer = undefined;
+      this.#synchronizeClear();
+    });
+  };
+
+  #cancelReset(): void {
+    if (this.#resetTimer === undefined) return;
+    this.#root.ownerDocument.defaultView?.clearTimeout(this.#resetTimer);
+    this.#resetTimer = undefined;
+  }
 
   #togglePassword(): void {
     if (!this.#password) return;

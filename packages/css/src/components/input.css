@@ -242,7 +242,8 @@
   block-size: var(--cm-icon-size-xl);
 }
 
-.cm-input__action[hidden] {
+.cm-input__action[hidden],
+.cm-input-wrap:has(> [data-cm-input-control]:is([readonly], :disabled)) > [data-cm-input-clear] {
   display: none;
 }
 
