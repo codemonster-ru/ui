@@ -22,19 +22,30 @@ for (const slug of ['dialog', 'drawer', 'dropdown', 'popover', 'tooltip']) {
 }
 
 test('preserves modal, focus, hidden, and logical-placement hooks', async () => {
-  const [dialog, drawer, popover, tooltip] = await Promise.all(
-    ['dialog', 'drawer', 'popover', 'tooltip'].map((slug) =>
-      readFile(new URL(`../src/components/${slug}.css`, import.meta.url), 'utf8'),
-    ),
-  );
+  const [dialog, drawer, popover, tooltip] = await Promise.all([
+    readBuiltStyles('dialog'),
+    readBuiltStyles('drawer'),
+    readFile(new URL('../src/components/popover.css', import.meta.url), 'utf8'),
+    readFile(new URL('../src/components/tooltip.css', import.meta.url), 'utf8'),
+  ]);
 
-  assert.match(dialog, /\.cm-dialog::backdrop/u);
-  assert.match(dialog, /\.cm-dialog__close:focus-visible/u);
+  assert.match(dialog, /:is\(\.cm-dialog, \.cm-drawer\)::backdrop/u);
+  assert.match(dialog, /:is\(\.cm-dialog__close, \.cm-drawer__close\):focus-visible/u);
   assert.match(drawer, /\.cm-drawer--start/u);
   assert.match(drawer, /inset-inline/u);
   assert.match(popover, /\.cm-popover__panel\[hidden\]/u);
   assert.match(tooltip, /\.cm-tooltip__content\[hidden\]/u);
-  assert.doesNotMatch(`${dialog}${drawer}${popover}${tooltip}`, /(?:left|right):/u);
+  assert.doesNotMatch(`${dialog}${drawer}${popover}${tooltip}`, /^\s*(?:(?:margin|padding|border)-)?(?:left|right):/mu);
+});
+
+test('starts native modal reveal motion from each standalone stylesheet', async () => {
+  const [dialog, drawer] = await Promise.all(['dialog', 'drawer'].map(readBuiltStyles));
+  assert.match(dialog, /@media \(prefers-reduced-motion: no-preference\) \{\s+\.cm-dialog:modal/u);
+  assert.match(dialog, /cm-dialog-enter var\(--cm-motion-duration-fast\)/u);
+  assert.match(dialog, /translate: 0 var\(--cm-space-3\)/u);
+  assert.match(drawer, /\.cm-drawer:modal \{\s+animation: cm-drawer-enter var\(--cm-motion-duration-normal\)/u);
+  assert.match(drawer, /\.cm-drawer:modal::backdrop \{\s+animation-duration: var\(--cm-motion-duration-normal\)/u);
+  assert.match(drawer, /\.cm-drawer--start:dir\(ltr\), \.cm-drawer--end:dir\(rtl\)\) \{\s+--cm-drawer-enter: -100%/u);
 });
 
 test('makes reveal motion available in each standalone anchored overlay stylesheet', async () => {
