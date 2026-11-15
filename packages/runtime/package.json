@@ -39,6 +39,10 @@
     "./native-modal": {
       "types": "./dist/native-modal.d.ts",
       "import": "./dist/native-modal.js"
+    },
+    "./tabs-scroll": {
+      "types": "./dist/tabs-scroll.d.ts",
+      "import": "./dist/tabs-scroll.js"
     }
   },
   "scripts": {

@@ -345,7 +345,7 @@ for (const [slug, approved] of [
       'cm-breadcrumbs__separator',
     ],
   ],
-  ['tabs', ['cm-tabs', 'cm-tabs__list', 'cm-tabs__tab', 'cm-tabs__panel']],
+  ['tabs', ['cm-tabs', 'cm-tabs__list', 'cm-tabs__tab', 'cm-tabs__panel', 'cm-tabs__scroll']],
   [
     'menu',
     [

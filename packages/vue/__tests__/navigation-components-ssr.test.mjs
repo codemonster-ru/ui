@@ -4,6 +4,7 @@ import { dirname, resolve } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { renderToString } from '@vue/server-renderer';
+import { JSDOM } from 'jsdom';
 import { createSSRApp, createStaticVNode, h } from 'vue';
 import { compareSignificantDom } from '../../../scripts/contracts/significant-dom.mjs';
 import { CmBreadcrumbs, CmDropdown, CmLink, CmMenu, CmTabs } from '../dist/index.js';
@@ -59,4 +60,29 @@ test('escapes navigation labels, content, and attributes during SSR', async () =
   assert.match(actual, /href="&quot;&gt;&lt;script&gt;unsafe&lt;\/script&gt;"/u);
   assert.match(actual, /&lt;Unsafe&gt;/u);
   assert.doesNotMatch(actual, /<script>/u);
+});
+
+test('keeps non-kebab tab values while generating unambiguous panel relationships', async () => {
+  const actual = await renderToString(
+    h(CmTabs, {
+      id: 'checklist',
+      modelValue: 'État & suite',
+      items: [
+        { value: '1', label: 'First', content: 'Content one' },
+        { value: 'État & suite', label: 'Second', content: 'Content two' },
+      ],
+    }),
+  );
+  const { document } = new JSDOM(actual).window;
+  const tabs = [...document.querySelectorAll('[role="tab"]')];
+  assert.deepEqual(
+    tabs.map((tab) => tab.getAttribute('data-cm-tab-value')),
+    ['1', 'État & suite'],
+  );
+  assert.notEqual(tabs[0].id, tabs[1].id);
+  for (const tab of tabs) {
+    assert.doesNotMatch(tab.id, /\s/u);
+    assert.equal(document.getElementById(tab.getAttribute('aria-controls')).getAttribute('aria-labelledby'), tab.id);
+  }
+  assert.equal(tabs[1].getAttribute('aria-selected'), 'true');
 });

@@ -8,7 +8,7 @@ Component: `Tabs`
 
 Tabs switches among related content panels. Vue generates a stable DOM prefix when `id` is
 omitted. `items` is a
-non-empty ordered collection of records with unique kebab-case `value`, non-empty `label`, optional
+non-empty ordered collection of records with unique non-empty string `value`, non-empty `label`, optional
 escaped string `content`, optional `disabled`, and optional `tabId` and `panelId`. At least one
 item is enabled.
 
@@ -22,7 +22,9 @@ next value but adapters do not invent application content state.
 The root owns `cm-tabs`, `data-cm-controller="tabs"`, and `data-cm-tabs-value`. It contains a
 horizontal `role="tablist"` and one native button per item. Owned panels use `role="tabpanel"` and
 only the active panel is visible. The default IDs are `{id}-tab-{value}` and
-`{id}-panel-{value}`. Item-level IDs replace those defaults. IDs must be unique on the page.
+`{id}-panel-{value}`. Vue encodes other value spellings to preserve valid IDs and exposes the
+original value in `data-cm-tab-value`. Item-level IDs replace the generated IDs, which must be
+unique on a page.
 A tab with neither owned content nor a `panelId` omits `aria-controls`. Disabled tabs use the native
 disabled attribute.
 
@@ -44,4 +46,15 @@ while that item is selected. Vanilla HTML authors the corresponding markup direc
 Tabs use automatic activation. Click selects an enabled tab. Left/Right arrows (direction-aware),
 Home, and End move focus and selection among enabled tabs with wrapping. Disabled tabs are skipped.
 Each active tab has `tabindex="0"`; other tabs have `-1`. The behavior scenarios are normative for
-Vue and shared progressive enhancement.
+Vue and shared progressive enhancement. Up and Down continue to scroll the document when the
+focus is on a horizontal tab.
+
+By default, Vue adds scroll buttons when the horizontal list overflows. Set `scrollControls` to
+`true` to include them, initially hidden, in server markup, or to `false` to use native scrolling.
+Vanilla authors both hidden buttons as siblings of the list, with `data-cm-tabs-scroll="start"`
+and `data-cm-tabs-scroll="end"`. Give the list a unique ID and reference it from the buttons'
+`aria-controls`. The [overflow case](cases/overflow.html) shows the complete HTML.
+
+Buttons scroll one logical step without selecting a tab. Focus stays usable when a button
+disappears at an edge, and reduced-motion preferences select an immediate scroll. Without
+enhancement, touch, horizontal wheel, and native focus scrolling remain available.

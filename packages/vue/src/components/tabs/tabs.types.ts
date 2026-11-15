@@ -12,6 +12,7 @@ export interface CmTabsProps {
   items: readonly CmTabItem[];
   modelValue?: string | null;
   defaultValue?: string | null;
+  scrollControls?: boolean;
 }
 
 export type VfTabItem = CmTabItem;
