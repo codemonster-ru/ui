@@ -9,7 +9,6 @@ import CoreOverlay from './CoreOverlay.vue';
 import CoreSurfaces from './CoreSurfaces.vue';
 import CoreTheme from './CoreTheme.vue';
 import ContractExamples from './ContractExamples.vue';
-import IconsShowcase from './IconsShowcase.vue';
 import ColorsShowcase from './ColorsShowcase.vue';
 import { iconIntro, renderOperations } from '../../shared/showcase-reference.mts';
 import { actionMatrices, buttonMatrices } from '../../shared/showcase-matrices.mts';
@@ -22,6 +21,7 @@ import { gear, moon, sun } from '@codemonster-ru/ui-icons';
 import LayoutShowcase from './LayoutShowcase.vue';
 import { CmButton, CmIcon, CmIconButton, CmLink, useCmTheme } from '@codemonster-ru/ui-vue';
 
+const IconsShowcase = defineAsyncComponent(async () => (await import('./IconsShowcase.vue')) as { default: Component });
 const CodeBlockShowcase = defineAsyncComponent(
   async () => (await import('./CodeBlockShowcase.vue')) as { default: Component },
 );

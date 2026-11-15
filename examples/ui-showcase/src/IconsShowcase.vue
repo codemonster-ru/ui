@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import * as icons from '@codemonster-ru/ui-icons';
+import { iconCatalog, iconNames, type IconName } from '@codemonster-ru/ui-icons/catalog';
 import { CmIcon, CmInput, CmTabs } from '@codemonster-ru/ui-vue';
-import iconOrder from '../../shared/showcase-icon-order.json';
-import keywords from '../../shared/showcase-icon-keywords.json';
 
 const showcaseVariants = icons.cmIconVariants;
 const showcaseFamilies = [
@@ -18,40 +17,12 @@ const showcaseFamilies = [
 const familyTabs = showcaseFamilies.map(({ id, title }) => ({ value: id, label: title, content: '' }));
 const query = ref('');
 const copyStatus = ref('');
-const order = new Map(iconOrder.map((name, index) => [name, index]));
-const iconNames = [...icons.cmIconNames].sort(
-  (left, right) => (order.get(left) ?? iconOrder.length) - (order.get(right) ?? iconOrder.length),
-);
-// Some weights share SVG definitions. Give each catalog cell its own fragment IDs.
-const geometryByName = Object.fromEntries(
-  iconNames.map((name) => [
-    name,
-    Object.fromEntries(
-      Object.entries(icons[name]).map(([form, rendering]) => {
-        const prefix = `catalog-${name}-${form.replace('/', '-')}-`;
-        return [
-          form,
-          {
-            ...rendering,
-            body: rendering.body
-              .replace(/\bid="([^"]+)"/gu, `id="${prefix}$1"`)
-              .replace(/url\(#([^)]+)\)/gu, `url(#${prefix}$1)`)
-              .replace(/href="#([^"]+)"/gu, `href="#${prefix}$1"`),
-          },
-        ];
-      }),
-    ),
-  ]),
-) as Record<(typeof iconNames)[number], icons.CmIconGeometry>;
-const systemIconNames = iconNames.filter((name) => 'classic/regular' in icons[name]);
-const brandIconNames = iconNames.filter((name) => !systemIconNames.includes(name));
-const aliases: Record<string, readonly string[]> = keywords;
+const systemIconNames = iconNames.filter((name) => !iconCatalog[name].brand);
+const brandIconNames = iconNames.filter((name) => iconCatalog[name].brand);
 const normalizedQuery = computed(() => query.value.trim().toLowerCase());
-function matchesQuery(name: (typeof iconNames)[number]) {
-  return [name, name.replace(/([a-z])([A-Z])/g, '$1 $2'), ...(aliases[name] ?? [])]
-    .join(' ')
-    .toLowerCase()
-    .includes(normalizedQuery.value);
+function matchesQuery(name: IconName) {
+  const { keywords, title } = iconCatalog[name];
+  return [name, title, ...keywords].join(' ').toLowerCase().includes(normalizedQuery.value);
 }
 const filteredSystemIconNames = computed(() => systemIconNames.filter(matchesQuery));
 const filteredBrandIconNames = computed(() => brandIconNames.filter(matchesQuery));
@@ -108,12 +79,7 @@ async function copyIconName(name: string) {
                 </button>
               </div>
               <span v-for="variant in showcaseVariants" :key="variant" role="cell">
-                <CmIcon
-                  :icon="geometryByName[iconName]"
-                  :family="iconFamily.id"
-                  :variant="variant"
-                  class="catalog-symbol"
-                />
+                <CmIcon :icon="icons[iconName]" :family="iconFamily.id" :variant="variant" class="catalog-symbol" />
               </span>
             </div>
           </div>
@@ -129,7 +95,7 @@ async function copyIconName(name: string) {
       </header>
       <div v-if="filteredBrandIconNames.length" class="brand-grid">
         <article v-for="iconName in filteredBrandIconNames" :key="iconName" class="brand-card">
-          <CmIcon :icon="geometryByName[iconName]" variant="solid" class="catalog-symbol" />
+          <CmIcon :icon="icons[iconName]" variant="solid" class="catalog-symbol" />
           <strong>{{ iconName }}</strong>
           <button type="button" :aria-label="`Copy ${iconName} icon name`" @click="copyIconName(iconName)">Copy</button>
         </article>

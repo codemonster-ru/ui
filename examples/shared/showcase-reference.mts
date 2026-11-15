@@ -1,7 +1,6 @@
 import { renderShowcaseTabs } from './showcase-tabs.mts';
-import iconOrder from './showcase-icon-order.json' with { type: 'json' };
-import keywords from './showcase-icon-keywords.json' with { type: 'json' };
 import * as icons from '@codemonster-ru/ui-icons';
+import { iconCatalog, iconNames, type IconName } from '@codemonster-ru/ui-icons/catalog';
 import { colorHero, contrastRows, families, semanticSwatches } from './showcase-colors.mts';
 
 const themes = ['light', 'dark'] as const;
@@ -129,10 +128,7 @@ function alert(tone: string, title: string, body: string) {
 }
 
 function iconSvg(rendering: icons.CmIconRendering, family: string, variant: string, id: string) {
-  const body = rendering.body
-    .replace(/\bid="([^"]+)"/g, `id="${id}-$1"`)
-    .replace(/url\(#([^)]+)\)/g, `url(#${id}-$1)`)
-    .replace(/href="#([^"]+)"/g, `href="#${id}-$1"`);
+  const body = icons.scopeCmIconIds(rendering.body, id);
   return `<svg class="cm-icon cm-icon--${family} cm-icon--${variant}" aria-hidden="true" viewBox="${rendering.viewBox}">${body}</svg>`;
 }
 
@@ -151,35 +147,30 @@ export function renderIconIntro() {
   return `<p class="showcase-icon-intro-note">${iconIntro.description}</p>
     <div class="showcase-matrix-row">${iconIntro.samples
       .map(({ icon, label, family, variant }, index) => {
+        const supportsRequestedStyle = Object.hasOwn(icon, `${family}/${variant}`);
         const rendering = icons.resolveCmIcon(icon, family, variant);
         if (!rendering) throw new Error(`Missing showcase icon: ${label}`);
-        return iconSvg(rendering, family, variant, `icon-intro-${index}`).replace(
-          'aria-hidden="true"',
-          `role="img" aria-label="${label}" focusable="false"`,
-        );
+        return iconSvg(
+          rendering,
+          supportsRequestedStyle ? family : 'classic',
+          supportsRequestedStyle ? variant : 'solid',
+          `icon-intro-${index}`,
+        ).replace('aria-hidden="true"', `role="img" aria-label="${label}" focusable="false"`);
       })
       .join('')}</div>`;
 }
 
 export function renderIconCatalog() {
-  const order = new Map(iconOrder.map((name, index) => [name, index]));
-  const orderedNames = [...icons.cmIconNames].sort(
-    (left, right) => (order.get(left) ?? iconOrder.length) - (order.get(right) ?? iconOrder.length),
-  );
-  const system = orderedNames.filter((name) => 'classic/regular' in icons[name]);
-  const brands = orderedNames.filter((name) => !system.includes(name));
-  const aliases: Record<string, readonly string[]> = keywords;
-  function entries(
-    names: readonly (typeof icons.cmIconNames)[number][],
-    family: icons.CmIconFamily,
-    variants = icons.cmIconVariants,
-  ) {
+  const system = iconNames.filter((name) => !iconCatalog[name].brand);
+  const brands = iconNames.filter((name) => iconCatalog[name].brand);
+  function entries(names: readonly IconName[], family: icons.CmIconFamily, variants = icons.cmIconVariants) {
     return `<div class="showcase-icon-scroll" tabindex="0" aria-label="${family} icon table">
       <table class="showcase-icon-table${variants.length === 1 ? ' showcase-icon-table--brands' : ''}"><thead><tr><th scope="col">Icon</th>${variants.map((variant) => `<th scope="col">${variant}</th>`).join('')}</tr></thead><tbody>
       ${names
         .map((name) => {
           const geometry: icons.CmIconGeometry = icons[name];
-          const search = [name.replace(/([a-z])([A-Z])/g, '$1 $2'), ...(aliases[name] ?? [])]
+          const { keywords, title } = iconCatalog[name];
+          const search = [name, title, ...keywords]
             .join(' ')
             .replaceAll('&', '&amp;')
             .replaceAll('"', '&quot;')
@@ -199,7 +190,7 @@ export function renderIconCatalog() {
     <header><h2>System and brand icons</h2><p>Find an icon, compare every system weight at 32 px, and copy its catalog name.</p></header>
     <div class="showcase-icon-toolbar"><label for="icon-catalog-search">Search by name or keyword</label>
     <input class="cm-input" id="icon-catalog-search" type="search" placeholder="Search by name or keyword">
-    <p role="status" data-icon-count data-total="${icons.cmIconNames.length}">${icons.cmIconNames.length} of ${icons.cmIconNames.length} icons</p></div>
+    <p role="status" data-icon-count data-total="${iconNames.length}">${iconNames.length} of ${iconNames.length} icons</p></div>
     <p data-icon-empty hidden>No matching icons.</p>
     <p role="status" data-icon-copy-status></p>
     ${renderShowcaseTabs(
@@ -213,6 +204,27 @@ export function renderIconCatalog() {
     <section><h3>Brands</h3>${entries(brands, 'classic', ['solid'])}</section>
   </section>`;
 }
+
+const operationIcons = {
+  bell: icons.bell,
+  chartBar: icons.chartBar,
+  cloud: icons.cloud,
+  columns: icons.columns,
+  database: icons.database,
+  download: icons.download,
+  file: icons.file,
+  folder: icons.folder,
+  gear: icons.gear,
+  grid: icons.grid,
+  house: icons.house,
+  mail: icons.mail,
+  message: icons.message,
+  pencil: icons.pencil,
+  trash: icons.trash,
+  upload: icons.upload,
+  user: icons.user,
+  users: icons.users,
+};
 
 export function renderOperations() {
   const navigation = ['Overview', 'Customers', 'Projects', 'Reports', 'Settings'];
@@ -230,9 +242,14 @@ export function renderOperations() {
         ['light', 'dark'].map((mode) => {
           const id = `operations-${mode}-${size}`;
           const compact = size === 'sm';
-          const symbol = (name: (typeof icons.cmIconNames)[number], slot: string) =>
-            iconSvg(icons.resolveCmIcon(icons[name], 'classic', 'regular')!, 'classic', 'regular', `${id}-${slot}`);
-          const command = (label: string, name: (typeof icons.cmIconNames)[number], slot: string = name) =>
+          const symbol = (name: keyof typeof operationIcons, slot: string) =>
+            iconSvg(
+              icons.resolveCmIcon(operationIcons[name], 'classic', 'regular')!,
+              'classic',
+              'regular',
+              `${id}-${slot}`,
+            );
+          const command = (label: string, name: keyof typeof operationIcons, slot: string = name) =>
             `<button type="button" class="cm-icon-button cm-icon-button--secondary cm-icon-button--${size}" aria-label="${label}" data-operation-action="${label}">${symbol(name, slot)}</button>`;
           const projects = `<section class="showcase-panel">
         <div class="showcase-matrix-row"><h4>Projects</h4><label for="${id}-filter">Status</label>
