@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, useAttrs, type PropType } from 'vue';
+import { computed, resolveComponent, useAttrs, type Component, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { assertCm } from '../../internal/warn';
@@ -10,7 +10,11 @@ defineOptions({ inheritAttrs: false });
 const underlines: readonly CmLinkUnderline[] = ['none', 'hover', 'always'];
 const tones: readonly CmLinkTone[] = ['default', 'muted'];
 const props = defineProps({
-  href: { type: String, required: true },
+  href: { type: String, default: undefined },
+  to: { type: [String, Object] as PropType<string | Record<string, unknown>>, default: undefined },
+  target: { type: String, default: undefined },
+  rel: { type: String, default: undefined },
+  component: { type: [String, Object, Function] as PropType<string | Component>, default: undefined },
   underline: {
     type: String as PropType<CmLinkUnderline>,
     default: 'none',
@@ -33,14 +37,25 @@ const classes = computed(() =>
     attrs.class,
   ),
 );
-const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['href', 'rel']));
-const rel = computed(() =>
-  typeof attrs.rel === 'string' ? attrs.rel : attrs.target === '_blank' ? 'noopener noreferrer' : undefined,
-);
+const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, []));
+const rel = computed(() => props.rel ?? (props.target === '_blank' ? 'noopener noreferrer' : undefined));
+const destination = computed(() => (props.to === undefined ? { href: props.href } : { to: props.to }));
 
-assertCm(props.href.trim() !== '', 'Link href must be a non-empty string.');
+function linkComponent() {
+  return props.to === undefined ? 'a' : (props.component ?? resolveComponent('RouterLink'));
+}
+
+assertCm(props.href === undefined || props.href.trim() !== '', 'Link href must be a non-empty string.');
 </script>
 
 <template>
-  <a v-bind="rootAttrs" :class="classes" :href="props.href" :rel="rel"><slot /></a>
+  <component
+    :is="linkComponent()"
+    v-bind="{ ...rootAttrs, ...destination }"
+    :class="classes"
+    :target="props.target"
+    :rel="rel"
+  >
+    <slot />
+  </component>
 </template>

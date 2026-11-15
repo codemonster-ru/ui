@@ -86,7 +86,14 @@ export type { CmInputProps, CmInputSize, CmInputType } from './components/input/
 export { default as CmInline } from './components/inline/CmInline.vue';
 export type { CmInlineElement, CmInlineProps } from './components/inline/inline.types';
 export { default as CmLink } from './components/link/CmLink.vue';
-export type { CmLinkProps, CmLinkTone, CmLinkUnderline } from './components/link/link.types';
+export { default as VfLink } from './components/link/CmLink.vue';
+export type {
+  CmLinkProps,
+  CmLinkTone,
+  CmLinkUnderline,
+  CmLinkTone as VfLinkTone,
+  CmLinkUnderline as VfLinkUnderline,
+} from './components/link/link.types';
 export { default as CmMenuBar } from './components/menu-bar/CmMenuBar.vue';
 export type { CmMenuBarItem, CmMenuBarProps } from './components/menu-bar/menu-bar.types';
 export { default as CmMenu } from './components/menu/CmMenu.vue';
