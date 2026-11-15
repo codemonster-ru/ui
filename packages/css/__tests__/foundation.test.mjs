@@ -41,7 +41,8 @@ test('shows token-backed focus rings only for focus-visible', () => {
 
 test('respects reduced motion and forced color preferences', () => {
   assert.match(preferencesCss, /@media \(prefers-reduced-motion: reduce\)/);
-  assert.match(preferencesCss, /transition-duration: var\(--cm-motion-duration-none\) !important;/);
+  assert.match(preferencesCss, /transition: none !important;/);
+  assert.match(preferencesCss, /animation-duration: var\(--cm-motion-duration-none\) !important;/);
   assert.match(preferencesCss, /@media \(forced-colors: active\)/);
   assert.match(preferencesCss, /outline-color: Highlight;/);
   assert.match(preferencesCss, /color: GrayText;/);
