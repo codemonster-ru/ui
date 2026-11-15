@@ -63,6 +63,30 @@ load CSS-free modules. Serve the client build's CSS alongside the server-rendere
 Use the current packages for foundation and theme APIs. For local design tokens use `ui-tokens`.
 The Vue theme provider and breakpoint alternatives are described below.
 
+### Keep original component specifiers during Vite migration
+
+For a Vite app that already uses supported historical component behavior, generate exact aliases
+from a matching CodeMonster UI checkout. Run the command from the consumer's project root.
+
+```bash
+node /path/to/codemonster-ui/scripts/migration/print-vueforge-component-aliases.mjs > vueforge-aliases.mjs
+```
+
+Add the generated aliases to the app's Vite configuration. Install matching current Vue and
+Layouts packages and their dependencies in the consumer.
+
+```js
+import alias from './vueforge-aliases.mjs';
+
+export default { resolve: { alias } };
+```
+
+The aliases preserve component imports such as `@codemonster-ru/vueforge-core/button` and
+`@codemonster-ru/vueforge-layouts/container` in Vite client and SSR builds. Browser builds use
+the same shared styles as the current subpaths. Package roots, stylesheets, foundation, theme,
+and unknown paths continue through the usual resolver. Use the current specifiers for Node
+imports outside Vite and for TypeScript to resolve the current declarations directly.
+
 ## Vue components and composables
 
 Use the `Cm*` components for new templates. Some restored names, including `VfButton`, `VfField`, and
@@ -101,6 +125,24 @@ const releaseDate = ref('');
 Port application overrides to the matching `--cm-*` tokens under `:root` or a theme selector.
 Load override styles after the tokens. For generated styles, `ui-tokens` exposes immutable light
 and dark preset data and `serializeCmThemeTokensToCssVars`. [Token overrides and serialization](./tokens/getting-started.md).
+
+For a scoped preset, move the old `rootSelector` to a stylesheet rule and select dark overrides
+with `data-cm-theme`. The shared component CSS reads the `--cm-*` token names, so migrate custom
+prefixes to those properties.
+
+```css
+.billing-theme[data-cm-theme='light'] {
+  --cm-color-background-canvas: #f1f5fb;
+}
+
+.billing-theme[data-cm-theme='dark'] {
+  --cm-color-background-canvas: #101525;
+}
+```
+
+Set the mode on the `.billing-theme` element for this example. Keep separate scoped rules for
+additional presets. With the archived preset engine, `styleId` controlled runtime `<style>`
+replacement. With shared tokens, the app owns stylesheet loading and order.
 
 Use `CmThemeProvider` for the `cm-theme` cookie. In SSR, read the cookie and write `data-cm-theme`
 before the first paint. The `system` mode follows the browser's color preference through CSS.
