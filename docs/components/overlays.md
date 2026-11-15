@@ -38,9 +38,10 @@ becomes hidden immediately on dismissal. A reduced-motion preference or a browse
 starting styles displays the content immediately. [CSS starting styles](https://www.w3.org/TR/css-transitions-2/#defining-before-change-style)
 
 Dialog fades in with a short upward motion. Drawer slides in from its selected edge. Both fade
-in their backdrops and move focus inside as soon as the native modal opens. A reduced-motion
-preference skips this entry motion. Closing leaves the native modal stack immediately and
-returns focus to the opener.
+in their backdrops and move focus inside as soon as the native modal opens. A modal containing
+Dropdown, MenuBar, Popover, or Tooltip fades in without moving to preserve viewport positioning
+for its nested overlays. A reduced-motion preference skips entry motion. Closing leaves the
+native modal stack immediately and returns focus to the opener.
 
 `VfDialog` and `VfDrawer` accept `teleportTo` as a selector or element in their document.
 They render inline on the server and move to the target after mounting, defaulting to `body`.

@@ -104,15 +104,11 @@
 }
 
 .cm-drawer--rounded.cm-drawer--top {
-  --cm-drawer-enter: 0 -100%;
-
   border-end-start-radius: var(--cm-radius-overlay);
   border-end-end-radius: var(--cm-radius-overlay);
 }
 
 .cm-drawer--rounded.cm-drawer--bottom {
-  --cm-drawer-enter: 0 100%;
-
   border-start-start-radius: var(--cm-radius-overlay);
   border-start-end-radius: var(--cm-radius-overlay);
 }

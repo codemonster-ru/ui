@@ -46,6 +46,13 @@ test('starts native modal reveal motion from each standalone stylesheet', async 
   assert.match(drawer, /\.cm-drawer:modal \{\s+animation: cm-drawer-enter var\(--cm-motion-duration-normal\)/u);
   assert.match(drawer, /\.cm-drawer:modal::backdrop \{\s+animation-duration: var\(--cm-motion-duration-normal\)/u);
   assert.match(drawer, /\.cm-drawer--start:dir\(ltr\), \.cm-drawer--end:dir\(rtl\)\) \{\s+--cm-drawer-enter: -100%/u);
+  for (const css of [dialog, drawer]) {
+    assert.match(
+      css,
+      /:modal:has\(\.cm-dropdown, \.cm-menu-bar, \.cm-popover, \.cm-tooltip\) \{\s+animation-name: cm-backdrop-enter;/u,
+    );
+    assert.match(css, /@keyframes cm-backdrop-enter \{\s+from \{\s+opacity: 0;\s+\}\s+\}/u);
+  }
 });
 
 test('makes reveal motion available in each standalone anchored overlay stylesheet', async () => {
