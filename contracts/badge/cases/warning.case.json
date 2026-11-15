@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "badge-warning",
+  "description": "A badge matching the historical warning tone spelling.",
+  "props": { "tone": "warn" },
+  "slots": { "default": "Pending review" }
+}

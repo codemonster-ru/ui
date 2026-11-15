@@ -19,6 +19,7 @@ const tones: readonly CmProgressSpinnerTone[] = [
 ];
 const props = defineProps({
   label: { type: String, required: true },
+  strokeWidth: { type: Number, default: 4 },
   size: {
     type: String as PropType<CmProgressSpinnerSize>,
     default: 'md',
@@ -35,6 +36,9 @@ assertCm(props.label.trim() !== '', 'ProgressSpinner label must be a non-empty s
 
 const attrs = useAttrs();
 const size = computed(() => (sizes.includes(props.size) ? props.size : 'md'));
+const strokeWidth = computed(() =>
+  Number.isFinite(props.strokeWidth) && props.strokeWidth >= 0 ? props.strokeWidth : 4,
+);
 const tone = computed(() => (tones.includes(props.tone) ? props.tone : 'primary'));
 const classes = computed(() =>
   mergeCmClasses(
@@ -52,8 +56,8 @@ const rootAttrs = computed(() =>
 <template>
   <span v-bind="rootAttrs" :class="classes" role="progressbar" :aria-label="props.label">
     <svg class="cm-progress-spinner__svg" viewBox="0 0 50 50" aria-hidden="true" focusable="false">
-      <circle class="cm-progress-spinner__track" cx="25" cy="25" r="20" fill="none" stroke-width="4" />
-      <circle class="cm-progress-spinner__value" cx="25" cy="25" r="20" fill="none" stroke-width="4" />
+      <circle class="cm-progress-spinner__track" cx="25" cy="25" r="20" fill="none" :stroke-width="strokeWidth" />
+      <circle class="cm-progress-spinner__value" cx="25" cy="25" r="20" fill="none" :stroke-width="strokeWidth" />
     </svg>
   </span>
 </template>

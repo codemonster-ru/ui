@@ -8,7 +8,7 @@
       "type": "enum",
       "required": false,
       "default": "neutral",
-      "values": ["neutral", "primary", "success", "info", "warning", "help", "danger", "contrast"]
+      "values": ["neutral", "primary", "success", "info", "warning", "warn", "help", "danger", "contrast"]
     }
   },
   "slots": {

@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "tag-warning",
+  "description": "A category tag matching the historical warning tone spelling.",
+  "props": { "tone": "warn" },
+  "slots": { "default": "Review" }
+}

@@ -59,6 +59,9 @@ tone. The `icon` slot overrides a named `icon` prop or the tone's default icon. 
 to hide all leading icon content. The `title` slot can replace the `title` prop.
 `VfAvatar` uses its named icon after `image` and `label`, before the default slot.
 
+`VfBadge` and `VfTag` are aliases for `CmBadge` and `CmTag`. Both names accept `warn` as an
+alias for `warning` and use the canonical warning class in rendered HTML.
+
 ```vue
 <script setup lang="ts">
 import { VfAlert, VfAvatar } from '@codemonster-ru/ui-vue/historical';

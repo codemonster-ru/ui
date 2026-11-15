@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "progress-spinner-custom-stroke",
+  "description": "An indeterminate progress spinner with a shared stroke width on both circles.",
+  "props": { "label": "Loading reports", "strokeWidth": 6 },
+  "slots": {}
+}
