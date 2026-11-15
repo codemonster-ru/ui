@@ -1,4 +1,5 @@
 import { mount } from '@vue/test-utils';
+import { defineComponent, h, markRaw, type PropType } from 'vue';
 import { describe, expect, it } from 'vitest';
 
 import CmBreadcrumbs from './breadcrumbs/CmBreadcrumbs.vue';
@@ -22,6 +23,26 @@ describe('Vue navigation components', () => {
     });
     expect(wrapper.attributes()).toMatchObject({ rel: 'noopener noreferrer', target: '_blank' });
     expect(wrapper.classes()).toEqual(['cm-link', 'cm-link--underline-always', 'cm-link--muted', 'consumer']);
+  });
+
+  it('renders a consumer link component with the router destination and link attributes', () => {
+    const route = { name: 'projects' };
+    const routerLink = defineComponent({
+      props: { to: { type: Object as PropType<typeof route>, required: true } },
+      setup(props, { slots }) {
+        return () => h('a', { href: `/${props.to.name}` }, slots.default?.());
+      },
+    });
+    const wrapper = mount(CmLink, {
+      props: { to: route, component: markRaw(routerLink), target: '_blank', rel: 'nofollow noopener' },
+      slots: { default: 'Projects' },
+    });
+    expect(wrapper.get('a').attributes()).toMatchObject({
+      href: '/projects',
+      rel: 'nofollow noopener',
+      target: '_blank',
+    });
+    expect(wrapper.text()).toBe('Projects');
   });
 
   it('infers the current breadcrumb and preserves disabled non-navigation', () => {

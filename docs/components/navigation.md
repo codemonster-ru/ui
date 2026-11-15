@@ -10,8 +10,10 @@ Individual styles are also available from the `link.css`, `breadcrumbs.css`, `ta
 
 ## APIs
 
-- `Link` requires a non-empty `href`, accepts `underline` (`none`, `hover`, or `always`) and `tone`
-  (`default` or `muted`), and forwards safe anchor attributes. A blank target receives
+- `CmLink` (also `VfLink`) accepts a native `href` or, in Vue, a router destination in `to`. With `to`, install
+  Vue Router or supply a link component through `component`. It accepts `underline`
+  (`none`, `hover`, or `always`) and `tone` (`default` or `muted`), and forwards safe
+  anchor attributes. A blank target receives
   `rel="noopener noreferrer"` unless an explicit `rel` is supplied.
 - `Breadcrumbs` requires ordered `items` with `label` and optional `href`, `disabled`, and
   `current`. At most one item is current; otherwise the last item is inferred. `ariaLabel`
