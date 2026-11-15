@@ -10,8 +10,8 @@ const props = withDefaults(defineProps<VfRadioProps>(), { modelValue: undefined 
 const emit = defineEmits<{ 'update:modelValue': [value: VfRadioValue]; change: [value: VfRadioValue] }>();
 defineSlots<{ default?(): unknown }>();
 
-const radio = useTemplateRef<InstanceType<typeof CmRadio>>('radio');
-const input = computed(() => (radio.value?.$el as HTMLElement | undefined)?.querySelector('input') ?? null);
+const radio = useTemplateRef<{ $el?: HTMLElement }>('radio');
+const input = computed(() => radio.value?.$el?.querySelector('input') ?? null);
 const initialValue = props.modelValue;
 useCmFormReset(input, () => {
   if (props.modelValue === props.value && initialValue !== undefined && initialValue !== props.value)
