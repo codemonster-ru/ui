@@ -15,7 +15,7 @@ import { iconIntro, renderOperations } from '../../shared/showcase-reference.mts
 import { actionMatrices, buttonMatrices } from '../../shared/showcase-matrices.mts';
 import type { CmButtonProps, CmIconButtonProps, CmLinkProps } from '@codemonster-ru/ui-vue';
 import typography from './core-typography.html?raw';
-import { computed, nextTick, onMounted, onUnmounted, ref, type Component } from 'vue';
+import { computed, defineAsyncComponent, nextTick, onMounted, onUnmounted, ref, type Component } from 'vue';
 import { CmRuntime, createCmTabsController } from '@codemonster-ru/ui-runtime';
 import { mountOperations } from '../../shared/showcase-reference.js';
 import { gear, moon, sun } from '@codemonster-ru/ui-icons';
@@ -23,11 +23,15 @@ import { followShowcaseTheme, saveShowcaseTheme, readShowcaseTheme } from '../..
 import LayoutShowcase from './LayoutShowcase.vue';
 import { CmButton, CmIcon, CmIconButton, CmLink } from '@codemonster-ru/ui-vue';
 
+const CodeBlockShowcase = defineAsyncComponent(
+  async () => (await import('./CodeBlockShowcase.vue')) as { default: Component },
+);
 const pages = [
   { id: 'core', label: 'Core' },
   { id: 'colors', label: 'Colors' },
   { id: 'layouts', label: 'Layouts' },
   { id: 'icons', label: 'Icons' },
+  { id: 'codeblock', label: 'CodeBlock' },
 ];
 const coreDescriptions: Record<string, string> = {
   actions: 'Use buttons for actions and links for navigation to another location or resource.',
@@ -204,6 +208,7 @@ onUnmounted(() => {
     </template>
     <ColorsShowcase v-else-if="currentPage === 'colors'" />
     <LayoutShowcase v-else-if="currentPage === 'layouts'" />
+    <CodeBlockShowcase v-else-if="currentPage === 'codeblock'" :theme="resolvedTheme" />
     <template v-else>
       <IconsShowcase />
       <details class="icon-showcase-extras" @toggle="openIconExamples">

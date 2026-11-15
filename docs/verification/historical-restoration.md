@@ -17,6 +17,7 @@ migration, including behavioral or visual differences. Do not claim parity from 
 | IN PROGRESS | Inventory historical Vue core exports and component contracts; implement missing native components first, then reconcile existing behavior, types, and styles. |
 | IN PROGRESS | Trace layouts, icons, themes, composables, styles and package entry points. Restore supported native contracts and test the new behavior. |
 | IN PROGRESS | Restore CodeBlock and Playground showcase sections using their real packages. Verify source, editor, preview, and assets from a production build. |
+| DONE | Restored the CodeBlock section with the published `vueforge-codeblock@4.0.1` package and all 20 historical examples. Vue showcase lint, typecheck, and production build passed. Chrome verified the direct route at 390 px, highlighting, 1,000 line numbers, copy, dark theme, and loading replay. |
 | IN PROGRESS | Track Vanilla coverage against historical Vue and current contracts. Verify repeat initialization, mutations, destruction, and event cleanup. |
 | DONE | Fixed Vanilla runtime observation of transient removals, cross-root moves and attribute changes. Runtime lint, typecheck, build and 206 tests passed on Node 24. |
 | TODO | Extend Vanilla markup and enhancements for applicable restored contracts; verify keyboard and form behavior. |
@@ -33,6 +34,13 @@ capture provenance. The exact `d9879116` archive passed offline dependency insta
 both package and showcase builds. The starting revision passed current package, Vue showcase and
 Vanilla showcase builds. Compare the actual showcases in the browser separately from the fixture
 gate; matching reference trees does not establish parity with the current checkout.
+
+The starting showcase comparison captured 48 top-of-page frames (historical Vue, current Vue,
+Vanilla; Core, Colors, Layouts and Icons; light and dark; 390 and 1280 px). Chrome reported no
+uncaught JavaScript exceptions or horizontal page overflow. Against the historical frames at a
+channel threshold of 4, all 16 Vue frames differed (1.2–24.6% of pixels), as did all 16 Vanilla
+frames (32.4–69.7%). Review section geometry, mobile header placement, and Vanilla presentation;
+these figures do not qualify as visual acceptance.
 
 Finish and verify each coherent slice before committing it; then select the next unfinished row.
 Record actual output and commands, including any check that cannot run, before advancing the
