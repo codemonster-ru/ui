@@ -29,6 +29,9 @@ await Promise.all([
     'code-block-example.html',
     'code-block-example.css',
     'code-block-example.mjs',
+    'playground-example.html',
+    'playground-example.css',
+    'playground-example.mjs',
   ].map((asset) => cp(resolve(source, asset), resolve(output, asset))),
   cp(resolve(source, 'start.js'), resolve(output, 'start.js')),
   ...['annabel', 'vueforge'].map((name) =>
