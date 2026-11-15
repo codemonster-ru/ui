@@ -3,6 +3,7 @@ import { computed, useAttrs, useSlots, useTemplateRef } from 'vue';
 
 import { cmDocumentLayoutVariants, type CmDocumentLayoutProps } from './document-layout.types';
 import { useShellStickyOffsets } from '../use-shell-sticky-offsets';
+import { useLayoutOwnership } from '../use-layout-ownership';
 
 defineOptions({ inheritAttrs: false });
 const props = withDefaults(defineProps<CmDocumentLayoutProps>(), {
@@ -21,6 +22,7 @@ const hasSidebar = computed(() => layout.value !== 'content' && Boolean(slots.si
 const hasAside = computed(() => layout.value === 'sidebar-content-aside' && Boolean(slots.aside));
 
 const header = useTemplateRef<HTMLElement>('header');
+useLayoutOwnership(useTemplateRef<HTMLElement>('root'));
 const subheader = useTemplateRef<HTMLElement>('subheader');
 const stickyOffsets = useShellStickyOffsets(
   header,
@@ -34,6 +36,7 @@ const stickyOffsets = useShellStickyOffsets(
 <template>
   <component
     :is="props.as"
+    ref="root"
     v-bind="attrs"
     class="cm-document-layout"
     :class="[

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { JSDOM } from 'jsdom';
+import { cmFrameworkOwnership } from '../dist/core/index.js';
 import { CmRuntime } from '../dist/index.js';
 
 test('discovers registered controllers and disconnects them in reverse order', () => {
@@ -62,6 +63,35 @@ test('initializes each element and controller name only once', () => {
   runtime.start(dom.window.document);
 
   assert.equal(connections, 1);
+});
+
+test('synchronously releases exactly the marked framework root without an observer', () => {
+  const dom = new JSDOM(
+    '<main data-cm-controller="first second"><section data-cm-controller="child"></section></main>',
+  );
+  const { document, Event } = dom.window;
+  const calls = [];
+  const runtime = new CmRuntime()
+    .register('first', controllerFactory('first', calls))
+    .register('second', controllerFactory('second', calls))
+    .register('child', controllerFactory('child', calls));
+  const main = document.querySelector('main');
+
+  try {
+    const claim = () => main.dispatchEvent(new Event(cmFrameworkOwnership.claimEvent));
+    runtime.start(document);
+    claim();
+    assert.deepEqual(calls, ['connect:first', 'connect:second', 'connect:child']);
+    main.setAttribute(cmFrameworkOwnership.attribute, '');
+    claim();
+    runtime.start(document);
+    assert.deepEqual(calls.slice(3), ['disconnect:second', 'disconnect:first']);
+    runtime.stop();
+    assert.equal(calls.at(-1), 'disconnect:child');
+  } finally {
+    runtime.stop();
+    dom.window.close();
+  }
 });
 
 test('disposes one subtree and allows it to reconnect', () => {

@@ -9,6 +9,7 @@ import {
   type CmAppShellScope,
 } from './app-shell.types';
 import { useShellStickyOffsets } from '../use-shell-sticky-offsets';
+import { useLayoutOwnership } from '../use-layout-ownership';
 
 defineOptions({ inheritAttrs: false });
 const props = withDefaults(defineProps<CmAppShellProps>(), {
@@ -53,6 +54,7 @@ const hasAside = computed(() => layout.value === 'sidebar-content-aside' && Bool
 const header = useTemplateRef<HTMLElement>('header');
 const subheader = useTemplateRef<HTMLElement>('subheader');
 const shell = useTemplateRef<HTMLElement>('shell');
+useLayoutOwnership(shell);
 const stickyOffsets = useShellStickyOffsets(
   header,
   subheader,

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, useAttrs, useId, useTemplateRef, watch } from 'vue';
-
 import {
   resolveMobileToggleLabel,
   shellEscapeState,
@@ -8,6 +7,8 @@ import {
   toggleShellSidebar,
   type CmShellState,
 } from '@codemonster-ru/ui-runtime/core';
+
+import { useLayoutOwnership } from '../use-layout-ownership';
 import type {
   CmAdminLayoutExposed,
   CmAdminLayoutMobileSidebarScope,
@@ -47,6 +48,7 @@ const slots = defineSlots<{
 const generatedId = `cm-admin-layout-sidebar-${useId()}`;
 const sidebarId = computed(() => props.id ?? generatedId);
 const sidebar = useTemplateRef<HTMLElement>('sidebar');
+useLayoutOwnership(useTemplateRef<HTMLElement>('root'));
 const mobileToggle = useTemplateRef<HTMLElement>('mobileToggle');
 
 const localCollapsed = ref(props.sidebarCollapsed ?? props.defaultSidebarCollapsed);
@@ -174,6 +176,7 @@ function onKeydown(event: KeyboardEvent): void {
 <template>
   <component
     :is="props.as"
+    ref="root"
     v-bind="attrs"
     class="cm-admin-layout"
     :class="{ 'cm-admin-layout--fit-content': !fillViewport }"

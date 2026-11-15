@@ -102,6 +102,9 @@ are implementation details unless a contract explicitly exposes them for integra
 
 The initializer must not attach a DOM controller to a framework-owned root. Applications must not
 initialize two frameworks or a framework and DOM controller over the same component boundary.
+When Vue takes ownership of server-rendered markup, it marks the root and synchronously releases any
+already-connected runtime controllers on that element. The server markup and separately authored
+Vanilla roots remain eligible for progressive enhancement.
 
 ## Themes and initial rendering
 
