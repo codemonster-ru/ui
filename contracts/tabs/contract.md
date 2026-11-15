@@ -59,8 +59,8 @@ Buttons scroll one logical step without selecting a tab. Focus stays usable when
 disappears at an edge, and reduced-motion preferences select an immediate scroll. Without
 enhancement, touch, horizontal wheel, and native focus scrolling remain available.
 
-Vue also positions an animated underline under the selected button. To enable that underline in
-Vanilla, place a hidden `span.cm-tabs__indicator[aria-hidden="true"]` after the tab buttons,
-inside the list. Without an active indicator, the selected button carries its own static
-underline. The indicator is decorative and does not change focus or selection. It moves with
-the scroll content and skips the transition when reduced motion is requested.
+Both adapters position an animated underline under the selected button. The Vanilla controller
+reuses an authored `span.cm-tabs__indicator[aria-hidden="true"][hidden]` or inserts one after
+the tab buttons. Without an active indicator, the selected button carries a static underline.
+The decorative indicator moves with the scroll content and skips the transition when reduced
+motion is requested.

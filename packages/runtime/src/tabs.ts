@@ -39,6 +39,7 @@ export class CmTabsController implements CmController {
   #scrollList: HTMLElement | null = null;
   #indicator: HTMLElement | null = null;
   #indicatorStyle: string | null = null;
+  #generatedIndicator = false;
   #scrollButtons: [CmTabScrollEdge, HTMLButtonElement][] = [];
   #stopScroll?: () => void;
 
@@ -57,11 +58,20 @@ export class CmTabsController implements CmController {
     this.#scrollList = this.#root.querySelector(':scope > .cm-tabs__list');
     this.#indicator = this.#scrollList?.querySelector(':scope > .cm-tabs__indicator') ?? null;
     this.#indicatorStyle = this.#indicator?.getAttribute('style') ?? null;
+    if (this.#scrollList && !this.#indicator) {
+      const indicator = this.#root.ownerDocument.createElement('span');
+      indicator.className = 'cm-tabs__indicator';
+      indicator.setAttribute('aria-hidden', 'true');
+      indicator.hidden = true;
+      this.#scrollList.append(indicator);
+      this.#indicator = indicator;
+      this.#generatedIndicator = true;
+    }
     this.#scrollButtons = (['start', 'end'] as const).flatMap((edge) => {
       const button = this.#root.querySelector<HTMLButtonElement>(`:scope > button[data-cm-tabs-scroll="${edge}"]`);
       return button ? [[edge, button]] : [];
     });
-    if (this.#scrollList && (this.#scrollButtons.length || this.#indicator)) {
+    if (this.#scrollList) {
       this.#stopScroll = observeTabScroll(
         this.#scrollList,
         (edges) => {
@@ -81,11 +91,13 @@ export class CmTabsController implements CmController {
     this.#stopScroll = undefined;
     for (const [, button] of this.#scrollButtons) button.hidden = true;
     this.#scrollButtons = [];
-    if (this.#indicator) {
+    if (this.#generatedIndicator) this.#indicator?.remove();
+    else if (this.#indicator) {
       this.#indicator.hidden = true;
       if (this.#indicatorStyle === null) this.#indicator.removeAttribute('style');
       else this.#indicator.setAttribute('style', this.#indicatorStyle);
     }
+    this.#generatedIndicator = false;
     this.#indicator = null;
     this.#scrollList = null;
     this.#entries = [];
