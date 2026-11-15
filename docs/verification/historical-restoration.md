@@ -403,3 +403,80 @@ image `20261102.0473.1`, macOS 26.7.2 (`25G332`), and installed Chrome for Testi
 changed, missing or unexpected images. All 362 paired fixtures matched in pixels and motion.
 All 144 behavior runs passed with equal motion signatures.
 [Hosted visual job](https://github.com/codemonster-ru/ui/actions/runs/43716556197/job/132819264193)
+
+## Continuation from a019c059
+
+**PASS for this continuation.** The restored behaviors passed the local checks and all eight
+hosted jobs. The package migration and browser fallback boundaries are documented below.
+
+- The CSS build removes authoring comments from distribution copies while retaining license
+  notices and the original stylesheet entry paths (`6f1ae7cf`). With the baseline component
+  sources this freed 4,626 gzip bytes. The shared scroll controls preserve the existing Tabs
+  markup and styles (`47b92039`). Four pinned Chrome Tabs pairs matched in both themes.
+- NodeNext now resolves the relative declarations exported by the Vue and Layouts packages
+  (`ca60f755`). The packed consumer checks that `createVueForgeCore()` with `app.use()` accepts
+  supported theme preferences, and that TypeScript rejects an old preset object and invalid
+  layout props. Current layouts render through component imports and shared styles. Archived
+  package roots and runtime preset configuration remain intentional migration boundaries.
+  [Migration guide](../migrate-from-vueforge.md)
+- Historical Vue MenuBar restores overflow controls with logical edges (`e4ff3dea`). At a
+  390 px viewport, pinned Chrome matched the 215 px `d9879116` scroll step in LTR and RTL.
+  The current component also passed touch swipes, wheel scrolling, grouped and nested keyboard
+  traversal, disabled-item skipping, and focus retention during resize and hydration. Compact
+  submenus stay reachable below the scroller. Server-rendered content wraps until hydration.
+  Nine Vue regression tests, eight canonical interaction runs, and eight paired screenshots
+  passed. Browser evidence is in `/private/tmp/cmui-menubar-overflow.R3Eudy`.
+- Dropdown, Popover, Tooltip, Select, DatePicker, and MenuBar restore 320 ms exit motion
+  (`11ce136a`, `e4ff3dea`). Closing panels are inert while their paint and placement persist.
+  Pinned Chrome passed 20 Vue and Vanilla cases covering trusted pointer input, the accessibility
+  tree, focus release, reduced motion and portal cleanup. The five frozen overlay controls used
+  the same duration and easing. Evidence is in `/private/tmp/cmui-floating-exit.qmz0Uy`.
+- Native Dialog, ConfirmDialog, CommandPalette, and Drawer restore their historical panel and
+  backdrop exit (`11ce136a`). Chrome compared 28 current and `d9879116` cases at 390 and 1280 px.
+  Dialog and ConfirmDialog faded with a 12 px downward shift over 220 ms. CommandPalette faded
+  with an 8 px upward shift over 220 ms, and Drawer slid toward its edge over 320 ms. The stacked
+  check kept the outer modal interactive, restored opener focus, and reported only that modal in the
+  accessibility tree while the inner panel faded. Six adapter behavior runs verify native
+  state, focus, hit testing, scroll release, and reduced-motion dismissal. Evidence is in
+  `/private/tmp/cmui-modal-exit.bWViyn`.
+
+Reduced motion and browsers without the required discrete transitions and CSS inertness use
+immediate hiding. On direct native `dialog.close()` or form dismissal without an opener, the
+browser can report the previous `activeElement` until its close event. The panel releases input
+and keyboard trapping immediately, and adapter-managed dismissal also clears focus synchronously.
+[Vue contract trace](historical-vue-core.md)
+
+### Local verification
+
+The exact product revision `e4ff3dea14ea7bc3a47a60abc9ae1a7be9377f25` passed all 20 clean quality
+checks. They included 988 cold tests, 181 accessibility cases, both production builds, fresh
+npm, pnpm and Yarn tarball installs, and the release audit. The audit reported zero production
+vulnerabilities, with three low and 17 moderate development findings. The native Vue bundle
+measured 59.97 of 60 KiB gzip and the historical entry measured 80.39 of 81 KiB. Runtime measured
+79.85 of 80 KiB and shared CSS measured 47,474 of 51,200 bytes. Evidence is in
+`/private/tmp/cmui-verify.6vvIwG`.
+
+Pinned Chrome passed all 144 interaction runs and all 362 Vue/Vanilla fixture pairs, including
+matching motion signatures. The three production showcases produced 48 captures with zero
+script errors or horizontal overflow. The largest changed areas against the historical showcase
+were 3.46% in Vue and 3.43% in Vanilla at the four-level RGB threshold. The Vanilla showcase
+builds independently with 62 components and 369 contract examples and variants.
+
+The local browser run used archive `68fbeae4`. The only later change before the final product
+revision resolves an optional submenu ID in the Vue regression test. Both builds produced
+byte-identical runtime assets for the two showcases and their packages. The 96 local captures
+matched each other across adapters and matched the font-injected `d9879116` and prior `084d19ea`
+captures byte for byte. The same 44 local stored-image differences per adapter come from the
+documented glyph paint residual. The approved images, font configuration and thresholds
+remain the same. Browser evidence is in `/private/tmp/cmui-browser-checkpoint.9XuT4u`.
+[Renderer evidence](stored-visual-renderer.md)
+
+### Hosted verification
+
+All eight GitHub Actions jobs passed at `e4ff3dea14ea7bc3a47a60abc9ae1a7be9377f25` on the
+dedicated verification branch. The visual job checked out that SHA on `macos-26-arm64` image
+`20261102.0473.1`, macOS 26.7.2 (`25G332`), with Chrome for Testing `151.0.7922.138`. Both
+48-image stored comparisons reported zero changed, missing or unexpected images. The same job
+verified 362 pixel-identical Vue/Vanilla pairs with matching motion and 144 interaction runs
+with zero failures or motion mismatches.
+[Hosted visual job](https://github.com/codemonster-ru/ui/actions/runs/43729547790/job/132858739350)
