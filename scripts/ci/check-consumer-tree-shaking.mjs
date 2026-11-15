@@ -158,8 +158,8 @@ const cases = [
     fileName: 'ui-vue-historical',
     forbiddenMarkers: unrelatedRuntimeMarkers,
     includesPositioning: true,
-    // Includes the native renderer and historical adapters, with DataTable paging and reorder (79.76 KiB measured).
-    maxGzipBytes: 80 * 1024,
+    // The aggregate opt-in entry includes the old theme plugin and anchored overlays; direct entries keep their budgets.
+    maxGzipBytes: 81 * 1024,
     name: 'ui-vue opt-in historical namespace',
   },
   {

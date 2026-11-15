@@ -25,6 +25,7 @@ export interface CmDropdownProps {
   teleportTo?: string | HTMLElement | null | false;
   disableTeleport?: boolean;
   triggerAsChild?: boolean;
+  showArrow?: boolean;
   closeOnSelect?: boolean;
   variant?: CmDropdownVariant;
 }

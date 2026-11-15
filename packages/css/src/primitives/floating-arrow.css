@@ -1,0 +1,20 @@
+.cm-dropdown__menu[data-cm-floating-arrow]::after,
+.cm-popover__panel[data-cm-floating-arrow]::after {
+  position: absolute;
+  top: var(--cm-floating-arrow-y, 0%);
+  left: clamp(var(--cm-space-3), var(--cm-floating-arrow-x, 50%), calc(100% - var(--cm-space-3)));
+  width: calc(var(--cm-space-5) / 2);
+  height: calc(var(--cm-space-5) / 2);
+  border-top: inherit;
+  border-left: inherit;
+  background: inherit;
+  content: '';
+  pointer-events: none;
+  rotate: var(--cm-floating-arrow-angle, 45deg);
+  translate: -50% -50%;
+}
+
+.cm-popover--top .cm-popover__panel[data-cm-floating-arrow] {
+  --cm-floating-arrow-y: 100%;
+  --cm-floating-arrow-angle: 225deg;
+}

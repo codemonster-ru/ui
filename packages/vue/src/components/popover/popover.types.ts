@@ -10,6 +10,7 @@ export interface CmPopoverProps {
   teleportTo?: string | HTMLElement | null | false;
   disableTeleport?: boolean;
   triggerAsChild?: boolean;
+  showArrow?: boolean;
   closeOnOutsideClick?: boolean;
   closeOnEscape?: boolean;
   focusOnOpen?: boolean;

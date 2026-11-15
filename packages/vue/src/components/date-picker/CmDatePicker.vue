@@ -1,7 +1,7 @@
 <script setup lang="ts" generic="Multiple extends boolean = false, Range extends boolean = false">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useAttrs, watch, type PropType } from 'vue';
 
-import { observeCmAnchoredPosition, type CmAnchoredStyle } from '../../internal/anchored-position';
+import { observeCmAnchoredPosition, type CmAnchoredStyle } from '@codemonster-ru/ui-runtime/anchored-position';
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
 import { assertCm, warnCm } from '../../internal/warn';

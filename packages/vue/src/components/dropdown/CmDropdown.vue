@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, shallowRef, useAttrs, watch, type ComponentPublicInstance, type PropType } from 'vue';
 
-import { observeCmAnchoredPosition, type CmAnchoredStyle } from '../../internal/anchored-position';
+import { observeCmAnchoredPosition, type CmAnchoredStyle } from '@codemonster-ru/ui-runtime/anchored-position';
 import { authoredTriggerElement, CmAuthoredTrigger, disclosureTriggerActions } from '../../internal/disclosure-trigger';
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
@@ -39,6 +39,7 @@ const props = defineProps({
   teleportTo: { type: [String, Object, Boolean] as PropType<string | HTMLElement | null | false>, default: null },
   disableTeleport: Boolean,
   triggerAsChild: Boolean,
+  showArrow: Boolean,
 });
 const emit = defineEmits<{
   openChange: [open: boolean];
@@ -189,7 +190,7 @@ function onDocumentClick(event: MouseEvent): void {
 }
 
 watch(
-  [localOpen, teleportTarget, placement, trigger, menuElement],
+  [localOpen, teleportTarget, placement, trigger, menuElement, () => props.showArrow],
   ([open, target, placement, anchor, panel], _, onCleanup) => {
     if (!open || !anchor || !panel) return;
     const document = anchor.ownerDocument;
@@ -257,6 +258,7 @@ useCmHydrated();
         ref="menu"
         v-bind="menuAttrs"
         class="cm-dropdown__menu"
+        :data-cm-floating-arrow="props.showArrow ? '' : undefined"
         :items="props.items"
         :aria-labelledby="`${props.id}-trigger`"
         :hidden="!localOpen"
