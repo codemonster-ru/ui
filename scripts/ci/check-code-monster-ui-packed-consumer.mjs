@@ -7,6 +7,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { historicalComponentEntries } from '../build/historical-component-entries.mjs';
+import { codeMonsterUiNodeEngine } from './code-monster-ui-package-catalog.mjs';
 import { discoverCodeMonsterUiWorkspaces } from './code-monster-ui-workspaces.mjs';
 
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
@@ -106,7 +107,7 @@ function writeConsumer(tarballs) {
     private: true,
     version: '0.0.0',
     type: 'module',
-    engines: { node: '^24.15.0 || >=26.0.0' },
+    engines: { node: codeMonsterUiNodeEngine },
     scripts: {
       build: 'vite build',
       typecheck: 'tsc --noEmit',
@@ -398,8 +399,8 @@ try {
     '--module',
     'NodeNext',
     '--strict',
-    '--skipLibCheck',
     '--noEmit',
+    'src/main.ts',
     'src/require.cts',
   ]);
   run(join(consumerDirectory, 'node_modules/.bin/vite'), ['build']);

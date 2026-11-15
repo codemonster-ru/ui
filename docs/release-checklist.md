@@ -1,8 +1,7 @@
 # Package release checklist
 
-This is the canonical checklist for VueForge and CodeMonster UI npm releases plus the CodeMonster
-UI package release. Run it from the repository root on the exact commit that will receive the
-package tags.
+Run this checklist for CodeMonster UI npm releases from the repository root, on the exact commit
+that will receive the package tags. VueForge releases belong to the archived project.
 
 ## 1. Choose the release channel
 
@@ -64,19 +63,13 @@ archive contents but do not create `.tgz` files. Review those file lists and ins
 explicitly when release metadata changes:
 
 ```bash
-npm pack --workspace @codemonster-ru/vueforge-theme --dry-run --ignore-scripts
-npm pack --workspace @codemonster-ru/vueforge-icons --dry-run --ignore-scripts
-npm pack --workspace @codemonster-ru/vueforge-playground-core --dry-run --ignore-scripts
-npm pack --workspace @codemonster-ru/vueforge-playground-vite-plugin --dry-run --ignore-scripts
-npm pack --workspace @codemonster-ru/vueforge-core --dry-run --ignore-scripts
-npm pack --workspace @codemonster-ru/vueforge-codeblock --dry-run --ignore-scripts
-npm pack --workspace @codemonster-ru/vueforge-layouts --dry-run --ignore-scripts
-npm pack --workspace @codemonster-ru/vueforge-playground --dry-run --ignore-scripts
 npm pack --workspace @codemonster-ru/ui-tokens --dry-run --ignore-scripts
+npm pack --workspace @codemonster-ru/ui-icons --dry-run --ignore-scripts
 npm pack --workspace @codemonster-ru/ui-runtime --dry-run --ignore-scripts
 npm pack --workspace @codemonster-ru/ui-css --dry-run --ignore-scripts
 npm pack --workspace @codemonster-ru/ui-utilities --dry-run --ignore-scripts
 npm pack --workspace @codemonster-ru/ui-vue --dry-run --ignore-scripts
+npm pack --workspace @codemonster-ru/ui-layouts --dry-run --ignore-scripts
 ```
 
 For every proposed archive and generated consumer tarball, verify:
@@ -99,12 +92,8 @@ Required scenarios:
 - Vite browser build and TypeScript `NodeNext`/bundler resolution;
 - Node ESM and CommonJS SSR without `document` shims;
 - full CSS and component-subpath auto CSS;
-- direct CSS subpath imports;
-- all 76 explicit CSS exports and representative browser auto-CSS entries;
-- one-component packed tree shaking with required CSS retained and unrelated CSS removed;
-- CodeBlock `/view` and `/highlight`;
-- Playground `/ui`, `/runtime`, component mode, and lazy sandbox mode;
-- Vite virtual modules from the Playground plugin.
+- all explicit shared CSS exports and representative browser auto-CSS entries;
+- one-component packed tree shaking with required CSS retained and unrelated CSS removed.
 
 The separate `npm run check:consumer-tree-shaking` gate covers one-component, multi-component, and
 full-namespace imports for Core and Layouts against the built workspace packages.
@@ -119,24 +108,15 @@ wait for each workflow and registry smoke to pass, then continue. Never use `git
 this release.
 
 CodeMonster UI packages use independent SemVer. Publish only packages included in the reviewed
-cohort, in dependency order: tokens, runtime, CSS, utilities, then Vue. Historical aggregate
-`ui/vX.Y.Z` tags do not trigger either current publication workflow.
+cohort, in the [documented dependency order](./architecture/package-topology-and-releases.md#release-order).
+Historical aggregate `ui/vX.Y.Z` tags do not trigger the publication workflow.
 
 The workflow treats the packed archive as immutable: after verification builds the package, it packs
 the target once with lifecycle scripts disabled, dry-runs publication of that exact `.tgz`, and then
 publishes the same file. No workspace or package-directory publish may replace the final tarball
 publish, and no rebuild may occur between packing, inspection, and publication.
 
-| Order | Tag                                              |
-| ----: | ------------------------------------------------ |
-|     1 | `@codemonster-ru/vueforge-theme@2.0.1`           |
-|     2 | `@codemonster-ru/vueforge-icons@3.2.0`           |
-|     3 | `@codemonster-ru/vueforge-playground-core@2.1.0` |
-|     4 | `@codemonster-ru/vueforge-core@2.4.0`            |
-|     5 | `@codemonster-ru/vueforge-layouts@2.1.2`         |
-|     6 | `@codemonster-ru/vueforge-playground@3.0.1`      |
-
-For each row:
+For each package:
 
 1. Create the annotated or lightweight tag on the reviewed release commit.
 2. Push only that tag.
@@ -144,23 +124,23 @@ For each row:
 4. Confirm the expected npm dist-tag and GitHub Release.
 5. Run the registry checks below before creating the next tag.
 
-Example for the first stable package:
+Example using a reviewed tokens release version:
 
 ```bash
-git tag '@codemonster-ru/vueforge-theme@2.0.1'
-git push origin '@codemonster-ru/vueforge-theme@2.0.1'
+git tag '@codemonster-ru/ui-tokens@2.0.0'
+git push origin '@codemonster-ru/ui-tokens@2.0.0'
 ```
 
 For a beta, update the package and changelog to a matching prerelease version first, then use a tag
-such as `@codemonster-ru/vueforge-core@2.4.0-beta.1`. The workflow publishes it under `next`.
+such as `@codemonster-ru/ui-tokens@2.0.0-beta.1`. The workflow publishes it under `next`.
 
 ## 7. Registry, provenance, and integrity smoke
 
 After each workflow completes:
 
 ```bash
-npm view @codemonster-ru/vueforge-theme@2.0.1 version dist.integrity dist.shasum --json
-npm dist-tag ls @codemonster-ru/vueforge-core
+npm view @codemonster-ru/ui-tokens@2.0.0 version dist.integrity dist.shasum --json
+npm dist-tag ls @codemonster-ru/ui-tokens
 ```
 
 Repeat with the package and version just published. Confirm:
@@ -172,7 +152,8 @@ Repeat with the package and version just published. Confirm:
 - a fresh registry install passes TypeScript, browser build, SSR, and CSS import smoke tests;
 - `npm audit signatures` passes in the clean npm consumer.
 
-After the package publishes, repeat the complete ecosystem consumer with only registry versions.
+After every package in the cohort is available, run `npm run check:ui-registry-consumer`.
+It installs the versions in the release checkout into a fresh consumer from the registry.
 
 ## 8. Rollback plan
 
@@ -187,23 +168,23 @@ For a stable regression:
 4. Prepare and verify a forward patch release.
 5. Publish the patch through the same sequential workflow.
 
-Commands use the real package and known-good version:
+Substitute the affected package, known-good version, and defective version in these examples:
 
 ```bash
-npm dist-tag add @codemonster-ru/vueforge-icons@3.1.0 latest
-npm deprecate @codemonster-ru/vueforge-icons@3.2.0 "Use the latest verified release."
+npm dist-tag add @codemonster-ru/ui-icons@2.0.0 latest
+npm deprecate @codemonster-ru/ui-icons@2.0.1 "Use the latest verified release."
 ```
 
 For a prerelease regression, move `next` to the last verified prerelease:
 
 ```bash
-npm dist-tag add @codemonster-ru/vueforge-core@2.4.0-beta.0 next
+npm dist-tag add @codemonster-ru/ui-vue@2.0.0-beta.1 next
 ```
 
 If no prerelease should remain discoverable, remove `next` instead:
 
 ```bash
-npm dist-tag rm @codemonster-ru/vueforge-core next
+npm dist-tag rm @codemonster-ru/ui-vue next
 ```
 
 Record the incident, affected versions, dist-tag changes, consumer impact, and forward-fix plan in
@@ -216,4 +197,4 @@ the release notes or issue tracker.
 - Confirm `latest` or `next` is correct for every package.
 - Confirm registry consumers pass with npm, pnpm, and Yarn.
 - Record final workflow URLs, integrity values, and smoke results in the release issue.
-- Announce the release only after the final Playground registry consumer passes.
+- Announce the release after the complete registry consumer passes.

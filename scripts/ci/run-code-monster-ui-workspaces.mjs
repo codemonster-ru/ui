@@ -3,7 +3,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { discoverCodeMonsterUiWorkspaces } from './code-monster-ui-workspaces.mjs';
 
-const allowedScripts = new Set(['build', 'check']);
+const allowedScripts = new Set(['build', 'check', 'pack:dry-run']);
 const script = process.argv[2];
 
 if (!allowedScripts.has(script)) {
@@ -14,7 +14,11 @@ if (!allowedScripts.has(script)) {
   const workspaces = discoverCodeMonsterUiWorkspaces(join(projectRoot, 'packages'));
 
   for (const workspace of workspaces) {
-    const result = spawnSync('npm', ['run', script, '--workspace', workspace.name], {
+    const npmArguments =
+      script === 'pack:dry-run'
+        ? ['pack', '--workspace', workspace.name, '--dry-run', '--ignore-scripts']
+        : ['run', script, '--workspace', workspace.name];
+    const result = spawnSync('npm', npmArguments, {
       cwd: projectRoot,
       stdio: 'inherit',
     });
