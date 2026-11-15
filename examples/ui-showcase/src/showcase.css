@@ -517,69 +517,6 @@
   gap: var(--cm-space-3);
 }
 
-#navigation .core-stepper-scroll .cm-stepper__trigger {
-  gap: 0.625rem;
-  block-size: 100%;
-}
-
-#navigation .cm-stepper__marker {
-  inline-size: 2.125rem;
-  block-size: 2.125rem;
-  flex: none;
-  font-size: var(--cm-font-size-sm);
-  font-weight: var(--cm-font-weight-semibold);
-}
-
-#navigation .cm-stepper__rail {
-  gap: 0;
-}
-
-#navigation .cm-stepper__content {
-  gap: 0.125rem;
-}
-
-#navigation .cm-stepper__label {
-  font-size: var(--cm-text-body-font-size);
-  font-weight: var(--cm-font-weight-medium);
-  line-height: 1.5;
-}
-
-#navigation .cm-stepper__description {
-  line-height: 1.5;
-}
-
-#navigation .cm-stepper__connector {
-  block-size: 2px;
-}
-
-#navigation .cm-stepper__item--complete .cm-stepper__marker {
-  background: var(--cm-color-interactive-primary-background);
-  color: var(--cm-color-interactive-primary-foreground);
-}
-
-#navigation .cm-stepper__item--complete .cm-stepper__connector,
-#navigation .cm-stepper__item--current .cm-stepper__connector--before {
-  background: var(--cm-color-interactive-primary-background);
-}
-
-#navigation .cm-stepper--vertical .cm-stepper__trigger {
-  gap: var(--cm-space-3);
-  min-block-size: 2.125rem;
-}
-
-#navigation .cm-stepper--vertical .cm-stepper__list {
-  gap: var(--cm-space-3);
-}
-
-#navigation .cm-stepper--vertical .cm-stepper__rail {
-  margin-block: calc(var(--cm-space-3) / -2);
-}
-
-#navigation .cm-stepper--vertical .cm-stepper__connector {
-  inline-size: 2px;
-  block-size: auto;
-}
-
 #navigation .cm-table-of-contents__link {
   padding-block: 0.375rem;
 }
