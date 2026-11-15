@@ -19,6 +19,26 @@ function tableSlot(content) {
   return h('tr', cells);
 }
 
+test('server-renders historical column reorder controls and preserves fixed headers', async () => {
+  const html = await renderToString(
+    h(VfDataTable, {
+      columns: [
+        { key: 'name', header: 'Name' },
+        { key: 'actions', reorderable: false },
+      ],
+      rows: [{ name: 'Ada', actions: 'Edit' }],
+      reorderableColumns: true,
+    }),
+  );
+
+  assert.match(
+    html,
+    /<th[^>]+tabindex="0"[^>]+aria-label="Name, column 1 of 2"[^>]+aria-keyshortcuts="ArrowLeft ArrowRight"/u,
+  );
+  assert.match(html, /<th data-cm-data-table-reorder-column="actions" scope="col">/u);
+  assert.match(html, /class="cm-data-table__reorder-status" aria-live="polite"/u);
+});
+
 test('server-renders the historical page window, custom labels and current page', async () => {
   const html = await renderToString(
     h(VfDataTable, {

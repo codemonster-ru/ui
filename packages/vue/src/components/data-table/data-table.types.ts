@@ -1,3 +1,5 @@
+import type { HTMLAttributes } from 'vue';
+
 export type CmDataTableAlign = 'start' | 'center' | 'end';
 export type CmDataTableVerticalAlign = 'top' | 'middle' | 'bottom' | 'baseline';
 export type CmDataTableDensity = 'default' | 'compact';
@@ -20,8 +22,18 @@ export interface CmDataTableColumn {
   maxWidth?: string;
   nowrap?: boolean;
   resizable?: boolean;
+  reorderable?: boolean;
   pinned?: CmDataTableColumnPin;
   scope?: 'col' | 'row' | 'colgroup' | 'rowgroup';
+}
+
+export interface DataTableHeaderInteraction {
+  attrs: (
+    column: CmDataTableColumn,
+    index: number,
+    columns: readonly CmDataTableColumn[],
+  ) => HTMLAttributes & { 'data-cm-data-table-reorder-column': string; 'data-cm-data-table-reordering'?: '' };
+  announcement: string;
 }
 
 export interface CmDataTableRow {
