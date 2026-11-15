@@ -40,7 +40,7 @@
     }
   },
   "scripts": {
-    "build": "vite build && node ../../scripts/build/build-historical-component-entries.mjs",
+    "build": "vite build && node ../../scripts/build/build-historical-component-entries.mjs && node ../../scripts/build/finalize-declarations.mjs dist",
     "check": "npm run lint && npm run typecheck && npm run test",
     "format": "prettier --ignore-path ../../.prettierignore --write .",
     "format:check": "prettier --ignore-path ../../.prettierignore --check .",

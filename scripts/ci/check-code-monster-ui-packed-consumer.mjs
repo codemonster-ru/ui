@@ -273,13 +273,21 @@ function writeConsumer(tarballs) {
   writeFileSync(
     join(consumerDirectory, 'src/require.cts'),
     [
+      "import { createSSRApp } from 'vue';",
       "import vueAdapter = require('@codemonster-ru/ui-vue');",
       "import historicalAdapter = require('@codemonster-ru/ui-vue/historical');",
       "import layoutsAdapter = require('@codemonster-ru/ui-layouts');",
       "import historicalButton = require('@codemonster-ru/ui-vue/historical/button');",
       '',
       "const options: historicalAdapter.VfVueForgeOptions = { defaultTheme: 'light' };",
-      'void [vueAdapter.CmButton, historicalAdapter.createVueForgeCore(options), layoutsAdapter.CmAuthLayout, historicalButton.VfButton];',
+      'createSSRApp({}).use(historicalAdapter.createVueForgeCore(), options);',
+      '// @ts-expect-error Configure the plugin with app.use.',
+      'historicalAdapter.createVueForgeCore(options);',
+      '// @ts-expect-error The legacy engine is outside the current theme contract.',
+      'const invalidTheme: historicalAdapter.VfVueForgeOptions = { theme: { preset: {} } };',
+      '// @ts-expect-error Layout props remain typed through NodeNext.',
+      'const invalidLayout: layoutsAdapter.CmAuthLayoutProps = { title: 42 };',
+      'void [vueAdapter.CmButton, layoutsAdapter.CmAuthLayout, historicalButton.VfButton, invalidTheme, invalidLayout];',
       '',
     ].join('\n'),
   );
