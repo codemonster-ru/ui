@@ -1,7 +1,7 @@
 import { nextTabsValue, resolveTabsValue } from './core/tabs.js';
 import { dispatchCmEvent } from './events.js';
 import type { CmController, CmControllerFactory } from './runtime.js';
-import { observeTabScroll, scrollTabList, type CmTabScrollEdge } from './tabs-scroll.js';
+import { observeTabScroll, scrollTabList, tabIndicatorGeometry, type CmTabScrollEdge } from './tabs-scroll.js';
 
 export interface TabsValueChangeDetail {
   value: string;
@@ -37,6 +37,7 @@ export class CmTabsController implements CmController {
   readonly #root: Element;
   #entries: TabEntry[] = [];
   #scrollList: HTMLElement | null = null;
+  #indicator: HTMLElement | null = null;
   #scrollButtons: [CmTabScrollEdge, HTMLButtonElement][] = [];
   #stopScroll?: () => void;
 
@@ -53,14 +54,19 @@ export class CmTabsController implements CmController {
     const active = resolveTabsValue(this.#coreItems, this.#root.getAttribute('data-cm-tabs-value'));
     if (active !== null) this.#synchronize(active);
     this.#scrollList = this.#root.querySelector(':scope > .cm-tabs__list');
+    this.#indicator = this.#scrollList?.querySelector(':scope > .cm-tabs__indicator') ?? null;
     this.#scrollButtons = (['start', 'end'] as const).flatMap((edge) => {
       const button = this.#root.querySelector<HTMLButtonElement>(`:scope > button[data-cm-tabs-scroll="${edge}"]`);
       return button ? [[edge, button]] : [];
     });
-    if (this.#scrollList && this.#scrollButtons.length) {
-      this.#stopScroll = observeTabScroll(this.#scrollList, (edges) => {
-        for (const [edge, button] of this.#scrollButtons) button.hidden = !edges[edge];
-      });
+    if (this.#scrollList && (this.#scrollButtons.length || this.#indicator)) {
+      this.#stopScroll = observeTabScroll(
+        this.#scrollList,
+        (edges) => {
+          for (const [edge, button] of this.#scrollButtons) button.hidden = !edges[edge];
+        },
+        () => this.#measureIndicator(),
+      );
     }
     this.#root.addEventListener('click', this.#handleClick);
     this.#root.addEventListener('keydown', this.#handleKeydown);
@@ -73,6 +79,8 @@ export class CmTabsController implements CmController {
     this.#stopScroll = undefined;
     for (const [, button] of this.#scrollButtons) button.hidden = true;
     this.#scrollButtons = [];
+    if (this.#indicator) this.#indicator.hidden = true;
+    this.#indicator = null;
     this.#scrollList = null;
     this.#entries = [];
   }
@@ -131,6 +139,17 @@ export class CmTabsController implements CmController {
       entry.tab.tabIndex = active ? 0 : -1;
       const panel = panelFor(this.#root, entry.tab);
       if (panel) panel.hidden = !active;
+    }
+    this.#measureIndicator();
+  }
+
+  #measureIndicator(): void {
+    if (!this.#indicator || !this.#scrollList) return;
+    const geometry = tabIndicatorGeometry(this.#scrollList);
+    this.#indicator.hidden = !geometry;
+    if (geometry) {
+      this.#indicator.style.width = `${geometry.width}px`;
+      this.#indicator.style.transform = `translateX(${geometry.left}px)`;
     }
   }
 }
