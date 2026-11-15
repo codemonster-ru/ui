@@ -60,6 +60,28 @@ test('does not add a gutter and reuses the existing lease when a native dialog r
   assert.equal(root.hasAttribute('data-cm-modal-scroll'), false);
 });
 
+test('can relinquish the document lease while keeping a dialog in the native modal stack', (context) => {
+  const { document, root } = createDocument(context);
+  const outer = document.querySelector('#outer');
+  const inner = document.querySelector('#inner');
+  const initialLease = enterCmNativeModal(outer);
+
+  inner.setAttribute('data-cm-modal-unlocked', '');
+  assert.equal(enterCmNativeModal(inner), undefined);
+  assert.equal(root.dataset.cmModalScroll, 'gutter');
+  outer.setAttribute('data-cm-modal-unlocked', '');
+  assert.equal(enterCmNativeModal(outer, initialLease), undefined);
+  assert.equal(root.hasAttribute('data-cm-modal-scroll'), false);
+  assert.ok(outer.matches(':modal'));
+  assert.ok(inner.matches(':modal'));
+
+  inner.removeAttribute('data-cm-modal-unlocked');
+  const resumed = enterCmNativeModal(inner);
+  assert.equal(root.dataset.cmModalScroll, 'gutter');
+  resumed();
+  assert.equal(root.hasAttribute('data-cm-modal-scroll'), false);
+});
+
 test('releases the document lock when the native modal cannot enter the top layer', (context) => {
   const { document, root } = createDocument(context);
   const dialog = document.querySelector('#outer');

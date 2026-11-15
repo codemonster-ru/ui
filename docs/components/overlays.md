@@ -37,6 +37,8 @@ Individual styles are also available from the `dialog.css`, `drawer.css`, `dropd
 They render inline on the server and move to the target after mounting, defaulting to `body`.
 Use `disableTeleport`, `false`, or `null` to keep them inline. The target controls DOM ancestry
 and inherited styles. Opening still uses the browser’s modal top layer and document scroll lock.
+Set `VfDrawer`’s `scrollLockTarget` to an element to lock that region while the drawer is open,
+or to `false` to leave scroll styles alone. `null` uses the normal document lock.
 
 ## Vue
 

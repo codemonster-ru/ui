@@ -47,14 +47,16 @@ export function enterCmNativeModal(dialog: HTMLDialogElement, releaseScroll?: ()
   const view = document.defaultView;
   if (!view || !dialog.isConnected || typeof dialog.showModal !== 'function') return releaseScroll;
 
-  const release = releaseScroll ?? lockDocumentScroll(document, view);
+  const lockScroll = !dialog.hasAttribute('data-cm-modal-unlocked');
+  if (!lockScroll) releaseScroll?.();
+  const release = lockScroll ? (releaseScroll ?? lockDocumentScroll(document, view)) : undefined;
   if (!dialog.matches(':modal')) {
     // Server markup may already be open without belonging to the browser's modal stack.
     dialog.removeAttribute('open');
     try {
       dialog.showModal();
     } catch (error) {
-      release();
+      release?.();
       throw error;
     }
   }

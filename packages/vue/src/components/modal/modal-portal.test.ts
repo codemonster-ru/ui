@@ -102,3 +102,39 @@ it('hydrates the server dialog in place before moving the same node to an author
     error.mockRestore();
   }
 });
+
+it('moves the legacy Drawer lock between authored elements and releases it on close', async () => {
+  const first = document.createElement('div');
+  const second = document.createElement('div');
+  first.style.overflow = 'auto';
+  second.style.overflow = 'scroll';
+  document.body.append(first, second);
+  const wrapper = mount(VfDrawer, {
+    attachTo: document.body,
+    props: { id: 'scoped-scroll', title: 'Summary', defaultOpen: true, scrollLockTarget: first },
+  });
+  try {
+    await flushPromises();
+    const drawer = document.querySelector<HTMLDialogElement>('#scoped-scroll-drawer');
+    expect(drawer?.open).toBe(true);
+    expect(drawer?.hasAttribute('scrolllocktarget')).toBe(false);
+    expect(first.style.overflow).toBe('hidden');
+    await wrapper.setProps({ scrollLockTarget: second });
+    expect(first.style.overflow).toBe('auto');
+    expect(second.style.overflow).toBe('hidden');
+    await wrapper.setProps({ scrollLockTarget: false });
+    expect(second.style.overflow).toBe('scroll');
+    expect(drawer?.open).toBe(true);
+    await wrapper.setProps({ scrollLockTarget: first });
+    expect(first.style.overflow).toBe('hidden');
+    drawer?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    await flushPromises();
+    expect(drawer?.open).toBe(false);
+    expect(first.style.overflow).toBe('auto');
+    expect(wrapper.emitted('update:open')).toEqual([[false]]);
+  } finally {
+    wrapper.unmount();
+    first.remove();
+    second.remove();
+  }
+});
