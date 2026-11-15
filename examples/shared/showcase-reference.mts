@@ -2,106 +2,121 @@ import { renderShowcaseTabs } from './showcase-tabs.mts';
 import iconOrder from './showcase-icon-order.json' with { type: 'json' };
 import keywords from './showcase-icon-keywords.json' with { type: 'json' };
 import * as icons from '@codemonster-ru/ui-icons';
-import {
-  cmPrimitiveColorTokens,
-  cmSemanticLightColorTokens,
-  serializeCmThemeTokensToCssVars,
-} from '@codemonster-ru/ui-tokens';
+import { colorHero, contrastRows, families, semanticSwatches } from './showcase-colors.mts';
 
-function swatches(variables: readonly string[], semantic = false) {
-  return `<ul class="showcase-samples${semantic ? ' showcase-semantic-swatches' : ''}">${variables
-    .map(
-      (variable) =>
-        `<li><span class="showcase-color-chip" style="background:var(${variable})"></span>${semantic ? `<span>${variable.slice('--cm-color-'.length).replace(/(^|-)([a-z])/g, (_, separator: string, letter: string) => (separator ? ' ' : '') + letter.toUpperCase())}</span>` : `<code>${variable}</code>`}</li>`,
-    )
-    .join('')}</ul>`;
-}
+const themes = ['light', 'dark'] as const;
+const surfaces = [
+  ['default', 'Default'],
+  ['hover', 'Hover'],
+  ['active', 'Active'],
+  ['selected', 'Selected'],
+  ['selected-hover', 'Selected + hover'],
+  ['selected-active', 'Selected + active'],
+] as const;
+const statuses = [
+  ['success', icons.checkCircle],
+  ['info', icons.info],
+  ['warning', icons.warning],
+  ['danger', icons.xCircle],
+  ['help', icons.questionCircle],
+] as const;
 
 export function renderColorScales() {
-  const primitives = Object.keys(serializeCmThemeTokensToCssVars(cmPrimitiveColorTokens));
-  const families = new Map<string, string[]>();
-  for (const variable of primitives) {
-    const family = variable.replace(/^--cm-palette-/, '').replace(/-\d+$/, '');
-    const values = families.get(family) ?? [];
-    values.push(variable);
-    families.set(family, values);
-  }
   const palette = [...families]
     .map(
-      ([family, values]) =>
-        `<article class="showcase-panel"><h3>${family}</h3><ul class="showcase-palette-scale">${values.map((variable) => `<li><span class="showcase-color-chip" style="background:var(${variable})"></span><span>${variable.split('-').at(-1)}</span></li>`).join('')}</ul></article>`,
+      ([family, steps]) => `<article class="color-system__family"><h3>${family}</h3>
+        <div class="color-system__scale">${steps.map(({ variable, step }) => `<div class="color-system__primitive"><span class="color-system__primitive-color" style="background:var(${variable})" aria-hidden="true"></span><span>${step}</span></div>`).join('')}</div></article>`,
     )
     .join('');
-  const semantics = Object.keys(serializeCmThemeTokensToCssVars(cmSemanticLightColorTokens));
-  return `<section class="showcase-group" id="primitive-scales">
-    <header><h2>Primitive scales</h2></header><div class="showcase-palette-families">${palette}</div>
-  </section>
-  <section class="showcase-group" id="theme-pairings">
-    <header><h2>Light and dark semantic pairings</h2><p>Both panels use the same roles, but each mode selects materials independently.</p></header>
-    <div class="showcase-pairings">${['light', 'dark']
-      .map(
-        (mode) =>
-          `<article class="showcase-panel" data-cm-theme="${mode}"><h3>${mode === 'light' ? 'Light' : 'Dark'}</h3>${swatches(semantics, true)}${renderThemeControls()}</article>`,
-      )
-      .join('')}</div>
-  </section>${renderContrastTable()}`;
+  const semantics = semanticSwatches
+    .map(
+      ([label, variable]) =>
+        `<div class="color-system__semantic" title="${variable}"><span class="color-system__semantic-color" style="background:var(${variable})" aria-hidden="true"></span><span>${label}</span></div>`,
+    )
+    .join('');
+  return `<div class="color-system">
+    <header class="color-system__hero">
+      <p class="color-system__eyebrow">${colorHero.eyebrow}</p>
+      <h1>${colorHero.title}</h1><p>${colorHero.description}</p>
+    </header>
+    <section class="color-system__section" aria-labelledby="primitive-scales">
+      <div class="color-system__section-heading"><h2 id="primitive-scales">Primitive scales</h2>
+      <p>Every displayed step has a concrete semantic use in light, dark, or interaction states.</p></div>
+      <div class="color-system__families">${palette}</div>
+    </section>
+    <section class="color-system__section" aria-labelledby="theme-pairings">
+      <div class="color-system__section-heading"><h2 id="theme-pairings">Light and dark semantic pairings</h2>
+      <p>Both panels use the same roles, but each mode selects materials independently.</p></div>
+      <div class="color-system__theme-grid">${themes
+        .map(
+          (mode) => `<article class="color-system__theme" data-cm-theme="${mode}">
+          <header class="color-system__theme-header"><h3>${mode}</h3><span>scoped theme</span></header>
+          <div class="color-system__semantic-grid">${semantics}</div>${renderThemeControls(mode)}</article>`,
+        )
+        .join('')}</div>
+    </section>${renderContrastTable()}</div>`;
 }
 
-function renderThemeControls() {
-  const surfaces = ['', 'Hover', 'Active', 'Selected', 'SelectedHover', 'SelectedActive'];
-  const tones = ['success', 'info', 'warning', 'danger', 'help'];
-  return `<div class="showcase-reference-controls">
-    <div class="showcase-matrix-row" aria-label="Interactive surface states">${surfaces
-      .map((state) => {
-        const suffix = state.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
-        return `<span class="showcase-swatch" style="background:var(--cm-color-background-surface${suffix})">${state.replace(/([a-z])([A-Z])/g, '$1 + $2') || 'Default'}</span>`;
-      })
-      .join('')}</div>
-    <input class="cm-input cm-input--md" aria-label="Semantic boundary example" value="Semantic boundary">
-    <input class="cm-input cm-input--md cm-input--invalid" aria-label="Invalid color state" aria-invalid="true" value="Invalid value">
-    <input class="cm-input cm-input--md" aria-label="Read-only color state" readonly value="Read-only value">
-    <input class="cm-input cm-input--md" aria-label="Disabled color state" disabled value="Disabled value">
-    <label class="cm-checkbox cm-checkbox--md"><input class="cm-checkbox__input" type="checkbox" checked>
-    <span class="cm-checkbox__control" aria-hidden="true"><span class="cm-checkbox__mark"></span></span>
-    <span class="cm-checkbox__content">Selected with a non-color cue</span></label>
-    <div class="showcase-matrix-row">${['primary', 'secondary', 'danger', 'ghost'].map((variant) => button(variant, variant)).join('')}
-    <button class="cm-button cm-button--primary cm-button--md" type="button" disabled aria-busy="true">
-      <span class="cm-button__spinner" aria-hidden="true"><svg class="cm-button__spinner-svg" viewBox="0 0 50 50" focusable="false">
-        <circle class="cm-button__spinner-track" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle>
-        <circle class="cm-button__spinner-value" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle>
-      </svg></span><span class="cm-button__label">Loading</span>
-    </button>
-    ${button('Disabled', 'primary', ' disabled')}</div>
-    ${tones.map((tone) => alert(tone, `${tone} status`, 'Separate background, border, and foreground roles.')).join('')}
-    <div class="showcase-matrix-row">${tones.map((tone) => `<span class="cm-badge cm-badge--${tone}">${tone}</span> <span class="cm-tag cm-tag--${tone}">${tone}</span>`).join('')}</div>
-    <figure class="showcase-color-code">
-      <figcaption><strong>color-system.ts</strong> <span class="showcase-code-language">Language: ts</span></figcaption>
-      <pre tabindex="0" aria-label="TypeScript color system sample"><code><span class="showcase-code-keyword">type</span> <span class="showcase-code-type">Release</span> = { version: <span class="showcase-code-type">string</span>; stable: <span class="showcase-code-type">boolean</span> };
+function renderThemeControls(mode: (typeof themes)[number]) {
+  const icon = (geometry: icons.CmIconGeometry, id: string) =>
+    iconSvg(icons.resolveCmIcon(geometry, 'classic', 'regular')!, 'classic', 'regular', id);
+  return `<div class="color-system__state-row" aria-label="Interactive surface states">${surfaces
+    .map(([state, label]) => `<span class="color-system__state color-system__state--${state}">${label}</span>`)
+    .join('')}</div>
+    <div class="color-system__controls">
+      <input class="cm-input cm-input--md" aria-label="Semantic boundary example" value="Semantic boundary">
+      <div class="color-system__field-states">
+        <input class="cm-input cm-input--md cm-input--invalid" aria-label="Invalid color state" aria-invalid="true" value="Invalid value">
+        <input class="cm-input cm-input--md" aria-label="Read-only color state" readonly value="Read-only value">
+        <input class="cm-input cm-input--md" aria-label="Disabled color state" disabled value="Disabled value">
+      </div>
+      <label class="cm-checkbox cm-checkbox--md"><input class="cm-checkbox__input" type="checkbox" checked>
+      <span class="cm-checkbox__control" aria-hidden="true"><span class="cm-checkbox__mark"></span></span>
+      <span class="cm-checkbox__content">Selected with a non-color cue</span></label>
+      <div class="color-system__actions">${['primary', 'secondary', 'danger', 'ghost'].map((variant) => button(variant, variant)).join('')}
+        <button class="cm-button cm-button--primary cm-button--md" type="button" disabled aria-busy="true">
+          <span class="cm-button__spinner" aria-hidden="true"><svg class="cm-button__spinner-svg" viewBox="0 0 50 50" focusable="false">
+            <circle class="cm-button__spinner-track" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle>
+            <circle class="cm-button__spinner-value" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle>
+          </svg></span><span class="cm-button__label">Loading</span>
+        </button>
+        ${button('Disabled', 'primary', ' disabled')}
+      </div>
+    </div>
+    <div class="color-system__statuses">
+      ${statuses.map(([tone, geometry]) => `<div class="cm-alert cm-alert--${tone}"><div class="cm-alert__icon" aria-hidden="true">${icon(geometry, `color-${mode}-${tone}`)}</div><div class="cm-alert__content"><p class="cm-alert__title">${tone} status</p><p class="cm-alert__body">Separate background, border, icon, and foreground roles.</p></div></div>`).join('')}
+      <div class="color-system__chips">
+        ${statuses.map(([tone]) => `<span class="cm-badge cm-badge--${tone}">${tone}</span>`).join('')}
+        ${statuses.map(([tone]) => `<span class="cm-tag cm-tag--${tone}">${tone}</span>`).join('')}
+      </div>
+    </div>
+    <figure class="color-system__code">
+      <figcaption><span>color-system.ts</span>
+        <button class="cm-icon-button cm-icon-button--ghost cm-icon-button--sm" type="button" aria-label="Copy code" data-showcase-copy-color disabled>
+          <span class="cm-icon-button__icon" aria-hidden="true">${icon(icons.copy, `color-copy-${mode}`)}</span>
+        </button>
+      </figcaption>
+      <pre tabindex="0" aria-label="TypeScript color system sample"><code><span class="showcase-code-keyword">type</span> <span class="showcase-code-type">Release</span> = { version: <span class="showcase-code-type">string</span>; stable: <span class="showcase-code-type">boolean</span>; };
 <span class="showcase-code-keyword">const</span> release: <span class="showcase-code-type">Release</span> = { version: <span class="showcase-code-string">'2.0.0'</span>, stable: <span class="showcase-code-keyword">true</span> };
 <span class="showcase-code-comment">// Semantic colors stay readable in both themes.</span></code></pre>
+      <span class="color-system__copy-status" role="status"></span>
     </figure>
-    <div class="showcase-elevation"><div class="showcase-panel"><strong>Elevated surface</strong><p>Backdrop, elevation, border, and text roles resolve inside the scoped theme.</p></div></div>
-  </div>`;
+    <div class="color-system__overlay-sample"><div class="color-system__overlay-card"><strong>Elevated surface</strong><span>Backdrop, elevation, border, and text roles resolve inside the same scoped theme.</span></div></div>`;
 }
 
 function renderContrastTable() {
-  const pairs = [
-    ['Primary text / surface', 'text-primary', 'background-surface'],
-    ['Muted text / canvas', 'text-muted', 'background-canvas'],
-    ['Interactive border / surface', 'border-interactive', 'background-surface'],
-    ['Focus ring / surface', 'focus-ring', 'background-surface'],
-    ['Primary solid / foreground', 'interactive-primary-foreground', 'interactive-primary-background'],
-    ['Selected strongest state', 'selected-foreground', 'background-surface-selected-active'],
-  ];
-  return `<section class="showcase-group" id="contrast-matrix">
-    <header><h2>Supported contrast matrix</h2><p>Ratios use the current theme tokens rendered in sRGB.</p></header>
-    <div class="cm-table__scroll" tabindex="0" aria-label="Contrast ratios"><table class="cm-table"><thead class="cm-table__head"><tr><th scope="col">Pairing</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
-    <tbody>${pairs
-      .map(
-        ([label, foreground, background]) => `<tr><th scope="row">${label}</th>
-      ${['light', 'dark'].map((mode) => `<td data-cm-theme="${mode}" data-contrast-foreground="--cm-color-${foreground}" data-contrast-background="--cm-color-${background}"></td>`).join('')}</tr>`,
-      )
-      .join('')}</tbody></table></div>
+  return `<section class="color-system__section" aria-labelledby="contrast-matrix">
+    <div class="color-system__section-heading"><h2 id="contrast-matrix">Supported contrast matrix</h2>
+      <p>Ratios use the current theme tokens rendered in sRGB.</p></div>
+    <div class="color-system__contrast-table-wrap" role="region" tabindex="0" aria-label="Contrast ratios">
+      <table class="color-system__contrast-table"><thead><tr><th scope="col">Pairing</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
+      <tbody>${contrastRows
+        .map(
+          ([label, foreground, background]) => `<tr><th scope="row">${label}</th>
+          ${themes.map((mode) => `<td><span data-cm-theme="${mode}" data-contrast-foreground="--cm-color-${foreground}" data-contrast-background="--cm-color-${background}"></span></td>`).join('')}</tr>`,
+        )
+        .join('')}</tbody></table>
+    </div>
   </section>`;
 }
 

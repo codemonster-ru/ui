@@ -1,36 +1,11 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { checkCircle, copy, info, questionCircle, warning, xCircle } from '@codemonster-ru/ui-icons';
-import {
-  cmPrimitiveColorTokens,
-  cmSemanticLightColorTokens,
-  serializeCmThemeTokensToCssVars,
-} from '@codemonster-ru/ui-tokens';
 import { CmAlert, CmBadge, CmButton, CmCheckbox, CmIcon, CmIconButton, CmInput, CmTag } from '@codemonster-ru/ui-vue';
 import { fillContrastTable } from '../../shared/showcase-reference.js';
-import './colors-showcase.css';
+import { colorHero, contrastRows, families, semanticSwatches } from '../../shared/showcase-colors.mts';
+import '../../shared/showcase-colors.css';
 
-const families = new Map<string, { variable: string; step: string }[]>();
-for (const variable of Object.keys(serializeCmThemeTokensToCssVars(cmPrimitiveColorTokens))) {
-  const parts = variable.slice('--cm-palette-'.length).split('-');
-  const step = parts.pop() ?? '';
-  const family = parts.join('-');
-  const entries = families.get(family) ?? [];
-  entries.push({ variable, step });
-  families.set(family, entries);
-}
-const semanticSwatches = Object.keys(serializeCmThemeTokensToCssVars(cmSemanticLightColorTokens)).map(
-  (variable) =>
-    [
-      variable
-        .slice('--cm-color-'.length)
-        .replace(
-          /(^|-)([a-z])/g,
-          (_, separator: string, letter: string) => (separator ? ' ' : '') + letter.toUpperCase(),
-        ),
-      variable,
-    ] as const,
-);
 const statusTones = [
   { tone: 'success', label: 'success', icon: checkCircle },
   { tone: 'info', label: 'info', icon: info },
@@ -40,14 +15,6 @@ const statusTones = [
 ] as const;
 const actionVariants = ['primary', 'secondary', 'danger', 'ghost'] as const;
 
-const contrastRows = [
-  ['Primary text / surface', 'text-primary', 'background-surface'],
-  ['Muted text / canvas', 'text-muted', 'background-canvas'],
-  ['Interactive border / surface', 'border-interactive', 'background-surface'],
-  ['Focus ring / surface', 'focus-ring', 'background-surface'],
-  ['Primary solid / foreground', 'interactive-primary-foreground', 'interactive-primary-background'],
-  ['Selected strongest state', 'selected-foreground', 'background-surface-selected-active'],
-] as const;
 const modes = ['light', 'dark'] as const;
 const table = ref<HTMLElement | null>(null);
 onMounted(() => {
@@ -70,9 +37,9 @@ async function copySample(mode: string, event: MouseEvent) {
 <template>
   <div class="color-system">
     <header class="color-system__hero">
-      <p class="color-system__eyebrow">CodeMonster UI color system</p>
-      <h1>Perceptual materials, semantic decisions</h1>
-      <p>Primitive OKLCH scales feed semantic roles. Components consume only the semantic token layer.</p>
+      <p class="color-system__eyebrow">{{ colorHero.eyebrow }}</p>
+      <h1>{{ colorHero.title }}</h1>
+      <p>{{ colorHero.description }}</p>
     </header>
 
     <section class="color-system__section" aria-labelledby="primitive-scales">

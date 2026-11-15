@@ -237,7 +237,6 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
     new URL('../../examples/shared/showcase-theme-samples.html', import.meta.url),
     'utf8',
   );
-  const colors = await readFile(new URL('../../examples/shared/showcase-colors.html', import.meta.url), 'utf8');
   const loadingMarkup = cases.find(({ id }) => id === 'button-loading').canonicalHtml;
   const icons = await import('../../packages/icons/dist/index.js');
   const icon = icons.resolveCmIcon(icons.gear, 'classic', 'regular');
@@ -390,7 +389,7 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
       .filter(({ id }) => id !== 'layouts' && id !== 'icons')
       .map(({ id }) => sections.get(id))
       .join('\n'),
-    colors: colors + renderColorScales(),
+    colors: renderColorScales(),
     layouts: sections.get('layouts'),
     icons: sections.get('icons'),
   };
