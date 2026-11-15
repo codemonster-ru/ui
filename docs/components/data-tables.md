@@ -235,6 +235,12 @@ const rows = [
 
 Vanilla markup: [column-chooser HTML](../../contracts/column-chooser/cases/default.html).
 
+In Vue, `VfDataTableColumnChooser` from `@codemonster-ru/ui-vue/historical` restores the default
+gear trigger, generated ID, body portal and historical `v-model` binding. The `trigger` slot
+receives `visibleColumnKeys` and `disabled`; it can supply one native or Vue button. With a bound
+model, the chooser emits the proposed keys in column order and displays the accepted model value.
+Without a model, the historical chooser displays every column and still emits the proposed keys.
+
 Render the initial checked state in HTML. Put `data-cm-column-chooser-key` on each option checkbox
 and `data-cm-column-chooser-all` on the aggregate checkbox. Mark required options with
 `data-cm-column-chooser-required`, `checked` and `disabled`. Give every checkbox a native label

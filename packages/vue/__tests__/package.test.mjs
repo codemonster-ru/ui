@@ -102,6 +102,7 @@ test('publishes the opt-in historical icon and Vue components', async () => {
     'VfAlert',
     'VfAvatar',
     'VfBadge',
+    'VfDataTableColumnChooser',
     'VfDatePicker',
     'VfDialog',
     'VfDrawer',
@@ -171,6 +172,21 @@ test('server-renders historical overlays around a single authored trigger', asyn
     const panelId = /aria-controls="([^"]+)"/u.exec(source)?.[1];
     assert.ok(panelId && source.includes(`id="${panelId}"`));
   }
+});
+
+test('server-renders the historical chooser with a named gear trigger and required column', async () => {
+  const { VfDataTableColumnChooser } = await import('@codemonster-ru/ui-vue/historical');
+  const source = await renderToString(
+    h(VfDataTableColumnChooser, {
+      id: 'project-columns',
+      columns: [{ key: 'name', header: 'Name' }],
+      modelValue: [],
+      requiredColumnKeys: ['name'],
+    }),
+  );
+  assert.match(source, /<button[^>]*aria-label="Configure columns"[^>]*>/);
+  assert.match(source, /<svg/);
+  assert.match(source, /<input[^>]*data-cm-column-chooser-key="name"[^>]*checked[^>]*disabled/);
 });
 
 test('generates historical modal ids and names without requiring a visible title', async () => {

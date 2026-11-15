@@ -4,6 +4,8 @@ export { default as VfAvatar } from './components/avatar/VfAvatar.vue';
 export type { VfAvatarProps } from './components/avatar/avatar.types';
 export { default as VfBadge } from './components/badge/CmBadge.vue';
 export type { CmBadgeProps as VfBadgeProps, CmBadgeTone as VfBadgeTone } from './components/badge/badge.types';
+export { default as VfDataTableColumnChooser } from './components/column-chooser/VfDataTableColumnChooser.vue';
+export type { VfDataTableColumnChooserProps } from './components/column-chooser/column-chooser.types';
 export { default as VfDatePicker } from './components/date-picker/VfDatePicker.vue';
 export type { VfDatePickerLabels, VfDatePickerProps } from './components/date-picker/date-picker.types';
 export { default as VueIconify } from './components/icon/VueIconify.vue';

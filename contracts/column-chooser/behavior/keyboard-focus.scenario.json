@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "column-chooser-keyboard-focus",
+  "case": "column-chooser-default",
+  "steps": [
+    { "action": "press", "target": "trigger", "key": "ArrowDown" },
+    { "expect": "visible", "target": "panel", "value": true },
+    { "expect": "focus", "target": "all-columns", "value": true },
+    { "action": "press", "target": "all-columns", "key": "Escape" },
+    { "expect": "visible", "target": "panel", "value": false },
+    { "expect": "focus", "target": "trigger", "value": true }
+  ]
+}
