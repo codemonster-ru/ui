@@ -33,4 +33,5 @@ yarn-debug.log*
 yarn-error.log*
 
 # Artifacts
+/artifacts/
 *.tgz
