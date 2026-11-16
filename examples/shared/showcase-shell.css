@@ -578,11 +578,6 @@ body {
   min-inline-size: 0;
 }
 
-/* Keep weekday labels and adjacent dates readable on the dark elevated calendar. */
-html[data-cm-theme='dark']:has(.showcase-reference-demo) .cm-date-picker__calendar {
-  --cm-color-text-muted: var(--cm-color-text-secondary);
-}
-
 .showcase-prose {
   grid-column: 1 / -1;
   line-height: var(--cm-line-height-relaxed);

@@ -317,7 +317,7 @@
 
 .cm-date-picker__weekday {
   padding-block: var(--cm-space-1);
-  color: var(--cm-color-text-muted);
+  color: var(--cm-color-text-secondary);
   font-size: var(--cm-font-size-sm);
   font-weight: var(--cm-font-weight-medium);
   line-height: var(--cm-line-height-normal);
@@ -333,11 +333,15 @@
 }
 
 .cm-date-picker__day--outside {
-  color: var(--cm-color-text-muted);
+  color: var(--cm-color-text-secondary);
 }
 
 .cm-date-picker__day--today {
-  border-color: var(--cm-color-border-interactive);
+  border-color: var(--cm-color-text-muted);
+}
+
+.cm-date-picker__day--today:is(.cm-date-picker__day--selected, .cm-date-picker__day--in-range, :focus-visible) {
+  text-decoration: underline;
 }
 
 .cm-date-picker__day--in-range,
@@ -348,6 +352,7 @@
 }
 
 .cm-date-picker__day--in-range {
+  border-block-color: var(--cm-color-interactive-primary-border);
   border-radius: 0;
   background: var(--cm-color-background-surface-hover);
 }
@@ -396,6 +401,7 @@
 }
 
 .cm-date-picker__day--selected {
+  border-color: var(--cm-color-interactive-primary-border);
   background: var(--cm-color-background-surface-selected);
   color: var(--cm-color-text-primary);
 }
@@ -427,7 +433,7 @@
 }
 
 .cm-date-picker__time-label {
-  color: var(--cm-color-text-muted);
+  color: var(--cm-color-text-secondary);
   font-size: var(--cm-text-caption-font-size);
   font-weight: var(--cm-text-caption-font-weight);
   line-height: var(--cm-text-caption-line-height);
