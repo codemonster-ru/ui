@@ -3,6 +3,18 @@
 Run this checklist for CodeMonster UI npm releases from the repository root, on the exact commit
 that will receive the package tags. VueForge releases belong to the archived project.
 
+## Internal CodeMonster UI 2.0 candidate
+
+Use the [draft 2.0 changelog](./codemonster-ui-2.0-release-notes.md) for the seven-package
+`2.0.0-rc.1` cohort. For an internal handoff, complete sections 1–5 and retain the seven `.tgz`
+files with SHA-256 digests and the product commit SHA. Run the Vanilla production build and the
+showcase browser regressions against both built sites. Attach results by browser engine, adapter,
+theme, and viewport. Record native Safari, VoiceOver and NVDA separately from automated checks.
+
+Keep sections 6–9 pending for an authorized publication. Before publication, record the hosted CI
+result for the exact product commit, including its stored visual comparison. Record any pending
+manual checks or residual defects in the candidate's risk register.
+
 ## 1. Choose the release channel
 
 - Stable versions publish to npm tag `latest`.
@@ -15,14 +27,15 @@ The tag preparation script derives `next` whenever the version contains a prerel
 
 ## 2. Prepare the release commit
 
-- Use Node.js 24.15 or newer and npm 11.9, matching CI and the root `packageManager` field.
+- Use Node.js 24.15 or newer and npm 11.17.0, matching the release workflow and the root
+  `packageManager` field.
 - Start from the protected default branch with a clean worktree.
 - Confirm the packages in scope use the target release versions and all other package versions remain
   unchanged.
 - Confirm every package in scope has a non-empty matching section in its `CHANGELOG.md` file.
 - Confirm the root `overrides` entry still resolves `js-beautify` to `2.0.3`, replacing the
   vulnerable `1.x` formatter dependency that `@vue/test-utils` declares.
-- Review [release-notes.md](./release-notes.md).
+- Review the [2.0 draft changelog](./codemonster-ui-2.0-release-notes.md).
 - Confirm npm Trusted Publishing is configured for `.github/workflows/release-from-tag.yml`.
 - Confirm the workflow has only `contents: write` and `id-token: write` permissions.
 
@@ -39,18 +52,18 @@ npm run lint:all
 npm run build
 npm run check:packed-consumers
 npm run build:demo
+npm run build:vanilla
 npm run prepublish:all
 ```
 
 All commands must pass on the release commit. Also confirm:
 
-- CSS/export/consumer contracts pass for Core, Layouts, CodeBlock, and Playground.
+- Metadata, export and consumer contracts pass for all seven active packages.
 - The production dependency graph has no known vulnerabilities, and no high/critical development
   advisory remains accepted.
 - `npm ls --all` reports a valid dependency graph after the clean lockfile installation.
 - ESM, CommonJS, Node ESM, SSR, and declaration-resolution smokes pass.
 - Tree-shaking and deferred-runtime budgets pass.
-- The demo manifest keeps Playground Core, TypeScript, and Shiki out of the initial static graph.
 - `git diff --check` reports no whitespace errors.
 - `git status --short` contains only reviewed release changes before the release commit, and is empty
   after that commit.
@@ -96,7 +109,7 @@ Required scenarios:
 - one-component packed tree shaking with required CSS retained and unrelated CSS removed.
 
 The separate `npm run check:consumer-tree-shaking` gate covers one-component, multi-component, and
-full-namespace imports for Core and Layouts against the built workspace packages.
+full-namespace imports for Vue and Layouts against the built workspace packages.
 
 Repeat these consumers from the registry after publication to catch registry-only dependency or
 tarball failures.
