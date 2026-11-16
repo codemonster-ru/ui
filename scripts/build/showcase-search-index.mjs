@@ -5,6 +5,7 @@ import pages from '../../examples/shared/showcase-pages.json' with { type: 'json
 import { publicName, referenceCatalog } from '../../examples/shared/showcase-component-reference.mts';
 
 const contracts = fileURLToPath(new URL('../../contracts', import.meta.url));
+const vueOnboarding = new Set(['install-a-local-20-build', 'vue-quick-start']);
 
 export function buildShowcaseSearchIndex(guides, adapter) {
   const manifests = new Map(collectComponentManifests(contracts).map(({ slug, manifest }) => [slug, manifest]));
@@ -25,6 +26,7 @@ export function buildShowcaseSearchIndex(guides, adapter) {
         description: excerpt,
         label: `Guide · ${title}`,
         terms: title,
+        ...(path === '/docs/getting-started/' && vueOnboarding.has(id) ? { aliases: ['Vue'] } : {}),
       })),
     ]),
     ...pages

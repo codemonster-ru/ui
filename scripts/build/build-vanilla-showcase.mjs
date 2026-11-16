@@ -2,7 +2,7 @@ import showcasePages from '../../examples/shared/showcase-pages.json' with { typ
 import { renderShowcaseNavigation, showcaseActions } from '../../examples/shared/showcase-navigation.mts';
 import { renderApplicationExamples } from '../../examples/vanilla/application-examples.mjs';
 import { renderComponentReference } from './render-showcase-component-reference.mjs';
-import { referenceFrameClass } from '../../examples/shared/showcase-component-reference.mts';
+import { referenceCaseDescription, referenceFrameClass } from '../../examples/shared/showcase-component-reference.mts';
 import { coreComponentTitle, coreRecipesFor, renderCoreMatrix } from '../../examples/shared/showcase-core-matrix.mts';
 import {
   renderLayoutGuideEntry,
@@ -59,17 +59,18 @@ function renderExample(
     componentSlug,
   );
   const floating = ['date-picker', 'dropdown', 'menu-bar', 'popover', 'select', 'tooltip'].includes(componentSlug);
-  const frameSize =
-    heading === 'h3'
-      ? referenceFrameClass(componentSlug)
-      : modal || layout
-        ? ' showcase-frame--tall'
-        : floating
-          ? ' showcase-frame--floating'
-          : '';
+  const reference = heading === 'h3';
+  const description = reference ? referenceCaseDescription(data) : data.description;
+  const frameSize = reference
+    ? referenceFrameClass(componentSlug)
+    : modal || layout
+      ? ' showcase-frame--tall'
+      : floating
+        ? ' showcase-frame--floating'
+        : '';
   const demo = page(
     `${name} · ${title}`,
-    `<main class="showcase-demo${heading === 'h3' ? ' showcase-reference-demo' : ''}" inert>
+    `<main class="showcase-demo${reference ? ' showcase-reference-demo' : ''}"${reference && id === 'data-table-default' ? ' data-showcase-sort-rows' : ''} inert>
       ${modal ? `<button class="cm-button cm-button--primary cm-button--md" type="button" id="showcase-open">Open ${escapeHtml(name)}</button>` : ''}
       ${canonicalHtml.replaceAll('src="/avatar.png"', 'src="./avatar.png"')}
     </main>`,
@@ -77,8 +78,8 @@ function renderExample(
   );
   return `<article class="showcase-example" id="${id}">
     ${primary ? '' : `<${heading}>${escapeHtml(title)}</${heading}>`}
-    ${data.description ? `<p>${escapeHtml(data.description)}</p>` : ''}
-    <iframe title="${escapeHtml(heading === 'h3' ? `Vanilla ${name} · ${title} preview` : id)}"${primary ? '' : ' loading="lazy"'}
+    ${description ? `<p>${escapeHtml(description)}</p>` : ''}
+    <iframe title="${escapeHtml(reference ? `Vanilla ${name} · ${title} preview` : id)}"${primary ? '' : ' loading="lazy"'}
       class="showcase-frame${frameSize}"
       srcdoc="${escapeHtml(demo)}"></iframe>
   </article>`;

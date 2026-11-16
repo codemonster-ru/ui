@@ -8,6 +8,7 @@ import { mountComponentReference } from '../../shared/showcase-component-referen
 import {
   escapeReference,
   primaryReferenceCase,
+  referenceCaseDescription,
   referenceCatalog,
   referenceFrameClass,
   referenceSupplements,
@@ -43,6 +44,7 @@ const supplement = referenceSupplements.find((entry) => entry.slug === slug);
 function preview(example: ReferenceCase, primary: boolean, option?: { label: string; prop: string; value: string }) {
   const basename = example.id.slice(slug.length + 1).replaceAll('-', ' ');
   const title = option ? `${basename} · ${option.label}` : basename;
+  const description = !option && referenceCaseDescription(example);
   const query = new URLSearchParams({
     case: example.id,
     view: 'reference',
@@ -50,7 +52,7 @@ function preview(example: ReferenceCase, primary: boolean, option?: { label: str
   });
   return `<article class="reference-example">
     ${primary ? '' : `<h3>${escapeReference(title)}</h3>`}
-    ${example.description && !option ? `<p>${escapeReference(example.description)}</p>` : ''}
+    ${description ? `<p>${escapeReference(description)}</p>` : ''}
     <iframe class="reference-frame${referenceFrameClass(slug)}" src="/case.html?${escapeReference(query.toString())}" title="${escapeReference(`Vue ${component?.name} · ${title} preview`)}"${primary ? '' : ' loading="lazy"'}></iframe>
   </article>`;
 }

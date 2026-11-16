@@ -266,6 +266,11 @@
   min-block-size: 28rem;
 }
 
+/* The Select fixtures have two options and need less room than other floating previews. */
+.component-reference:has([data-reference-preview='select']) iframe {
+  min-block-size: 9rem;
+}
+
 /* The optional time controls need room below a six-week calendar. */
 .component-reference:has([data-reference-preview='date-picker']) iframe {
   min-block-size: 28rem;
