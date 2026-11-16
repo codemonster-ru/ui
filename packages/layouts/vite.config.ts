@@ -9,6 +9,7 @@ export default defineConfig({
     dts({
       entryRoot: 'src',
       include: ['src'],
+      exclude: ['src/**/*.test.ts'],
       insertTypesEntry: true,
       processor: 'vue',
     }),
