@@ -4,9 +4,14 @@ import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
 
 const require = createRequire(import.meta.url);
-const { chromium } = require(process.env.SHOWCASE_PLAYWRIGHT || 'playwright');
+const browserName = process.env.SHOWCASE_BROWSER || 'chromium';
+if (!['chromium', 'firefox', 'webkit'].includes(browserName))
+  throw new Error(`Unsupported showcase browser: ${browserName}`);
+const playwright = require(process.env.SHOWCASE_PLAYWRIGHT || 'playwright');
 const axe = require.resolve('axe-core/axe.min.js');
-const browser = await chromium.launch({ executablePath: process.env.SHOWCASE_CHROME || undefined });
+const browser = await playwright[browserName].launch({
+  executablePath: browserName === 'chromium' ? process.env.SHOWCASE_CHROME || undefined : undefined,
+});
 const output = process.env.SHOWCASE_CAPTURE_DIR;
 const adapters = {
   vue: process.env.SHOWCASE_VUE_URL || 'http://127.0.0.1:4173/',
@@ -41,6 +46,7 @@ const representative = new Set([
 ]);
 let visited = 0;
 let accessibilityScans = 0;
+let calendarContrastScans = 0;
 let scans = [];
 
 function url(base, path) {
@@ -97,6 +103,30 @@ async function checkReferenceFrames(page, base, adapter) {
   }
 }
 
+async function checkDatePickerContrast(page, base, adapter) {
+  await page.goto(url(base, 'components/date-picker/'));
+  await page.getByText('More examples and states', { exact: true }).click();
+  for (const [variant, selector] of [
+    ['default', '.reference-preview iframe'],
+    ['portal', '.reference-variants iframe[title$=" · portal preview"]'],
+  ]) {
+    const preview = page.locator(selector);
+    await preview.scrollIntoViewIfNeeded();
+    const frame = await (await preview.elementHandle()).contentFrame();
+    await frame.locator('.showcase-demo:not([inert])').getByRole('combobox').press('ArrowDown');
+    await frame.getByRole('dialog').waitFor();
+    await frame.addScriptTag({ path: axe });
+    const violations = await frame.evaluate(async () => {
+      const result = await window.axe.run('.cm-date-picker__calendar', { runOnly: ['color-contrast'] });
+      return result.violations.map(({ id, nodes }) => [id, nodes.map((node) => node.target)]);
+    });
+    const label = `${adapter} dark DatePicker (${variant})`;
+    scans.push([label, violations]);
+    assert.deepEqual(violations, [], `${label}: axe violations`);
+    calendarContrastScans++;
+  }
+}
+
 async function checkReferenceInteractions(page, base, adapter) {
   const preview = page.locator('.reference-preview');
   const frame = preview.locator('iframe').contentFrame();
@@ -150,7 +180,7 @@ async function checkNavigation(page, base, adapter, width) {
   const search = page.getByRole('button', { name: 'Search components and guides' });
   await page.goto(base);
   await page.locator('main h1').waitFor();
-  await page.keyboard.press('Tab');
+  await page.keyboard.press(browserName === 'webkit' && process.platform === 'darwin' ? 'Alt+Tab' : 'Tab');
   assert.equal(await page.locator(':focus').textContent(), 'Skip to content');
   await page.keyboard.press('Enter');
   assert.equal(await page.locator(':focus').getAttribute('id'), 'showcase-main');
@@ -221,7 +251,11 @@ async function checkNavigation(page, base, adapter, width) {
   await section.click();
   await page.locator('#vue-quick-start').waitFor();
   assert.equal(page.url(), url(base, 'docs/getting-started/#vue-quick-start'));
-  await page.reload();
+  // Exercise the browser's native reload of the fragment URL before testing Back and Forward.
+  await Promise.all([
+    page.waitForEvent('framenavigated', { predicate: (frame) => frame === page.mainFrame() }),
+    page.evaluate(() => setTimeout(() => location.reload(), 0)),
+  ]);
   await page.locator('#vue-quick-start').waitFor();
   await page.goBack();
   assert.equal(page.url(), url(base, 'colors/'));
@@ -234,7 +268,7 @@ async function checkNavigation(page, base, adapter, width) {
 
 try {
   if (output) await mkdir(output, { recursive: true });
-  console.log(`Chrome ${browser.version()}`);
+  console.log(`${browserName} ${browser.version()}`);
   await Promise.all(
     Object.entries(adapters).map(async ([adapter, base]) => {
       for (const [width, height] of viewports) {
@@ -273,7 +307,10 @@ try {
                 await scale.evaluate((style) => style.remove());
               }
             }
-            if (width === 360 && theme === 'dark') await checkReferenceFrames(page, base, adapter);
+            if (width === 360 && theme === 'dark') {
+              await checkReferenceFrames(page, base, adapter);
+              await checkDatePickerContrast(page, base, adapter);
+            }
             if ((width === 360 && theme === 'dark') || (width === 1440 && theme === 'light'))
               await checkReferenceInteractions(page, base, adapter);
             if ((width === 360 || width === 1440) && theme === 'dark')
@@ -289,7 +326,9 @@ try {
       );
     }),
   );
-  console.log(`${visited} route/width/theme combinations; ${accessibilityScans} axe scans.`);
+  console.log(
+    `${visited} route/width/theme combinations; ${accessibilityScans} page axe scans; ${calendarContrastScans} dark calendar contrast scans.`,
+  );
 } catch (error) {
   console.error(
     JSON.stringify(
