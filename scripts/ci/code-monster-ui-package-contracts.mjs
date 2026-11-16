@@ -1,5 +1,5 @@
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
-import { extname, join, relative, resolve, sep } from 'node:path';
+import { basename, extname, join, relative, resolve, sep } from 'node:path';
 import semver from 'semver';
 import { historicalComponentEntries, historicalComponentPattern } from '../build/historical-component-entries.mjs';
 import { codeMonsterUiNpmPackages } from './code-monster-ui-package-catalog.mjs';
@@ -150,9 +150,13 @@ function validateDependencies(packageContract, manifest, errors) {
   }
 }
 
-function validateNoVueForgeImports(packageContract, packageDirectory, errors) {
+function validatePackageFiles(packageContract, packageDirectory, errors) {
   for (const ownedDirectory of ['src', 'dist']) {
     for (const filePath of walkFiles(join(packageDirectory, ownedDirectory))) {
+      if (ownedDirectory === 'dist' && /\.(?:test|spec)\./.test(basename(filePath))) {
+        errors.push(`${packageContract.name} contains a test artifact in ${relative(packageDirectory, filePath)}.`);
+        continue;
+      }
       if (!sourceExtensions.has(extname(filePath))) {
         continue;
       }
@@ -187,6 +191,6 @@ export function validateCodeMonsterUiNpmPackageContract(packageContract, package
 
   validateExportTargets(packageContract, packageDirectory, manifest, errors);
   validateDependencies(packageContract, manifest, errors);
-  validateNoVueForgeImports(packageContract, packageDirectory, errors);
+  validatePackageFiles(packageContract, packageDirectory, errors);
   return errors;
 }

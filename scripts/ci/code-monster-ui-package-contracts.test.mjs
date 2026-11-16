@@ -58,6 +58,19 @@ test('accepts a built CodeMonster UI package contract', (context) => {
   assert.deepEqual(validateCodeMonsterUiNpmPackageContract(tokensContract, packageDirectory, manifest), []);
 });
 
+test('rejects emitted test declarations and maps while allowing workspace tests', (context) => {
+  const { manifest, packageDirectory } = createPackage(context);
+  writeFileSync(join(packageDirectory, 'src/index.test.ts'), 'export {};\n');
+  assert.deepEqual(validateCodeMonsterUiNpmPackageContract(tokensContract, packageDirectory, manifest), []);
+
+  writeFileSync(join(packageDirectory, 'dist/index.test.d.ts'), 'export {};\n');
+  writeFileSync(join(packageDirectory, 'dist/index.test.d.ts.map'), '{}\n');
+  assert.deepEqual(validateCodeMonsterUiNpmPackageContract(tokensContract, packageDirectory, manifest).sort(), [
+    `${tokensContract.name} contains a test artifact in ${join('dist', 'index.test.d.ts')}.`,
+    `${tokensContract.name} contains a test artifact in ${join('dist', 'index.test.d.ts.map')}.`,
+  ]);
+});
+
 test('checks every registered historical wildcard target after build', (context) => {
   const { manifest, packageDirectory } = createPackage(context, {
     name: layoutsContract.name,
