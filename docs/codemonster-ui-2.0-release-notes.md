@@ -47,6 +47,7 @@ Vue and Layouts require Vue `^3.5.0`. For Node consumers, including SSR, use Nod
 - The compact Select preview reserves space for its two-option listbox.
 - Sorting the DataTable preview reorders the example rows in both directions.
 - Dialog and Drawer descriptions describe how to open the previews and remain accurate when open.
+- Weekday labels and adjacent dates are easier to read in the dark DatePicker preview.
 
 ## Migration
 
