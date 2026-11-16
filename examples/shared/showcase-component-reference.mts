@@ -129,7 +129,7 @@ const layoutPackages = new Set([
   'sidebar-area',
 ]);
 const modalComponents = new Set(['dialog', 'drawer', 'command-palette']);
-const floatingComponents = new Set(['date-picker', 'dropdown', 'menu-bar', 'popover', 'select', 'tooltip']);
+const floatingComponents = new Set(['date-picker', 'dropdown', 'menu-bar', 'popover', 'tooltip']);
 const tallPreviews = new Set([...modalComponents, ...layoutPackages]);
 const docsPath = 'https://github.com/codemonster-ru/ui/blob/main';
 const preferredCases: Record<string, string> = {
@@ -199,6 +199,12 @@ export function referenceFrameClass(slug: string) {
 
 export function primaryReferenceCase(slug: string, cases: ReferenceCase[]) {
   return cases.find(({ id }) => id === `${slug}-${preferredCases[slug] ?? 'default'}`) ?? cases[0];
+}
+
+export function referenceCaseDescription({ id, description }: ReferenceCase) {
+  if (id === 'dialog-default') return 'A confirmation dialog for deleting a project.';
+  if (id === 'drawer-default') return 'A drawer for filter controls.';
+  return description;
 }
 
 export function resolveReferenceProps(slug: string, example: ReferenceCase): Record<string, unknown> {

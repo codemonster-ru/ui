@@ -97,6 +97,55 @@ async function checkReferenceFrames(page, base, adapter) {
   }
 }
 
+async function checkReferenceInteractions(page, base, adapter) {
+  const preview = page.locator('.reference-preview');
+  const frame = preview.locator('iframe').contentFrame();
+  const demo = frame.locator('.showcase-demo:not([inert])');
+
+  await page.goto(url(base, 'components/select/'));
+  const trigger = demo.getByRole('combobox', { name: 'Frequency' });
+  await trigger.press('ArrowDown');
+  const listbox = demo.getByRole('listbox');
+  await listbox.waitFor();
+  assert(await listbox.getByRole('option', { name: 'Daily' }).evaluate((option) => option === document.activeElement));
+  const { top, left, right, bottom, width, height } = await listbox.evaluate((element) => {
+    const { top, left, right, bottom } = element.getBoundingClientRect();
+    return { top, left, right, bottom, width: innerWidth, height: innerHeight };
+  });
+  assert(top >= 0 && left >= 0 && right <= width && bottom <= height, `${adapter}: Select listbox fits its frame`);
+  assert(height - bottom < 64, `${adapter}: Select preview has less than 64 px of space below the open listbox`);
+  await page.keyboard.press('ArrowDown');
+  await page.keyboard.press('Enter');
+  assert.match(await trigger.textContent(), /Weekly/);
+  assert(await trigger.evaluate((button) => button === document.activeElement));
+
+  await page.goto(url(base, 'components/data-table/'));
+  const header = demo.getByRole('columnheader', { name: /Name/ });
+  const rows = demo.locator('tbody tr td:first-child');
+  await header.waitFor();
+  assert.equal(await header.getAttribute('aria-sort'), 'none');
+  assert.deepEqual(await rows.allTextContents(), ['Apollo', 'Zephyr']);
+  for (const [direction, order] of [
+    ['ascending', ['Apollo', 'Zephyr']],
+    ['descending', ['Zephyr', 'Apollo']],
+    ['none', ['Apollo', 'Zephyr']],
+  ]) {
+    await header.getByRole('button').press('Enter');
+    assert.equal(await header.getAttribute('aria-sort'), direction, `${adapter}: DataTable sort direction`);
+    assert.deepEqual(await rows.allTextContents(), order, `${adapter}: DataTable row order for ${direction}`);
+  }
+
+  for (const [slug, title, description] of [
+    ['dialog', 'Dialog', 'A confirmation dialog for deleting a project.'],
+    ['drawer', 'Drawer', 'A drawer for filter controls.'],
+  ]) {
+    await page.goto(url(base, `components/${slug}/`));
+    await demo.getByRole('button', { name: `Open ${title}` }).press('Enter');
+    await demo.getByRole('dialog').waitFor();
+    assert.equal(await preview.locator('article > p').textContent(), description, `${adapter}: ${title} caption`);
+  }
+}
+
 async function checkNavigation(page, base, adapter, width) {
   const search = page.getByRole('button', { name: 'Search components and guides' });
   await page.goto(base);
@@ -155,8 +204,16 @@ async function checkNavigation(page, base, adapter, width) {
   assert(await search.evaluate((button) => button === document.activeElement));
 
   await search.click();
-  await query.fill('Vue quick start');
+  await query.fill('Vue');
+  const installation = dialog.locator('a[href$="/getting-started/#install-a-local-20-build"]');
   const section = dialog.locator('a[href$="/getting-started/#vue-quick-start"]');
+  await installation.waitFor();
+  await section.waitFor();
+  assert.deepEqual(await dialog.getByRole('link').evaluateAll((links) => links.slice(0, 2).map(({ hash }) => hash)), [
+    '#install-a-local-20-build',
+    '#vue-quick-start',
+  ]);
+  await query.fill('Vue quick start');
   await section.waitFor();
   await checkViewport(page, `${adapter} search results`);
   await checkAccessibility(page, `${adapter} search ${width}`);
@@ -217,6 +274,8 @@ try {
               }
             }
             if (width === 360 && theme === 'dark') await checkReferenceFrames(page, base, adapter);
+            if ((width === 360 && theme === 'dark') || (width === 1440 && theme === 'light'))
+              await checkReferenceInteractions(page, base, adapter);
             if ((width === 360 || width === 1440) && theme === 'dark')
               await checkNavigation(page, base, adapter, width);
             assert.deepEqual(errors, [], `${adapter} ${width} ${theme}: network/runtime errors`);

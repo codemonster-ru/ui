@@ -10,7 +10,7 @@ function normalize(value) {
 
 function rank(entry, query, words) {
   if (entry.title === query) return entry.section ? 105 : 120;
-  if (entry.aliases.includes(query)) return 100;
+  if (entry.aliases.includes(query)) return 110;
   let score = entry.title.startsWith(query) ? 45 : entry.title.includes(query) ? 30 : 0;
   for (const word of words) {
     if (entry.title.includes(word)) score += 8;
