@@ -1,15 +1,18 @@
 # CodeMonster UI 2.0.0-rc.2 readiness
 
-Reviewed November 16, 2026. Product revision `6073806d98b84fb77dc488aa2fdcd6dbfa7fb4af`
-follows the verified [RC.1 product](./codemonster-ui-2.0-rc.1.md) at `38e04e83` and the
-subsequent browser harness wait for DataTable sorting. The evidence report is a documentation
-follow-up to the product revision. The [release checklist](../release-checklist.md) remains the
-acceptance contract.
+Reviewed November 16, 2026. The local tarballs were built from product revision
+`6073806d98b84fb77dc488aa2fdcd6dbfa7fb4af`, following the verified
+[RC.1 product](./codemonster-ui-2.0-rc.1.md) at `38e04e83`. The exact hosted candidate is
+`3b292a929732714adb6fe5f8c756206dc492cf65` on `main`. The package sources and lockfile are
+identical between those revisions. The intervening changes serialize the local Firefox harness,
+record local verification, and ignore generated archives. This report is a documentation-only
+follow-up. The [release checklist](../release-checklist.md) remains the acceptance contract.
 
-**Disposition:** Internal candidate prepared. Publication remains pending on the open gates in
-the [risk register](#risk-register). All seven packages use `2.0.0-rc.2`, with matching internal
-ranges and changelog sections. No public API changes, migration steps, snapshot updates or changes
-to the visual comparison thresholds were required. Theme overrides remain application-owned.
+**Disposition:** Hosted CI passed. RC.2 is ready for release review. Publication remains pending
+on the open gates in the [risk register](#risk-register). All seven packages use `2.0.0-rc.2`, with
+matching internal ranges and changelog sections. No public API changes, migration steps, snapshot
+updates or changes to the visual comparison thresholds were required. Theme overrides remain
+application-owned.
 
 ## Packaged DatePicker
 
@@ -86,16 +89,31 @@ SSR. Vite resolved all 63 browser-conditioned entries.
 
 ## Hosted CI
 
-**Pending:** authenticated, read-only GitHub access was available and the `CI` workflow was active.
-The exact SHA returned HTTP 422 (no commit found) and a workflow run count of zero. Remote `main`
-was `f51882eab03ba1b8e0b7e72f66e7375ff79bc42d`; no remote ref contains this candidate. A workflow
-run for RC.2 requires an authorized remote ref at the product SHA. No ref was pushed and no
-workflow was dispatched. Earlier hosted runs do not qualify this candidate.
+**Pass:** [CI run 43867665340](https://github.com/codemonster-ru/ui/actions/runs/43867665340)
+completed on its first attempt after a fast-forward push to `main`. GitHub reported
+`head_sha` `3b292a929732714adb6fe5f8c756206dc492cf65` and success for all eight jobs:
 
-After the ref is authorized, confirm that the run's `head_sha` equals the product revision and
-inspect `lint`, `typecheck`, `contracts`, `source-tests`, `packaging`, `packed-consumers`, `hygiene`
-and `visual`. The last job must pass both strict historical comparisons on `macos-26` and both
-paired adapter checks.
+| Job | Result and coverage |
+| --- | --- |
+| [lint](https://github.com/codemonster-ru/ui/actions/runs/43867665340/job/133300295323) | Pass: source, style, markup, data and format checks. |
+| [typecheck](https://github.com/codemonster-ru/ui/actions/runs/43867665340/job/133300295352) | Pass: workspace and documented example type checks. |
+| [contracts](https://github.com/codemonster-ru/ui/actions/runs/43867665340/job/133300295447) | Pass: repository contracts, 181 canonical accessibility cases, visual fixtures and release preparation. |
+| [source-tests](https://github.com/codemonster-ru/ui/actions/runs/43867665340/job/133300295361) | Pass: workspace tests with prebuilt output hidden. |
+| [packaging](https://github.com/codemonster-ru/ui/actions/runs/43867665340/job/133300295257) | Pass: production builds, package contracts, size budgets, tree shaking and pack dry runs. |
+| [packed-consumers](https://github.com/codemonster-ru/ui/actions/runs/43867665340/job/133300294897) | Pass: npm, pnpm and Yarn consumed the tarballs. |
+| [hygiene](https://github.com/codemonster-ru/ui/actions/runs/43867665340/job/133300295195) | Pass: clean install and release dependency audit. |
+| [visual](https://github.com/codemonster-ru/ui/actions/runs/43867665340/job/133300295531) | Pass: strict stored screenshots, paired adapter visuals and browser behavior on `macos-26`. |
+
+The visual job ran on `macos-26-arm64` image `20261102.0473.1`, macOS 26.7.2 (`25G332`), with
+Chrome for Testing `151.0.7922.138`. The two stored comparisons covered 48 screenshots per
+adapter at the existing threshold of 4; both reported zero changed, missing or unexpected
+screenshots. All 362 paired visuals matched with zero differing pixels, including matching
+animation signatures for eight cases. All 144 paired browser behavior runs passed with no motion
+mismatches. The broader showcase and DatePicker browser matrices below are local evidence.
+
+No CI corrections were needed. The branch push created no tags and did not run the publishing
+workflow. Read-only checks found no RC.2 tags and no public npm records for any of the seven
+`2.0.0-rc.2` packages.
 
 ## Historical visual acceptance
 
@@ -104,8 +122,8 @@ stored images **failed locally** on each adapter: 44 of 48 frames differed at th
 with 520 of 559,172 pixels flagged per adapter and no missing or unexpected frames. The 96
 same-renderer comparisons against the matching RC.1 captures passed at threshold zero with
 zero changed pixels. This reproduces the
-[known local renderer residual](./stored-visual-renderer.md); the hosted strict result remains
-pending. Approved snapshots and thresholds were left intact.
+[known local renderer residual](./stored-visual-renderer.md). The hosted strict gate passed with
+the approved snapshots and thresholds unchanged.
 
 ## Browser and accessibility checks
 
@@ -177,7 +195,7 @@ TypeScript worker is within 3,700,000 bytes raw and 1,100 KiB gzip; no other JS 
 | VoiceOver and NVDA | **Pending.** The local native Safari smoke exposed DatePicker semantics, but VoiceOver did not yield an observable reading session; there was no usable Windows/NVDA session. Run the manual checklist above. |
 | Embedded preview headings | **Advisory.** Some live frames lack an H1 of their own. The containing reference page has a heading and each frame has a name. Confirm the navigation experience in both native readers. |
 | Native Safari breadth | **Partial.** The native DatePicker smoke passed. The full matrix used Playwright WebKit. Repeat forms, menus, table, focus and responsive behavior in native Safari and cover iOS touch when available. |
-| Hosted CI and strict historical pixels | **Pending / local strict comparison failed.** Authorize a remote ref at the recorded product SHA, then inspect all eight jobs. The clean same-renderer RC.1 comparison does not replace the hosted strict gate. |
+| Hosted CI and strict historical pixels | **Pass on the hosted candidate.** All eight jobs passed. The local renderer residual remains reproducible; see [historical visual acceptance](#historical-visual-acceptance). |
 | Runtime and full Vue size margins | **Pass on the release toolchain; narrow margin.** Runtime is 79.98/80 KiB gzip; full Vue consumer is 59.98/60 KiB. Recheck with official Node on the next change. The historical Homebrew zlib discrepancy is documented in RC.1. |
 | Registry installation and provenance | **Pending.** Read-only `npm view` checks returned E404 for all seven exact versions (Icons and Layouts were absent by package name). Repeat the registry consumer, dist-tags, provenance, integrity, signatures and release page checks after separately authorized publication. |
 
