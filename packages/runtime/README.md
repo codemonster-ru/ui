@@ -2,7 +2,7 @@
 
 Framework-independent progressive enhancement for canonical CodeMonster UI markup.
 
-Current version: `@codemonster-ru/ui-runtime@2.0.0-rc.1` — unpublished internal release candidate; the published line is `1.x`.
+Current version: `@codemonster-ru/ui-runtime@2.0.0-rc.2` — unpublished internal release candidate; the published line is `1.x`.
 
 The package provides controller registration, scoped discovery, lifecycle management,
 optional mutation observation, and typed `cm:*` custom events for server-rendered markup.
