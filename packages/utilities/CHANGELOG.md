@@ -2,9 +2,9 @@
 
 All notable changes to this package will be documented in this file.
 
-## Unreleased
+## 2.0.0-rc.1
 
-No changes in this cycle. The package is listed in the 2.0 cohort so its peer range moves with
+No changes in this cycle. The package is listed in the 2.0 cohort so its dependency range moves with
 `@codemonster-ru/ui-tokens`.
 
 ## 1.0.1

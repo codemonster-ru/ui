@@ -2,7 +2,7 @@
 
 Framework-independent foundation and component styles for CodeMonster UI.
 
-Current version: `@codemonster-ru/ui-css@2.0.0-dev.0` — in development, not published; the published line is `1.x`.
+Current version: `@codemonster-ru/ui-css@2.0.0-rc.1` — unpublished internal release candidate; the published line is `1.x`.
 
 ## Requirements
 
