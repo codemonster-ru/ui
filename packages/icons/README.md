@@ -2,7 +2,7 @@
 
 Framework-independent icon geometry for CodeMonster UI.
 
-Current version: `@codemonster-ru/ui-icons@2.0.0-rc.1` — unpublished internal release candidate.
+Current version: `@codemonster-ru/ui-icons@2.0.0-rc.2` — unpublished internal release candidate.
 
 ## Requirements
 

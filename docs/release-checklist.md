@@ -6,7 +6,7 @@ that will receive the package tags. VueForge releases belong to the archived pro
 ## Internal CodeMonster UI 2.0 candidate
 
 Use the [draft 2.0 changelog](./codemonster-ui-2.0-release-notes.md) for the seven-package
-`2.0.0-rc.1` cohort. For an internal handoff, complete sections 1–5 and retain the seven `.tgz`
+`2.0.0-rc.2` cohort. For an internal handoff, complete sections 1–5 and retain the seven `.tgz`
 files with SHA-256 digests and the product commit SHA. Run the Vanilla production build and the
 showcase browser regressions against both built sites. Attach results by browser engine, adapter,
 theme, and viewport. Record native Safari, VoiceOver and NVDA separately from automated checks.

@@ -2,6 +2,13 @@
 
 All notable changes to this package will be documented in this file.
 
+## 2.0.0-rc.2
+
+### Fixed
+
+- Improve contrast for DatePicker weekday headings, adjacent dates, and time labels.
+- Improve calendar indicators for today, selected dates, and selected ranges in both adapters.
+
 ## 2.0.0-rc.1
 
 ### Added

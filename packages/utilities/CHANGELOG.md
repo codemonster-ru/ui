@@ -2,6 +2,10 @@
 
 All notable changes to this package will be documented in this file.
 
+## 2.0.0-rc.2
+
+Update the Tokens dependency range for the coordinated CodeMonster UI 2.0 release candidate.
+
 ## 2.0.0-rc.1
 
 No changes in this cycle. The package is listed in the 2.0 cohort so its dependency range moves with
