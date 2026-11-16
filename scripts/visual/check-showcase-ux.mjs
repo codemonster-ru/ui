@@ -161,7 +161,7 @@ async function checkReferenceInteractions(page, base, adapter) {
     ['none', ['Apollo', 'Zephyr']],
   ]) {
     await header.getByRole('button').press('Enter');
-    assert.equal(await header.getAttribute('aria-sort'), direction, `${adapter}: DataTable sort direction`);
+    await header.and(demo.locator(`[aria-sort="${direction}"]`)).waitFor();
     assert.deepEqual(await rows.allTextContents(), order, `${adapter}: DataTable row order for ${direction}`);
   }
 
