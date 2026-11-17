@@ -10,11 +10,19 @@ import {
   CmIconButton,
   CmInput,
   CmLink,
+  CmPanel,
   CmTable,
   CmTag,
 } from '@codemonster-ru/ui-vue';
 import { fillContrastTable } from '../../shared/showcase-reference.js';
-import { colorSections, colorsTitle, contrastRows, families, semanticSwatches } from '../../shared/showcase-colors.mts';
+import {
+  colorSections,
+  colorsTitle,
+  contrastRows,
+  families,
+  releaseChecks,
+  semanticSwatches,
+} from '../../shared/showcase-colors.mts';
 import '../../shared/showcase-colors.css';
 import { vScrollableTable } from './scrollable-table';
 
@@ -89,6 +97,22 @@ async function copySample(mode: string, event: MouseEvent) {
             <h3>{{ mode }}</h3>
             <span>scoped theme</span>
           </header>
+
+          <CmPanel class="color-system__release">
+            <header class="color-system__release-header">
+              <h4>{{ releaseChecks.title }}</h4>
+              <CmBadge tone="primary">{{ releaseChecks.environment }}</CmBadge>
+            </header>
+            <ul class="color-system__release-checks" role="list">
+              <li v-for="{ label, status, tone } in releaseChecks.checks" :key="label">
+                <span>{{ label }}</span>
+                <CmTag :tone="tone">{{ status }}</CmTag>
+              </li>
+            </ul>
+            <CmAlert tone="danger" :title="releaseChecks.blocker.title">
+              {{ releaseChecks.blocker.body }}
+            </CmAlert>
+          </CmPanel>
 
           <div class="color-system__semantic-grid">
             <div

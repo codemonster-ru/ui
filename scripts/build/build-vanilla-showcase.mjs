@@ -486,11 +486,11 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
         ? `<header class="showcase-intro showcase-home">
     <div class="showcase-home__copy">${renderHomeCopy(path, './')}</div>
     <section class="showcase-home__demo" aria-label="Live data table example">
-      <div class="showcase-home__demo-heading">
-        <p>Sortable table</p>
-        <a class="cm-link cm-link--underline-hover" href="./components/data-table/">View DataTable</a>
-      </div>
       ${caseMarkup.get('data-table-default').replace('id="projects"', 'id="showcase-projects"')}
+      <div class="showcase-home__demo-footer">
+        <p>Sort by Name.</p>
+        <a class="cm-link cm-link--underline-hover" href="./components/data-table/">DataTable reference</a>
+      </div>
     </section>
   </header>
   <section id="component-catalog" class="showcase-directory" tabindex="-1" aria-labelledby="showcase-directory-title">

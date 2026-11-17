@@ -40,11 +40,9 @@ const grids = [
       <h3 id="demo-stack">CmStack</h3>
     </header>
     <div class="layout-sample-pair">
-      <CmSection v-for="(items, index) in stacks" :key="items[0]" surface>
-        <CmStack :as="index === 1 ? 'article' : 'div'">
-          <CmSection v-for="(item, itemIndex) in items" :key="itemIndex" surface>{{ item }}</CmSection>
-        </CmStack>
-      </CmSection>
+      <CmStack v-for="(items, index) in stacks" :key="items[0]" :as="index === 1 ? 'article' : 'div'">
+        <CmSection v-for="(item, itemIndex) in items" :key="itemIndex" surface>{{ item }}</CmSection>
+      </CmStack>
     </div>
   </section>
 
@@ -81,11 +79,9 @@ const grids = [
       <h3 id="demo-grid">CmGrid</h3>
     </header>
     <CmStack>
-      <CmSection v-for="items in grids" :key="items[0]" surface>
-        <CmGrid
-          ><CmCard v-for="(item, index) in items" :key="index">{{ item }}</CmCard></CmGrid
-        >
-      </CmSection>
+      <CmGrid v-for="items in grids" :key="items[0]">
+        <CmCard v-for="(item, index) in items" :key="index">{{ item }}</CmCard>
+      </CmGrid>
     </CmStack>
   </section>
 

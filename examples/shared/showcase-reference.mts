@@ -1,7 +1,14 @@
 import { renderShowcaseTabs } from './showcase-tabs.mts';
 import * as icons from '@codemonster-ru/ui-icons';
 import { iconCatalog, iconNames, type IconName } from '@codemonster-ru/ui-icons/catalog';
-import { colorSections, colorsTitle, contrastRows, families, semanticSwatches } from './showcase-colors.mts';
+import {
+  colorSections,
+  colorsTitle,
+  contrastRows,
+  families,
+  releaseChecks,
+  semanticSwatches,
+} from './showcase-colors.mts';
 
 const themes = ['light', 'dark'] as const;
 const surfaces = [
@@ -51,10 +58,28 @@ export function renderColorScales() {
         .map(
           (mode) => `<article class="color-system__theme" data-cm-theme="${mode}">
           <header class="color-system__theme-header"><h3>${mode}</h3><span>scoped theme</span></header>
+          ${renderReleaseChecks()}
           <div class="color-system__semantic-grid">${semantics}</div>${renderThemeControls(mode)}</article>`,
         )
         .join('')}</div>
     </section>${renderContrastTable()}</div>`;
+}
+
+function renderReleaseChecks() {
+  const { title, environment, checks, blocker } = releaseChecks;
+  return `<section class="cm-panel color-system__release">
+    <header class="color-system__release-header">
+      <h4>${title}</h4>
+      <span class="cm-badge cm-badge--primary">${environment}</span>
+    </header>
+    <ul class="color-system__release-checks" role="list">${checks
+      .map(
+        ({ label, status, tone }) =>
+          `<li><span>${label}</span><span class="cm-tag cm-tag--${tone}">${status}</span></li>`,
+      )
+      .join('')}</ul>
+    ${alert('danger', blocker.title, blocker.body)}
+  </section>`;
 }
 
 function renderThemeControls(mode: (typeof themes)[number]) {
@@ -159,6 +184,44 @@ export function renderIconIntro() {
     .join('')}</div>`;
 }
 
+export const iconContexts = {
+  navigation: { title: 'Navigation', label: 'Open Layouts', icon: 'grid' },
+  action: { title: 'Action', label: 'Copy name', icon: 'copy', name: 'download' },
+  status: { title: 'Status', label: 'Deployed', icon: 'checkCircle' },
+} as const;
+
+function renderIconContexts() {
+  const { navigation, action, status } = iconContexts;
+  const glyph = (name: IconName) =>
+    iconSvg(icons.resolveCmIcon(icons[name], 'classic', 'regular')!, 'classic', 'regular', `context-${name}`);
+  return `<section class="catalog-contexts" aria-labelledby="catalog-contexts-title">
+    <h2 id="catalog-contexts-title">Icons in context</h2>
+    <div class="catalog-contexts__grid">
+      <article class="catalog-contexts__sample">
+        <h3>${navigation.title}</h3>
+        <a class="cm-link cm-link--underline-hover catalog-contexts__link" href="./layouts/">
+          ${glyph(navigation.icon)}<span>${navigation.label}</span>
+        </a>
+      </article>
+      <article class="catalog-contexts__sample">
+        <h3>${action.title}</h3>
+        <div class="catalog-contexts__action" data-icon-name="${action.name}">
+          <code>${action.name}</code>
+          <button class="cm-button cm-button--secondary cm-button--sm" type="button" data-copy-icon
+            aria-label="${action.label}: ${action.name}">
+            <span class="cm-button__leading">${glyph(action.icon)}</span>
+            <span class="cm-button__label">${action.label}</span>
+          </button>
+        </div>
+      </article>
+      <article class="catalog-contexts__sample">
+        <h3>${status.title}</h3>
+        <span class="cm-badge cm-badge--success">${glyph(status.icon)}${status.label}</span>
+      </article>
+    </div>
+  </section>`;
+}
+
 export function renderIconCatalog() {
   const system = iconNames.filter((name) => !iconCatalog[name].brand);
   const brands = iconNames.filter((name) => iconCatalog[name].brand);
@@ -218,6 +281,7 @@ export function renderIconCatalog() {
       <p role="status"><span data-icon-count data-total="${iconNames.length}">${iconNames.length} of ${iconNames.length} icons</span><span data-icon-copy-status></span></p>
       <a class="cm-link catalog-brands-link" href="./icons/#brand-icons-heading">Brand icons</a>
     </div>
+    ${renderIconContexts()}
     ${renderShowcaseTabs('catalog', 'Icon families', [
       { title: 'Classic', panel: familyPanel('classic', 'Classic') },
       { title: 'Duotone', panel: familyPanel('duotone', 'Duotone') },
