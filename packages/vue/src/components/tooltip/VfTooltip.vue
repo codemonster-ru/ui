@@ -11,14 +11,7 @@ const props = withDefaults(defineProps<VfTooltipProps>(), {
 </script>
 
 <template>
-  <CmTooltip
-    v-bind="$attrs"
-    :text="props.text"
-    :placement="props.placement"
-    :open-delay="props.openDelay"
-    :teleport-to="props.teleportTo"
-    :disable-teleport="props.disableTeleport"
-  >
+  <CmTooltip v-bind="{ ...$attrs, ...props }">
     <template v-if="$slots.default" #default>
       <slot />
     </template>

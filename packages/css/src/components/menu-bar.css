@@ -86,8 +86,8 @@
 }
 
 .cm-menu-bar__item:hover:where(
-  :not(.cm-menu-bar__item--active, .cm-menu-bar__item--open, :disabled, [aria-disabled='true'])
-) {
+    :not(.cm-menu-bar__item--active, .cm-menu-bar__item--open, :disabled, [aria-disabled='true'])
+  ) {
   background: var(--cm-color-background-surface-subtle);
   color: var(--cm-color-text-primary);
 }
