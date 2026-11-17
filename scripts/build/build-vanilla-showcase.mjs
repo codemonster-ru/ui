@@ -1,6 +1,10 @@
 import showcasePages from '../../examples/shared/showcase-pages.json' with { type: 'json' };
-import { renderShowcaseNavigation, showcaseActions } from '../../examples/shared/showcase-navigation.mts';
-import { renderApplicationExamples } from '../../examples/vanilla/application-examples.mjs';
+import {
+  coreShowcaseGroups,
+  renderCoreSectionNavigation,
+  renderLayoutSectionNavigation,
+  renderShowcaseNavigation,
+} from '../../examples/shared/showcase-navigation.mts';
 import { renderComponentReference } from './render-showcase-component-reference.mjs';
 import { referenceCaseDescription, referenceFrameClass } from '../../examples/shared/showcase-component-reference.mts';
 import { coreComponentTitle, coreRecipesFor, renderCoreMatrix } from '../../examples/shared/showcase-core-matrix.mts';
@@ -9,8 +13,8 @@ import {
   renderLayoutPrimitives,
   renderLayoutRecipes,
 } from '../../examples/shared/showcase-layout-samples.mts';
-import { renderLayoutPreview } from './render-showcase-layout.mjs';
-import { panels } from '../../examples/shared/showcase-layout-data.mts';
+import { renderLayoutExample } from './render-showcase-layout.mjs';
+import { defaultPreview, layoutExamples, previews } from '../../examples/shared/showcase-layout-data.mts';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import {
@@ -22,14 +26,14 @@ import {
 import { actionMatrices, buttonMatrices, showcaseCaseVariants } from '../../examples/shared/showcase-matrices.mts';
 import { collectComponentCases } from '../contracts/component-cases.mjs';
 import { collectComponentManifests } from '../contracts/component-manifests.mjs';
-import { buildDocumentation } from './showcase-documentation.mjs';
-import { buildShowcaseSearchIndex } from './showcase-search-index.mjs';
 
 function escapeHtml(text) {
   return text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
 }
 
-function page(title, content, script, base = '') {
+const packageStyles = ['./tokens/tokens.css', './css/fonts.css', './css/styles.css'];
+
+function page(title, content, script, { base = '', styles = ['./css/showcase.css'] } = {}) {
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -38,7 +42,7 @@ function page(title, content, script, base = '') {
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>${escapeHtml(title)}</title>
   <link rel="icon" href="data:," />
-  <link rel="stylesheet" href="./css/showcase.css" />
+  ${styles.map((style) => `<link rel="stylesheet" href="${style}" />`).join('\n  ')}
   <script type="module" src="./${script}"></script>
 </head>
 <body>
@@ -70,11 +74,12 @@ function renderExample(
         : '';
   const demo = page(
     `${name} · ${title}`,
-    `<main class="showcase-demo${reference ? ' showcase-reference-demo' : ''}"${reference && id === 'data-table-default' ? ' data-showcase-sort-rows' : ''} inert>
+    `<main class="showcase-demo" style="display: flow-root; padding: var(--cm-space-3)" inert>
       ${modal ? `<button class="cm-button cm-button--primary cm-button--md" type="button" id="showcase-open">Open ${escapeHtml(name)}</button>` : ''}
       ${canonicalHtml.replaceAll('src="/avatar.png"', 'src="./avatar.png"')}
     </main>`,
     'showcase-demo.js',
+    { styles: packageStyles },
   );
   return `<article class="showcase-example" id="${id}">
     ${primary ? '' : `<${heading}>${escapeHtml(title)}</${heading}>`}
@@ -306,8 +311,8 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
       ${withLabel ? '<span class="cm-button__label" data-showcase-theme-label>Light</span>' : ''}
     </button>`;
   };
-  const themeCards = `<div class="showcase-grid">
-    <article class="showcase-panel core-theme-card">
+  const themeCards = `<div class="core-theme-grid">
+    <article class="cm-panel showcase-panel core-theme-card">
       <h3>Theme provider</h3>
       <div class="core-theme-controls">
         ${['light', 'dark', 'system', 'toggle'].map((mode) => `<button class="cm-button cm-button--${mode === 'toggle' ? 'primary' : 'secondary'} cm-button--sm" type="button" data-showcase-set-theme="${mode}" disabled><span class="cm-button__label">${mode.charAt(0).toUpperCase() + mode.slice(1)}</span></button>`).join('')}
@@ -317,19 +322,14 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
         <span class="cm-tag cm-tag--contrast" data-showcase-theme-resolved>resolved: light</span>
       </div>
     </article>
-    <article class="showcase-panel core-theme-card">
+    <article class="cm-panel showcase-panel core-theme-card">
       <h3>Theme switch</h3>
       <div class="core-theme-controls">
         ${themeSwitches}
         ${themeToggle('secondary', 'md')}${themeToggle('ghost', 'md')}${themeToggle('secondary', 'sm')}
         ${themeToggle('secondary', 'md', true)}${themeToggle('ghost', 'md', true)}${themeToggle('secondary', 'lg', true)}
       </div>
-      <p class="showcase-muted core-theme-switch-note">The switch reflects the resolved theme and turns system mode into an explicit light or dark choice after interaction.</p>
-    </article>
-    <article class="showcase-panel core-theme-card">
-      <h3>Color roles</h3>
-      <p class="showcase-muted">The same semantic roles map to different palettes in light and dark.</p>
-      <p class="showcase-muted"><a class="cm-link" href="./colors/">Explore color and contrast</a></p>
+      <p class="showcase-muted core-theme-switch-note">Toggling from System chooses Light or Dark explicitly.</p>
     </article>
   </div>`;
   const renderCases = (slug, { only, except, heading } = {}) => {
@@ -342,36 +342,59 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
       .join('\n');
   };
   const themeContracts = `<details id="theme-contracts" class="showcase-contracts"><summary>Theme contract examples and palette samples</summary>
-    ${themeRadio}<div class="showcase-grid"><section id="demo-theme-switch" class="showcase-panel" aria-labelledby="component-theme-switch"><h3 id="component-theme-switch">ThemeSwitch</h3>
+    ${themeRadio}<div class="showcase-grid"><section id="demo-theme-switch" class="cm-panel showcase-panel" aria-labelledby="component-theme-switch"><h3 id="component-theme-switch">ThemeSwitch</h3>
       <div class="showcase-variants">${renderCases('theme-switch')}</div></section>${themeSamples}</div>
   </details>`;
   const sections = new Map(
-    groups.map(({ id, title, description, components: slugs, matrix: matrixTitle, recipeAfter }) => {
+    groups.map(({ id, title, components: slugs, matrix: matrixTitle, recipeAfter }) => {
       if (id === 'theme') {
         return [
           id,
-          `<section class="showcase-group" id="theme"><header><h2>${escapeHtml(title)}</h2>
-            <p>${escapeHtml(description)}</p></header>${themeCards}</section>`,
+          `<section class="showcase-group" id="theme" tabindex="-1"><header class="showcase-group-heading"><h2>${escapeHtml(title)}</h2><a class="cm-link cm-link--underline-hover" href="./colors/">Colors and contrast</a></header>${themeCards}</section>`,
         ];
       }
       if (id === 'layouts') {
-        const shellPreviews = panels.map(({ slug, title, description }) =>
-          renderLayoutGuideEntry(
+        const shellPreviews = layoutExamples.map(({ slug, title, label }) => {
+          const options = previews
+            .map(
+              ({ value, label, width }) =>
+                `<label class="cm-radio cm-radio--sm">
+                  <input class="cm-radio__input" type="radio" name="${slug}-width" value="${value}" data-preview-width="${width}"${value === defaultPreview ? ' checked' : ''}>
+                  <span class="cm-radio__control" aria-hidden="true"><span class="cm-radio__mark"></span></span>
+                  <span class="cm-radio__content">${label}</span>
+                </label>`,
+            )
+            .join('');
+          const content = renderLayoutExample(
             slug,
+            caseMarkup.get(`${slug}-default`),
+            caseMarkup.get('input-enhanced'),
+          );
+          const frame = page(title, `<div data-layout-example="${slug}">${content}</div>`, 'layout-example.js', {
+            styles: packageStyles,
+          });
+          return renderLayoutGuideEntry(
+            slug,
+            label,
+            `<fieldset class="layout-preview__sizes"><legend>Preview width</legend>${options}</fieldset>
+            <div class="layout-preview__viewport" role="region" aria-label="${escapeHtml(title)} preview viewport" tabindex="0">
+              <iframe class="layout-preview__frame" title="${escapeHtml(title)} preview" loading="lazy"
+                width="${previews.find(({ value }) => value === defaultPreview).width}" srcdoc="${escapeHtml(frame)}"></iframe>
+            </div>`,
             title,
-            description,
-            renderLayoutPreview(slug, caseMarkup.get(`${slug}-default`), caseMarkup.get('input-enhanced')),
-            true,
-          ),
-        );
+          );
+        });
         const layoutContracts = slugs.map(
-          (slug) => `<section class="showcase-card showcase-panel">
+          (slug) => `<section class="showcase-card cm-panel showcase-panel">
           <h3>${escapeHtml(bySlug.get(slug).name)}</h3><div class="showcase-variants">${renderCases(slug)}</div>
         </section>`,
         );
         return [
           id,
-          `<div class="layout-guide">${renderLayoutPrimitives()}${renderLayoutRecipes()}${shellPreviews.join('\n')}</div>
+          `<div class="layout-guide">${shellPreviews.join('\n')}
+          <section id="layout-primitives" class="layout-guide" aria-labelledby="layout-primitives-title" tabindex="-1">
+            <h2 id="layout-primitives-title">Layout primitives</h2>${renderLayoutPrimitives()}${renderLayoutRecipes()}
+          </section></div>
         <details class="showcase-contracts" data-layout-contracts><summary>Layout contract examples</summary>
           <div class="showcase-filter">
             <label for="showcase-search">Filter components</label>
@@ -387,7 +410,7 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
           id,
           `${renderIconCatalog()}
           <details class="showcase-contracts"><summary>Icon component and operations examples</summary>
-            <section id="demo-icon" class="showcase-panel" aria-labelledby="component-icon">
+            <section id="demo-icon" class="cm-panel showcase-panel" aria-labelledby="component-icon">
               <h3 id="component-icon" class="showcase-icon-intro-heading">Icon</h3>
               ${renderIconIntro()}
               <details class="showcase-contracts"><summary>Contract examples</summary>
@@ -414,7 +437,7 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
             : renderMatrix(slug, actionMatrices[slug], loadingMarkup, iconMarkup);
         const cardClass = matrixTitle
           ? 'core-component core-group-cell'
-          : `core-component showcase-panel${wide ? ' showcase-panel--wide' : ''}`;
+          : `core-component cm-panel showcase-panel${wide ? ' showcase-panel--wide' : ''}`;
         const heading = matrixTitle ? 'h4' : 'h3';
         return `<section id="demo-${slug}" class="${cardClass}" aria-labelledby="component-${slug}">
         <${heading} id="component-${slug}"${matrixTitle ? ' class="showcase-label"' : ''}>${escapeHtml(coreComponentTitle(slug))}</${heading}>
@@ -426,81 +449,62 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
       const recipes = coreRecipesFor(coreSamples, id);
       if (recipeAfter) cards.splice(slugs.indexOf(recipeAfter) + 1, 0, recipes);
       const grid = matrixTitle
-        ? `<section class="showcase-panel core-group-matrix" aria-labelledby="${id}-matrix-title">
+        ? `<section class="cm-panel showcase-panel core-group-matrix" aria-labelledby="${id}-matrix-title">
           <h3 id="${id}-matrix-title">${escapeHtml(matrixTitle)}</h3>${recipeAfter ? '' : recipes}${cards.join('\n')}
         </section>`
         : `<div class="showcase-grid">${recipes}${cards.join('\n')}</div>`;
       const typeSamples =
         id === 'actions'
-          ? `<section id="typography" class="showcase-group">
-      <header><h2>Typography</h2><p>Review the heading, body, content, and prose styles shared by CodeMonster UI interfaces.</p></header>
+          ? `<section id="typography" class="showcase-group" tabindex="-1">
+      <header><h2>Typography</h2></header>
       ${typography.replaceAll('href="#', 'href="./core/#')}
     </section>${themeContracts}`
           : '';
       return [
         id,
-        `${typeSamples}<section class="showcase-group" id="${id}">
-      <header><h2>${escapeHtml(title)}</h2><p>${escapeHtml(description)}</p></header>
+        `${typeSamples}<section class="showcase-group" id="${id}" tabindex="-1">
+      <header><h2>${escapeHtml(title)}</h2></header>
       ${grid}
     </section>`,
       ];
     }),
   );
 
-  const coreGroups = groups.filter(({ id }) => id !== 'layouts' && id !== 'icons');
-  const coreLinks = [...coreGroups.slice(0, 1), { id: 'typography', title: 'Typography' }, ...coreGroups.slice(1)];
-  const [componentIndex, componentDetails] = renderComponentReference(groups, bySlug, casesByComponent, renderCases);
+  const componentDetails = renderComponentReference(groups, bySlug, casesByComponent, renderCases);
   const pages = {
-    core: coreGroups.map(({ id }) => sections.get(id)).join('\n'),
-    components: componentIndex,
-    examples: renderApplicationExamples(),
+    core: coreShowcaseGroups.map(({ id }) => sections.get(id)).join('\n'),
     colors: renderColorScales(),
     layouts: sections.get('layouts'),
     icons: sections.get('icons'),
   };
-  const navigationPages = showcasePages.filter(({ vueOnly }) => !vueOnly);
-  const coreJump = (path) => `<nav class="showcase-jump" aria-label="On this page">
-    <p>On this page</p><ul>${coreLinks.map(({ id, title }) => `<li><a href="${path}#${id}">${escapeHtml(title)}</a></li>`).join('')}</ul>
-  </nav>`;
-  function renderPage(current, base, path, content = pages[current], pageTitle) {
-    const { label, title, description } = navigationPages.find(({ id }) => id === current);
-    const navigation = renderShowcaseNavigation(current, path.slice(1), '.', false);
+  function renderPage(current, base, path, content = pages[current]) {
+    const { label, title } = showcasePages.find(({ id }) => id === current);
+    const navigation = renderShowcaseNavigation(current, path.slice(1), '.');
     const intro = title
-      ? `<header class="showcase-intro${current === 'core' ? ' showcase-intro--core' : ''}">
-    <p class="showcase-intro__eyebrow">${escapeHtml(label)}</p>
-    <h1>${escapeHtml(title)}</h1><p>${escapeHtml(description)}</p>
-    ${
-      current === 'core'
-        ? `<div class="showcase-intro__actions">
-      <a class="showcase-intro__primary" href="./docs/getting-started/">Get started</a>
-      <a class="cm-link" href="./components/">Browse components</a>
-    </div>`
-        : ''
-    }
+      ? `<header class="showcase-intro">
+    <h1>${escapeHtml(title)}</h1>
+    ${current === 'core' ? renderCoreSectionNavigation(path) : current === 'layouts' ? renderLayoutSectionNavigation(path) : ''}
   </header>`
       : '';
     return page(
-      `${pageTitle ?? label} · CodeMonster UI Vanilla`,
-      `<a class="showcase-skip" href="${path}#showcase-main">Skip to content</a>
+      `${label} · CodeMonster UI Vanilla`,
+      `<a class="cm-link showcase-skip" href="${path}#showcase-main">Skip to content</a>
   <header class="showcase-topbar">
     <div class="showcase-header">
-      <a class="showcase-brand" href="./core/">CodeMonster UI <span>Vanilla</span></a>
+      <a class="cm-link showcase-brand" href="./">CodeMonster UI <span class="cm-badge">Vanilla</span></a>
       <div class="showcase-menu">${navigation}</div>
-      <div class="showcase-header__actions">${showcaseActions}</div>
-      <button class="cm-icon-button cm-icon-button--secondary cm-icon-button--md showcase-theme" id="showcase-theme" type="button" aria-label="Switch to dark theme" hidden><span class="cm-icon-button__icon">${themeIcons}</span></button>
+      <button class="cm-icon-button cm-icon-button--secondary cm-icon-button--lg showcase-theme" id="showcase-theme" type="button" aria-label="Switch to dark theme" hidden><span class="cm-icon-button__icon">${themeIcons}</span></button>
     </div>
   </header>
   <main id="showcase-main" class="showcase-content" tabindex="-1">
     ${intro}
-    ${current === 'core' ? coreJump(path) : ''}
     <div class="showcase-catalog${current === 'core' ? ' showcase-core' : ''}">${content}</div>
   </main>`,
-      current === 'examples' ? 'application-examples.js' : 'showcase.js',
-      base,
+      'showcase.js',
+      { base },
     );
   }
 
-  const documentation = await buildDocumentation({ relativeLinks: true });
   await Promise.all([
     writeFile(join(output, 'index.html'), renderPage('core', './', './')),
     ...Object.keys(pages).map(async (id) => {
@@ -516,20 +520,6 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
         renderPage('components', '../../', `./components/${slug}/`, content),
       );
     }),
-    ...[...documentation.pages].map(async ([path, { title, html }]) => {
-      const directory = join(output, path);
-      const base = '../'.repeat(path.split('/').length - 2);
-      await mkdir(directory, { recursive: true });
-      await writeFile(join(directory, 'index.html'), renderPage('docs', base, `.${path}`, html, title));
-    }),
-    (async () => {
-      const directory = join(output, 'docs-content');
-      await mkdir(directory, { recursive: true });
-      await writeFile(
-        join(directory, 'search.json'),
-        JSON.stringify(buildShowcaseSearchIndex(documentation.index, 'vanilla')),
-      );
-    })(),
   ]);
   console.log(
     `Vanilla showcase: ${components.length} components, ${expandedExamples(cases, icons).length} contract examples and variants.`,

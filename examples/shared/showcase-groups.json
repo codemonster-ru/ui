@@ -2,32 +2,27 @@
   {
     "id": "theme",
     "title": "Theme",
-    "description": "Provide color-mode state and let users switch between system, light, and dark themes.",
     "components": ["theme-switch"]
   },
   {
     "id": "actions",
     "title": "Actions and Links",
-    "description": "Compare buttons, icon buttons, and links.",
     "components": ["button", "icon-button", "link"]
   },
   {
     "id": "overlay",
     "title": "Overlay",
-    "description": "Open floating panels and check their placement and focus.",
     "matrix": "Overlay visual QA matrix",
     "components": ["tooltip", "dropdown", "popover"]
   },
   {
     "id": "surfaces",
     "title": "Surface Components",
-    "description": "Explore content, grouping, and table surfaces.",
     "components": ["card", "panel", "divider", "fieldset", "group-box", "table", "data-table", "column-chooser"]
   },
   {
     "id": "feedback",
     "title": "Feedback",
-    "description": "Compare status, progress, and loading states.",
     "matrix": "Feedback visual QA matrix",
     "recipeAfter": "skeleton",
     "components": ["alert", "avatar", "badge", "tag", "progress-bar", "progress-spinner", "skeleton", "skeleton-gate"]
@@ -35,13 +30,11 @@
   {
     "id": "forms",
     "title": "Forms",
-    "description": "Try input, selection, and validation states.",
     "components": ["field", "form-layout", "input", "textarea", "select", "date-picker", "checkbox", "radio", "switch"]
   },
   {
     "id": "navigation",
     "title": "Navigation and Disclosure",
-    "description": "Explore navigation, disclosure, and keyboard interaction.",
     "matrix": "Navigation visual QA matrix",
     "recipeAfter": "breadcrumbs",
     "components": [
@@ -59,13 +52,11 @@
   {
     "id": "modals",
     "title": "Modals and Commands",
-    "description": "Open each overlay and check keyboard dismissal and focus.",
     "components": ["dialog", "drawer", "command-palette"]
   },
   {
     "id": "layouts",
     "title": "Layouts",
-    "description": "Review layout primitives and full-page shells.",
     "components": [
       "container",
       "grid",
@@ -89,7 +80,6 @@
   {
     "id": "icons",
     "title": "Icons",
-    "description": "Review icon geometry and accessible labels.",
     "components": ["icon"]
   }
 ]

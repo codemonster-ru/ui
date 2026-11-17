@@ -51,7 +51,7 @@ npm run typecheck
 npm run lint:all
 npm run build
 npm run check:packed-consumers
-npm run build:demo
+npm run build:showcase
 npm run build:vanilla
 npm run prepublish:all
 ```
@@ -70,9 +70,8 @@ All commands must pass on the release commit. Also confirm:
 
 ## 4. Inspect tarballs
 
-`npm run prepublish:all` builds and runs dry-run packs for every npm package. For a CodeMonster UI
-only train, `npm run prepublish:ui` provides the focused build and dry run. Dry runs print proposed
-archive contents but do not create `.tgz` files. Review those file lists and inspect each target
+`npm run prepublish:all` builds and runs dry-run packs for every npm package. Dry runs print
+proposed archive contents but do not create `.tgz` files. Review those file lists and inspect each target
 explicitly when release metadata changes:
 
 ```bash

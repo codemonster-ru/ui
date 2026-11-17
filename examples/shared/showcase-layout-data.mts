@@ -1,4 +1,3 @@
-import { checkCircle, database, file, fileText, gear, grid, user } from '@codemonster-ru/ui-icons';
 import { cmBreakpoints } from '@codemonster-ru/ui-tokens';
 
 export const previews = [['min', 320], ...Object.entries(cmBreakpoints)].map(([value, width]) => ({
@@ -18,51 +17,34 @@ export const regionControls = [
   { key: 'notches', label: 'Edge notches' },
 ] as const;
 
-export function previewClass(width: number) {
-  return width < cmBreakpoints.lg
-    ? 'layout-preview--stacked'
-    : width < cmBreakpoints.xl
-      ? 'layout-preview--two-columns'
-      : '';
-}
-
-export const panels = [
-  {
-    slug: 'setup-layout',
-    title: 'CmSetupLayout',
-    description: 'Structures an initial configuration flow with progress, content, and actions.',
-  },
-  {
-    slug: 'app-shell',
-    title: 'CmAppShell and shell areas',
-    description: 'Composes header, sidebar, content, aside, and footer regions into an application frame.',
-  },
-  {
-    slug: 'admin-layout',
-    title: 'CmAdminLayout',
-    description: 'Provides responsive admin navigation with collapsible desktop and mobile sidebars.',
-  },
-  {
-    slug: 'admin-shell',
-    title: 'CmAdminShell',
-    description: 'Provides an opinionated product shell for dense administration workflows.',
-  },
-  {
-    slug: 'document-layout',
-    title: 'CmDocumentLayout',
-    description: 'Organizes documentation with optional navigation, article content, and an aside.',
-  },
+export const layoutExamples = [
+  { slug: 'admin-shell', title: 'CmAdminShell', label: 'Warehouse workspace', contract: true },
+  { slug: 'admin-layout', title: 'CmAdminLayout', label: 'Admin dashboard', contract: true },
+  { slug: 'setup-layout', title: 'CmSetupLayout', label: 'Installation flow', contract: true },
+  { slug: 'app-shell', title: 'CmAppShell', label: 'App shell', contract: true },
+  { slug: 'document-layout', title: 'CmDocumentLayout', label: 'Document layout', contract: true },
+  { slug: 'auth-layout', title: 'CmAuthLayout', label: 'Sign-in page', contract: false },
+  { slug: 'error-layout', title: 'CmErrorLayout', label: 'Error page', contract: false },
 ] as const;
+
+export type LayoutExampleSlug = (typeof layoutExamples)[number]['slug'];
+
 export const nav = [
   { value: 'dashboard', label: 'Dashboard' },
   { value: 'inventory', label: 'Warehouse availability' },
   { value: 'settings', label: 'Settings' },
 ];
+export const warehouseTableCaption = 'Warehouse availability';
+export const warehouseStockTones = {
+  Available: 'success',
+  'Low stock': 'warning',
+  'Out of stock': 'danger',
+} as const;
 export const columns = [
   { key: 'product', header: 'Product' },
   { key: 'sku', header: 'SKU' },
   { key: 'warehouse', header: 'Warehouse' },
-  { key: 'available', header: 'Available' },
+  { key: 'available', header: 'Available', align: 'end' as const },
   { key: 'status', header: 'Status' },
 ];
 export const rows = [
@@ -82,25 +64,6 @@ export const steps = [
 ];
 export const initialSetupStep = 'database';
 
-export const layoutNavIcons = Object.fromEntries(
-  Object.entries({
-    dashboard: grid,
-    commerce: file,
-    settings: gear,
-    license: fileText,
-    database,
-    admin: user,
-    finish: checkCircle,
-  }).map(([name, icon]) => {
-    const { viewBox, body } = icon['classic/regular'];
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${body}</svg>`;
-    return [`--layout-nav-icon-${name}`, `url('data:image/svg+xml,${encodeURIComponent(svg)}')`];
-  }),
-);
-export const layoutNavIconStyle = Object.entries(layoutNavIcons)
-  .map(([key, value]) => `${key}:${value}`)
-  .join(';');
-
 export const warehouseNavigation = [
   { value: 'dashboard', label: 'Dashboard' },
   {
@@ -116,11 +79,13 @@ export const warehouseNavigation = [
 ];
 
 export function warehousePagination() {
-  return `<nav class="warehouse-pagination" aria-label="Table pagination" data-total-rows="${rows.length}">
-    <span data-warehouse-summary aria-live="polite">1–5 of ${rows.length}</span>
-    <label>Rows <select data-warehouse-size><option value="5">5</option><option value="10">10</option></select></label>
-    <button type="button" data-warehouse-page="previous" aria-label="Previous page" disabled>‹</button>
-    ${[1, 2].map((page) => `<button type="button" data-warehouse-page="${page}" aria-label="Page ${page}"${page === 1 ? ' aria-current="page"' : ''}>${page}</button>`).join('')}
-    <button type="button" data-warehouse-page="next" aria-label="Next page">›</button>
+  return `<nav class="cm-data-table__pagination" aria-label="Table pagination">
+    <label class="cm-data-table__page-size"><span>Rows per page</span>
+      <select data-cm-data-table-page-size-control><option value="5">5</option><option value="10">10</option></select>
+    </label>
+    <span class="cm-data-table__pagination-summary" aria-live="polite">1-5 of ${rows.length}</span>
+    <button class="cm-data-table__page-button" type="button" data-cm-data-table-page-action="previous" aria-label="Previous page" disabled>Previous</button>
+    <span class="cm-data-table__page-summary" aria-live="polite">Page 1 of ${Math.ceil(rows.length / 5)}</span>
+    <button class="cm-data-table__page-button" type="button" data-cm-data-table-page-action="next" aria-label="Next page">Next</button>
   </nav>`;
 }

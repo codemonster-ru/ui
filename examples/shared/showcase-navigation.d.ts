@@ -1,1 +1,1 @@
-export function mountShowcaseNavigation(header: HTMLElement, base: string): () => void;
+export function revealShowcaseLink(event: FocusEvent): void;

@@ -86,7 +86,7 @@
   inline-size: var(--cm-radio-dot-size);
   block-size: var(--cm-radio-dot-size);
   border-radius: var(--cm-radius-round);
-  background: var(--cm-color-interactive-primary-background);
+  background: var(--cm-color-interactive-primary-border);
   opacity: 0;
   transform: scale(0.35);
   transition:
@@ -112,7 +112,7 @@
 }
 
 .cm-radio__input:checked + .cm-radio__control {
-  border-color: var(--cm-color-interactive-primary-background);
+  border-color: var(--cm-color-interactive-primary-border);
 }
 
 .cm-radio__input:checked + .cm-radio__control .cm-radio__mark {
@@ -120,21 +120,17 @@
   transform: scale(1);
 }
 
-.cm-radio:hover:has(.cm-radio__input:checked:not(:disabled)) .cm-radio__control,
-.cm-radio:hover:has(.cm-radio__input:checked:not(:disabled)) .cm-radio__mark {
-  border-color: var(--cm-color-interactive-primary-hover-background);
-  background: var(--cm-color-interactive-primary-hover-background);
+.cm-radio:hover:has(.cm-radio__input:checked:not(:disabled)) .cm-radio__control {
+  background: var(--cm-color-background-surface-hover);
 }
 
-.cm-radio:active:has(.cm-radio__input:checked:not(:disabled)) .cm-radio__control,
-.cm-radio:active:has(.cm-radio__input:checked:not(:disabled)) .cm-radio__mark {
-  border-color: var(--cm-color-interactive-primary-active-background);
-  background: var(--cm-color-interactive-primary-active-background);
+.cm-radio:active:has(.cm-radio__input:checked:not(:disabled)) .cm-radio__control {
+  background: var(--cm-color-background-surface-active);
 }
 
 .cm-radio__input:focus-visible + .cm-radio__control {
   border-color: var(--cm-color-border-focus);
-  outline: none;
+  outline: var(--cm-focus-ring-width) solid var(--cm-forced-focus-outline-color, transparent);
   box-shadow: 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
 }
 
@@ -161,7 +157,11 @@
 }
 
 @media (forced-colors: active) {
-  .cm-radio__input:checked + .cm-radio__control {
-    color: HighlightText;
+  .cm-radio__input:checked:not(:disabled) + .cm-radio__control .cm-radio__mark {
+    background: CanvasText;
+  }
+
+  .cm-radio__input:checked:disabled + .cm-radio__control .cm-radio__mark {
+    background: GrayText;
   }
 }

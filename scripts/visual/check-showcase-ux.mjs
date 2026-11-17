@@ -18,6 +18,7 @@ const adapters = {
   vanilla: process.env.SHOWCASE_VANILLA_URL || 'http://127.0.0.1:4174/',
 };
 const viewports = new Map([
+  [320, 800],
   [360, 800],
   [390, 844],
   [768, 1024],
@@ -25,25 +26,12 @@ const viewports = new Map([
 ]);
 const routes = [
   ['core', '', '.showcase-intro h1'],
-  ['components', 'components/', '.reference-catalog h1'],
+  ['core-alias', 'core/', '.showcase-intro h1'],
   ['button', 'components/button/', '[data-reference-preview="button"]'],
   ['data-table', 'components/data-table/#api', '#api'],
-  ['docs', 'docs/', '.guide-header h1'],
-  ['quick-start', 'docs/getting-started/#vue-quick-start', '#vue-quick-start'],
-  ['workspace', 'examples/', '#release-workspace-title'],
   ['icons', 'icons/', '#icon-catalog'],
 ];
-const representative = new Set([
-  'core--1440--light',
-  'core--360--dark',
-  'components--1440--light',
-  'button--390--dark',
-  'docs--1440--light',
-  'docs--1440--dark',
-  'docs--360--dark',
-  'workspace--1440--light',
-  'workspace--360--dark',
-]);
+const representative = new Set(['core--1440--light', 'core--360--dark', 'button--390--dark']);
 let visited = 0;
 let accessibilityScans = 0;
 let calendarContrastScans = 0;
@@ -63,7 +51,7 @@ async function checkViewport(page, label) {
   const layout = await page.evaluate(() => ({ width: innerWidth, scroll: document.documentElement.scrollWidth }));
   assert.equal(layout.scroll, layout.width, `${label}: document reflows horizontally`);
   const clipped = await page
-    .locator('.showcase-header button:visible, .showcase-navigation a:visible')
+    .locator('.showcase-brand:visible, .showcase-header button:visible, #showcase-navigation:visible')
     .evaluateAll((items) =>
       items.some((item) => {
         const box = item.getBoundingClientRect();
@@ -135,6 +123,14 @@ async function checkReferenceInteractions(page, base, adapter) {
   await page.goto(url(base, 'components/select/'));
   const trigger = demo.getByRole('combobox', { name: 'Frequency' });
   await trigger.press('ArrowDown');
+  const sections = await page
+    .locator('.reference-section > h2')
+    .evaluateAll((headings) => headings.map(({ id }) => id));
+  assert.deepEqual(
+    sections.slice(0, 3),
+    ['preview', 'variants', 'usage'],
+    `${adapter}: states follow the live preview`,
+  );
   const listbox = demo.getByRole('listbox');
   await listbox.waitFor();
   assert(await listbox.getByRole('option', { name: 'Daily' }).evaluate((option) => option === document.activeElement));
@@ -150,19 +146,29 @@ async function checkReferenceInteractions(page, base, adapter) {
   assert(await trigger.evaluate((button) => button === document.activeElement));
 
   await page.goto(url(base, 'components/data-table/'));
+  const referenceNav = page.getByRole('navigation', { name: 'Component reference sections' });
+  await referenceNav.getByRole('link', { name: 'API reference', exact: true }).press('Enter');
+  assert.equal(new URL(page.url()).hash, '#api');
+  await page.locator('#api:focus').waitFor();
   const header = demo.getByRole('columnheader', { name: /Name/ });
   const rows = demo.locator('tbody tr td:first-child');
   await header.waitFor();
   assert.equal(await header.getAttribute('aria-sort'), 'none');
   assert.deepEqual(await rows.allTextContents(), ['Apollo', 'Zephyr']);
-  for (const [direction, order] of [
-    ['ascending', ['Apollo', 'Zephyr']],
-    ['descending', ['Zephyr', 'Apollo']],
-    ['none', ['Apollo', 'Zephyr']],
-  ]) {
+  if (page.viewportSize().width === 360) {
+    const scrolls = await demo
+      .locator('.cm-data-table__scroll')
+      .evaluate((table) => table.scrollWidth > table.clientWidth);
+    assert.equal(scrolls, false, `${adapter}: the two-column DataTable fits the narrow preview`);
+  }
+  for (const direction of ['ascending', 'descending', 'none']) {
     await header.getByRole('button').press('Enter');
     await header.and(demo.locator(`[aria-sort="${direction}"]`)).waitFor();
-    assert.deepEqual(await rows.allTextContents(), order, `${adapter}: DataTable row order for ${direction}`);
+    assert.deepEqual(
+      await rows.allTextContents(),
+      ['Apollo', 'Zephyr'],
+      `${adapter}: manual sorting preserves row order`,
+    );
   }
 
   for (const [slug, title, description] of [
@@ -176,94 +182,201 @@ async function checkReferenceInteractions(page, base, adapter) {
   }
 }
 
+async function checkLayoutViewport(page, base, adapter) {
+  await page.goto(url(base, 'layouts/'));
+  const example = page.locator('#demo-app-shell');
+  const frame = example.locator('iframe.layout-preview__frame');
+  await frame.scrollIntoViewIfNeeded();
+  const preview = frame.contentFrame();
+  const tab = preview.getByRole('tab', { name: 'Sidebar + content + aside' });
+  await tab.waitFor();
+  const previewDocument = await (await frame.elementHandle()).contentFrame();
+  await previewDocument.waitForLoadState('load');
+  await tab.click();
+  const aside = preview.locator('.cm-app-shell__aside:not([hidden])');
+  await aside.waitFor({ state: 'attached' });
+
+  await example.getByRole('radio', { name: 'lg · 1024 px' }).press('Space');
+  await expectPreviewWidth(frame, 1024);
+  assert.equal(await aside.evaluate((region) => getComputedStyle(region).display), 'none');
+
+  await example.getByRole('radio', { name: 'xl · 1280 px' }).press('Space');
+  await expectPreviewWidth(frame, 1280);
+  await aside.waitFor({ state: 'visible' });
+  assert.equal(await tab.getAttribute('aria-selected'), 'true', `${adapter}: resizing preserves layout selection`);
+  await checkViewport(page, `${adapter} layouts`);
+}
+
+async function checkWarehouse(page, base, adapter) {
+  await page.goto(url(base, 'layouts/'));
+  const layoutNav = page.getByRole('navigation', { name: 'Layout examples', exact: true });
+  await layoutNav.getByRole('link', { name: 'Warehouse workspace', exact: true }).press('Enter');
+  assert.equal(new URL(page.url()).hash, '#demo-admin-shell');
+  const example = page.locator('#demo-admin-shell');
+  await example.and(page.locator(':focus')).waitFor();
+  assert.equal(await page.locator('.layout-guide-entry h2').first().textContent(), 'Warehouse workspace');
+  const preview = example.locator('iframe.layout-preview__frame');
+  await preview.scrollIntoViewIfNeeded();
+  const frame = preview.contentFrame();
+  const table = frame.getByRole('table', { name: 'Warehouse availability', exact: true });
+  const scrollArea = table.locator('..');
+  const header = table.getByRole('columnheader', { name: 'Available', exact: true });
+  const available = table.locator('tbody tr:visible td:nth-child(4)');
+  const pagination = frame.getByRole('navigation', { name: 'Table pagination', exact: true });
+  await table.waitFor();
+  await frame.locator('#showcase-warehouse[data-cm-data-table-page-count="2"]').waitFor();
+  assert.equal(await scrollArea.getAttribute('tabindex'), '0', `${adapter}: the table viewport is keyboard focusable`);
+  assert.equal(await header.evaluate((cell) => getComputedStyle(cell).textAlign), 'end');
+  assert.deepEqual(await available.allTextContents(), ['24', '0', '7', '31', '16']);
+  assert.equal(await available.first().evaluate((cell) => getComputedStyle(cell).textAlign), 'end');
+  assert.deepEqual(await table.locator('tbody .cm-tag--danger:visible').allTextContents(), ['Out of stock']);
+  assert.deepEqual(await table.locator('tbody .cm-tag--warning:visible').allTextContents(), ['Low stock']);
+  await pagination.getByRole('button', { name: 'Next page' }).press('Enter');
+  await pagination.getByText('Page 2 of 2', { exact: true }).waitFor();
+  assert.deepEqual(await available.allTextContents(), ['4', '12'], `${adapter}: page two renders remaining rows`);
+  const size = pagination.getByRole('combobox', { name: 'Rows per page' });
+  await size.selectOption('10');
+  await pagination.getByText('Page 1 of 1', { exact: true }).waitFor();
+  assert.equal(await available.count(), 7, `${adapter}: changing page size resets pagination`);
+
+  await example.getByRole('radio', { name: 'min · 320 px' }).press('Space');
+  await expectPreviewWidth(preview, 320);
+  assert.equal(await available.count(), 7, `${adapter}: warehouse data survives reflow`);
+  assert(
+    await scrollArea.evaluate((area) => area.scrollWidth > area.clientWidth),
+    `${adapter}: the five-column warehouse table scrolls at 320 px`,
+  );
+  await checkViewport(page, `${adapter} warehouse preview`);
+  await screenshot(page, `${adapter}--warehouse--320--dark`);
+}
+
+async function expectPreviewWidth(frame, width) {
+  await frame.evaluate(async (iframe, expectedWidth) => {
+    for (let attempt = 0; attempt < 20 && iframe.contentWindow.innerWidth !== expectedWidth; attempt++) {
+      await new Promise(requestAnimationFrame);
+    }
+  }, width);
+  assert.equal(await frame.evaluate((iframe) => iframe.contentWindow.innerWidth), width);
+}
+
 async function checkNavigation(page, base, adapter, width) {
-  const search = page.getByRole('button', { name: 'Search components and guides' });
-  await page.goto(base);
-  await page.locator('main h1').waitFor();
-  await page.keyboard.press(browserName === 'webkit' && process.platform === 'darwin' ? 'Alt+Tab' : 'Tab');
+  if (width === 360) {
+    for (const path of [
+      'components/',
+      'examples/',
+      'docs/',
+      'docs/getting-started/',
+      'showcase-search.json',
+      'codeblock/',
+      'playground/',
+    ]) {
+      const response = await page.request.get(url(base, path));
+      assert.equal(response.status(), 404, `${adapter}: ${path} was removed`);
+    }
+  }
+  await page.goto(base, { waitUntil: 'domcontentloaded' });
+  await page.getByRole('heading', { level: 1, name: 'Component states' }).waitFor();
+  await page.evaluate(() => document.fonts.ready);
+  const header = page.locator('.showcase-header');
+  assert.equal(await header.getByRole('button', { name: /search|^menu$/i, includeHidden: true }).count(), 0);
+  await header.locator('.showcase-theme').waitFor();
+  const [brandCenter, themeCenter] = await header.locator('.showcase-brand, .showcase-theme').evaluateAll((items) =>
+    items.map((item) => {
+      const { top, height } = item.getBoundingClientRect();
+      return top + height / 2;
+    }),
+  );
+  assert(Math.abs(brandCenter - themeCenter) <= 1, `${adapter} ${width}: brand and theme switch align vertically`);
+  const tabKey = browserName === 'webkit' && process.platform === 'darwin' ? 'Alt+Tab' : 'Tab';
+  await page.keyboard.press(tabKey);
   assert.equal(await page.locator(':focus').textContent(), 'Skip to content');
   await page.keyboard.press('Enter');
   assert.equal(await page.locator(':focus').getAttribute('id'), 'showcase-main');
 
   const navigation = page.locator('#showcase-navigation');
-  const menu = page.getByRole('button', { name: 'Menu', exact: true });
-  if (width < 896) {
-    assert.equal(await navigation.isVisible(), false);
-    assert.equal(await menu.getAttribute('aria-expanded'), 'false');
-    assert((await page.locator('.showcase-topbar').evaluate((header) => header.offsetHeight)) <= 72);
-    await menu.tap();
-    assert.equal(await menu.getAttribute('aria-expanded'), 'true');
-    assert(
-      await navigation.getByRole('link', { name: 'Overview' }).evaluate((link) => link === document.activeElement),
-    );
-    await checkViewport(page, `${adapter} open menu`);
-    await screenshot(page, `${adapter}--menu--${width}--dark`);
-    await page.keyboard.press('Escape');
-    assert(await menu.evaluate((button) => button === document.activeElement));
-    assert.equal(await navigation.isVisible(), false);
-    await menu.tap();
-  } else {
-    assert(await navigation.isVisible());
-    assert.equal(await menu.isVisible(), false);
+  const links = navigation.getByRole('link');
+  assert(await navigation.isVisible());
+  assert.equal(await navigation.locator('details, summary').count(), 0);
+  assert.deepEqual(await links.allTextContents(), ['Visual matrix', 'Layouts', 'Colors', 'Icons']);
+  assert.equal(await navigation.locator('a.cm-link').count(), await links.count());
+  const tops = await links.evaluateAll((items) => items.map((item) => item.getBoundingClientRect().top));
+  assert.equal(new Set(tops).size, 1, `${adapter}: navigation links fit on one row`);
+  await checkViewport(page, `${adapter} navigation ${width}`);
+
+  const lastLinkClipped = await links.last().evaluate((link) => {
+    return link.getBoundingClientRect().right > link.closest('nav').getBoundingClientRect().right + 1;
+  });
+  assert.equal(lastLinkClipped, false, `${adapter} ${width}: all routes fit at default text size`);
+  const scale = await page.addStyleTag({ content: 'html { font-size: 200%; }' });
+  await checkViewport(page, `${adapter} navigation at 200% text size`);
+  await links.first().focus();
+  for (const link of (await links.all()).slice(1)) {
+    await page.keyboard.press(tabKey);
+    assert(await link.evaluate((anchor) => anchor === document.activeElement));
   }
-  await navigation.locator('summary').click();
-  await navigation.getByRole('link', { name: 'Colors', exact: true }).click();
+  const lastLinkIsVisible = await links.last().evaluate((link) => {
+    const linkBounds = link.getBoundingClientRect();
+    const navBounds = link.closest('nav').getBoundingClientRect();
+    return linkBounds.left >= navBounds.left - 1 && linkBounds.right <= navBounds.right + 1;
+  });
+  assert(lastLinkIsVisible, `${adapter}: keyboard focus scrolls the last link into view`);
+  await scale.evaluate((style) => style.remove());
+  await checkSectionNavigation(page, adapter);
+  await screenshot(page, `${adapter}--navigation--${width}--dark`);
+
+  const colors = navigation.getByRole('link', { name: 'Colors', exact: true });
+  if (width < 600) {
+    await colors.tap();
+  } else {
+    await colors.focus();
+    await page.keyboard.press('Enter');
+  }
+  await colors.and(page.locator('[aria-current="page"]')).waitFor();
   assert.equal(page.url(), url(base, 'colors/'));
-  await page.locator('.showcase-resources [aria-current="page"]').waitFor({ state: 'attached' });
-  if (width < 896) await menu.tap();
-  assert((await navigation.getByRole('link', { name: 'Colors', exact: true }).isVisible()) || width >= 896);
-  if (width < 896) await menu.tap();
 
-  await search.click();
-  let dialog = page.getByRole('dialog', { name: 'Search components and guides' });
-  const query = dialog.getByRole('searchbox');
-  assert(await query.evaluate((input) => input === document.activeElement));
-  await query.fill('zzzzzz no matching record');
-  await dialog.getByText(/No matches/).waitFor();
-  await page.keyboard.press('Escape');
-  await dialog.waitFor({ state: 'hidden' });
-  assert(await search.evaluate((button) => button === document.activeElement));
-  await search.click();
-  await query.fill('CmDatePicker');
-  const first = dialog.getByRole('link').first();
-  await first.waitFor();
-  assert.equal(await first.getAttribute('href'), url(base, 'components/date-picker/'));
-  await page.keyboard.press('ArrowDown');
-  assert(await first.evaluate((link) => link === document.activeElement));
-  await page.keyboard.press('Escape');
-  assert(await search.evaluate((button) => button === document.activeElement));
+  await page.goto(url(base, 'components/date-picker/'));
+  await page.locator('[data-reference-preview="date-picker"]').waitFor();
+  assert.equal(page.url(), url(base, 'components/date-picker/'));
+  assert.equal(
+    await page.getByRole('link', { name: 'Developer guide', exact: true }).first().getAttribute('href'),
+    'https://github.com/codemonster-ru/ui/blob/main/docs/components/advanced-inputs.md#datepicker',
+  );
+  await page
+    .getByRole('navigation', { name: 'Breadcrumb' })
+    .getByRole('link', { name: 'Visual matrix', exact: true })
+    .click();
+  await page.getByRole('heading', { level: 1, name: 'Component states' }).waitFor();
+  assert.equal(page.url(), url(base, 'core/'));
+}
 
-  await search.click();
-  await query.fill('Vue');
-  const installation = dialog.locator('a[href$="/getting-started/#install-a-local-20-build"]');
-  const section = dialog.locator('a[href$="/getting-started/#vue-quick-start"]');
-  await installation.waitFor();
-  await section.waitFor();
-  assert.deepEqual(await dialog.getByRole('link').evaluateAll((links) => links.slice(0, 2).map(({ hash }) => hash)), [
-    '#install-a-local-20-build',
-    '#vue-quick-start',
-  ]);
-  await query.fill('Vue quick start');
-  await section.waitFor();
-  await checkViewport(page, `${adapter} search results`);
-  await checkAccessibility(page, `${adapter} search ${width}`);
-  await screenshot(page, `${adapter}--search--${width}--dark`);
-  await section.click();
-  await page.locator('#vue-quick-start').waitFor();
-  assert.equal(page.url(), url(base, 'docs/getting-started/#vue-quick-start'));
-  // Exercise the browser's native reload of the fragment URL before testing Back and Forward.
-  await Promise.all([
-    page.waitForEvent('framenavigated', { predicate: (frame) => frame === page.mainFrame() }),
-    page.evaluate(() => setTimeout(() => location.reload(), 0)),
-  ]);
-  await page.locator('#vue-quick-start').waitFor();
+async function checkSectionNavigation(page, adapter) {
+  const sectionNav = page.getByRole('navigation', { name: 'Component state sections', exact: true });
+  const entries = await sectionNav.getByRole('link').evaluateAll((anchors) =>
+    anchors.map((anchor) => {
+      const section = document.getElementById(anchor.hash.slice(1));
+      return [anchor.textContent, section?.querySelector('h2')?.textContent, section?.tabIndex];
+    }),
+  );
+  assert.equal(entries.length, 9, `${adapter}: section index covers the complete matrix`);
+  for (const [link, title, tabIndex] of entries) {
+    assert.equal(link, title, `${adapter}: section link names the linked heading`);
+    assert.equal(tabIndex, -1, `${adapter}: section is a programmatic focus target`);
+  }
+  const link = sectionNav.getByRole('link', { name: 'Forms', exact: true });
+  await link.press('Enter');
+  assert.equal(new URL(page.url()).hash, '#forms');
+  const destination = page.locator('#forms');
+  assert.equal(await destination.evaluate((element) => element === document.activeElement), true);
+  assert(
+    await destination.evaluate((section) => {
+      const top = section.querySelector('h2').getBoundingClientRect().top;
+      const topbar = document.querySelector('.showcase-topbar');
+      return top >= Math.max(0, topbar.getBoundingClientRect().bottom) && top < innerHeight;
+    }),
+    `${adapter}: the section heading remains visible after keyboard navigation`,
+  );
   await page.goBack();
-  assert.equal(page.url(), url(base, 'colors/'));
-  assert.equal(await dialog.isVisible(), false);
-  await page.goForward();
-  await page.locator('#vue-quick-start').waitFor();
-  assert.equal(page.url(), url(base, 'docs/getting-started/#vue-quick-start'));
-  assert.equal(await page.locator('.showcase-navigation [aria-current]').getAttribute('aria-current'), 'location');
+  await sectionNav.waitFor();
 }
 
 async function checkAdapter([adapter, base]) {
@@ -282,10 +395,12 @@ async function checkAdapter([adapter, base]) {
         if (response.status() >= 400) errors.push(`${response.status()} ${response.url()}`);
       });
       page.setDefaultTimeout(10000);
+      page.setDefaultNavigationTimeout(30000);
       try {
         await page.addInitScript((mode) => localStorage.setItem('cm-showcase-theme', mode), theme);
         for (const [name, path, ready] of routes) {
-          await page.goto(url(base, path));
+          // Core has hundreds of deferred previews. The route and theme checks below establish page readiness.
+          await page.goto(url(base, path), { waitUntil: 'domcontentloaded' });
           await page.locator(ready).first().waitFor();
           await page.locator(`html[data-cm-theme="${theme}"]`).waitFor({ state: 'attached' });
           await checkViewport(page, `${adapter} ${name} ${width} ${theme}`);
@@ -293,7 +408,7 @@ async function checkAdapter([adapter, base]) {
           const file = `${name}--${width}--${theme}`;
           if (representative.has(file)) await screenshot(page, `${adapter}--${file}`);
           if (
-            ['components', 'button', 'docs', 'quick-start', 'workspace'].includes(name) &&
+            (name === 'core' || name === 'button') &&
             ((width === 360 && theme === 'dark') || (width === 1440 && theme === 'light'))
           )
             await checkAccessibility(page, `${adapter} ${file}`);
@@ -309,26 +424,27 @@ async function checkAdapter([adapter, base]) {
         }
         if ((width === 360 && theme === 'dark') || (width === 1440 && theme === 'light'))
           await checkReferenceInteractions(page, base, adapter);
-        if ((width === 360 || width === 1440) && theme === 'dark') await checkNavigation(page, base, adapter, width);
+        if ((width <= 360 || width === 1440) && theme === 'dark') await checkNavigation(page, base, adapter, width);
+        if (width === 1440 && theme === 'dark') {
+          await checkLayoutViewport(page, base, adapter);
+          await checkWarehouse(page, base, adapter);
+        }
         assert.deepEqual(errors, [], `${adapter} ${width} ${theme}: network/runtime errors`);
       } finally {
         await page.close();
       }
     }
   }
-  console.log(`${adapter}: four widths, two themes, eight routes, and keyboard / touch navigation and search passed`);
+  console.log(
+    `${adapter}: ${viewports.size} widths, two themes, ${routes.length} routes, and keyboard / touch navigation passed`,
+  );
 }
 
 try {
   if (output) await mkdir(output, { recursive: true });
   console.log(`${browserName} ${browser.version()}`);
-  const entries = Object.entries(adapters);
-  if (browserName === 'firefox') {
-    // Concurrent adapter pages compete for focus, which can suppress keyboard activation in an iframe.
-    for (const entry of entries) await checkAdapter(entry);
-  } else {
-    await Promise.all(entries.map(checkAdapter));
-  }
+  // Keep each adapter's iframe keyboard and resize checks in the foreground.
+  for (const entry of Object.entries(adapters)) await checkAdapter(entry);
   console.log(
     `${visited} route/width/theme combinations; ${accessibilityScans} page axe scans; ${calendarContrastScans} dark calendar contrast scans.`,
   );

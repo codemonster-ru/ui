@@ -377,7 +377,7 @@ try {
     const packageDirectory = dirname(workspace.manifestPath);
     const manifest = JSON.parse(readFileSync(workspace.manifestPath, 'utf8'));
     if (!existsSync(join(packageDirectory, 'dist'))) {
-      throw new Error(`${workspace.name} has no dist directory. Run npm run build:ui first.`);
+      throw new Error(`${workspace.name} has no dist directory. Run npm run build first.`);
     }
     const output = run(
       'npm',

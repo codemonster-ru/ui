@@ -4,12 +4,7 @@ import {
   serializeCmThemeTokensToCssVars,
 } from '@codemonster-ru/ui-tokens';
 
-export const colorHero = {
-  eyebrow: 'CodeMonster UI color system · semantic palette',
-  title: 'Perceptual materials, semantic decisions',
-  description:
-    'Primitive OKLCH scales feed semantic roles. Components consume only the canonical UI semantic token layer.',
-};
+export const colorsTitle = 'Perceptual materials, semantic decisions';
 
 export const families = new Map<string, { variable: string; step: string }[]>();
 for (const variable of Object.keys(serializeCmThemeTokensToCssVars(cmPrimitiveColorTokens))) {

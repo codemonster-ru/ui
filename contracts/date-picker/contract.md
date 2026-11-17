@@ -16,6 +16,9 @@ Page Down change month. Movement respects the date bounds. Escape closes the cal
 returns focus to the trigger. An outside click or focus move closes the calendar without
 moving focus back.
 
+If the available width cannot fit its localized weekday and date columns, the grid can scroll
+horizontally within the calendar. Keyboard navigation scrolls the focused date into view.
+
 The calendar prefers `bottom-start` placement and can flip above the trigger near an edge.
 Choose `bottom-end` to align its trailing edge. Vue `teleportTo` accepts a selector or
 element and `disableTeleport` keeps the calendar inline. Vanilla accepts

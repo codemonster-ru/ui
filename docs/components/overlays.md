@@ -163,6 +163,9 @@ when the surface flips or shifts to fit the viewport.
 - Rich Tooltip content must remain brief and cannot contain controls. You can move the pointer
   onto the tooltip to read it, or press Escape to dismiss it without moving focus. Provide
   required instructions where they do not depend on a tooltip.
+- Enhanced inline tooltips shift or flip at viewport edges. A clipping ancestor can still hide
+  an inline tooltip. Choose a portal target outside that ancestor when the panel must extend
+  beyond its bounds.
 - Keep content inside a component-owned trigger button noninteractive. Use authored trigger
   composition for existing buttons: Tooltip accepts one in its default slot, and Vue Popover
   and Dropdown accept one with `triggerAsChild` or through their historical entries.

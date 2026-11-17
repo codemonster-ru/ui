@@ -26,8 +26,8 @@ Vue and Layouts require Vue `^3.5.0`. For Node consumers, including SSR, use Nod
 
 ## Added
 
-- Vue and Vanilla reference sites with a searchable component catalog, interactive previews,
-  copyable examples, integrated guides and a Release Workspace demo.
+- Vue and Vanilla reference sites with interactive component previews, copyable examples, and links
+  to the developer guides.
 - A dedicated Layouts package for shells, page layouts, regions and shared breakpoint helpers.
 - Opt-in historical Vue and Layouts entry points for incremental migration, including component
   subpaths with automatic CSS in browser builds and CSS-free entries for server rendering.
@@ -43,7 +43,6 @@ Vue and Layouts require Vue `^3.5.0`. For Node consumers, including SSR, use Nod
 
 ## Fixed
 
-- Matching `Vue` in site search now surfaces local installation and Vue quick start first.
 - The compact Select preview reserves space for its two-option listbox.
 - Sorting the DataTable preview reorders the example rows in both directions.
 - Dialog and Drawer descriptions describe how to open the previews and remain accurate when open.

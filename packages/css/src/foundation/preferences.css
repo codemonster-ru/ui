@@ -10,9 +10,14 @@
 }
 
 @media (forced-colors: active) {
+  :root {
+    /* Paint the component outlines when the browser suppresses their usual focus shadows. */
+    --cm-forced-focus-outline-color: CanvasText;
+  }
+
   :where(a[href], button, input, select, textarea, summary, [tabindex]:not([tabindex='-1'])):focus-visible,
   .cm-focus-ring:focus-visible {
-    outline-color: Highlight;
+    outline-color: CanvasText;
     box-shadow: none !important;
   }
 

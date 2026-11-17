@@ -17,12 +17,28 @@ See the [CodeMonster UI 1.1 release notes](./docs/codemonster-ui-1.1-release-not
 
 ## Preview locally
 
-Run `npm ci` from the repository root once. Run `npm run preview` to build and open the Vue
-showcase, or `npm run preview:vanilla` to build and open the full Vanilla HTML showcase. Both
-commands are available under the root `package.json` in the VS Code NPM Scripts panel.
+The Vue and Vanilla showcases are development tools for trying components, states, and layouts.
+Both open on the **Visual matrix** for reviewing variants by category.
 
-Use `npm run dev` for the Vue showcase with hot reload. See the
-[Vanilla guide](./docs/vanilla.md) for the static assets and template integration.
+Run `npm ci` from the repository root once. Use the following root commands in the terminal or
+under the root `package.json` in VS Code's NPM Scripts panel.
+
+| Task | Vue showcase | Vanilla showcase |
+| --- | --- | --- |
+| Develop with browser updates | `npm run dev` · [5177](http://127.0.0.1:5177) | `npm run dev:vanilla` · [5178](http://127.0.0.1:5178) |
+| Build the local showcase | `npm run build:showcase` | `npm run build:vanilla` |
+| Open the existing build | `npm run preview` · [4173](http://127.0.0.1:4173) | `npm run preview:vanilla` · [4174](http://127.0.0.1:4174) |
+
+The NPM Scripts panel also lists `dev`, `build`, and `preview` under `examples/ui-showcase/package.json`
+for Vue and `examples/vanilla/package.json` for Vanilla.
+
+Run the build before the first preview and whenever you want to refresh the previewed artifact.
+`npm run build` builds the seven npm packages. Use `npm test` for package and UI contract tests,
+`npm run check` for documentation and package checks, and `npm run verify` for release checks.
+After the first package build, use `-w` to focus a command on one workspace, for example
+`npm test -w @codemonster-ru/ui-vue`.
+The [showcase README](./examples/ui-showcase/README.md) explains which files to edit and serve;
+the [Vanilla guide](./docs/vanilla.md) covers static assets and template integration.
 
 ## VueForge
 

@@ -25,6 +25,10 @@ Table supplies `<thead>`, `<tbody>`, and `<tfoot>` wrappers but does not infer h
 relationships. Its outer element owns forwarded attributes and horizontal scrolling. No runtime is
 needed.
 
+Table and auto-layout DataTable use the available width and scroll when their content needs more
+room. DataTable retains the scrollable minimum for fixed columns so pinning and resizing have room
+to work. Column headings use the label scale, while tabular numerals align figures in data cells.
+
 ## DataTable data model
 
 Columns have a unique kebab-case `key`, non-empty `header`, optional `sortable`, and optional

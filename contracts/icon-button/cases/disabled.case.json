@@ -3,5 +3,7 @@
   "id": "icon-button-disabled",
   "description": "Disabled primary small icon button.",
   "props": { "label": "Delete", "variant": "primary", "size": "sm", "disabled": true },
-  "slots": { "default": "<svg></svg>" }
+  "slots": {
+    "default": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" focusable=\"false\"><path d=\"M5.25 8.25h13.5l-1 12.25H6.25Z\"></path><line x1=\"4\" y1=\"5.25\" x2=\"20\" y2=\"5.25\"></line><path d=\"M9 5.25V3.5h6v1.75M9.5 11v5.75M14.5 11v5.75\"></path></svg>"
+  }
 }

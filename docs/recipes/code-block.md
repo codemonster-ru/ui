@@ -1,6 +1,6 @@
 # Vanilla code block recipe
 
-Run `npm run preview:vanilla` from the repository root and open `code-block-example.html` on the local preview server. For deployment, run `npm run build:vanilla` and serve `examples/vanilla/dist` over HTTP. [Example HTML](../../examples/vanilla/code-block-example.html) · [Styles](../../examples/vanilla/code-block-example.css) · [Copy module](../../examples/vanilla/code-block-example.mjs)
+Run `npm run dev:vanilla` from the repository root and open `code-block-example.html` on the local server. For deployment, run `npm run build:vanilla` and serve `examples/vanilla/dist` over HTTP. [Example HTML](../../examples/vanilla/code-block-example.html) · [Styles](../../examples/vanilla/code-block-example.css) · [Copy module](../../examples/vanilla/code-block-example.mjs)
 
 Render an escaped code sample inside `<pre><code>` and use a `<figcaption>` for its filename or language. Give each caption a unique ID and use it to name the scrollable region. The source preserves indentation and long lines. The scroll region can receive keyboard focus, and the code remains readable and selectable with JavaScript disabled. If your server already highlights code, render its escaped text and trusted highlighting spans inside `<code>`. The recipe stylesheet uses CodeMonster UI tokens and the shared button styles.
 

@@ -1,10 +1,21 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { checkCircle, copy, info, questionCircle, warning, xCircle } from '@codemonster-ru/ui-icons';
-import { CmAlert, CmBadge, CmButton, CmCheckbox, CmIcon, CmIconButton, CmInput, CmTag } from '@codemonster-ru/ui-vue';
+import {
+  CmAlert,
+  CmBadge,
+  CmButton,
+  CmCheckbox,
+  CmIcon,
+  CmIconButton,
+  CmInput,
+  CmTable,
+  CmTag,
+} from '@codemonster-ru/ui-vue';
 import { fillContrastTable } from '../../shared/showcase-reference.js';
-import { colorHero, contrastRows, families, semanticSwatches } from '../../shared/showcase-colors.mts';
+import { colorsTitle, contrastRows, families, semanticSwatches } from '../../shared/showcase-colors.mts';
 import '../../shared/showcase-colors.css';
+import { vScrollableTable } from './scrollable-table';
 
 const statusTones = [
   { tone: 'success', label: 'success', icon: checkCircle },
@@ -37,15 +48,12 @@ async function copySample(mode: string, event: MouseEvent) {
 <template>
   <div class="color-system">
     <header class="color-system__hero">
-      <p class="color-system__eyebrow">{{ colorHero.eyebrow }}</p>
-      <h1>{{ colorHero.title }}</h1>
-      <p>{{ colorHero.description }}</p>
+      <h1>{{ colorsTitle }}</h1>
     </header>
 
     <section class="color-system__section" aria-labelledby="primitive-scales">
       <div class="color-system__section-heading">
         <h2 id="primitive-scales">Primitive scales</h2>
-        <p>Every displayed step has a concrete semantic use in light, dark, or interaction states.</p>
       </div>
 
       <div class="color-system__families">
@@ -68,7 +76,6 @@ async function copySample(mode: string, event: MouseEvent) {
     <section class="color-system__section" aria-labelledby="theme-pairings">
       <div class="color-system__section-heading">
         <h2 id="theme-pairings">Light and dark semantic pairings</h2>
-        <p>Both panels use the same roles, but each mode selects materials independently.</p>
       </div>
 
       <div class="color-system__theme-grid">
@@ -164,41 +171,30 @@ async function copySample(mode: string, event: MouseEvent) {
       </div>
     </section>
 
-    <section class="color-system__section" aria-labelledby="contrast-matrix">
+    <section ref="table" class="color-system__section" aria-labelledby="contrast-matrix">
       <div class="color-system__section-heading">
         <h2 id="contrast-matrix">Supported contrast matrix</h2>
-        <p>Ratios use the current theme tokens rendered in sRGB.</p>
       </div>
 
-      <div
-        ref="table"
-        class="color-system__contrast-table-wrap"
-        tabindex="0"
-        role="region"
-        aria-label="Contrast ratios"
-      >
-        <table class="color-system__contrast-table">
-          <thead>
-            <tr>
-              <th scope="col">Pairing</th>
-              <th scope="col">Light</th>
-              <th scope="col">Dark</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="[label, foreground, background] in contrastRows" :key="label">
-              <th scope="row">{{ label }}</th>
-              <td v-for="mode in modes" :key="mode">
-                <span
-                  :data-cm-theme="mode"
-                  :data-contrast-foreground="'--cm-color-' + foreground"
-                  :data-contrast-background="'--cm-color-' + background"
-                />
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <CmTable v-scrollable-table="'Contrast ratios'" density="compact">
+        <template #header>
+          <tr>
+            <th scope="col">Pairing</th>
+            <th scope="col">Light</th>
+            <th scope="col">Dark</th>
+          </tr>
+        </template>
+        <tr v-for="[label, foreground, background] in contrastRows" :key="label">
+          <th scope="row">{{ label }}</th>
+          <td v-for="mode in modes" :key="mode">
+            <span
+              :data-cm-theme="mode"
+              :data-contrast-foreground="'--cm-color-' + foreground"
+              :data-contrast-background="'--cm-color-' + background"
+            />
+          </td>
+        </tr>
+      </CmTable>
     </section>
   </div>
 </template>

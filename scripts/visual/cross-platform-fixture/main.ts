@@ -59,6 +59,7 @@ if (
 const resolvedCase = casesById.get(caseId);
 if (!resolvedCase) throw new Error(`Cross-platform case ${caseId} is unavailable.`);
 const { componentCase, componentSlug } = resolvedCase;
+const datePickerLocale = componentSlug === 'date-picker' ? parameters.get('locale') : null;
 const componentName = `Cm${componentSlug
   .split('-')
   .map((part) => `${part[0]?.toUpperCase() ?? ''}${part.slice(1)}`)
@@ -68,6 +69,7 @@ if (!component && platform === 'vue') throw new Error(`Vue adapter ${componentNa
 
 function resolveVueProps(): Record<string, unknown> {
   const props = { ...componentCase.props };
+  if (datePickerLocale) props.locale = datePickerLocale;
   if (['input', 'select', 'date-picker', 'tabs', 'textarea'].includes(componentSlug) && Object.hasOwn(props, 'value')) {
     props.modelValue = props.value;
     delete props.value;
@@ -102,6 +104,7 @@ function staticSlot(contents: string, needsElementVNode: boolean): () => VNodeCh
 }
 
 document.documentElement.dataset.cmTheme = theme ?? 'light';
+if (datePickerLocale) document.documentElement.lang = datePickerLocale;
 root.dataset.visualCase = caseId;
 const behavior = parameters.get('behavior') === 'true';
 if (behavior) initializeBehavior(root, componentSlug);
@@ -183,6 +186,7 @@ if (platform === 'vue') {
   const response = await fetch(`/__visual/vanilla/${encodeURIComponent(caseId)}`);
   if (!response.ok) throw new Error(`Vanilla fixture endpoint returned ${response.status} for ${caseId}.`);
   root.innerHTML = await response.text();
+  if (datePickerLocale) root.querySelector('.cm-date-picker')?.setAttribute('data-cm-locale', datePickerLocale);
   const runtimeUrl = '/__visual/vanilla-runtime.js';
   const { createRuntime } = await import(/* @vite-ignore */ runtimeUrl);
   if (parameters.get('enhance') !== 'false') createRuntime().start(root);
