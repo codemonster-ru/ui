@@ -44,6 +44,7 @@ await Promise.all([
     resolve(root, 'examples/shared/showcase-component-reference.js'),
     resolve(output, 'showcase-component-reference.js'),
   ),
+  cp(resolve(root, 'examples/shared/showcase-layout-example.css'), resolve(output, 'showcase-layout-example.css')),
   cp(resolve(root, 'examples/shared/showcase-layout-recipes.js'), resolve(output, 'showcase-layout-recipes.js')),
   cp(resolve(source, 'showcase-layouts.js'), resolve(output, 'showcase-layouts.js')),
   cp(resolve(source, 'layout-example.js'), resolve(output, 'layout-example.js')),

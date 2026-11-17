@@ -275,7 +275,7 @@ async function checkNavigation(page, base, adapter, width) {
     }
   }
   await page.goto(base, { waitUntil: 'domcontentloaded' });
-  await page.getByRole('heading', { level: 1, name: 'Component states' }).waitFor();
+  await page.getByRole('heading', { level: 1, name: 'CodeMonster UI' }).waitFor();
   await page.evaluate(() => document.fonts.ready);
   const header = page.locator('.showcase-header');
   assert.equal(await header.getByRole('button', { name: /search|^menu$/i, includeHidden: true }).count(), 0);
@@ -321,6 +321,7 @@ async function checkNavigation(page, base, adapter, width) {
   });
   assert(lastLinkIsVisible, `${adapter}: keyboard focus scrolls the last link into view`);
   await scale.evaluate((style) => style.remove());
+  await checkHome(page, adapter);
   await checkSectionNavigation(page, adapter);
   await screenshot(page, `${adapter}--navigation--${width}--dark`);
 
@@ -345,8 +346,30 @@ async function checkNavigation(page, base, adapter, width) {
     .getByRole('navigation', { name: 'Breadcrumb' })
     .getByRole('link', { name: 'Visual matrix', exact: true })
     .click();
-  await page.getByRole('heading', { level: 1, name: 'Component states' }).waitFor();
+  await page.getByRole('heading', { level: 1, name: 'CodeMonster UI' }).waitFor();
   assert.equal(page.url(), url(base, 'core/'));
+}
+
+async function checkHome(page, adapter) {
+  const catalog = page.getByRole('region', { name: 'Component catalog' });
+  const links = await catalog
+    .locator('a')
+    .evaluateAll((anchors) => anchors.map((anchor) => new URL(anchor.href).pathname));
+  assert.equal(links.length, 64, `${adapter}: the catalog includes every documented component`);
+  assert.equal(new Set(links).size, links.length, `${adapter}: component links are unique`);
+  assert(links.includes('/components/confirm-dialog/') && links.includes('/components/theme-provider/'));
+  await page.getByRole('link', { name: 'Browse components', exact: true }).press('Enter');
+  assert.equal(new URL(page.url()).hash, '#component-catalog');
+  assert.equal(await catalog.evaluate((section) => section === document.activeElement), true);
+  const disclosures = catalog.locator('summary');
+  await disclosures.first().press('Enter');
+  assert.equal(await disclosures.first().evaluate((summary) => summary.parentElement.open), true);
+  await disclosures.first().press('Enter');
+  const feature = page.getByRole('region', { name: 'Live data table example' });
+  await feature.getByRole('button', { name: 'Sort Name ascending' }).click();
+  await feature.getByRole('button', { name: 'Sort Name descending' }).click();
+  assert.equal(await feature.locator('tbody tr').first().locator('td').first().textContent(), 'Zephyr');
+  await page.goBack();
 }
 
 async function checkSectionNavigation(page, adapter) {

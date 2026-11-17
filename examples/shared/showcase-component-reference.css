@@ -1,7 +1,7 @@
 .component-reference {
   display: grid;
   min-inline-size: 0;
-  gap: var(--cm-space-6);
+  gap: var(--cm-space-8);
   overflow-wrap: anywhere;
 }
 
@@ -19,13 +19,16 @@
 
 .reference-intro h1 {
   font-family: var(--cm-font-family-heading);
+  font-size: calc(2 * var(--cm-font-size-xl));
+  font-weight: var(--cm-font-weight-semibold);
+  line-height: var(--cm-line-height-tight);
 }
 
 .reference-content,
 .reference-sections {
   display: grid;
   min-inline-size: 0;
-  gap: var(--cm-space-6);
+  gap: var(--cm-space-8);
 }
 
 .reference-contents {
@@ -138,12 +141,14 @@
 }
 
 .reference-section + .reference-section {
-  padding-block-start: var(--cm-space-5);
+  padding-block-start: var(--cm-space-6);
   border-block-start: var(--cm-border-width) solid var(--cm-color-border-subtle);
 }
 
 .reference-section h2 {
   font-size: var(--cm-font-size-3xl);
+  font-weight: var(--cm-font-weight-semibold);
+  line-height: var(--cm-line-height-tight);
 }
 
 .reference-section :is(h2, h3)[tabindex='-1'] {
@@ -162,7 +167,18 @@
   gap: var(--cm-space-2);
 }
 
+.component-reference :is(.reference-example, .showcase-example) > :is(h3, p) {
+  margin: 0;
+  font-size: var(--cm-text-label-font-size);
+}
+
+:where(.component-reference) :is(.reference-example, .showcase-example) > h3 {
+  font-weight: var(--cm-font-weight-semibold);
+}
+
 .component-reference iframe {
+  --reference-open-height: 23rem;
+
   display: block;
   box-sizing: border-box;
   inline-size: 100%;
@@ -173,26 +189,36 @@
   background: var(--cm-color-background-surface);
 }
 
+.component-reference .reference-frame--compact {
+  max-inline-size: 28rem;
+}
+
+.component-reference .reference-frame--form {
+  max-inline-size: 40rem;
+}
+
 .component-reference .reference-frame--content {
   block-size: 15rem;
 }
 
-.component-reference .reference-frame--floating {
-  min-block-size: 23rem;
+.component-reference .reference-frame--modal {
+  max-inline-size: 48rem;
 }
 
 .component-reference .reference-frame--tall {
   min-block-size: 28rem;
 }
 
-/* The Select fixtures have two options and need less room than other floating previews. */
-.component-reference:has([data-reference-preview='select']) iframe {
-  min-block-size: 9rem;
+.component-reference :is(.reference-frame--modal, .reference-frame--calendar) {
+  --reference-open-height: 28rem;
 }
 
-/* The optional time controls need room below a six-week calendar. */
-.component-reference:has([data-reference-preview='date-picker']) iframe {
-  min-block-size: 28rem;
+.component-reference .reference-frame--short-popup {
+  --reference-open-height: 9rem;
+}
+
+.component-reference iframe[data-reference-expanded] {
+  min-block-size: var(--reference-open-height);
 }
 
 .reference-variants summary {
@@ -214,6 +240,7 @@
 .reference-variant-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  align-items: start;
   gap: var(--cm-space-4);
   margin-block-start: var(--cm-space-2);
 }
@@ -299,10 +326,6 @@
   border-block-start: var(--cm-border-width) solid var(--cm-color-border-subtle);
 }
 
-.reference-api-list > div:nth-child(odd) {
-  background: var(--cm-color-background-surface);
-}
-
 .reference-api-list dt {
   display: flex;
   flex-wrap: wrap;
@@ -338,6 +361,10 @@
 }
 
 @media (width <= 35rem) {
+  .reference-intro h1 {
+    font-size: calc(2 * var(--cm-font-size-md));
+  }
+
   .reference-api-list > div {
     grid-template-columns: minmax(0, 1fr);
   }

@@ -82,7 +82,29 @@ export function renderLayoutRecipes() {
   ].join('\n');
 }
 
-export function renderPageLayout(slug: 'error-layout' | 'auth-layout') {
+export function renderLayoutField(
+  id: string,
+  label: string,
+  attributes: string,
+  {
+    description = '',
+    revealButton = '',
+    required = false,
+  }: {
+    description?: string;
+    revealButton?: string;
+    required?: boolean;
+  } = {},
+) {
+  const input = `<input class="cm-input cm-input--md" id="${id}" ${attributes}${required ? ' required' : ''}${description ? ` aria-describedby="${id}-description"` : ''}${revealButton ? ' data-cm-input-control' : ''}>`;
+  const control = revealButton
+    ? `<div class="cm-input-wrap" data-cm-controller="input">${input}${revealButton}</div>`
+    : input;
+  return `<div class="cm-field"><label class="cm-field__label" for="${id}">${label}${required ? '<span class="cm-field__required" aria-hidden="true">*</span>' : ''}</label>
+    <div class="cm-field__control">${control}</div>${description ? `<p class="cm-field__description" id="${id}-description">${description}</p>` : ''}</div>`;
+}
+
+export function renderPageLayout(slug: 'error-layout' | 'auth-layout', revealButton = '') {
   if (slug === 'error-layout')
     return `<section class="cm-error-layout cm-page-layout--fill-viewport cm-page-layout--centered"><div class="cm-page-layout__container">
     <div class="cm-error-layout__panel cm-page-layout__panel cm-page-layout__panel--surface">
@@ -97,18 +119,19 @@ export function renderPageLayout(slug: 'error-layout' | 'auth-layout') {
       <header class="cm-auth-layout__header">
         <div class="cm-auth-layout__brand"><img src="./vueforge-logo-icon.svg" width="36" height="36" alt="VueForge"></div>
         <h1 class="cm-auth-layout__title">Sign in</h1>
-        <p class="cm-auth-layout__description">Use your account to continue.</p>
+        <p class="cm-auth-layout__description">Don't have an account? <a class="cm-link cm-link--underline-none" href="./core/" target="_parent">Click here to sign up</a></p>
       </header>
       <div class="cm-auth-layout__body">
         <form class="cm-stack" data-layout-auth>
-          <label class="cm-stack">Email <input class="cm-input cm-input--md" type="email" autocomplete="email" required></label>
-          <label class="cm-stack">Password <input class="cm-input cm-input--md" type="password" autocomplete="current-password" required></label>
-          <label class="cm-checkbox cm-checkbox--md"><input class="cm-checkbox__input" type="checkbox" data-layout-reveal><span class="cm-checkbox__control" aria-hidden="true"><span class="cm-checkbox__mark"></span></span><span class="cm-checkbox__content">Show password</span></label>
-          <label class="cm-checkbox cm-checkbox--md"><input class="cm-checkbox__input" type="checkbox"><span class="cm-checkbox__control" aria-hidden="true"><span class="cm-checkbox__mark"></span></span><span class="cm-checkbox__content">Remember me</span></label>
+          ${renderLayoutField('sign-in-email', 'Email', 'type="email" autocomplete="email"', { required: true })}
+          ${renderLayoutField('sign-in-password', 'Password', 'type="password" autocomplete="current-password"', { required: true, revealButton })}
+          <div class="cm-inline layout-example__sign-in-options"><label class="cm-checkbox cm-checkbox--md"><input class="cm-checkbox__input" type="checkbox"><span class="cm-checkbox__control" aria-hidden="true"><span class="cm-checkbox__mark"></span></span><span class="cm-checkbox__content">Remember me</span></label>
+            <a class="cm-link cm-link--underline-none" href="./core/" target="_parent">Forgot password?</a></div>
           <button class="cm-button cm-button--primary cm-button--md" type="submit"><span class="cm-button__label">Sign in</span></button>
-          <output aria-live="polite"></output>
+          <output aria-live="polite" hidden></output>
         </form>
       </div>
+      <footer class="cm-auth-layout__footer"><small>© 2026 VueForge. All rights reserved.</small></footer>
     </div>
   </div></main>`;
 }

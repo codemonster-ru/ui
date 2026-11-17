@@ -1,7 +1,7 @@
 import { renderShowcaseTabs } from './showcase-tabs.mts';
 import * as icons from '@codemonster-ru/ui-icons';
 import { iconCatalog, iconNames, type IconName } from '@codemonster-ru/ui-icons/catalog';
-import { colorsTitle, contrastRows, families, semanticSwatches } from './showcase-colors.mts';
+import { colorSections, colorsTitle, contrastRows, families, semanticSwatches } from './showcase-colors.mts';
 
 const themes = ['light', 'dark'] as const;
 const surfaces = [
@@ -34,7 +34,13 @@ export function renderColorScales() {
     )
     .join('');
   return `<div class="color-system">
-    <header class="color-system__hero"><h1>${colorsTitle}</h1></header>
+    <header class="showcase-intro color-system__intro">
+      <h1>${colorsTitle}</h1>
+      <p>Compare palette steps, see semantic roles in both themes, and check contrast pairs.</p>
+      <nav class="color-system__navigation" aria-label="On this page">${colorSections
+        .map(({ id, label }) => `<a class="cm-link" href="./colors/#${id}">${label}</a>`)
+        .join('')}</nav>
+    </header>
     <section class="color-system__section" aria-labelledby="primitive-scales">
       <div class="color-system__section-heading"><h2 id="primitive-scales">Primitive scales</h2></div>
       <div class="color-system__families">${palette}</div>
@@ -179,14 +185,14 @@ export function renderIconCatalog() {
         <div class="cm-table__scroll" role="region" tabindex="0" aria-label="${title} icon weights">
         <table class="cm-table cm-table--compact cm-table--column-dividers">
         <thead class="cm-table__head"><tr>
-          <th scope="col">Icon</th>
-          ${icons.cmIconVariants.map((variant) => `<th scope="col">${variant}</th>`).join('')}
+          <th class="catalog-name" scope="col">Icon</th>
+          ${icons.cmIconVariants.map((variant) => `<th class="catalog-weight" scope="col">${variant}</th>`).join('')}
         </tr></thead>
         <tbody class="cm-table__body">${system
           .map(
             (name) => `<tr ${entryAttributes(name)}>
-              <th scope="row"><div class="cm-inline cm-inline--nowrap"><strong>${name}</strong>${copyButton(name)}</div></th>
-              ${icons.cmIconVariants.map((variant) => `<td>${symbol(name, family, variant)}</td>`).join('')}
+              <th class="catalog-name" scope="row"><div class="catalog-entry"><code>${name}</code>${copyButton(name)}</div></th>
+              ${icons.cmIconVariants.map((variant) => `<td class="catalog-weight">${symbol(name, family, variant)}</td>`).join('')}
             </tr>`,
           )
           .join('')}</tbody></table></div>
@@ -195,7 +201,10 @@ export function renderIconCatalog() {
     </section>`;
   }
   return `<section class="icon-catalog" id="icon-catalog" aria-labelledby="icon-catalog-heading">
-    <header class="page-heading"><h1 id="icon-catalog-heading">System and brand icons</h1></header>
+    <header class="showcase-intro catalog-intro">
+      <h1 id="icon-catalog-heading">System and brand icons</h1>
+      <p>Compare four weights in each family and copy icon names for use in code.</p>
+    </header>
     <div class="catalog-toolbar">
       <div class="cm-field catalog-search">
         <label class="cm-field__label" for="icon-catalog-search">Find an icon</label>
@@ -207,6 +216,7 @@ export function renderIconCatalog() {
         </div></div>
       </div>
       <p role="status"><span data-icon-count data-total="${iconNames.length}">${iconNames.length} of ${iconNames.length} icons</span><span data-icon-copy-status></span></p>
+      <a class="cm-link catalog-brands-link" href="./icons/#brand-icons-heading">Brand icons</a>
     </div>
     ${renderShowcaseTabs('catalog', 'Icon families', [
       { title: 'Classic', panel: familyPanel('classic', 'Classic') },
@@ -216,8 +226,10 @@ export function renderIconCatalog() {
       <header class="family-heading"><h2 id="brand-icons-heading">Brands</h2></header>
       <div class="brand-grid">${brands
         .map(
-          (name) => `<article class="cm-panel" ${entryAttributes(name)}>${symbol(name, 'classic', 'solid')}
-            <strong>${name}</strong>${copyButton(name)}</article>`,
+          (
+            name,
+          ) => `<article class="cm-panel catalog-brand" ${entryAttributes(name)}>${symbol(name, 'classic', 'solid')}
+            <code>${name}</code>${copyButton(name)}</article>`,
         )
         .join('')}</div>
       <p class="catalog-empty" data-icon-empty hidden>No brand icons match.</p>

@@ -14,12 +14,14 @@ import { iconIntro, renderOperations } from '../../shared/showcase-reference.mts
 import { actionMatrices, buttonMatrices } from '../../shared/showcase-matrices.mts';
 import type { CmButtonProps, CmIconButtonProps, CmLinkProps } from '@codemonster-ru/ui-vue';
 import typography from '../../shared/showcase-typography.html?raw';
+import projects from '../../../contracts/data-table/cases/default.case.json';
+import { renderComponentCatalog, renderHomeCopy } from '../../shared/showcase-home.mts';
 import { defineAsyncComponent, nextTick, onUnmounted, ref, type Component } from 'vue';
 import { CmRuntime, createCmTabsController } from '@codemonster-ru/ui-runtime';
 import { mountOperations } from '../../shared/showcase-reference.js';
 import { gear, moon, sun } from '@codemonster-ru/ui-icons';
 import LayoutShowcase from './LayoutShowcase.vue';
-import { CmBadge, CmButton, CmIcon, CmIconButton, CmLink, useCmTheme } from '@codemonster-ru/ui-vue';
+import { CmBadge, CmButton, CmDataTable, CmIcon, CmIconButton, CmLink, useCmTheme } from '@codemonster-ru/ui-vue';
 import {
   coreShowcaseGroups,
   renderCoreSectionNavigation,
@@ -105,12 +107,38 @@ const { theme: themeMode, resolvedTheme, setTheme: selectTheme, toggleTheme } = 
     :class="{ 'showcase-layouts': currentPage === 'layouts' }"
     tabindex="-1"
   >
-    <header v-if="page.title" class="showcase-intro">
+    <header v-if="currentPage === 'core'" class="showcase-intro showcase-home">
+      <!-- eslint-disable-next-line vue/no-v-html -- Shared showcase copy uses repository-owned links. -->
+      <div class="showcase-home__copy" v-html="renderHomeCopy('', '/')" />
+      <section class="showcase-home__demo" aria-label="Live data table example">
+        <div class="showcase-home__demo-heading">
+          <p>Sortable table</p>
+          <CmLink href="/components/data-table/" underline="hover">View DataTable</CmLink>
+        </div>
+        <CmDataTable v-bind="projects.props" id="showcase-projects" sorting-mode="client" />
+      </section>
+    </header>
+    <header v-else-if="page.title" class="showcase-intro">
       <h1>{{ page.title }}</h1>
       <!-- eslint-disable-next-line vue/no-v-html -- Shared navigation uses repository-owned route metadata. -->
       <div v-if="sectionNavigation" v-html="sectionNavigation" />
     </header>
     <template v-if="currentPage === 'core'">
+      <section
+        id="component-catalog"
+        class="showcase-directory"
+        tabindex="-1"
+        aria-labelledby="showcase-directory-title"
+      >
+        <h2 id="showcase-directory-title">Component catalog</h2>
+        <!-- eslint-disable-next-line vue/no-v-html -- Component links come from the shared showcase inventory. -->
+        <div class="showcase-directory__groups" v-html="renderComponentCatalog('/')" />
+      </section>
+      <header class="showcase-state-index">
+        <h2>Component states</h2>
+        <!-- eslint-disable-next-line vue/no-v-html -- Shared navigation uses repository-owned route metadata. -->
+        <div v-html="sectionNavigation" />
+      </header>
       <CoreTheme :mode="themeMode" :resolved="resolvedTheme" @select="selectTheme" @toggle="toggleTheme" />
       <section id="typography" class="showcase-group" tabindex="-1">
         <header>

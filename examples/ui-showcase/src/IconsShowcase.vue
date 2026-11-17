@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue';
 import * as icons from '@codemonster-ru/ui-icons';
 import { iconCatalog, iconNames, type IconName } from '@codemonster-ru/ui-icons/catalog';
-import { CmButton, CmField, CmIcon, CmInline, CmInput, CmTable, CmTabs } from '@codemonster-ru/ui-vue';
+import { CmButton, CmField, CmIcon, CmInput, CmLink, CmTable, CmTabs } from '@codemonster-ru/ui-vue';
 import { vScrollableTable } from './scrollable-table';
 
 const showcaseVariants = icons.cmIconVariants;
@@ -35,8 +35,9 @@ async function copyIconName(name: string) {
 
 <template>
   <section id="icon-catalog" class="icon-catalog" aria-labelledby="icon-catalog-heading">
-    <header class="page-heading">
+    <header class="showcase-intro catalog-intro">
       <h1 id="icon-catalog-heading">System and brand icons</h1>
+      <p>Compare four weights in each family and copy icon names for use in code.</p>
     </header>
 
     <div class="catalog-toolbar">
@@ -47,6 +48,7 @@ async function copyIconName(name: string) {
         {{ filteredSystemIconNames.length + filteredBrandIconNames.length }} of {{ iconNames.length }} icons
         <span v-if="copyStatus">· {{ copyStatus }}</span>
       </p>
+      <CmLink class="catalog-brands-link" href="#brand-icons-heading">Brand icons</CmLink>
     </div>
 
     <CmTabs id="icon-catalog-family" :items="familyTabs" default-value="classic">
@@ -59,14 +61,16 @@ async function copyIconName(name: string) {
           <CmTable v-scrollable-table="iconFamily.title + ' icon weights'" density="compact" column-dividers>
             <template #header>
               <tr>
-                <th scope="col">Icon</th>
-                <th v-for="variant in showcaseVariants" :key="variant" scope="col">{{ variant }}</th>
+                <th class="catalog-name" scope="col">Icon</th>
+                <th v-for="variant in showcaseVariants" :key="variant" class="catalog-weight" scope="col">
+                  {{ variant }}
+                </th>
               </tr>
             </template>
             <tr v-for="iconName in filteredSystemIconNames" :key="iconName">
-              <th scope="row">
-                <CmInline :wrap="false">
-                  <strong>{{ iconName }}</strong>
+              <th class="catalog-name" scope="row">
+                <div class="catalog-entry">
+                  <code>{{ iconName }}</code>
                   <CmButton
                     variant="ghost"
                     size="sm"
@@ -75,9 +79,9 @@ async function copyIconName(name: string) {
                   >
                     Copy
                   </CmButton>
-                </CmInline>
+                </div>
               </th>
-              <td v-for="variant in showcaseVariants" :key="variant">
+              <td v-for="variant in showcaseVariants" :key="variant" class="catalog-weight">
                 <CmIcon :icon="icons[iconName]" :family="iconFamily.id" :variant="variant" />
               </td>
             </tr>
@@ -92,9 +96,9 @@ async function copyIconName(name: string) {
         <h2 id="brand-icons-heading">Brands</h2>
       </header>
       <div v-if="filteredBrandIconNames.length" class="brand-grid">
-        <article v-for="iconName in filteredBrandIconNames" :key="iconName" class="cm-panel">
+        <article v-for="iconName in filteredBrandIconNames" :key="iconName" class="cm-panel catalog-brand">
           <CmIcon :icon="icons[iconName]" variant="solid" />
-          <strong>{{ iconName }}</strong>
+          <code>{{ iconName }}</code>
           <CmButton
             variant="ghost"
             size="sm"

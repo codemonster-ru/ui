@@ -123,8 +123,24 @@ const layoutPackages = new Set([
   'sidebar-area',
 ]);
 const modalComponents = new Set(['dialog', 'drawer', 'command-palette']);
-const floatingComponents = new Set(['date-picker', 'dropdown', 'menu-bar', 'popover', 'tooltip']);
-const tallPreviews = new Set([...modalComponents, ...layoutPackages]);
+const floatingComponents = new Set(['date-picker', 'dropdown', 'menu-bar', 'popover', 'select', 'tooltip']);
+const compactPreviews = new Set([
+  'avatar',
+  'badge',
+  'button',
+  'checkbox',
+  'icon',
+  'icon-button',
+  'link',
+  'progress-spinner',
+  'radio',
+  'switch',
+  'tag',
+  'theme-switch',
+  'tooltip',
+]);
+const formPreviews = new Set(['date-picker', 'field', 'fieldset', 'form-layout', 'input', 'select', 'textarea']);
+const contentPreviews = new Set(['table', 'data-table', 'form-layout', 'nav-menu']);
 const docsPath = 'https://github.com/codemonster-ru/ui/blob/main';
 const preferredCases: Record<string, string> = {
   avatar: 'label',
@@ -186,9 +202,17 @@ function guideLink(path: string, label = 'Developer guide') {
 }
 
 export function referenceFrameClass(slug: string) {
-  if (tallPreviews.has(slug)) return ' reference-frame--tall';
-  if (['table', 'data-table', 'form-layout', 'nav-menu'].includes(slug)) return ' reference-frame--content';
-  return floatingComponents.has(slug) ? ' reference-frame--floating' : '';
+  if (layoutPackages.has(slug)) return ' reference-frame--tall';
+  if (modalComponents.has(slug)) return ' reference-frame--modal';
+
+  const modifiers = [];
+  if (compactPreviews.has(slug)) modifiers.push('compact');
+  if (formPreviews.has(slug)) modifiers.push('form');
+  if (contentPreviews.has(slug)) modifiers.push('content');
+  if (floatingComponents.has(slug)) modifiers.push('floating');
+  if (slug === 'date-picker') modifiers.push('calendar');
+  if (slug === 'select' || slug === 'tooltip') modifiers.push('short-popup');
+  return modifiers.map((modifier) => ` reference-frame--${modifier}`).join('');
 }
 
 export function primaryReferenceCase(slug: string, cases: ReferenceCase[]) {
@@ -198,6 +222,7 @@ export function primaryReferenceCase(slug: string, cases: ReferenceCase[]) {
 export function referenceCaseDescription({ id, description }: ReferenceCase) {
   if (id === 'dialog-default') return 'A confirmation dialog for deleting a project.';
   if (id === 'drawer-default') return 'A drawer for filter controls.';
+  if (id === 'tooltip-default') return 'Hover over Save or focus it with the keyboard to show the tooltip.';
   return description;
 }
 

@@ -9,11 +9,12 @@ import {
   CmIcon,
   CmIconButton,
   CmInput,
+  CmLink,
   CmTable,
   CmTag,
 } from '@codemonster-ru/ui-vue';
 import { fillContrastTable } from '../../shared/showcase-reference.js';
-import { colorsTitle, contrastRows, families, semanticSwatches } from '../../shared/showcase-colors.mts';
+import { colorSections, colorsTitle, contrastRows, families, semanticSwatches } from '../../shared/showcase-colors.mts';
 import '../../shared/showcase-colors.css';
 import { vScrollableTable } from './scrollable-table';
 
@@ -47,8 +48,12 @@ async function copySample(mode: string, event: MouseEvent) {
 
 <template>
   <div class="color-system">
-    <header class="color-system__hero">
+    <header class="showcase-intro color-system__intro">
       <h1>{{ colorsTitle }}</h1>
+      <p>Compare palette steps, see semantic roles in both themes, and check contrast pairs.</p>
+      <nav class="color-system__navigation" aria-label="On this page">
+        <CmLink v-for="{ id, label } in colorSections" :key="id" :href="'#' + id">{{ label }}</CmLink>
+      </nav>
     </header>
 
     <section class="color-system__section" aria-labelledby="primitive-scales">

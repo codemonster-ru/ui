@@ -102,12 +102,10 @@ if (setup) {
 }
 
 if (form) {
-  const password = form.querySelector('input[autocomplete="current-password"]');
-  form.querySelector('[data-layout-reveal]').addEventListener('change', ({ target }) => {
-    password.type = target.checked ? 'text' : 'password';
-  });
   form.addEventListener('submit', (event) => {
     event.preventDefault();
-    form.querySelector('output').textContent = 'Sign-in preview submitted.';
+    const output = form.querySelector('output');
+    output.textContent = 'Sign-in preview submitted.';
+    output.hidden = false;
   });
 }

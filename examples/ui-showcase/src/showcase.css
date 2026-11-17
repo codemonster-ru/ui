@@ -1,7 +1,3 @@
-.showcase-core .showcase-group:where(:not(.layout-guide-entry)) {
-  margin-block-end: var(--cm-space-4);
-}
-
 .core-matrix-cell > p,
 .core-form-stack > p,
 .core-avatar-person p {
