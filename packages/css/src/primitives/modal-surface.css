@@ -21,11 +21,17 @@
 }
 
 :is(.cm-dialog__footer, .cm-drawer__footer) {
+  flex-wrap: wrap;
   justify-content: flex-end;
 }
 
 :is(.cm-dialog__title, .cm-drawer__title) {
+  min-inline-size: 0;
   flex: 1;
+  font-size: var(--cm-font-size-2xl);
+  font-weight: var(--cm-font-weight-semibold);
+  line-height: var(--cm-line-height-tight);
+  overflow-wrap: anywhere;
 }
 
 :is(.cm-dialog__title, .cm-dialog__description, .cm-drawer__title, .cm-drawer__description) {
@@ -39,10 +45,8 @@
 }
 
 :is(
-  .cm-dialog__title,
   .cm-dialog__description,
   .cm-dialog__body,
-  .cm-drawer__title,
   .cm-drawer__description,
   .cm-drawer__body
 ) {

@@ -275,8 +275,11 @@ const menuBarExamples = [
   <CoreMatrix title="Navigation visual QA matrix" :columns="2">
     <div class="core-matrix-cell">
       <h4>Breadcrumbs</h4>
-      <CmBreadcrumbs :items="links"><template #separator>›</template></CmBreadcrumbs>
+      <CmBreadcrumbs :items="links" aria-label="Library breadcrumb with chevrons"
+        ><template #separator>›</template></CmBreadcrumbs
+      >
       <CmBreadcrumbs
+        aria-label="Field geometry breadcrumb"
         :items="[
           links[0],
           { label: 'Core', href: '#navigation' },
@@ -286,7 +289,7 @@ const menuBarExamples = [
       >
         <template #separator>›</template>
       </CmBreadcrumbs>
-      <CmBreadcrumbs :items="links" />
+      <CmBreadcrumbs :items="links" aria-label="Library breadcrumb" />
     </div>
     <div class="core-matrix-cell core-matrix-wide">
       <h4>Page header</h4>
@@ -345,7 +348,13 @@ const menuBarExamples = [
     </div>
     <div class="core-matrix-cell">
       <h4>Navigation menu and menu bar</h4>
-      <CmNavMenu v-model:value="selectedMenu" variant="inline" :items="menu" class="core-nav-plain" />
+      <CmNavMenu
+        v-model:value="selectedMenu"
+        variant="inline"
+        :items="menu"
+        class="core-nav-plain"
+        aria-label="Inline navigation"
+      />
       <CmNavMenu v-model:value="pillMenu" variant="pills" :items="menu" aria-label="Pill navigation" />
       <CmNavMenu
         v-model="guideValue"
@@ -380,14 +389,8 @@ const menuBarExamples = [
           />
         </div>
         <div class="core-matrix-cell">
-          <h5>Wrapping labels</h5>
-          <CmNavMenu
-            v-model:value="wrappingSelected"
-            variant="sidebar"
-            :items="wrappingMenu"
-            :compact="false"
-            class="core-nav-wrapping"
-          />
+          <h5>Long labels</h5>
+          <CmNavMenu v-model:value="wrappingSelected" variant="sidebar" :items="wrappingMenu" :compact="false" />
         </div>
       </div>
       <div v-for="example in menuBarExamples" :key="example.label">
@@ -408,7 +411,7 @@ const menuBarExamples = [
     <div class="core-matrix-cell">
       <h4>Table of contents</h4>
       <CmTableOfContents :items="sections" active-id="actions" />
-      <CmTableOfContents :items="sections" active-id="actions" variant="pills" />
+      <CmTableOfContents :items="sections" active-id="actions" variant="pills" aria-label="Pill table of contents" />
     </div>
   </CoreMatrix>
 </template>

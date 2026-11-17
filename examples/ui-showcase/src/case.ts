@@ -1,4 +1,5 @@
 import { followShowcaseFrameTheme, saveShowcaseTheme } from '../../shared/showcase-theme.js';
+import { fitShowcaseFrame } from '../../shared/showcase-component-reference.js';
 import { showcaseCaseVariants, showcaseVariantValue } from '../../shared/showcase-matrices.mts';
 import * as UiIcons from '@codemonster-ru/ui-icons';
 import * as UiLayouts from '@codemonster-ru/ui-layouts';
@@ -9,7 +10,7 @@ import { createApp, createStaticVNode, h, reactive, type Component, type VNodeCh
 import '@codemonster-ru/ui-tokens/tokens.css';
 import '@codemonster-ru/ui-css/fonts.css';
 import '@codemonster-ru/ui-css/styles.css';
-import '../../shared/showcase-shell.css';
+
 interface ComponentCase {
   attributes?: Record<string, boolean | number | string | null>;
   id: string;
@@ -29,7 +30,8 @@ const casesById = new Map(
   }),
 );
 const components = { ...UiVue, ...UiLayouts } as Record<string, Component>;
-const caseId = new URLSearchParams(location.search).get('case');
+const parameters = new URLSearchParams(location.search);
+const caseId = parameters.get('case');
 const resolvedCase = casesById.get(caseId ?? '');
 const root = document.querySelector<HTMLElement>('#visual-root');
 if (!root || !resolvedCase) throw new Error('Unknown Vue showcase case.');
@@ -77,11 +79,6 @@ const slots = Object.fromEntries(
   Object.entries(componentCase.slots).map(([name, contents]) => [name, staticSlot(contents)]),
 );
 const props = reactive(resolveVueProps());
-const parameters = new URLSearchParams(location.search);
-if (parameters.get('view') === 'reference') {
-  root.classList.add('showcase-reference-demo');
-  if (caseId === 'data-table-default') props.sortingMode = 'client';
-}
 const basename = componentCase.id.slice(componentSlug.length + 1);
 for (const { prop, value } of showcaseCaseVariants(componentSlug, basename)) {
   if (parameters.get(prop) === value) props[prop] = showcaseVariantValue(value);
@@ -111,19 +108,13 @@ createApp({
     ...(modal
       ? [
           h(
-            'button',
+            UiVue.CmButton,
             {
-              type: 'button',
-              class: 'cm-button cm-button--primary cm-button--md',
               onClick: () => {
                 props.open = true;
               },
             },
-            'Open ' +
-              componentSlug
-                .split('-')
-                .map((part) => part[0].toUpperCase() + part.slice(1))
-                .join(''),
+            () => `Open ${componentName.slice(2)}`,
           ),
         ]
       : []),
@@ -131,6 +122,7 @@ createApp({
   ],
 }).mount(root);
 root.inert = false;
+if (window.frameElement?.matches('.reference-frame')) fitShowcaseFrame(root);
 root.addEventListener('submit', (event) => event.preventDefault());
 root.addEventListener('click', (event) => {
   if (event.target instanceof Element && event.target.closest('a[href^="/"]')) event.preventDefault();

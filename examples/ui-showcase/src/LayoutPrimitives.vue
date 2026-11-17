@@ -28,8 +28,7 @@ const grids = [
 <template>
   <section class="showcase-group layout-guide-entry" aria-labelledby="demo-container">
     <header>
-      <h2 id="demo-container">CmContainer</h2>
-      <p>Constrains content width and supplies the standard responsive page gutter.</p>
+      <h3 id="demo-container">CmContainer</h3>
     </header>
     <CmSection surface>
       <CmContainer>Use container as the default content boundary inside a full-width section.</CmContainer>
@@ -38,8 +37,7 @@ const grids = [
 
   <section class="showcase-group layout-guide-entry" aria-labelledby="demo-stack">
     <header>
-      <h2 id="demo-stack">CmStack</h2>
-      <p>Arranges related items vertically with a consistent, configurable gap.</p>
+      <h3 id="demo-stack">CmStack</h3>
     </header>
     <div class="layout-sample-pair">
       <CmSection v-for="(items, index) in stacks" :key="items[0]" surface>
@@ -52,8 +50,7 @@ const grids = [
 
   <section class="showcase-group layout-guide-entry" aria-labelledby="demo-inline">
     <header>
-      <h2 id="demo-inline">CmInline</h2>
-      <p>Arranges compact items horizontally and optionally wraps them onto new rows.</p>
+      <h3 id="demo-inline">CmInline</h3>
     </header>
     <div class="layout-sample-pair">
       <CmSection surface>
@@ -71,8 +68,7 @@ const grids = [
 
   <section class="showcase-group layout-guide-entry" aria-labelledby="demo-section">
     <header>
-      <h2 id="demo-section">CmSection</h2>
-      <p>Creates a semantic content region with optional surface treatment and inset.</p>
+      <h3 id="demo-section">CmSection</h3>
     </header>
     <div class="layout-sample-pair">
       <CmSection><strong>surface: false</strong></CmSection>
@@ -82,8 +78,7 @@ const grids = [
 
   <section class="showcase-group layout-guide-entry" aria-labelledby="demo-grid">
     <header>
-      <h2 id="demo-grid">CmGrid</h2>
-      <p>Builds a responsive auto-fitting grid for cards, summaries, and listings.</p>
+      <h3 id="demo-grid">CmGrid</h3>
     </header>
     <CmStack>
       <CmSection v-for="items in grids" :key="items[0]" surface>
@@ -96,8 +91,7 @@ const grids = [
 
   <section class="showcase-group layout-guide-entry" aria-labelledby="demo-foundation">
     <header>
-      <h2 id="demo-foundation">Responsive foundation</h2>
-      <p>Inspect shared breakpoints and values that react to the current viewport.</p>
+      <h3 id="demo-foundation">Responsive foundation</h3>
     </header>
     <div class="layout-sample-pair">
       <CmSection surface>

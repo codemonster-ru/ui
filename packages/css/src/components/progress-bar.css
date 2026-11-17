@@ -1,7 +1,7 @@
 .cm-progress-bar {
   --cm-progress-bar-height: 0.5rem;
   --cm-progress-bar-value-color: var(--cm-color-interactive-primary-background);
-  --cm-progress-bar-label-color: var(--cm-color-interactive-primary-foreground);
+  --cm-progress-bar-label-color: var(--cm-color-text-secondary);
 
   position: relative;
   overflow: hidden;
@@ -35,49 +35,71 @@
 
 .cm-progress-bar--neutral {
   --cm-progress-bar-value-color: var(--cm-color-icon-secondary);
-  --cm-progress-bar-label-color: var(--cm-color-text-inverse);
 }
 
 .cm-progress-bar--success {
   --cm-progress-bar-value-color: var(--cm-color-status-success-solid-background);
-  --cm-progress-bar-label-color: var(--cm-color-status-success-solid-foreground);
 }
 
 .cm-progress-bar--info {
   --cm-progress-bar-value-color: var(--cm-color-status-info-solid-background);
-  --cm-progress-bar-label-color: var(--cm-color-status-info-solid-foreground);
 }
 
 .cm-progress-bar--warning {
   --cm-progress-bar-value-color: var(--cm-color-status-warning-active-background);
-  --cm-progress-bar-label-color: var(--cm-color-status-warning-solid-foreground);
 }
 
 .cm-progress-bar--help {
   --cm-progress-bar-value-color: var(--cm-color-status-help-solid-background);
-  --cm-progress-bar-label-color: var(--cm-color-status-help-solid-foreground);
 }
 
 .cm-progress-bar--danger {
   --cm-progress-bar-value-color: var(--cm-color-status-danger-solid-background);
-  --cm-progress-bar-label-color: var(--cm-color-status-danger-solid-foreground);
 }
 
 .cm-progress-bar--contrast {
   --cm-progress-bar-value-color: var(--cm-color-background-inverse);
-  --cm-progress-bar-label-color: var(--cm-color-text-inverse);
+}
+
+/* Keep the value legible at every percentage without changing the requested rail height. */
+.cm-progress-bar:has(.cm-progress-bar__label) {
+  --cm-progress-bar-label-space: calc(4ch + var(--cm-space-2));
+
+  display: flex;
+  block-size: auto;
+  min-block-size: max(var(--cm-progress-bar-height), 1lh);
+  align-items: center;
+  padding-inline-end: var(--cm-progress-bar-label-space);
+  overflow: visible;
+  isolation: isolate;
+  background: transparent;
+  font-size: var(--cm-font-size-sm);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--cm-font-weight-medium);
+  line-height: var(--cm-line-height-tight);
+}
+
+.cm-progress-bar:has(.cm-progress-bar__label)::before {
+  position: absolute;
+  z-index: -1;
+  inset-block: 0;
+  inset-inline: 0 var(--cm-progress-bar-label-space);
+  block-size: var(--cm-progress-bar-height);
+  margin-block: auto;
+  border-radius: var(--cm-radius-round);
+  background: var(--cm-color-background-surface-disabled);
+  content: '';
+}
+
+.cm-progress-bar:where(:has(.cm-progress-bar__label)) .cm-progress-bar__value {
+  block-size: var(--cm-progress-bar-height);
+  border-radius: var(--cm-radius-round);
 }
 
 .cm-progress-bar__label {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-inline-size: 100%;
-  padding-inline: var(--cm-space-1);
+  position: absolute;
+  inset-inline-end: 0;
   color: var(--cm-progress-bar-label-color);
-  font-size: 0.625rem;
-  font-weight: var(--cm-font-weight-regular);
-  line-height: 1;
   white-space: nowrap;
 }
 

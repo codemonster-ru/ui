@@ -1,31 +1,35 @@
 #!/bin/sh
-set -u
+set -eu
 
 root_dir=$(cd "$(dirname "$0")/../.." && pwd)
-tmp_dir=$(mktemp -d "${TMPDIR:-/tmp}/vueforge-test-without-dist.XXXXXX")
-rc=0
+tmp_dir=$(mktemp -d "${TMPDIR:-/tmp}/codemonster-ui-test-without-dist.XXXXXX")
+build_started=false
 
 restore_dist() {
+  trap '' INT TERM
   for workspace_dir in "$root_dir"/packages/* "$root_dir"/examples/*; do
     if [ ! -f "$workspace_dir/package.json" ]; then
       continue
     fi
 
     relative_dir=${workspace_dir#"$root_dir"/}
-    if [ -d "$workspace_dir/dist" ]; then
+    saved_dist="$tmp_dir/$relative_dir/dist"
+    if [ -d "$workspace_dir/dist" ] && { [ "$build_started" = true ] || [ -d "$saved_dist" ]; }; then
       mkdir -p "$tmp_dir/generated/$relative_dir"
       mv "$workspace_dir/dist" "$tmp_dir/generated/$relative_dir/dist"
     fi
 
-    if [ -d "$tmp_dir/$relative_dir/dist" ]; then
-      mv "$tmp_dir/$relative_dir/dist" "$workspace_dir/dist"
+    if [ -d "$saved_dist" ]; then
+      mv "$saved_dist" "$workspace_dir/dist"
     fi
   done
 
   rm -rf "$tmp_dir"
 }
 
-trap restore_dist EXIT INT TERM
+trap restore_dist EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
 
 for workspace_dir in "$root_dir"/packages/* "$root_dir"/examples/*; do
   if [ ! -f "$workspace_dir/package.json" ] || [ ! -d "$workspace_dir/dist" ]; then
@@ -37,11 +41,10 @@ for workspace_dir in "$root_dir"/packages/* "$root_dir"/examples/*; do
   mv "$workspace_dir/dist" "$tmp_dir/$relative_dir/dist"
 done
 
-cd "$root_dir" || exit 1
+cd "$root_dir"
 
 # A workspace may test a sibling package's built public entry. Rebuild from empty dist directories
 # in release order before npm runs the workspace tests in its own order.
-npm run build:ui || exit $?
-npm run test --workspaces --if-present || rc=$?
-
-exit "$rc"
+build_started=true
+npm run build
+npm run test --workspaces --if-present --include-workspace-root=false

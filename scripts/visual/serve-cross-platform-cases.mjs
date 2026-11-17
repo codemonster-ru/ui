@@ -1,3 +1,4 @@
+import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { build } from 'esbuild';
 import { createServer } from 'vite';
@@ -18,6 +19,7 @@ if (!Number.isInteger(port) || port < 1 || port > 65_535) {
 const collected = collectComponentCases(resolve(import.meta.dirname, '../../contracts'));
 if (collected.errors.length > 0) throw new Error(collected.errors.join('\n'));
 const casesById = new Map(collected.cases.map((componentCase) => [componentCase.id, componentCase]));
+const avatarImage = await readFile(resolve(import.meta.dirname, '../../examples/vanilla/avatar.png'));
 const vanillaRuntime = (
   await build({
     entryPoints: [resolve(import.meta.dirname, '../../examples/vanilla/runtime.mjs')],
@@ -36,6 +38,10 @@ const server = await createServer({
     {
       name: 'codemonster-cross-platform-vanilla-fixtures',
       configureServer(viteServer) {
+        viteServer.middlewares.use('/avatar.png', (_request, response) => {
+          response.setHeader('Content-Type', 'image/png');
+          response.end(avatarImage);
+        });
         viteServer.middlewares.use('/__visual/vanilla-runtime.js', (_request, response) => {
           response.setHeader('Content-Type', 'text/javascript; charset=utf-8');
           response.end(vanillaRuntime);

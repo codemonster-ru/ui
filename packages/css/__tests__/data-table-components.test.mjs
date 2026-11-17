@@ -25,14 +25,14 @@ test('preserves responsive table and interactive data-table hooks', async () => 
   assert.match(dataTable, /@media \(forced-colors: active\)/u);
 });
 
-test('preserves the fd793696 table geometry through CodeMonster tokens', async () => {
+test('uses the shared type and spacing roles and retains intrinsic table layout', async () => {
   const [table, dataTable] = await Promise.all(
     ['table', 'data-table'].map((slug) => readFile(new URL(`../src/components/${slug}.css`, import.meta.url), 'utf8')),
   );
 
   for (const css of [table, dataTable]) {
-    assert.match(css, /min-inline-size: calc\(var\(--cm-space-16\) \* 9\)/u);
     assert.match(css, /font-size: var\(--cm-font-size-xl\)/u);
+    assert.match(css, /font-variant-numeric: tabular-nums/u);
     assert.match(css, /font-weight: var\(--cm-font-weight-regular\)/u);
     assert.match(css, /padding: var\(--cm-field-padding-lg\)/u);
     assert.match(css, /padding: var\(--cm-field-padding-md\)/u);
@@ -44,7 +44,13 @@ test('preserves the fd793696 table geometry through CodeMonster tokens', async (
   assert.match(table, /\.cm-table__foot > tr:first-child > td/u);
   assert.match(dataTable, /\.cm-data-table__body > tr \+ tr > td/u);
   assert.match(dataTable, /inline-size: calc\(var\(--cm-space-4\) \+ var\(--cm-space-1\)\)/u);
-  assert.doesNotMatch(dataTable, /\.cm-data-table__row--selected\s*\{[^}]*background:/u);
+  assert.doesNotMatch(table, /\.cm-table\s*\{[^}]*min-inline-size:/u);
+  assert.doesNotMatch(dataTable, /\.cm-data-table__table\s*\{[^}]*min-inline-size:/u);
+  assert.match(
+    dataTable,
+    /\.cm-data-table__table\[data-cm-data-table-fixed-columns\]\s*\{[^}]*min-inline-size: calc\(var\(--cm-space-16\) \* 9\)/u,
+  );
+  assert.match(dataTable, /\.cm-data-table__row--selected\s*\{[^}]*var\(--cm-color-background-surface-selected\)/u);
   assert.match(
     dataTable,
     /min-block-size: calc\(var\(--cm-control-height-sm\) \+ var\(--cm-field-padding-block-lg\) \* 2\)/u,

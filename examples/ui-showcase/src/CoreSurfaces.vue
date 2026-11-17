@@ -16,6 +16,7 @@ import { VfDataTable, VfDataTableColumnChooser, type VfDataTableSort } from '@co
 import { computed, ref } from 'vue';
 import CoreMatrix from './CoreMatrix.vue';
 import CoreResizableTable from './CoreResizableTable.vue';
+import { vScrollableTable } from './scrollable-table';
 
 const sortableColumns = [
   { key: 'member', header: 'Member', sortable: true },
@@ -173,7 +174,7 @@ const pageSize = ref(3);
     </div>
     <div v-for="{ title, props, headers, rows: tableRows } in tableExamples" :key="title" class="core-matrix-cell">
       <h4>Table · {{ title }}</h4>
-      <CmTable v-bind="props" :class="{ 'core-scroll-table': props.stickyHeader }">
+      <CmTable v-scrollable-table="'Table · ' + title" v-bind="props">
         <template #header
           ><tr>
             <th v-for="label in headers" :key="label" scope="col">{{ label }}</th>
@@ -225,6 +226,7 @@ const pageSize = ref(3);
           </div>
         </div>
         <CmDataTable
+          v-scrollable-table="'Reorderable team roster'"
           id="core-data-column-order"
           caption="Reorderable team roster"
           :columns="orderedColumns"
@@ -235,7 +237,7 @@ const pageSize = ref(3);
       </div>
       <div v-if="id === 'sticky'" class="core-matrix-cell">
         <h4>Table · slots and footer</h4>
-        <CmTable>
+        <CmTable v-scrollable-table="'Team workload with grouped data'">
           <template #header>
             <tr>
               <th scope="col">Member</th>
@@ -264,7 +266,7 @@ const pageSize = ref(3);
       </div>
       <div v-if="id === 'sticky'" class="core-matrix-cell">
         <h4>Table · expandable rows</h4>
-        <CmTable striped>
+        <CmTable v-scrollable-table="'Expandable team roster'" striped>
           <template #header
             ><tr>
               <th scope="col">Member</th>
@@ -296,7 +298,7 @@ const pageSize = ref(3);
       </div>
       <div v-if="id === 'error'" class="core-matrix-cell">
         <h4>Table · skeleton</h4>
-        <CmTable :aria-busy="true" aria-label="Team workload loading">
+        <CmTable v-scrollable-table="'Workload skeleton'" :aria-busy="true" aria-label="Team workload loading">
           <template #header
             ><tr>
               <th v-for="column in metricColumns" :key="column.key" scope="col">{{ column.header }}</th>
@@ -329,6 +331,7 @@ const pageSize = ref(3);
             row-key="id"
             multi-sort
             pagination
+            pagination-label="Sortable team workload pagination"
             :default-page-size="3"
             :page-size-options="[3, 5, 10]"
             striped
@@ -340,6 +343,7 @@ const pageSize = ref(3);
         </template>
         <CmDataTable
           v-else
+          v-scrollable-table="'Data table · ' + title"
           :id="'core-data-' + id"
           v-bind="{ columns: rosterColumns, ...props }"
           :rows="
@@ -353,7 +357,6 @@ const pageSize = ref(3);
           :visible-column-keys="id === 'columns' ? visible : undefined"
           :selected-row-ids="id === 'selection' ? selection : undefined"
           :error="id === 'error' && dataError"
-          :class="{ 'core-scroll-table': props?.stickyHeader }"
           @update:selected-row-ids="selection = $event"
           @update:page="page = $event"
           @update:page-size="

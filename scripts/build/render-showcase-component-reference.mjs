@@ -3,7 +3,6 @@ import {
   referenceCatalog,
   referenceSupplements,
   renderReferenceDetail,
-  renderReferenceIndex,
   renderReferenceSupplement,
 } from '../../examples/shared/showcase-component-reference.mts';
 
@@ -28,5 +27,5 @@ export function renderComponentReference(groups, components, casesByComponent, r
   for (const supplement of referenceSupplements) {
     details.set(supplement.slug, renderReferenceSupplement(supplement, catalog));
   }
-  return [renderReferenceIndex(groups, components), details];
+  return details;
 }

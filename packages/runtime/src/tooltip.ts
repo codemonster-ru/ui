@@ -52,14 +52,9 @@ export class CmTooltipController implements CmController {
   };
 
   readonly #handleBlur = (event: Event): void => {
-    const view = this.#root.ownerDocument.defaultView;
-    if (
-      view &&
-      event instanceof view.FocusEvent &&
-      event.relatedTarget instanceof view.Node &&
-      this.#root.contains(event.relatedTarget)
-    )
-      return;
+    const { relatedTarget } = event as FocusEvent;
+    const Node_ = this.#root.ownerDocument.defaultView?.Node;
+    if (Node_ && relatedTarget instanceof Node_ && this.#root.contains(relatedTarget)) return;
     this.#focused = false;
     if (!this.#hovered) this.#close();
   };
@@ -137,34 +132,40 @@ export class CmTooltipController implements CmController {
   #holdFloating(): void {
     if (this.#stopFloating) return;
     const target = resolveCmAnchoredTarget(this.#root, this.#root.getAttribute('data-cm-tooltip-teleport-to'));
-    if (!target) return;
 
     const document = this.#root.ownerDocument;
     const trigger = this.#trigger;
     const content = this.#content;
-    const side =
-      (['bottom', 'start', 'end'] as const).find((value) => this.#root.classList.contains(`cm-tooltip--${value}`)) ??
-      'top';
+    const classes = this.#root.classList;
     const rtl = document.defaultView?.getComputedStyle(trigger).direction === 'rtl';
-    const direction = side === 'start' ? (rtl ? 'right' : 'left') : side === 'end' ? (rtl ? 'left' : 'right') : side;
+    let direction: 'bottom' | 'left' | 'right' | 'top' = 'top';
+    if (classes.contains('cm-tooltip--bottom')) direction = 'bottom';
+    else if (classes.contains('cm-tooltip--start')) direction = rtl ? 'right' : 'left';
+    else if (classes.contains('cm-tooltip--end')) direction = rtl ? 'left' : 'right';
     const { left, top } = content.style;
-    const origin = document.createComment('tooltip');
-    content.before(origin);
-    target.append(content);
-    content.setAttribute('data-cm-tooltip-floating', '');
+    const attribute = target ? 'data-cm-tooltip-floating' : 'data-cm-tooltip-inline';
+    const container = target ? null : content.parentElement;
+    const origin = target ? document.createComment('tooltip') : null;
+    if (target && origin) {
+      content.before(origin);
+      target.append(content);
+      content.setAttribute(attribute, '');
+    }
 
-    const stop = observeCmAnchoredPosition(trigger, content, direction, 10, null, (style, placement) => {
-      content.setAttribute('data-cm-tooltip-floating', placement);
+    const stop = observeCmAnchoredPosition(trigger, content, direction, 10, container, (style, placement) => {
+      content.setAttribute(attribute, placement);
       content.style.left = style.left;
       content.style.top = style.top;
     });
     this.#stopFloating = () => {
       stop();
-      content.removeAttribute('data-cm-tooltip-floating');
+      content.removeAttribute(attribute);
       content.style.left = left;
       content.style.top = top;
-      if (origin.parentNode) origin.replaceWith(content);
-      else content.remove();
+      if (origin) {
+        if (origin.parentNode) origin.replaceWith(content);
+        else content.remove();
+      }
     };
   }
 

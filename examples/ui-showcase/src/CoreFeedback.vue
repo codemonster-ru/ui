@@ -67,7 +67,7 @@ onUnmounted(() => clearInterval(timer));
     <section class="core-matrix-cell core-matrix-wide">
       <h4>Avatar</h4>
       <div class="core-matrix-grid core-matrix-grid--two">
-        <article class="showcase-panel core-matrix-cell">
+        <article class="cm-panel showcase-panel core-matrix-cell">
           <div class="core-avatar-panel-header">
             <div>
               <h5>Project team</h5>
@@ -89,7 +89,7 @@ onUnmounted(() => clearInterval(timer));
             />
           </div>
         </article>
-        <article class="showcase-panel core-matrix-cell">
+        <article class="cm-panel showcase-panel core-matrix-cell">
           <div class="core-avatar-panel-header">
             <div>
               <h5>Content variants</h5>
@@ -97,13 +97,13 @@ onUnmounted(() => clearInterval(timer));
             </div>
           </div>
           <div class="core-theme-controls core-avatar-variants">
-            <div><CmAvatar :image="avatar" image-alt="Maya Chen" shape="circle" size="lg" /><span>Image</span></div>
+            <div><CmAvatar :image="avatar" image-alt="Maya Chen" shape="circle" size="lg" /><small>Image</small></div>
             <div>
               <CmAvatar role="img" aria-label="User" shape="circle" size="lg"><CmIcon :icon="user" /></CmAvatar
-              ><span>Icon</span>
+              ><small>Icon</small>
             </div>
             <div>
-              <CmAvatar role="img" aria-label="Unknown user" shape="circle" size="lg">?</CmAvatar><span>Slot</span>
+              <CmAvatar role="img" aria-label="Unknown user" shape="circle" size="lg">?</CmAvatar><small>Slot</small>
             </div>
           </div>
           <div class="core-theme-controls core-avatar-variants">
@@ -116,7 +116,7 @@ onUnmounted(() => clearInterval(timer));
               :size="size"
               shape="circle"
             />
-            <span>sm · md · lg</span>
+            <small>sm · md · lg</small>
           </div>
         </article>
       </div>

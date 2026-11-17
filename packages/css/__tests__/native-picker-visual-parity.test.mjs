@@ -35,16 +35,26 @@ test('preserves reference native-control interaction states', async () => {
   }
 });
 
-test('preserves reference clear-control positioning without changing canonical DOM', async () => {
+test('positions clear actions and reserves trigger space only when the action is shown', async () => {
   const [select, datePicker] = await Promise.all(['select', 'date-picker'].map(readComponent));
 
-  for (const css of [select, datePicker]) {
-    assert.match(css, /position: absolute;/u);
-    assert.match(css, /inset-inline-end: 0\.625rem;/u);
-    assert.match(css, /inline-size: 1\.375rem;/u);
-    assert.match(css, /block-size: 1\.375rem;/u);
-    assert.match(css, /border-radius: var\(--cm-radius-control-tight\);/u);
+  for (const [name, css] of [
+    ['select', select],
+    ['date-picker', datePicker],
+  ]) {
+    const action = css.split(`.cm-${name}__clear {`)[1].split('}')[0];
+    assert.match(action, /position: absolute;/u);
+    assert.ok(action.includes(`inset-inline-end: var(--cm-${name}-action-inset);`));
+    assert.match(action, /inline-size: var\(--cm-icon-size-xl\);/u);
+    assert.match(action, /block-size: var\(--cm-icon-size-xl\);/u);
+    assert.match(action, /border-radius: var\(--cm-radius-control-tight\);/u);
+    const trigger = css
+      .split(`.cm-${name}-wrap:has(> .cm-${name}__clear:not([hidden])) > .cm-${name} {`)[1]
+      .split('}')[0];
+    assert.ok(
+      trigger.includes(
+        `padding-inline-end: calc(var(--cm-${name}-action-inset) + var(--cm-icon-size-xl) + var(--cm-space-1));`,
+      ),
+    );
   }
-  assert.match(select, /padding-inline-end: 2\.25rem;/u);
-  assert.match(datePicker, /padding-inline-end: 3\.625rem;/u);
 });

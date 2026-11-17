@@ -87,7 +87,7 @@ jobs:
         run: npm run build
 
       - name: Check repository contracts
-        run: npm run check:repository-contracts
+        run: npm run check:docs
 
       - name: Check CodeMonster UI contracts, accessibility, and visual fixtures
         run: npm run test:ui
@@ -114,12 +114,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # The suite hides dist itself; the build is still needed for its other output, such as
-      # generated CSS that some workspaces' own tests read back.
-      - name: Build packages
-        run: npm run build
-
-      - name: Run workspace tests without build output
+      - name: Run workspace tests from a clean build
         run: npm run test:ci-like
 
   packaging:
@@ -259,11 +254,14 @@ jobs:
           done
 
           npm run visual:cross-platform:capture -- --origin=http://127.0.0.1:5176 --output="${CROSS_PLATFORM_CAPTURE}" --label=ci-actual-adapters
-          node scripts/visual/compare-showcase.mjs --baseline=visual-baselines/vueforge-cross-platform --current="${CROSS_PLATFORM_CAPTURE}/vue" --diff="${CROSS_PLATFORM_VUE_DIFF}" --threshold=4
-          node scripts/visual/compare-showcase.mjs --baseline=visual-baselines/vueforge-cross-platform --current="${CROSS_PLATFORM_CAPTURE}/vanilla" --diff="${CROSS_PLATFORM_VANILLA_DIFF}" --threshold=4
+          # Keep the gate strict while collecting both adapters' results and behavior evidence.
+          result=0
+          node scripts/visual/compare-showcase.mjs --baseline=visual-baselines/vueforge-cross-platform --current="${CROSS_PLATFORM_CAPTURE}/vue" --diff="${CROSS_PLATFORM_VUE_DIFF}" --threshold=4 || result=1
+          node scripts/visual/compare-showcase.mjs --baseline=visual-baselines/vueforge-cross-platform --current="${CROSS_PLATFORM_CAPTURE}/vanilla" --diff="${CROSS_PLATFORM_VANILLA_DIFF}" --threshold=4 || result=1
 
-          CHROME_PATH="${chrome_for_testing_path}" CM_PARITY_REPORT="${RUNNER_TEMP}/codemonster-pair-visual.json" node scripts/visual/check-vanilla-parity.mjs
-          CHROME_PATH="${chrome_for_testing_path}" CM_PARITY_REPORT="${RUNNER_TEMP}/codemonster-pair-behavior.json" CM_PARITY_BEHAVIOR=1 node scripts/visual/check-vanilla-parity.mjs
+          CHROME_PATH="${chrome_for_testing_path}" CM_PARITY_REPORT="${RUNNER_TEMP}/codemonster-pair-visual.json" node scripts/visual/check-vanilla-parity.mjs || result=1
+          CHROME_PATH="${chrome_for_testing_path}" CM_PARITY_REPORT="${RUNNER_TEMP}/codemonster-pair-behavior.json" CM_PARITY_BEHAVIOR=1 node scripts/visual/check-vanilla-parity.mjs || result=1
+          exit "$result"
 
       - name: Upload cross-platform visual differences
         if: failure()
