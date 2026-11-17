@@ -30,8 +30,8 @@ export function renderLayoutPrimitives() {
       'stack',
       'CmStack',
       pair(
-        surface(stack(['Vertical composition', 'Item', 'Item'])),
-        surface(stack(['Article block', 'Body section', 'Related notes'], 'article')),
+        stack(['Vertical composition', 'Item', 'Item']),
+        stack(['Article block', 'Body section', 'Related notes'], 'article'),
       ),
     ),
     renderLayoutGuideEntry(
@@ -53,7 +53,7 @@ export function renderLayoutPrimitives() {
     renderLayoutGuideEntry(
       'grid',
       'CmGrid',
-      `<div class="cm-stack">${surface(grid(['Responsive card grid', 'Item', 'Item', 'Item']))}${surface(grid(['Use grid for summaries', 'Examples', 'Listings']))}</div>`,
+      `<div class="cm-stack">${grid(['Responsive card grid', 'Item', 'Item', 'Item'])}${grid(['Use grid for summaries', 'Examples', 'Listings'])}</div>`,
     ),
   ].join('\n');
 }

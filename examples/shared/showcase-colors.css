@@ -128,6 +128,31 @@
   text-transform: capitalize;
 }
 
+.color-system__release-header,
+.color-system__release-checks li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--cm-space-1) var(--cm-space-3);
+}
+
+.color-system__release-header h4 {
+  margin: 0;
+  font-size: var(--cm-font-size-2xl);
+}
+
+.color-system__release-checks {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.color-system__release-checks li {
+  padding-block: var(--cm-space-2);
+  border-block-start: var(--cm-border-width) solid var(--cm-color-border-subtle);
+}
+
 .color-system__semantic-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

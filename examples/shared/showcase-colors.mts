@@ -12,6 +12,20 @@ export const colorSections = [
   { id: 'contrast-matrix', label: 'Contrast' },
 ] as const;
 
+export const releaseChecks = {
+  title: 'Release checks',
+  environment: 'Staging',
+  checks: [
+    { label: 'Unit tests', status: 'Passed', tone: 'success' },
+    { label: 'Preview build', status: 'Ready', tone: 'info' },
+    { label: 'Manual review', status: 'Pending', tone: 'warning' },
+  ],
+  blocker: {
+    title: 'Production deploy blocked',
+    body: 'The build is missing a signing certificate.',
+  },
+} as const;
+
 export const families = new Map<string, { variable: string; step: string }[]>();
 for (const variable of Object.keys(serializeCmThemeTokensToCssVars(cmPrimitiveColorTokens))) {
   const parts = variable.slice('--cm-palette-'.length).split('-');

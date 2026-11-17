@@ -2,7 +2,8 @@
 import { computed, ref } from 'vue';
 import * as icons from '@codemonster-ru/ui-icons';
 import { iconCatalog, iconNames, type IconName } from '@codemonster-ru/ui-icons/catalog';
-import { CmButton, CmField, CmIcon, CmInput, CmLink, CmTable, CmTabs } from '@codemonster-ru/ui-vue';
+import { CmBadge, CmButton, CmField, CmIcon, CmInput, CmLink, CmTable, CmTabs } from '@codemonster-ru/ui-vue';
+import { iconContexts } from '../../shared/showcase-reference.mts';
 import { vScrollableTable } from './scrollable-table';
 
 const showcaseVariants = icons.cmIconVariants;
@@ -50,6 +51,40 @@ async function copyIconName(name: string) {
       </p>
       <CmLink class="catalog-brands-link" href="#brand-icons-heading">Brand icons</CmLink>
     </div>
+
+    <section class="catalog-contexts" aria-labelledby="catalog-contexts-title">
+      <h2 id="catalog-contexts-title">Icons in context</h2>
+      <div class="catalog-contexts__grid">
+        <article class="catalog-contexts__sample">
+          <h3>{{ iconContexts.navigation.title }}</h3>
+          <CmLink class="catalog-contexts__link" href="/layouts/" underline="hover">
+            <CmIcon :icon="icons[iconContexts.navigation.icon]" />
+            <span>{{ iconContexts.navigation.label }}</span>
+          </CmLink>
+        </article>
+        <article class="catalog-contexts__sample">
+          <h3>{{ iconContexts.action.title }}</h3>
+          <div class="catalog-contexts__action">
+            <code>{{ iconContexts.action.name }}</code>
+            <CmButton
+              variant="secondary"
+              size="sm"
+              :aria-label="`${iconContexts.action.label}: ${iconContexts.action.name}`"
+              @click="copyIconName(iconContexts.action.name)"
+            >
+              <template #leading><CmIcon :icon="icons[iconContexts.action.icon]" /></template>
+              {{ iconContexts.action.label }}
+            </CmButton>
+          </div>
+        </article>
+        <article class="catalog-contexts__sample">
+          <h3>{{ iconContexts.status.title }}</h3>
+          <CmBadge tone="success">
+            <CmIcon :icon="icons[iconContexts.status.icon]" />{{ iconContexts.status.label }}
+          </CmBadge>
+        </article>
+      </div>
+    </section>
 
     <CmTabs id="icon-catalog-family" :items="familyTabs" default-value="classic">
       <template v-for="iconFamily in showcaseFamilies" :key="iconFamily.id" #[iconFamily.panel]="{ active }">

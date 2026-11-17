@@ -20,6 +20,55 @@
   color: var(--cm-color-text-secondary);
 }
 
+.icon-catalog .catalog-contexts {
+  display: grid;
+  gap: var(--cm-space-3);
+  margin-block-end: var(--cm-space-6);
+}
+
+.icon-catalog .catalog-contexts h2 {
+  margin: 0;
+  font-size: var(--cm-font-size-2xl);
+}
+
+.icon-catalog .catalog-contexts__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: var(--cm-space-2);
+}
+
+.icon-catalog .catalog-contexts__sample {
+  display: grid;
+  min-inline-size: 0;
+  place-items: center start;
+  gap: var(--cm-space-1) var(--cm-space-3);
+  padding: var(--cm-space-2) var(--cm-space-3);
+  border: var(--cm-border-width) solid var(--cm-color-border-default);
+  border-radius: var(--cm-radius-surface);
+  background: var(--cm-color-background-surface);
+}
+
+.icon-catalog .catalog-contexts__sample h3 {
+  margin: 0;
+  color: var(--cm-color-text-secondary);
+  font-size: var(--cm-text-label-font-size);
+  font-weight: var(--cm-text-label-font-weight);
+}
+
+.icon-catalog .catalog-contexts__link {
+  min-block-size: var(--cm-control-height-sm);
+  align-items: center;
+  gap: var(--cm-space-2);
+  font-size: var(--cm-text-label-font-size);
+}
+
+.icon-catalog .catalog-contexts__action {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--cm-space-1) var(--cm-space-2);
+}
+
 .icon-catalog .family-heading h2 {
   margin: 0;
   font-family: var(--cm-font-family-heading);
@@ -88,7 +137,7 @@
   gap: var(--cm-space-3);
 }
 
-.icon-catalog :is(.catalog-entry, .catalog-brand) code {
+.icon-catalog :is(.catalog-entry, .catalog-brand, .catalog-contexts__action) code {
   overflow-wrap: anywhere;
   font-family: var(--cm-font-family-mono);
   font-size: var(--cm-text-label-font-size);
@@ -121,6 +170,14 @@
 }
 
 @media (width <= 620px) {
+  .icon-catalog .catalog-contexts__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .icon-catalog .catalog-contexts__sample {
+    grid-template-columns: 5rem minmax(0, 1fr);
+  }
+
   .icon-catalog .catalog-toolbar {
     grid-template-columns: minmax(0, 1fr) auto;
   }

@@ -111,11 +111,11 @@ const { theme: themeMode, resolvedTheme, setTheme: selectTheme, toggleTheme } = 
       <!-- eslint-disable-next-line vue/no-v-html -- Shared showcase copy uses repository-owned links. -->
       <div class="showcase-home__copy" v-html="renderHomeCopy('', '/')" />
       <section class="showcase-home__demo" aria-label="Live data table example">
-        <div class="showcase-home__demo-heading">
-          <p>Sortable table</p>
-          <CmLink href="/components/data-table/" underline="hover">View DataTable</CmLink>
-        </div>
         <CmDataTable v-bind="projects.props" id="showcase-projects" sorting-mode="client" />
+        <div class="showcase-home__demo-footer">
+          <p>Sort by Name.</p>
+          <CmLink href="/components/data-table/" underline="hover">DataTable reference</CmLink>
+        </div>
       </section>
     </header>
     <header v-else-if="page.title" class="showcase-intro">
