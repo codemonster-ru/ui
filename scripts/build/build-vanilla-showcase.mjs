@@ -6,6 +6,7 @@ import {
   renderShowcaseNavigation,
 } from '../../examples/shared/showcase-navigation.mts';
 import { renderComponentReference } from './render-showcase-component-reference.mjs';
+import { renderComponentCatalog, renderHomeCopy } from '../../examples/shared/showcase-home.mts';
 import { referenceCaseDescription, referenceFrameClass } from '../../examples/shared/showcase-component-reference.mts';
 import { coreComponentTitle, coreRecipesFor, renderCoreMatrix } from '../../examples/shared/showcase-core-matrix.mts';
 import {
@@ -64,7 +65,7 @@ function renderExample(
   );
   const floating = ['date-picker', 'dropdown', 'menu-bar', 'popover', 'select', 'tooltip'].includes(componentSlug);
   const reference = heading === 'h3';
-  const description = reference ? referenceCaseDescription(data) : data.description;
+  const description = reference ? (id.includes('--') ? '' : referenceCaseDescription(data)) : data.description;
   const frameSize = reference
     ? referenceFrameClass(componentSlug)
     : modal || layout
@@ -371,7 +372,7 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
             caseMarkup.get('input-enhanced'),
           );
           const frame = page(title, `<div data-layout-example="${slug}">${content}</div>`, 'layout-example.js', {
-            styles: packageStyles,
+            styles: [...packageStyles, './showcase-layout-example.css'],
           });
           return renderLayoutGuideEntry(
             slug,
@@ -480,12 +481,32 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
   function renderPage(current, base, path, content = pages[current]) {
     const { label, title } = showcasePages.find(({ id }) => id === current);
     const navigation = renderShowcaseNavigation(current, path.slice(1), '.');
-    const intro = title
-      ? `<header class="showcase-intro">
-    <h1>${escapeHtml(title)}</h1>
-    ${current === 'core' ? renderCoreSectionNavigation(path) : current === 'layouts' ? renderLayoutSectionNavigation(path) : ''}
+    const intro =
+      current === 'core'
+        ? `<header class="showcase-intro showcase-home">
+    <div class="showcase-home__copy">${renderHomeCopy(path, './')}</div>
+    <section class="showcase-home__demo" aria-label="Live data table example">
+      <div class="showcase-home__demo-heading">
+        <p>Sortable table</p>
+        <a class="cm-link cm-link--underline-hover" href="./components/data-table/">View DataTable</a>
+      </div>
+      ${caseMarkup.get('data-table-default').replace('id="projects"', 'id="showcase-projects"')}
+    </section>
+  </header>
+  <section id="component-catalog" class="showcase-directory" tabindex="-1" aria-labelledby="showcase-directory-title">
+    <h2 id="showcase-directory-title">Component catalog</h2>
+    <div class="showcase-directory__groups">${renderComponentCatalog('./')}</div>
+  </section>
+  <header class="showcase-state-index">
+    <h2>Component states</h2>
+    ${renderCoreSectionNavigation(path)}
   </header>`
-      : '';
+        : title
+          ? `<header class="showcase-intro">
+    <h1>${escapeHtml(title)}</h1>
+    ${current === 'layouts' ? renderLayoutSectionNavigation(path) : ''}
+  </header>`
+          : '';
     return page(
       `${label} · CodeMonster UI Vanilla`,
       `<a class="cm-link showcase-skip" href="${path}#showcase-main">Skip to content</a>

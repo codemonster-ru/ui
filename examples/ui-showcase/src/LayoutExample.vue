@@ -4,6 +4,8 @@ import { bars } from '@codemonster-ru/ui-icons';
 import annabelLogo from '../../shared/annabel-logo-icon.svg';
 import {
   columns,
+  dashboardActivity,
+  dashboardStats,
   type LayoutExampleSlug,
   regionControls,
   rows,
@@ -33,7 +35,6 @@ import {
   CmButton,
   CmCard,
   CmDataTable,
-  CmGrid,
   CmInput,
   CmInline,
   CmLink,
@@ -181,26 +182,30 @@ function setMode(kind: 'app' | 'document', value: string) {
       ><CmIconButton variant="ghost" label="Toggle sidebar" data-cm-sidebar-toggle><CmIcon :icon="bars" /></CmIconButton
     ></template>
     <CmStack>
-      <CmInline> <strong>Dashboard</strong><CmButton size="sm">Create post</CmButton> </CmInline>
-      <CmGrid><CmCard>Published: 24</CmCard><CmCard>Drafts: 8</CmCard><CmCard>Views: 12,480</CmCard></CmGrid>
-      <CmCard>
-        <template #header>Recent inventory changes</template>
-        <p>Warehouse A · 24 items received</p>
-        <p>Warehouse B · 8 items reserved</p>
-        <p>Warehouse C · 3 items returned</p>
-        <p>Online stock · 12 items sold</p>
-      </CmCard>
-      <CmCard>
-        <template #header>Stock alerts</template>
-        <p>Wireless keyboard · 2 items remaining</p>
-        <p>USB-C dock · out of stock</p>
-        <p>Studio monitor · reorder threshold reached</p>
-        <p>Laptop stand · delivery expected tomorrow</p>
-      </CmCard>
+      <div class="layout-example__dashboard-heading">
+        <h1>Dashboard</h1>
+        <CmButton size="sm">Create post</CmButton>
+      </div>
+      <dl class="layout-example__metrics">
+        <div v-for="{ label, value } in dashboardStats" :key="label">
+          <dt>{{ label }}</dt>
+          <dd>{{ value }}</dd>
+        </div>
+      </dl>
+      <div class="layout-example__activity">
+        <CmCard v-for="{ title, items } in dashboardActivity" :key="title">
+          <template #header
+            ><h2 class="layout-example__activity-heading">{{ title }}</h2></template
+          >
+          <ul class="layout-example__activity-list" role="list">
+            <li v-for="item in items" :key="item">{{ item }}</li>
+          </ul>
+        </CmCard>
+      </div>
     </CmStack>
-    <template #footer>© 2026 VueForge. All rights reserved.</template>
+    <template #footer>Inventory workspace</template>
   </CmAdminLayout>
-  <CmAdminShell v-else-if="slug === 'admin-shell'">
+  <CmAdminShell v-else-if="slug === 'admin-shell'" :fill-viewport="false">
     <template #brand>
       <CmInline :wrap="false"
         ><img :src="annabelLogo" alt="" width="24" height="24" /><strong>Annabel</strong></CmInline
@@ -247,18 +252,20 @@ function setMode(kind: 'app' | 'document', value: string) {
     @back="moveStep(-1)"
   >
     <template #brand>
-      <CmInline :wrap="false"
-        ><img :src="annabelLogo" alt="" width="24" height="24" /><strong>Annabel</strong></CmInline
-      >
-      <CmStack>
-        <span>Step {{ stepIndex + 1 }} of {{ steps.length }}</span>
-        <CmProgressBar :value="stepIndex + 1" :max="steps.length" label="Setup progress" />
-      </CmStack>
+      <div class="layout-example__setup-brand">
+        <CmInline :wrap="false"
+          ><img :src="annabelLogo" alt="" width="24" height="24" /><strong>Annabel</strong></CmInline
+        >
+        <div class="layout-example__setup-progress">
+          <span>Step {{ stepIndex + 1 }} of {{ steps.length }}</span>
+          <CmProgressBar :value="stepIndex + 1" :max="steps.length" label="Setup progress" />
+        </div>
+      </div>
     </template>
     <template #aside><CmNavMenu v-model:value="step" :items="steps" aria-label="Installation steps" /></template>
     <CmCheckbox v-if="step === 'license'" v-model="acceptedLicense" label="Accept terms" />
     <CmStack v-else-if="step === 'database'">
-      <CmGrid>
+      <div class="layout-example__field-row">
         <CmField
           v-slot="{ controlId, describedBy }"
           control-id="setup-preview-host"
@@ -270,18 +277,18 @@ function setMode(kind: 'app' | 'document', value: string) {
         <CmField v-slot="{ controlId }" control-id="setup-preview-port" label="Port">
           <CmInput :id="controlId" v-model="database.port" placeholder="3306" />
         </CmField>
-      </CmGrid>
+      </div>
       <CmField v-slot="{ controlId }" control-id="setup-preview-name" label="Database name">
         <CmInput :id="controlId" v-model="database.name" placeholder="annabel" />
       </CmField>
-      <CmGrid>
+      <div class="layout-example__field-row">
         <CmField v-slot="{ controlId }" control-id="setup-preview-user" label="Database user">
           <CmInput :id="controlId" v-model="database.user" placeholder="annabel_user" />
         </CmField>
         <CmField v-slot="{ controlId }" control-id="setup-preview-password" label="Database password">
           <CmInput :id="controlId" v-model="database.password" type="password" placeholder="Password" password-reveal />
         </CmField>
-      </CmGrid>
+      </div>
     </CmStack>
     <CmField v-else-if="step === 'admin'" v-slot="{ controlId }" control-id="setup-preview-email" label="Email">
       <CmInput :id="controlId" v-model="email" type="email" />
@@ -309,16 +316,13 @@ function setMode(kind: 'app' | 'document', value: string) {
       Don't have an account? <CmLink href="/core/" target="_parent" underline="none">Click here to sign up</CmLink>
     </template>
     <CmStack as="form" @submit.prevent="submitted = true">
-      <CmInput type="email" placeholder="Email" aria-label="Email" autocomplete="email" required />
-      <CmInput
-        type="password"
-        placeholder="Password"
-        aria-label="Password"
-        autocomplete="current-password"
-        password-reveal
-        required
-      />
-      <CmInline>
+      <CmField v-slot="{ controlId }" control-id="sign-in-email" label="Email" required>
+        <CmInput :id="controlId" type="email" autocomplete="email" required />
+      </CmField>
+      <CmField v-slot="{ controlId }" control-id="sign-in-password" label="Password" required>
+        <CmInput :id="controlId" type="password" autocomplete="current-password" password-reveal required />
+      </CmField>
+      <CmInline class="layout-example__sign-in-options">
         <CmCheckbox label="Remember me" /><CmLink href="/core/" target="_parent" underline="none"
           >Forgot password?</CmLink
         >

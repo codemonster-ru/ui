@@ -1,7 +1,9 @@
-import { renderPageLayout } from '../../examples/shared/showcase-layout-samples.mts';
+import { bars, resolveCmIcon } from '@codemonster-ru/ui-icons';
+import { renderLayoutField, renderPageLayout } from '../../examples/shared/showcase-layout-samples.mts';
 import {
   columns,
-  nav,
+  dashboardActivity,
+  dashboardStats,
   regionControls,
   rows,
   steps,
@@ -85,28 +87,34 @@ function warehouse() {
   </table></div>${warehousePagination()}</div>`;
 }
 
-function setup(enhancedInput) {
+function passwordReveal(enhancedInput) {
   const reveal = enhancedInput?.match(/<button\b[^>]*\bdata-cm-input-password\b[^>]*>.*?<\/button>/s)?.[0];
   if (!reveal) throw new Error('Missing password reveal action in enhanced Input case.');
-  const password = `<div class="cm-stack"><label for="setup-preview-password">Database password</label>
-    <div class="cm-input-wrap" data-cm-controller="input"><input class="cm-input cm-input--md" id="setup-preview-password"
-      data-preview-field="password" data-cm-input-control type="password" placeholder="Password">
-    ${reveal.replaceAll('Show secret', 'Show password').replaceAll('Hide secret', 'Hide password')}</div></div>`;
+  return reveal.replaceAll('Show secret', 'Show password').replaceAll('Hide secret', 'Hide password');
+}
 
-  const field = (label, key, value = '', type = 'text') =>
-    `<label class="cm-stack">${label}<input class="cm-input cm-input--md" data-preview-field="${key}" value="${value}" type="${type}"${key === 'host' ? ' aria-describedby="setup-host-help"><small id="setup-host-help">Hostname, socket, or private address.</small>' : '>'}</label>`;
+function setup(revealButton) {
+  const field = (label, key, value = '', type = 'text', description = '', reveal = '') =>
+    renderLayoutField('setup-preview-' + key, label, `data-preview-field="${key}" value="${value}" type="${type}"`, {
+      description,
+      revealButton: reveal,
+    });
   return `<main class="cm-setup-layout cm-setup-layout--fit-content cm-setup-layout--aside-left" data-cm-controller="setup-layout">
-    <div class="cm-setup-layout__panel"><div class="cm-setup-layout__brand">${brand}<div class="cm-stack" data-setup-progress>
+    <div class="cm-setup-layout__panel"><div class="cm-setup-layout__brand"><div class="layout-example__setup-brand">${brand}<div class="layout-example__setup-progress" data-setup-progress>
       <span>Step 2 of ${steps.length}</span>
       <div class="cm-progress-bar" role="progressbar" aria-label="Setup progress" aria-valuemin="0" aria-valuenow="2" aria-valuemax="${steps.length}">
         <span class="cm-progress-bar__value" style="inline-size:${(2 / steps.length) * 100}%"></span>
       </div>
-    </div></div>
+    </div></div></div>
     <aside class="cm-setup-layout__aside">${navigation(steps, initialSetupStep, 'Installation steps')}</aside>
     <header class="cm-setup-layout__header"><div class="cm-setup-layout__heading"><h1 class="cm-setup-layout__title">${steps[1].label}</h1>
     <p class="cm-setup-layout__description">Configure the CMS environment before the first administrator account is created.</p></div></header>
     <section class="cm-setup-layout__main"><div class="cm-setup-layout__body">
-    <label class="cm-checkbox cm-checkbox--md" data-preview-step="license" hidden><input class="cm-checkbox__input" type="checkbox"><span class="cm-checkbox__control" aria-hidden="true"><span class="cm-checkbox__mark"></span></span><span class="cm-checkbox__content">Accept terms</span></label><div class="cm-stack" data-preview-step="database">${field('Host', 'host', '127.0.0.1')}${field('Port', 'port', '3306')}${field('Database name', 'name', 'annabel')}${field('Database user', 'user', 'annabel_user')}${password}</div>
+    <label class="cm-checkbox cm-checkbox--md" data-preview-step="license" hidden><input class="cm-checkbox__input" type="checkbox"><span class="cm-checkbox__control" aria-hidden="true"><span class="cm-checkbox__mark"></span></span><span class="cm-checkbox__content">Accept terms</span></label><div class="cm-stack" data-preview-step="database">
+      <div class="layout-example__field-row">${field('Host', 'host', '127.0.0.1', 'text', 'Hostname, socket, or private address.')}${field('Port', 'port', '3306')}</div>
+      ${field('Database name', 'name', 'annabel')}
+      <div class="layout-example__field-row">${field('Database user', 'user', 'annabel_user')}${field('Database password', 'password', '', 'password', '', revealButton)}</div>
+    </div>
     <div data-preview-step="admin" hidden>${field('Email', 'email', '', 'email')}</div><p data-preview-step="finish" hidden></p><p data-setup-complete role="status" hidden>Setup preview completed.</p></div>
     <div class="cm-setup-layout__actions"><button class="cm-button cm-button--secondary cm-button--md" type="button" data-preview-back>Back</button>
     <button class="cm-button cm-button--primary cm-button--md" type="button" data-preview-next><span class="cm-button__label">Continue</span></button></div>
@@ -114,21 +122,28 @@ function setup(enhancedInput) {
 }
 
 export function renderLayoutExample(slug, markup, enhancedInput) {
-  if (slug === 'auth-layout' || slug === 'error-layout') return renderPageLayout(slug);
+  if (slug === 'error-layout') return renderPageLayout(slug);
+  if (slug === 'auth-layout') return renderPageLayout(slug, passwordReveal(enhancedInput));
   if (slug === 'app-shell' || slug === 'document-layout') return shell(slug);
-  if (slug === 'setup-layout') return setup(enhancedInput);
+  if (slug === 'setup-layout') return setup(passwordReveal(enhancedInput));
   if (slug === 'admin-layout') {
-    const dashboard = `<div class="cm-stack"><div class="cm-inline"><strong>Dashboard</strong><button class="cm-button cm-button--primary cm-button--sm" type="button">Create post</button></div>
-      <div class="cm-grid">${['Published: 24', 'Drafts: 8', 'Views: 12,480'].map((stat) => `<div class="cm-card"><div class="cm-card__body">${stat}</div></div>`).join('')}</div>
-      <article class="cm-card"><header class="cm-card__header">Recent inventory changes</header><div class="cm-card__body"><p>Warehouse A · 24 items received</p><p>Warehouse B · 8 items reserved</p><p>Warehouse C · 3 items returned</p></div></article>
-      <article class="cm-card"><header class="cm-card__header">Stock alerts</header><div class="cm-card__body"><p>Wireless keyboard · 2 items remaining</p><p>USB-C dock · out of stock</p><p>Studio monitor · reorder threshold reached</p></div></article></div>`;
+    const sidebarIcon = resolveCmIcon(bars, 'classic', 'regular');
+    if (!sidebarIcon) throw new Error('Missing the sidebar icon for the dashboard example.');
+    const dashboard = `<div class="cm-stack"><div class="layout-example__dashboard-heading"><h1>Dashboard</h1><button class="cm-button cm-button--primary cm-button--sm" type="button">Create post</button></div>
+      <dl class="layout-example__metrics">${dashboardStats.map(({ label, value }) => `<div><dt>${label}</dt><dd>${value}</dd></div>`).join('')}</dl>
+      <div class="layout-example__activity">${dashboardActivity
+        .map(
+          ({ title, items }) =>
+            `<section class="cm-card"><header class="cm-card__header"><h2 class="layout-example__activity-heading">${title}</h2></header><div class="cm-card__body"><ul class="layout-example__activity-list" role="list">${items.map((item) => `<li>${item}</li>`).join('')}</ul></div></section>`,
+        )
+        .join('')}</div></div>`;
     return markup
       .replaceAll('workspace', 'showcase-admin-layout')
       .replace('>Acme<', `>${brand}<`)
-      .replace('>Navigation<', `>${navigation(nav, 'dashboard')}<`)
+      .replace('>Navigation<', `>${navigation(warehouseNavigation, 'dashboard')}<`)
       .replace(
         '<div class="cm-admin-layout__header-content">Projects</div>',
-        `<div class="cm-admin-layout__mobile-brand">${brand}</div><div class="cm-admin-layout__header-content"><button class="cm-button cm-button--ghost cm-button--sm" type="button" data-cm-sidebar-toggle>Toggle sidebar</button></div>`,
+        `<div class="cm-admin-layout__mobile-brand">${brand}</div><div class="cm-admin-layout__header-content"><button class="cm-icon-button cm-icon-button--ghost cm-icon-button--md" type="button" aria-label="Toggle sidebar" data-cm-sidebar-toggle><span class="cm-icon-button__icon" aria-hidden="true"><svg class="cm-icon cm-icon--classic cm-icon--regular" viewBox="${sidebarIcon.viewBox}" aria-hidden="true" focusable="false">${sidebarIcon.body}</svg></span></button></div>`,
       )
       .replace(
         '>Dashboard</main>',
@@ -137,6 +152,7 @@ export function renderLayoutExample(slug, markup, enhancedInput) {
   }
   if (slug === 'admin-shell') {
     return markup
+      .replace('class="cm-admin-shell"', 'class="cm-admin-shell cm-admin-shell--fit-content"')
       .replace('>Acme<', `>${brand}<`)
       .replace(
         '</header>',

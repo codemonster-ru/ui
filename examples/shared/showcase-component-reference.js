@@ -48,6 +48,26 @@ export function fitShowcaseFrame(demo) {
   const frame = window.frameElement;
   if (!frame || frame.matches('.showcase-frame--tall, .reference-frame--tall')) return;
 
+  if (frame.matches('.reference-frame--floating, .reference-frame--modal')) {
+    const popup = 'dialog, [role="dialog"], [role="listbox"], [role="menu"], [role="tooltip"]';
+    const syncOverlaySpace = () => {
+      // Portaled and visibly exiting panels can outlive the example's own layout.
+      const visible = Array.from(document.body.querySelectorAll(popup)).some(
+        (element) => element.getClientRects().length > 0,
+      );
+      frame.toggleAttribute('data-reference-expanded', visible);
+    };
+    syncOverlaySpace();
+    new MutationObserver(syncOverlaySpace).observe(document.body, {
+      attributeFilter: ['hidden', 'open'],
+      childList: true,
+      subtree: true,
+    });
+    for (const event of ['transitionend', 'transitioncancel']) {
+      document.body.addEventListener(event, syncOverlaySpace);
+    }
+  }
+
   new ResizeObserver(() => {
     requestAnimationFrame(() => {
       const border = frame.clientHeight === 0 ? 0 : frame.offsetHeight - frame.clientHeight;

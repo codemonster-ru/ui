@@ -29,10 +29,30 @@ export const layoutExamples = [
 
 export type LayoutExampleSlug = (typeof layoutExamples)[number]['slug'];
 
-export const nav = [
-  { value: 'dashboard', label: 'Dashboard' },
-  { value: 'inventory', label: 'Warehouse availability' },
-  { value: 'settings', label: 'Settings' },
+export const dashboardStats = [
+  { label: 'Published', value: '24' },
+  { label: 'Drafts', value: '8' },
+  { label: 'Views', value: '12,480' },
+];
+export const dashboardActivity = [
+  {
+    title: 'Recent inventory changes',
+    items: [
+      'Warehouse A · 24 items received',
+      'Warehouse B · 8 items reserved',
+      'Warehouse C · 3 items returned',
+      'Online stock · 12 items sold',
+    ],
+  },
+  {
+    title: 'Stock alerts',
+    items: [
+      'Wireless keyboard · 2 items remaining',
+      'USB-C dock · out of stock',
+      'Studio monitor · reorder needed',
+      'Laptop stand · due tomorrow',
+    ],
+  },
 ];
 export const warehouseTableCaption = 'Warehouse availability';
 export const warehouseStockTones = {

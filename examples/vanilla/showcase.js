@@ -31,7 +31,21 @@ mountLayoutPreviews(catalog);
 mountLayoutRecipes(catalog);
 mountCoreRecipes(catalog);
 const runtime = createRuntime();
-mountCoreMatrices(catalog, runtime);
+mountCoreMatrices(document.getElementById('showcase-main'), runtime);
+const projectTable = document.querySelector('#showcase-projects');
+const projectBody = projectTable?.querySelector('tbody');
+if (projectBody) {
+  const rows = [...projectBody.rows];
+  projectTable.addEventListener('cm:data-table-sort-change', ({ detail: { sort } }) => {
+    const ordered = sort
+      ? rows.slice().sort((left, right) => {
+          const comparison = left.cells[0].textContent.localeCompare(right.cells[0].textContent);
+          return sort.direction === 'ascending' ? comparison : -comparison;
+        })
+      : rows;
+    projectBody.append(...ordered);
+  });
+}
 mountComponentReference(catalog, runtime);
 
 const iconCatalog = document.querySelector('#icon-catalog');

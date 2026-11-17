@@ -4,7 +4,13 @@ import {
   serializeCmThemeTokensToCssVars,
 } from '@codemonster-ru/ui-tokens';
 
-export const colorsTitle = 'Perceptual materials, semantic decisions';
+export const colorsTitle = 'Color system';
+
+export const colorSections = [
+  { id: 'primitive-scales', label: 'Palette' },
+  { id: 'theme-pairings', label: 'Theme pairings' },
+  { id: 'contrast-matrix', label: 'Contrast' },
+] as const;
 
 export const families = new Map<string, { variable: string; step: string }[]>();
 for (const variable of Object.keys(serializeCmThemeTokensToCssVars(cmPrimitiveColorTokens))) {
