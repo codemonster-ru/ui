@@ -12,7 +12,7 @@
   min-inline-size: 0;
 }
 
-.color-system__intro {
+.color-system > .color-system__intro {
   justify-items: start;
   gap: var(--cm-space-2);
   padding-block-end: 0;
