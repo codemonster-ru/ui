@@ -44,12 +44,7 @@
   color: var(--cm-color-text-secondary);
 }
 
-:is(
-  .cm-dialog__description,
-  .cm-dialog__body,
-  .cm-drawer__description,
-  .cm-drawer__body
-) {
+:is(.cm-dialog__description, .cm-dialog__body, .cm-drawer__description, .cm-drawer__body) {
   font-size: var(--cm-font-size-xl);
   font-weight: var(--cm-font-weight-regular);
   line-height: var(--cm-line-height-normal);
