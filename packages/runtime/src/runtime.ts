@@ -15,6 +15,8 @@ interface ConnectedController {
 
 const controllerAttribute = 'data-cm-controller';
 const controllerSelector = `[${controllerAttribute}]`;
+const adminShellClass = 'cm-admin-shell';
+const shellMetricsName = 'shell-metrics';
 // A framework adapter renders the same controller hook so its markup matches the canonical DOM,
 // but it owns that element's state declaratively. It marks the element once it has taken over, and
 // the runtime leaves those alone rather than writing the same attributes imperatively behind it.
@@ -22,14 +24,17 @@ const { attribute: hydratedAttribute, claimEvent } = cmFrameworkOwnership;
 
 function controllerNames(element: Element): Set<string> {
   if (element.hasAttribute(hydratedAttribute)) return new Set();
-  return new Set((element.getAttribute(controllerAttribute) ?? '').split(/\s+/u).filter(Boolean));
+  const names = new Set((element.getAttribute(controllerAttribute) ?? '').split(/\s+/u).filter(Boolean));
+  // AdminShell HTML shipped without controller attributes. Its public class identifies that frame.
+  if (element.classList.contains(adminShellClass)) names.add(shellMetricsName);
+  return names;
 }
 
-function discoverElements(root: ParentNode): Element[] {
-  const elements = [...root.querySelectorAll(controllerSelector)];
+function discoverElements(root: ParentNode, selector: string): Element[] {
+  const elements = [...root.querySelectorAll(selector)];
   if (root.nodeType === 1) {
     const element = root as Element;
-    if (element.matches(controllerSelector)) {
+    if (element.matches(selector)) {
       elements.unshift(element);
     }
   }
@@ -56,7 +61,10 @@ export class CmRuntime {
   }
 
   start(root: ParentNode = document): void {
-    for (const element of discoverElements(root)) {
+    const selector = this.#factories.has(shellMetricsName)
+      ? `${controllerSelector}, .${adminShellClass}`
+      : controllerSelector;
+    for (const element of discoverElements(root, selector)) {
       this.#startElement(element, controllerNames(element));
     }
   }

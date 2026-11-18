@@ -1,3 +1,5 @@
+import { observeAdminLayoutGeometry } from './admin-layout-geometry.js';
+import { observeAdminShellFocus } from './admin-shell-focus.js';
 import { cmStickyOffsetProperties, shellStickyOffsets } from './core/shell.js';
 import type { CmController, CmControllerFactory } from './runtime.js';
 
@@ -18,12 +20,22 @@ const subheaderSelector = '[data-cm-sticky-subheader]';
 export class CmShellMetricsController implements CmController {
   readonly #root: Element;
   #observer: ResizeObserver | null = null;
+  #stopAdminEnhancement: (() => void) | null = null;
 
   constructor(root: Element) {
     this.#root = root;
   }
 
   connect(): void {
+    if (this.#root.classList.contains('cm-admin-shell')) {
+      this.#stopAdminEnhancement ??= observeAdminShellFocus(this.#root);
+      return;
+    }
+    if (this.#root.classList.contains('cm-admin-layout')) {
+      this.#stopAdminEnhancement ??= observeAdminLayoutGeometry(this.#root);
+      return;
+    }
+
     const view = this.#root.ownerDocument.defaultView;
 
     if (view && typeof view.ResizeObserver === 'function') {
@@ -37,6 +49,12 @@ export class CmShellMetricsController implements CmController {
   }
 
   disconnect(): void {
+    if (this.#stopAdminEnhancement) {
+      this.#stopAdminEnhancement();
+      this.#stopAdminEnhancement = null;
+      return;
+    }
+
     this.#observer?.disconnect();
     this.#observer = null;
 

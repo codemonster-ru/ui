@@ -3,16 +3,22 @@
  * toggles. That is what lets one stylesheet serve both adapters and a server-rendered page that has
  * not run JavaScript yet.
  *
- * The sidebar and header are fixed to the viewport rather than scrolling with the page -- only the
- * content area scrolls. Responsiveness is a container query against the layout's own inline size,
- * not the viewport: an admin layout embedded in a narrower pane (a preview frame, a split view)
- * collapses to its mobile presentation on its own width, the same way it would in a full window.
+ * The desktop sidebar is fixed and the header is sticky. The mobile presentation uses the
+ * layout's own width, so an embedded layout can open its drawer inside its pane.
  */
 .cm-admin-layout {
-  display: block;
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
   min-block-size: 100dvb;
   container: cm-admin-layout / inline-size;
   background: var(--cm-color-background-canvas);
+}
+
+.cm-admin-layout:has(> .cm-admin-layout__aside) {
+  /* Clip the sliding drawer without making the layout a sticky scroll container. */
+  overflow-x: clip;
 }
 
 .cm-admin-layout__aside {
@@ -33,7 +39,7 @@
   min-block-size: auto;
 }
 
-.cm-admin-layout[data-cm-sidebar-collapsed='true'] .cm-admin-layout__aside {
+.cm-admin-layout[data-cm-sidebar-collapsed='true'] > .cm-admin-layout__aside {
   inline-size: 4.75rem;
 }
 
@@ -42,7 +48,7 @@
  * changing the collapsed state itself -- that state is for the layout at rest, not for whether you
  * can currently see it.
  */
-.cm-admin-layout[data-cm-sidebar-collapsed='true'] .cm-admin-layout__aside:is(:hover, :has(:focus-visible)) {
+.cm-admin-layout[data-cm-sidebar-collapsed='true'] > .cm-admin-layout__aside:is(:hover, :has(:focus-visible)) {
   z-index: calc(var(--cm-z-index-sticky, 10) + 2);
   inline-size: 18rem;
 }
@@ -70,16 +76,18 @@
 
 .cm-admin-layout__main {
   display: flex;
+  grid-column: 1;
+  grid-row: 1;
   flex-direction: column;
   min-inline-size: 0;
 }
 
-.cm-admin-layout:has(> .cm-admin-layout__aside) .cm-admin-layout__main {
+.cm-admin-layout:has(> .cm-admin-layout__aside) > .cm-admin-layout__main {
   margin-inline-start: 18rem;
   transition: margin-inline-start var(--cm-motion-duration-normal) var(--cm-motion-ease-standard);
 }
 
-.cm-admin-layout[data-cm-sidebar-collapsed='true']:has(> .cm-admin-layout__aside) .cm-admin-layout__main {
+.cm-admin-layout[data-cm-sidebar-collapsed='true']:has(> .cm-admin-layout__aside) > .cm-admin-layout__main {
   margin-inline-start: 4.75rem;
 }
 
@@ -90,7 +98,7 @@
   display: flex;
   align-items: center;
   gap: var(--cm-space-2);
-  block-size: 4rem;
+  min-block-size: 4rem;
   padding: var(--cm-space-2) var(--cm-space-3);
   background: var(--cm-color-background-surface);
   border-block-end: var(--cm-border-width) solid var(--cm-color-border-default);
@@ -166,9 +174,12 @@
  */
 @container cm-admin-layout (width < 64rem) {
   .cm-admin-layout__aside {
-    inset-block-start: 0;
+    position: absolute;
+    inset-block: var(--cm-admin-layout-drawer-start, 0) auto;
     z-index: calc(var(--cm-z-index-sticky, 10) + 3);
     inline-size: min(18rem, 85cqi);
+    block-size: var(--cm-admin-layout-drawer-size, 0);
+    padding-block-end: env(safe-area-inset-bottom, 0);
     visibility: hidden;
     translate: -100% 0;
     transition:
@@ -176,11 +187,16 @@
       visibility 0s var(--cm-motion-duration-normal);
   }
 
-  [dir='rtl'] .cm-admin-layout__aside {
+  .cm-admin-layout__aside:dir(rtl) {
     translate: 100% 0;
   }
 
-  .cm-admin-layout[data-cm-mobile-sidebar-open='true'] .cm-admin-layout__aside {
+  .cm-admin-layout__aside > :is(.cm-admin-layout__brand, .cm-admin-layout__aside-content) {
+    padding-left: max(var(--cm-space-3), env(safe-area-inset-left, 0px));
+    padding-right: max(var(--cm-space-3), env(safe-area-inset-right, 0px));
+  }
+
+  .cm-admin-layout[data-cm-mobile-sidebar-open='true'] > .cm-admin-layout__aside {
     visibility: visible;
     translate: 0 0;
     transition:
@@ -188,19 +204,23 @@
       visibility 0s;
   }
 
-  .cm-admin-layout[data-cm-sidebar-collapsed='true'] .cm-admin-layout__aside {
+  .cm-admin-layout[data-cm-sidebar-collapsed='true'] > .cm-admin-layout__aside {
     inline-size: min(18rem, 85cqi);
   }
 
-  .cm-admin-layout:has(> .cm-admin-layout__aside) .cm-admin-layout__main,
-  .cm-admin-layout[data-cm-sidebar-collapsed='true']:has(> .cm-admin-layout__aside) .cm-admin-layout__main {
+  .cm-admin-layout:has(> .cm-admin-layout__aside) > .cm-admin-layout__main,
+  .cm-admin-layout[data-cm-sidebar-collapsed='true']:has(> .cm-admin-layout__aside) > .cm-admin-layout__main {
     margin-inline-start: 0;
   }
 
   .cm-admin-layout__header {
+    inset-block-start: var(--cm-admin-layout-sticky-start, 0);
     z-index: calc(var(--cm-z-index-sticky, 10) + 3);
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    padding-block-start: max(var(--cm-space-2), env(safe-area-inset-top, 0px));
+    padding-left: max(var(--cm-space-3), env(safe-area-inset-left, 0px));
+    padding-right: max(var(--cm-space-3), env(safe-area-inset-right, 0px));
   }
 
   .cm-admin-layout__mobile-toggle {
@@ -225,8 +245,10 @@
   }
 
   .cm-admin-layout__mobile-backdrop {
-    position: fixed;
-    inset: 0;
+    position: absolute;
+    inset-block-start: var(--cm-admin-layout-drawer-start, 0);
+    inset-inline: 0;
+    block-size: var(--cm-admin-layout-drawer-size, 0);
     z-index: calc(var(--cm-z-index-sticky, 10) + 2);
     display: block;
     background: var(--cm-color-background-backdrop);
@@ -238,7 +260,7 @@
       visibility 0s var(--cm-motion-duration-normal);
   }
 
-  .cm-admin-layout[data-cm-mobile-sidebar-open='true'] .cm-admin-layout__mobile-backdrop {
+  .cm-admin-layout[data-cm-mobile-sidebar-open='true'] > .cm-admin-layout__mobile-backdrop {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
@@ -247,9 +269,36 @@
       visibility 0s;
   }
 
-  .cm-admin-layout[data-cm-sidebar-collapsed='true'] .cm-admin-layout__aside:is(:hover, :has(:focus-visible)) {
+  .cm-admin-layout[data-cm-sidebar-collapsed='true'] > .cm-admin-layout__aside:is(:hover, :has(:focus-visible)) {
     z-index: calc(var(--cm-z-index-sticky, 10) + 4);
     inline-size: min(18rem, 85cqi);
+  }
+
+  /* An already-open server-rendered drawer is readable inside the layout before enhancement. */
+  .cm-admin-layout[data-cm-mobile-sidebar-open='true']:not([data-cm-admin-layout-measured]) > .cm-admin-layout__aside {
+    position: static;
+    grid-column: 1;
+    grid-row: 2;
+    block-size: auto;
+  }
+
+  .cm-admin-layout[data-cm-mobile-sidebar-open='true']:not([data-cm-admin-layout-measured]) > .cm-admin-layout__main {
+    display: contents;
+  }
+
+  .cm-admin-layout__main > .cm-admin-layout__header {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .cm-admin-layout__main > .cm-admin-layout__content {
+    grid-column: 1;
+    grid-row: 3;
+  }
+
+  .cm-admin-layout__main > .cm-admin-layout__footer {
+    grid-column: 1;
+    grid-row: 4;
   }
 }
 

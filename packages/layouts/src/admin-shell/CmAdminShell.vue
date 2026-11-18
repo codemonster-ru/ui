@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed, useAttrs, useSlots } from 'vue';
+import { createCmShellMetricsController } from '@codemonster-ru/ui-runtime';
+import { computed, useAttrs, useSlots, useTemplateRef, watchPostEffect } from 'vue';
+
 import type { CmAdminShellProps } from './admin-shell.types';
 
-// AdminShell holds no state at all, so it needs neither attributes nor a controller: it is the
-// frame, and everything that changes lives in what fills it.
 defineOptions({ inheritAttrs: false });
 const props = withDefaults(defineProps<CmAdminShellProps>(), { as: 'div', fillViewport: true });
 const attrs = useAttrs();
@@ -11,11 +11,19 @@ const slots = useSlots();
 const hasTopbar = computed(() =>
   Boolean(slots.brand || slots.header || slots.headerActions || slots['header-actions']),
 );
+const root = useTemplateRef<HTMLElement>('root');
+watchPostEffect((onCleanup) => {
+  if (!root.value || !hasTopbar.value) return;
+  const controller = createCmShellMetricsController(root.value);
+  controller.connect();
+  onCleanup(() => controller.disconnect());
+});
 </script>
 
 <template>
   <component
     :is="props.as"
+    ref="root"
     v-bind="attrs"
     class="cm-admin-shell"
     :class="{ 'cm-admin-shell--fit-content': !fillViewport }"

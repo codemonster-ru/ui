@@ -114,9 +114,11 @@ Vanilla markup: [admin-layout HTML](../../contracts/admin-layout/cases/default.h
 
 ## AdminShell
 
-`CmAdminShell` is a fixed administrative frame: a topbar above a sidebar and workspace. It holds no
-state at all, so it needs neither attributes nor a controller — it is the frame, and everything that
-changes lives in what fills it.
+`CmAdminShell` is a fixed administrative frame with a sticky topbar above a sidebar and workspace.
+Native focus scrolling uses the declared `--cm-layout-header-height` clearance before enhancement.
+The Vue adapter and the Vanilla `shell-metrics` controller check the rendered topbar when a focused
+control may be covered. Vanilla runtime discovery uses the existing `cm-admin-shell` class. If
+you register controllers individually, register `shell-metrics` with `createCmShellMetricsController`.
 
 Use `:fill-viewport="false"` to size the frame to its content. Both `header-actions` and
 `headerActions` are accepted as slot names.
