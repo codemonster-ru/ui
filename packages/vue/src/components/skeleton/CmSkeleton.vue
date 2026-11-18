@@ -46,11 +46,8 @@ const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['class', 'style', 'ari
 
 <template>
   <div
-    v-if="attrs.style || rootStyle"
-    v-bind="rootAttrs"
+    v-bind="attrs.style || rootStyle ? { ...rootAttrs, style: [attrs.style, rootStyle] } : rootAttrs"
     :class="classes"
-    :style="[attrs.style, rootStyle]"
     aria-hidden="true"
   />
-  <div v-else v-bind="rootAttrs" :class="classes" aria-hidden="true" />
 </template>
