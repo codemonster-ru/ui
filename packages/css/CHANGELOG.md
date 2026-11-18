@@ -6,6 +6,8 @@ All notable changes to this package will be documented in this file.
 
 Ship shared component styles, including the DatePicker contrast improvements.
 
+Reserve sticky header clearance for keyboard focus in administrative shells.
+
 ## 2.0.0-rc.2
 
 ### Fixed

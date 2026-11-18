@@ -42,6 +42,10 @@ Vue and Layouts require Vue `^3.5.0`. For Node consumers, including SSR, use Nod
 ## Fixed
 
 - Vue Skeleton preserves its DOM element when the minimum height changes.
+- AdminShell and AdminLayout keep keyboard focus visible around sticky headers. Vue and Vanilla
+  consumers with a custom AdminShell header can declare its initial clearance for SSR.
+- Vanilla showcase previews load a single bundle of package styles, restoring interaction in
+  Chromium when several embedded previews load together.
 - The compact Select preview reserves space for its two-option listbox.
 - Sorting the DataTable preview reorders the example rows in both directions.
 - Dialog and Drawer descriptions describe how to open the previews and remain accurate when open.

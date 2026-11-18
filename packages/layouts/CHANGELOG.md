@@ -6,6 +6,8 @@ All notable changes to this package will be documented in this file.
 
 Ship the stable layout catalog, shared breakpoints, and opt-in historical entries.
 
+Keep focused navigation visible in sticky administrative layouts.
+
 ## 2.0.0-rc.2
 
 Update dependency and peer ranges for the coordinated CodeMonster UI 2.0 release candidate.
