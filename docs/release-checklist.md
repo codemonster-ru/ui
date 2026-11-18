@@ -37,6 +37,9 @@ The tag preparation script derives `next` whenever the version contains a prerel
   vulnerable `1.x` formatter dependency that `@vue/test-utils` declares.
 - Review the [2.0 draft changelog](./codemonster-ui-2.0-release-notes.md).
 - Confirm npm Trusted Publishing is configured for `.github/workflows/release-from-tag.yml`.
+  For a package name absent from the registry, arrange a first-publication bootstrap with the
+  npm organization owner. npm requires an existing package for Trusted Publishing setup.
+  [npm trust documentation](https://docs.npmjs.com/cli/v11/commands/npm-trust/)
 - Confirm the workflow has only `contents: write` and `id-token: write` permissions.
 
 ## 3. Run the complete verification sequence
