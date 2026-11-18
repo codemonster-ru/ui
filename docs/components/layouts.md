@@ -115,19 +115,27 @@ Vanilla markup: [admin-layout HTML](../../contracts/admin-layout/cases/default.h
 ## AdminShell
 
 `CmAdminShell` is a fixed administrative frame with a sticky topbar above a sidebar and workspace.
-Native focus scrolling uses the declared `--cm-layout-header-height` clearance before enhancement.
-The Vue adapter and the Vanilla `shell-metrics` controller check the rendered topbar when a focused
-control may be covered. Vanilla runtime discovery uses the existing `cm-admin-shell` class. If
-you register controllers individually, register `shell-metrics` with `createCmShellMetricsController`.
+Set the existing `--cm-layout-header-height` token on the shell when its topbar has a custom height.
+Before JavaScript runs, sticky sidebar placement and native focus scrolling use that declared
+height. Include the topbar's padding in the value. If the topbar can wrap before enhancement,
+declare enough clearance for the tallest expected layout.
+
+After enhancement, the Vue adapter and Vanilla `shell-metrics` controller measure the rendered
+topbar and update the clearance as it resizes. Use the same CSS property on the Vanilla
+`.cm-admin-shell` element. If you register Vanilla controllers individually, register
+`shell-metrics` with `createCmShellMetricsController`.
 
 Use `:fill-viewport="false"` to size the frame to its content. Both `header-actions` and
 `headerActions` are accepted as slot names.
 
 ```vue
 <template>
-  <CmAdminShell>
-    <template #brand>Acme</template>
-    <template #sidebar>Navigation</template>
+  <CmAdminShell style="--cm-layout-header-height: 120px">
+    <template #header>
+      <div style="min-block-size: calc(120px - 2 * var(--cm-space-2))">Acme workspace</div>
+    </template>
+    <template #sidebar><a href="#reports">Reports</a></template>
+    <h1 id="reports">Reports</h1>
     Workspace
   </CmAdminShell>
 </template>
