@@ -1,7 +1,7 @@
 # CodeMonster UI 2.0 component coverage
 
 The public catalog below reconciles the canonical manifests with the Vue and Layouts root
-exports. Vanilla uses each linked canonical HTML contract and opts into the matching runtime
+exports. Vanilla uses each linked canonical contract and opts into the matching runtime
 controller where the contract specifies one. The inventory has 62 components, 181 canonical cases
 and 72 scripted behavior scenarios. A dash means the contract has no dedicated scenario under
 `contracts/<component>/behavior`.
@@ -15,10 +15,10 @@ canonical fixtures. [Prior product coverage](../verification/product-quality.md#
 | Component and contract | Vue distribution | Fixture cases | Behavior scenarios |
 | --- | --- | ---: | ---: |
 | [Accordion](../../contracts/accordion/contract.md) | `ui-vue` | 5 | 6 |
-| [AdminLayout](../../contracts/admin-layout/contract.md) | `ui-layouts` | 2 | 1 |
-| [AdminShell](../../contracts/admin-shell/contract.md) | `ui-layouts` | 1 | — |
+| [AdminLayout](../../contracts/admin-layout/manifest.json) | `ui-layouts` | 2 | 1 |
+| [AdminShell](../../contracts/admin-shell/manifest.json) | `ui-layouts` | 1 | — |
 | [Alert](../../contracts/alert/contract.md) | `ui-vue` | 2 | — |
-| [AppShell](../../contracts/app-shell/contract.md) | `ui-layouts` | 2 | 1 |
+| [AppShell](../../contracts/app-shell/manifest.json) | `ui-layouts` | 2 | 1 |
 | [AsideArea](../../contracts/aside-area/contract.md) | `ui-layouts` | 1 | — |
 | [AuthLayout](../../contracts/auth-layout/contract.md) | `ui-layouts` | 1 | — |
 | [Avatar](../../contracts/avatar/contract.md) | `ui-vue` | 2 | — |
@@ -27,7 +27,7 @@ canonical fixtures. [Prior product coverage](../verification/product-quality.md#
 | [Button](../../contracts/button/contract.md) | `ui-vue` | 11 | — |
 | [Card](../../contracts/card/contract.md) | `ui-vue` | 5 | — |
 | [Checkbox](../../contracts/checkbox/contract.md) | `ui-vue` | 3 | 2 |
-| [ColumnChooser](../../contracts/column-chooser/contract.md) | `ui-vue` | 1 | 3 |
+| [ColumnChooser](../../contracts/column-chooser/manifest.json) | `ui-vue` | 1 | 3 |
 | [CommandPalette](../../contracts/command-palette/contract.md) | `ui-vue` | 6 | 4 |
 | [Container](../../contracts/container/contract.md) | `ui-vue`, `ui-layouts` | 3 | — |
 | [ContentArea](../../contracts/content-area/contract.md) | `ui-layouts` | 1 | — |
@@ -35,7 +35,7 @@ canonical fixtures. [Prior product coverage](../verification/product-quality.md#
 | [DatePicker](../../contracts/date-picker/contract.md) | `ui-vue` | 9 | 2 |
 | [Dialog](../../contracts/dialog/contract.md) | `ui-vue` | 4 | 4 |
 | [Divider](../../contracts/divider/contract.md) | `ui-vue` | 2 | — |
-| [DocumentLayout](../../contracts/document-layout/contract.md) | `ui-layouts` | 1 | 1 |
+| [DocumentLayout](../../contracts/document-layout/manifest.json) | `ui-layouts` | 1 | 1 |
 | [Drawer](../../contracts/drawer/contract.md) | `ui-vue` | 6 | 3 |
 | [Dropdown](../../contracts/dropdown/contract.md) | `ui-vue` | 5 | 5 |
 | [ErrorLayout](../../contracts/error-layout/contract.md) | `ui-layouts` | 1 | — |
@@ -46,7 +46,7 @@ canonical fixtures. [Prior product coverage](../verification/product-quality.md#
 | [Grid](../../contracts/grid/contract.md) | `ui-vue`, `ui-layouts` | 1 | — |
 | [GroupBox](../../contracts/group-box/contract.md) | `ui-vue` | 1 | 1 |
 | [HeaderArea](../../contracts/header-area/contract.md) | `ui-layouts` | 1 | — |
-| [Icon](../../contracts/icon/contract.md) | `ui-vue` | 2 | — |
+| [Icon](../../contracts/icon/manifest.json) | `ui-vue` | 2 | — |
 | [IconButton](../../contracts/icon-button/contract.md) | `ui-vue` | 3 | — |
 | [Inline](../../contracts/inline/contract.md) | `ui-vue`, `ui-layouts` | 2 | — |
 | [Input](../../contracts/input/contract.md) | `ui-vue` | 7 | 4 |
@@ -62,19 +62,19 @@ canonical fixtures. [Prior product coverage](../verification/product-quality.md#
 | [Radio](../../contracts/radio/contract.md) | `ui-vue` | 3 | 1 |
 | [Section](../../contracts/section/contract.md) | `ui-vue`, `ui-layouts` | 2 | — |
 | [Select](../../contracts/select/contract.md) | `ui-vue` | 3 | 2 |
-| [SetupLayout](../../contracts/setup-layout/contract.md) | `ui-layouts` | 1 | 1 |
+| [SetupLayout](../../contracts/setup-layout/manifest.json) | `ui-layouts` | 1 | 1 |
 | [SidebarArea](../../contracts/sidebar-area/contract.md) | `ui-layouts` | 1 | — |
 | [Skeleton](../../contracts/skeleton/contract.md) | `ui-vue` | 2 | — |
 | [SkeletonGate](../../contracts/skeleton-gate/contract.md) | `ui-vue` | 2 | — |
 | [Stack](../../contracts/stack/contract.md) | `ui-vue`, `ui-layouts` | 1 | — |
-| [Stepper](../../contracts/stepper/contract.md) | `ui-vue` | 3 | 2 |
+| [Stepper](../../contracts/stepper/manifest.json) | `ui-vue` | 3 | 2 |
 | [Switch](../../contracts/switch/contract.md) | `ui-vue` | 4 | 1 |
 | [Table](../../contracts/table/contract.md) | `ui-vue` | 2 | — |
-| [TableOfContents](../../contracts/table-of-contents/contract.md) | `ui-vue` | 2 | 1 |
+| [TableOfContents](../../contracts/table-of-contents/manifest.json) | `ui-vue` | 2 | 1 |
 | [Tabs](../../contracts/tabs/contract.md) | `ui-vue` | 5 | 2 |
-| [Tag](../../contracts/tag/contract.md) | `ui-vue` | 3 | — |
+| [Tag](../../contracts/tag/manifest.json) | `ui-vue` | 3 | — |
 | [Textarea](../../contracts/textarea/contract.md) | `ui-vue` | 3 | 2 |
-| [ThemeSwitch](../../contracts/theme-switch/contract.md) | `ui-vue` | 1 | 1 |
+| [ThemeSwitch](../../contracts/theme-switch/manifest.json) | `ui-vue` | 1 | 1 |
 | [Tooltip](../../contracts/tooltip/contract.md) | `ui-vue` | 4 | 3 |
 
 ## Manual coverage
