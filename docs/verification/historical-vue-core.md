@@ -128,6 +128,4 @@ CommonJS, and explicit shared stylesheet and token imports for aggregate entries
   reachability check. Historical component styles use VueForge selectors and tokens. The new
   counterparts use the existing shared CodeMonster selectors and tokens. CSS class name and
   custom property migration for legacy consumers remains open.
-- The [restoration queue](historical-restoration.md) records the separate historical showcase,
-  stored fixture, paired adapter and accessibility checks. Any remaining differences are scoped
-  in the corresponding contract rows above.
+- See the [release checklist](../release-checklist.md) for current browser and accessibility checks.

@@ -68,4 +68,18 @@ describe('display components', () => {
     );
     expect(unsafe.attributes('style')).toBeUndefined();
   });
+
+  it('keeps the Skeleton element when the minimum height is added or removed', async () => {
+    const wrapper = mount(CmSkeleton);
+    const element = wrapper.get('div').element;
+    expect(wrapper.attributes('style')).toBeUndefined();
+
+    await wrapper.setProps({ minHeight: 48 });
+    expect(wrapper.get('div').element).toBe(element);
+    expect(wrapper.attributes('style')).toContain('min-height: 48px');
+
+    await wrapper.setProps({ minHeight: null });
+    expect(wrapper.get('div').element).toBe(element);
+    expect(wrapper.attributes('style')).toBeUndefined();
+  });
 });

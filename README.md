@@ -24,6 +24,24 @@ commands are available under the root `package.json` in the VS Code NPM Scripts 
 Use `npm run dev` for the Vue showcase with hot reload. See the
 [Vanilla guide](./docs/vanilla.md) for the static assets and template integration.
 
+## Development checks
+
+Run the smallest check that covers the change. For a Vue component, run its source test directly:
+
+```sh
+npm exec -w @codemonster-ru/ui-vue -- vitest run src/components/button/CmButton.test.ts
+```
+
+Use `npm test -w @codemonster-ru/ui-runtime` for a standalone package test. Check dependent
+packages when behavior or an export changes. For a broader change, use
+`npm run check -- "$(git rev-parse origin/main)"` to test the changed workspaces and their published
+dependants. `npm run check` checks the full graph. Shared contracts, configuration and lockfile
+changes select the full graph automatically.
+
+CI runs on pull requests and pushes to `main`, with a short Chromium smoke for applicable changes.
+The tag workflow runs package and strict browser verification before publishing. See the
+[release checklist](./docs/release-checklist.md) for release commands and manual checks.
+
 ## VueForge
 
 CodeMonster UI succeeds VueForge, the Vue-only design system this project migrated from. VueForge

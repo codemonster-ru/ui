@@ -93,9 +93,11 @@ supported build target and do not add a second legacy bundle to shared packages.
 
 ## Verification
 
-Continuous integration covers Chromium, Firefox, and WebKit engines for canonical rendering and
-interaction cases. Release verification additionally checks representative real Safari and mobile
-browser behavior where engine emulation is insufficient.
+Pull request CI runs a short headless Chromium interaction smoke for applicable changes.
+The release workflow runs the full stored comparisons and cross-platform behavior checks with
+pinned Chrome on macOS. Use the repository browser scripts with Firefox and WebKit for
+representative release cases. Native Safari, mobile browser and assistive-technology checks
+remain part of release verification where browser automation cannot cover the behavior.
 
 Tests include:
 
@@ -108,8 +110,7 @@ Tests include:
 - directly served static assets;
 - no-JavaScript and progressively enhanced Vanilla pages.
 
-The exact automated browser versions are recorded in CI configuration when `CMUI-016` establishes
-workspace conventions.
+See the [release workflow](../../.github/workflows/release-from-tag.yml) for the pinned visual renderer.
 
 ## Review policy
 

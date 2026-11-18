@@ -105,8 +105,7 @@ migration state, not a permanent compatibility architecture.
 - Do not ship duplicate `.vf-*` selectors in `ui-css`.
 - Do not emit both `--vf-*` and `--cm-*` variables from new token packages.
 - In the Vue adapter, restore a `Vf*` export only after verifying its contract. See the
-  [historical restoration queue](../verification/historical-restoration.md) and its traceability
-  records for scope and differences.
+  [consumer migration guide](../migrate-from-vueforge.md) for scope and differences.
 - Do not make new adapters depend on VueForge packages.
 - Do not preserve obsolete API shapes that conflict with canonical HTML or accessibility.
 - Add a migration transform only when the change is deterministic and safe.

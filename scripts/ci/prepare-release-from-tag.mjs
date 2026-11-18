@@ -111,7 +111,7 @@ if (!releaseNotes) {
   fail(`Changelog section for ${versionFromTag} is empty in ${packageDir}/CHANGELOG.md.`);
 }
 
-const releaseNotesPath = path.join(rootDir, '.release-notes.md');
+const releaseNotesPath = process.env.RELEASE_NOTES_PATH ?? path.join(rootDir, '.release-notes.md');
 fs.writeFileSync(releaseNotesPath, `# ${packageName}@${versionFromTag}\n\n## Changes\n\n${releaseNotes}\n`, 'utf8');
 
 const output = [

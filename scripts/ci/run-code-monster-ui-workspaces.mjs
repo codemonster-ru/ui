@@ -3,7 +3,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { discoverCodeMonsterUiWorkspaces } from './code-monster-ui-workspaces.mjs';
 
-const allowedScripts = new Set(['build', 'check', 'pack:dry-run']);
+const allowedScripts = new Set(['build', 'pack:dry-run']);
 const script = process.argv[2];
 
 if (!allowedScripts.has(script)) {

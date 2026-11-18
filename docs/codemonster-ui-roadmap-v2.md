@@ -1,7 +1,7 @@
 # CodeMonster UI maturity roadmap
 
 This document continues the completed
-[CodeMonster UI 1.0 roadmap](./codemonster-ui-roadmap.md). CodeMonster UI 1.0 proved the shared
+[CodeMonster UI 1.0 roadmap](https://github.com/codemonster-ru/ui/blob/857c0e396077a7703a6b0b28c7c731fdb7f7befb/docs/codemonster-ui-roadmap.md). CodeMonster UI 1.0 proved the shared
 contract, CSS, runtime, Vue, and Annabel Razor architecture. This roadmap closes the remaining
 functional, migration, and visual-compatibility gaps before another platform adapter is scheduled.
 
@@ -69,33 +69,15 @@ that threshold. There is no design-change tolerance.
 
 ## Working rules
 
-- Complete phases in order unless a dependency recorded below permits parallel work.
-- Keep every implementation commit buildable and include its relevant tests. Update this roadmap
-  only when an item changes status, scope, dependency, or a decision changes the delivery plan.
-- Reference the stable item identifier in the commit body, for example `Roadmap: CMUI-170`.
-- Do not mark an item complete because component files exist on both platforms.
-- Record every legacy capability as `supported`, `superseded`, `application-owned`, `retained`, or
-  `missing`, with evidence for the decision.
-- A `supported` capability requires tests at the appropriate contract, adapter, accessibility,
-  interaction, SSR or server-rendering, and visual layers.
-- A visual claim requires rendered screenshot comparison. Generating an HTML fixture matrix without
-  capturing and comparing pixels is fixture coverage, not visual verification.
-- Treat VueForge token source and formulas as the first visual-compatibility input. Compare token
-  names, aliases, formulas, serialized values, and computed browser values before changing
-  component or showcase CSS.
-- Keep visual corrections in the lowest shared layer that owns the behavior: tokens in
-  `ui-tokens`, component geometry and states in `ui-css` or the shared component contract, adapter
-  behavior in the platform adapter, and only application-owned composition in the showcase.
-- Do not accept screenshot-driven offsets, selectors, or markup changes as component fixes. A
-  screenshot diff is a validation signal, not the implementation source of truth; every shared
-  component change requires canonical Vue and Razor evidence before it can close a visual item.
-- Use commit `fd793696f50d3be0fcd3788f0f8f751c63869963` as the frozen VueForge repository,
-  showcase, token, and component-style reference. Compare equivalent routes, states, themes, and
-  viewports; do not approve a new design merely because Vue and Razor match each other.
-- Do not weaken canonical HTML or accessibility contracts solely to reproduce a VueForge API.
-- Record material scope changes in the decision log before changing the numbered checklist.
-- Do not use the decision log as an implementation journal. Link routine visual-fix evidence from
-  the relevant work item, issue, or commit instead.
+Follow the [development checks](../README.md#development-checks) for routine changes. Use this
+roadmap for the remaining product and migration work.
+
+- Record changes to legacy capability dispositions with evidence appropriate to the behavior.
+- Keep visual changes in the layer that owns the behavior. Use shared tokens for colors and
+  geometry, shared CSS for component presentation, and adapter code for platform behavior.
+- Use the frozen VueForge reference for historical compatibility decisions and
+  [the checked-in fixture baseline](../visual-baselines/README.md) for release comparisons.
+- Preserve canonical HTML and accessibility contracts when reconciling VueForge behavior.
 
 ## Progress
 

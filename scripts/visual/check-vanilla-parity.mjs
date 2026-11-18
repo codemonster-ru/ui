@@ -9,6 +9,24 @@ import { collectComponentCases } from '../contracts/component-cases.mjs';
 
 const chromePath = process.env.CHROME_PATH ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const origin = process.env.CM_PARITY_ORIGIN ?? 'http://127.0.0.1:5176';
+const requested = process.argv.slice(2);
+const contractsDirectory = resolve(import.meta.dirname, '../../contracts');
+let behaviorScenarios;
+if (process.env.CM_PARITY_BEHAVIOR === '1') {
+  const { scenarios, errors } = collectBehaviorScenarios(contractsDirectory);
+  if (errors.length) throw new Error(errors.join('\n'));
+  const unknown = requested.filter((id) => !scenarios.some(({ data }) => data.id === id));
+  if (unknown.length) throw new Error(`Unknown browser behavior scenario(s): ${unknown.join(', ')}`);
+  behaviorScenarios = scenarios.filter(({ data }) => !requested.length || requested.includes(data.id));
+  if (!behaviorScenarios.length) throw new Error('No browser behavior scenarios selected.');
+}
+const visualCases = behaviorScenarios ? undefined : collectComponentCases(contractsDirectory);
+if (visualCases) {
+  const { cases, errors } = visualCases;
+  if (errors.length) throw new Error(errors.join('\n'));
+  const unknown = requested.filter((id) => !cases.some((componentCase) => componentCase.id === id));
+  if (unknown.length) throw new Error(`Unknown browser visual case(s): ${unknown.join(', ')}`);
+}
 const profile = await mkdtemp(join(tmpdir(), 'cm-vanilla-chrome-'));
 const chrome = spawn(
   chromePath,
@@ -85,12 +103,7 @@ try {
   await send('Emulation.setLocaleOverride', { locale: 'en-US' });
   await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
   await send('Emulation.setDeviceMetricsOverride', { width: 360, height: 660, deviceScaleFactor: 1, mobile: false });
-  const { cases, errors } = collectComponentCases(resolve(import.meta.dirname, '../../contracts'));
-  if (process.env.CM_PARITY_BEHAVIOR === '1') {
-    const { scenarios, errors: scenarioErrors } = collectBehaviorScenarios(
-      resolve(import.meta.dirname, '../../contracts'),
-    );
-    if (scenarioErrors.length) throw new Error(scenarioErrors.join('\n'));
+  if (behaviorScenarios) {
     await send('Emulation.setEmulatedMedia', {
       features: [{ name: 'prefers-reduced-motion', value: 'no-preference' }],
     });
@@ -126,9 +139,7 @@ try {
       observer.observe(dialog, { attributes: true, attributeFilter: ['open'] });
     })()`;
     const result = [];
-    for (const { componentSlug, data } of scenarios.filter(
-      ({ data }) => !process.argv[2] || process.argv.slice(2).includes(data.id),
-    )) {
+    for (const { componentSlug, data } of behaviorScenarios) {
       for (const platform of ['vue', 'vanilla']) {
         const row = { scenario: data.id, platform, failures: [], motion: [] };
         result.push(row);
@@ -288,11 +299,10 @@ try {
     );
     if (result.some(({ failures }) => failures.length) || motionMismatches.length) process.exitCode = 1;
   } else {
-    if (errors.length) throw new Error(errors.join('\n'));
-    const selected = process.argv.slice(2);
+    const { cases } = visualCases;
     const report = [];
     const animatedCases = new Set();
-    for (const componentCase of cases.filter(({ id }) => !selected.length || selected.includes(id))) {
+    for (const componentCase of cases.filter(({ id }) => !requested.length || requested.includes(id))) {
       const { id, componentSlug } = componentCase;
       for (const theme of ['light', 'dark']) {
         const result = { id, componentSlug, theme };

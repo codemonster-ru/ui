@@ -9,6 +9,9 @@
     }
   },
   "ignores": [
+    "artifacts/**",
+    "**/.generated/**",
+    "**/.cache/**",
     "**/node_modules/**",
     "**/dist/**",
     "**/coverage/**",

@@ -6,60 +6,174 @@ on:
       - '@*/*@*'
 
 permissions:
-  contents: write
-  id-token: write
+  contents: read
 
 concurrency:
   group: codemonster-ui-package-publish
   cancel-in-progress: false
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
-  publish:
+  verify:
     runs-on: ubuntu-latest
+    outputs:
+      commit: ${{ steps.commit.outputs.sha }}
+      package_name: ${{ steps.prep.outputs.package_name }}
+      package_version: ${{ steps.prep.outputs.package_version }}
+      dist_tag: ${{ steps.prep.outputs.dist_tag }}
+      tarball_name: ${{ steps.prep.outputs.tarball_name }}
+      is_prerelease: ${{ steps.prep.outputs.is_prerelease }}
+      release_name: ${{ steps.prep.outputs.release_name }}
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v7
+      - uses: actions/checkout@v7
         with:
+          ref: ${{ github.sha }}
           fetch-depth: 0
+          persist-credentials: false
+      - name: Check the tagged commit
+        id: commit
+        run: |
+          commit=$(git rev-parse HEAD)
+          test "$commit" = "$(git rev-parse "$GITHUB_SHA^{commit}")"
+          test "$commit" = "$(git rev-parse "$GITHUB_REF^{commit}")"
+          echo "sha=$commit" >> "$GITHUB_OUTPUT"
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: npm
-          registry-url: https://registry.npmjs.org
-
-      - name: Pin npm
-        run: npm install --global npm@11.17.0
-
-      - name: Install dependencies
-        run: npm ci
-
+      - run: npm install --global npm@11.17.0
+      - run: npm ci
       - name: Resolve release target from tag
         id: prep
+        env:
+          RELEASE_NOTES_PATH: ${{ runner.temp }}/codemonster-release-notes.md
         run: node scripts/ci/prepare-release-from-tag.mjs
-
-      - name: Verify release graph and packed consumer
+      - name: Verify packages and consumers
         run: npm run verify
 
-      - name: Pack verified target
+      - name: Pack and inspect the verified target
+        env:
+          PACKAGE_NAME: ${{ steps.prep.outputs.package_name }}
+          TARBALL_NAME: ${{ steps.prep.outputs.tarball_name }}
+          RELEASE_NOTES: ${{ steps.prep.outputs.release_notes_path }}
+          DIST_TAG: ${{ steps.prep.outputs.dist_tag }}
         run: |
-          mkdir -p .release-artifacts
-          npm pack -w "${{ steps.prep.outputs.package_name }}" --ignore-scripts --pack-destination .release-artifacts
-          test -f ".release-artifacts/${{ steps.prep.outputs.tarball_name }}"
+          mkdir -p "$RUNNER_TEMP/release-package"
+          npm pack -w "$PACKAGE_NAME" --ignore-scripts --pack-destination "$RUNNER_TEMP/release-package"
+          cd "$RUNNER_TEMP/release-package"
+          npm publish "./$TARBALL_NAME" --dry-run --ignore-scripts --tag "$DIST_TAG"
+          cp "$RELEASE_NOTES" release-notes.md
+          sha256sum "$TARBALL_NAME" release-notes.md > SHA256SUMS
+      - uses: actions/upload-artifact@v7
+        with:
+          name: release-package
+          path: ${{ runner.temp }}/release-package/
+          if-no-files-found: error
 
-      - name: Inspect target tarball
-        run: npm publish ".release-artifacts/${{ steps.prep.outputs.tarball_name }}" --dry-run --ignore-scripts --tag "${{ steps.prep.outputs.dist_tag }}"
+  visual:
+    runs-on: macos-26
+    env:
+      CHROME_FOR_TESTING_VERSION: 151.0.7922.138
+    outputs:
+      commit: ${{ steps.commit.outputs.sha }}
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Check the browser test commit
+        id: commit
+        run: |
+          commit=$(git rev-parse HEAD)
+          test "$commit" = "$(git rev-parse "$GITHUB_SHA^{commit}")"
+          echo "sha=$commit" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Install pinned Chrome
+        run: |
+          chrome_path="$RUNNER_TEMP/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing"
+          curl --fail --location --retry 3 --silent --show-error \
+            "https://storage.googleapis.com/chrome-for-testing-public/${CHROME_FOR_TESTING_VERSION}/mac-arm64/chrome-mac-arm64.zip" \
+            --output "$RUNNER_TEMP/chrome-for-testing.zip"
+          unzip -q "$RUNNER_TEMP/chrome-for-testing.zip" -d "$RUNNER_TEMP"
+          "$chrome_path" --version
+          echo "CHROME_PATH=$chrome_path" >> "$GITHUB_ENV"
+      - name: Check browser behavior and strict visual baselines
+        env:
+          CM_BROWSER_OUTPUT: ${{ runner.temp }}/codemonster-release-browser
+        run: bash scripts/visual/run-browser-checks.sh release
+      - name: Upload browser failures
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: codemonster-release-browser
+          path: |
+            ${{ runner.temp }}/codemonster-release-browser/capture
+            ${{ runner.temp }}/codemonster-release-browser/diff-*
+            ${{ runner.temp }}/codemonster-release-browser/*.json
+            ${{ runner.temp }}/codemonster-release-browser/*.log
+          if-no-files-found: ignore
+
+  publish:
+    needs: [verify, visual]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    env:
+      VERIFIED_COMMIT: ${{ needs.verify.outputs.commit }}
+      VISUAL_COMMIT: ${{ needs.visual.outputs.commit }}
+      PACKAGE_NAME: ${{ needs.verify.outputs.package_name }}
+      PACKAGE_VERSION: ${{ needs.verify.outputs.package_version }}
+      DIST_TAG: ${{ needs.verify.outputs.dist_tag }}
+      TARBALL_NAME: ${{ needs.verify.outputs.tarball_name }}
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Confirm both checks verified the tagged commit
+        run: |
+          commit=$(git rev-parse HEAD)
+          test "$commit" = "$(git rev-parse "$GITHUB_SHA^{commit}")"
+          test "$commit" = "$(git rev-parse "$GITHUB_REF^{commit}")"
+          test "$commit" = "$VERIFIED_COMMIT"
+          test "$commit" = "$VISUAL_COMMIT"
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+      - run: npm install --global npm@11.17.0
+      - uses: actions/download-artifact@v8
+        with:
+          name: release-package
+          path: ${{ runner.temp }}/release-package
+      - name: Verify the package archive
+        working-directory: ${{ runner.temp }}/release-package
+        run: |
+          sha256sum --check --strict SHA256SUMS
+          test -f "$TARBALL_NAME"
 
       - name: Check existing registry version
         id: registry
+        working-directory: ${{ runner.temp }}/release-package
         run: |
-          package_spec="${{ steps.prep.outputs.package_name }}@${{ steps.prep.outputs.package_version }}"
-          tarball=".release-artifacts/${{ steps.prep.outputs.tarball_name }}"
-
+          package_spec="$PACKAGE_NAME@$PACKAGE_VERSION"
           if npm view "$package_spec" version >/dev/null 2>&1; then
-            npm diff --diff="$package_spec" --diff="$tarball" --diff-name-only | sed '/^[[:space:]]*$/d' > .release-diff
+            npm diff --diff="$package_spec" --diff="./$TARBALL_NAME" --diff-name-only | sed '/^[[:space:]]*$/d' > .release-diff
             if test -s .release-diff; then
               cat .release-diff
               exit 1
@@ -71,13 +185,14 @@ jobs:
 
       - name: Publish package to npm
         if: steps.registry.outputs.published != 'true'
-        run: npm publish ".release-artifacts/${{ steps.prep.outputs.tarball_name }}" --access public --provenance --tag "${{ steps.prep.outputs.dist_tag }}"
+        working-directory: ${{ runner.temp }}/release-package
+        run: npm publish "./$TARBALL_NAME" --access public --provenance --tag "$DIST_TAG"
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@v3
         with:
-          name: ${{ steps.prep.outputs.release_name }}
-          body_path: ${{ steps.prep.outputs.release_notes_path }}
-          prerelease: ${{ steps.prep.outputs.is_prerelease }}
+          name: ${{ needs.verify.outputs.release_name }}
+          body_path: ${{ runner.temp }}/release-package/release-notes.md
+          prerelease: ${{ needs.verify.outputs.is_prerelease }}
           tag_name: ${{ github.ref_name }}
-          target_commitish: ${{ github.sha }}
+          target_commitish: ${{ needs.verify.outputs.commit }}

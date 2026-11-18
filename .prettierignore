@@ -1,3 +1,6 @@
+/artifacts/
+**/.cache
+**/.vite
 **/dist
 **/.generated
 **/coverage

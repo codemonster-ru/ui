@@ -3,18 +3,6 @@
 Run this checklist for CodeMonster UI npm releases from the repository root, on the exact commit
 that will receive the package tags. VueForge releases belong to the archived project.
 
-## Internal CodeMonster UI 2.0 candidate
-
-Use the [draft 2.0 changelog](./codemonster-ui-2.0-release-notes.md) for the seven-package
-`2.0.0-rc.2` cohort. For an internal handoff, complete sections 1–5 and retain the seven `.tgz`
-files with SHA-256 digests and the product commit SHA. Run the Vanilla production build and the
-showcase browser regressions against both built sites. Attach results by browser engine, adapter,
-theme, and viewport. Record native Safari, VoiceOver and NVDA separately from automated checks.
-
-Keep sections 6–9 pending for an authorized publication. Before publication, record the hosted CI
-result for the exact product commit, including its stored visual comparison. Record any pending
-manual checks or residual defects in the candidate's risk register.
-
 ## 1. Choose the release channel
 
 - Stable versions publish to npm tag `latest`.
@@ -33,86 +21,37 @@ The tag preparation script derives `next` whenever the version contains a prerel
 - Confirm the packages in scope use the target release versions and all other package versions remain
   unchanged.
 - Confirm every package in scope has a non-empty matching section in its `CHANGELOG.md` file.
-- Confirm the root `overrides` entry still resolves `js-beautify` to `2.0.3`, replacing the
-  vulnerable `1.x` formatter dependency that `@vue/test-utils` declares.
 - Review the [2.0 draft changelog](./codemonster-ui-2.0-release-notes.md).
 - Confirm npm Trusted Publishing is configured for `.github/workflows/release-from-tag.yml`.
-- Confirm the workflow has only `contents: write` and `id-token: write` permissions.
+- Confirm only the publish job has `contents: write` and `id-token: write` permissions.
 
-## 3. Run the complete verification sequence
+## 3. Verify the release commit
 
-Run every requested command even where `verify` repeats an earlier or later gate:
+The tag workflow installs from the lockfile and runs `npm run verify` on the exact release
+commit. This command checks the dependency graph and advisories, builds all seven packages,
+runs source, integration, SSR and accessibility tests, and checks types, lint, documentation,
+exports, package contents, size and tree shaking. It also installs real tarballs into isolated
+npm, pnpm and Yarn consumers for browser builds, ESM and CommonJS SSR, TypeScript resolution
+and CSS imports. Use `npm ci` followed by `npm run verify` to reproduce the package checks locally.
 
-```bash
-npm test
-npm run audit:release
-npm run verify
-npm run typecheck
-npm run lint:all
-npm run build
-npm run check:packed-consumers
-npm run build:demo
-npm run build:vanilla
-npm run prepublish:all
-```
+## 4. Check browser behavior and accessibility
 
-All commands must pass on the release commit. Also confirm:
+The tag workflow runs the full behavior and stored visual checks with pinned Chrome on macOS
+in parallel with package verification. Publication requires both jobs to pass on the tagged commit.
 
-- Metadata, export and consumer contracts pass for all seven active packages.
-- The production dependency graph has no known vulnerabilities, and no high/critical development
-  advisory remains accepted.
-- `npm ls --all` reports a valid dependency graph after the clean lockfile installation.
-- ESM, CommonJS, Node ESM, SSR, and declaration-resolution smokes pass.
-- Tree-shaking and deferred-runtime budgets pass.
-- `git diff --check` reports no whitespace errors.
-- `git status --short` contains only reviewed release changes before the release commit, and is empty
-  after that commit.
+Before tagging, check representative cases in Firefox, WebKit, native Safari and mobile browsers
+where applicable. Check keyboard navigation, focus and announcements with native VoiceOver and
+NVDA. Record results and unresolved risks for the exact commit in the release issue. Include
+narrow or enlarged-text DatePicker layout, edge placement of overlays, and showcase landmark,
+scroll-region and contrast findings where still applicable. See the
+[accessibility requirements](./architecture/accessibility-requirements.md) and the
+[RC.2 manual scenarios](./verification/codemonster-ui-2.0-rc.2.md#manual-assistive-technology-acceptance).
 
-## 4. Inspect tarballs
+## 5. Check the release package set
 
-`npm run prepublish:all` builds and runs dry-run packs for every npm package. For a CodeMonster UI
-only train, `npm run prepublish:ui` provides the focused build and dry run. Dry runs print proposed
-archive contents but do not create `.tgz` files. Review those file lists and inspect each target
-explicitly when release metadata changes:
-
-```bash
-npm pack --workspace @codemonster-ru/ui-tokens --dry-run --ignore-scripts
-npm pack --workspace @codemonster-ru/ui-icons --dry-run --ignore-scripts
-npm pack --workspace @codemonster-ru/ui-runtime --dry-run --ignore-scripts
-npm pack --workspace @codemonster-ru/ui-css --dry-run --ignore-scripts
-npm pack --workspace @codemonster-ru/ui-utilities --dry-run --ignore-scripts
-npm pack --workspace @codemonster-ru/ui-vue --dry-run --ignore-scripts
-npm pack --workspace @codemonster-ru/ui-layouts --dry-run --ignore-scripts
-```
-
-For every proposed archive and generated consumer tarball, verify:
-
-- every declared `exports` target exists, including JavaScript, declarations, and CSS;
-- no source-only tests, examples, caches, or unrelated monorepo files are present;
-- declaration files do not resolve through workspace-only aliases;
-- package metadata, license, repository directory, engine, and peer ranges are correct;
-- browser auto-CSS files and CSS-free Node artifacts are both present where declared.
-
-## 5. Repeat clean consumer verification
-
-`npm run check:packed-consumers`, run explicitly in section 3, creates real tarballs in isolated
-temporary directories and installs only those archives into fresh npm, pnpm, and Yarn consumers. It
-must pass without workspace links or source aliases.
-
-Required scenarios:
-
-- npm, pnpm, and Yarn installation with Vue 3.5;
-- Vite browser build and TypeScript `NodeNext`/bundler resolution;
-- Node ESM and CommonJS SSR without `document` shims;
-- full CSS and component-subpath auto CSS;
-- all explicit shared CSS exports and representative browser auto-CSS entries;
-- one-component packed tree shaking with required CSS retained and unrelated CSS removed.
-
-The separate `npm run check:consumer-tree-shaking` gate covers one-component, multi-component, and
-full-namespace imports for Vue and Layouts against the built workspace packages.
-
-Repeat these consumers from the registry after publication to catch registry-only dependency or
-tarball failures.
+Confirm the intended package versions and their published dependency ranges. For an internal
+2.0 handoff, use the [draft changelog](./codemonster-ui-2.0-release-notes.md) and retain the
+candidate tarballs with SHA-256 digests and the source commit SHA.
 
 ## 6. Publish in topological order
 
@@ -127,7 +66,9 @@ Historical aggregate `ui/vX.Y.Z` tags do not trigger the publication workflow.
 The workflow treats the packed archive as immutable: after verification builds the package, it packs
 the target once with lifecycle scripts disabled, dry-runs publication of that exact `.tgz`, and then
 publishes the same file. No workspace or package-directory publish may replace the final tarball
-publish, and no rebuild may occur between packing, inspection, and publication.
+publish, and no rebuild may occur between packing, inspection, and publication. The publish job
+compares the verified SHA from both checks with the tag and validates SHA-256 on the downloaded
+archive before using it.
 
 For each package:
 

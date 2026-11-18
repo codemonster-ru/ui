@@ -53,7 +53,8 @@ pixels were originally captured from, back when this comparison proved the migra
 reproduced it exactly. That provenance stays accurate and is kept for the record; the comparison
 itself no longer depends on that commit or on anything being checked out from it.
 
-## Current showcase baseline
+## Historical showcase design captures
 
-[Showcase excellence v1](showcase-excellence-v1/README.md) records the intentional showcase
-layout and composition changes. It is reviewed separately from the historical component baseline.
+The completed [v1](https://github.com/codemonster-ru/ui/tree/857c0e396077a7703a6b0b28c7c731fdb7f7befb/visual-baselines/showcase-excellence-v1) and
+[v2](https://github.com/codemonster-ru/ui/tree/857c0e396077a7703a6b0b28c7c731fdb7f7befb/visual-baselines/showcase-excellence-v2) showcase captures are available in
+Git history. The release workflow compares the cross-platform component fixtures above.

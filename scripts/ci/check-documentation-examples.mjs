@@ -8,7 +8,21 @@ import ts from 'typescript';
 import { resolveContainedPath, resolveVirtualFilePath } from './documentation-example-paths.mjs';
 
 const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
-const ignoredDirectoryNames = new Set(['.git', '.npm-cache', 'build', 'coverage', 'dist', 'node_modules']);
+const ignoredDirectoryNames = new Set([
+  '.cache',
+  '.generated',
+  '.git',
+  '.npm-cache',
+  '.release-artifacts',
+  '.vite',
+  'artifacts',
+  'build',
+  'coverage',
+  'dist',
+  'node_modules',
+  'showcase-dist',
+  'vendor',
+]);
 const temporaryRoot = path.join(repositoryRoot, '.npm-cache');
 mkdirSync(temporaryRoot, { recursive: true });
 const temporaryDirectory = mkdtempSync(path.join(temporaryRoot, 'vueforge-documentation-examples-'));

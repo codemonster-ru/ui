@@ -87,6 +87,4 @@ and registered the TableOfContents factory. Type checking passed with the packag
 `ColumnChooserVisibleColumnsChangeDetail` declaration. The browser bundle contained CSS, ESM
 JavaScript, and all four bundled Inter font assets.
 
-The [restoration queue](historical-restoration.md) gives the exact browser, accessibility, and
-package checkpoints and distinguishes canonical markup checks from comparisons against the
-historical showcase and the stored fixture baseline.
+See the [release checklist](../release-checklist.md) for current package, browser and accessibility checks.

@@ -40,7 +40,8 @@
     "format:check": "prettier --ignore-path ../../.prettierignore --check .",
     "lint": "eslint .",
     "prepack": "npm run build",
-    "test": "npm run build && node --test ./__tests__/*.test.mjs",
+    "test": "npm run build && npm run test:built",
+    "test:built": "node --test ./__tests__/*.test.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "keywords": [

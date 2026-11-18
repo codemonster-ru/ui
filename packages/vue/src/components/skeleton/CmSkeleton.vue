@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, useAttrs, type CSSProperties, type PropType } from 'vue';
+import { computed, useAttrs, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { assertCm } from '../../internal/warn';
@@ -38,19 +38,13 @@ const minHeight = computed(() => {
     return undefined;
   return props.minHeight;
 });
-const rootStyle = computed<CSSProperties | undefined>(() =>
-  minHeight.value === undefined ? undefined : { minHeight: minHeight.value },
-);
 const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['class', 'style', 'aria-hidden']));
+const rootStyle = computed(() => {
+  const heightStyle = minHeight.value === undefined ? undefined : { minHeight: minHeight.value };
+  return attrs.style || heightStyle ? { style: [attrs.style, heightStyle] } : {};
+});
 </script>
 
 <template>
-  <div
-    v-if="attrs.style || rootStyle"
-    v-bind="rootAttrs"
-    :class="classes"
-    :style="[attrs.style, rootStyle]"
-    aria-hidden="true"
-  />
-  <div v-else v-bind="rootAttrs" :class="classes" aria-hidden="true" />
+  <div v-bind="{ ...rootAttrs, ...rootStyle }" :class="classes" aria-hidden="true" />
 </template>

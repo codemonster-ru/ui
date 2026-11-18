@@ -87,6 +87,14 @@ the same shared styles as the current subpaths. Package roots, stylesheets, foun
 and unknown paths continue through the usual resolver. Use the current specifiers for Node
 imports outside Vite and for TypeScript to resolve the current declarations directly.
 
+## Compatibility limits
+
+Keep the archived packages for applications using their package-level registrations or raw theme
+preset engine. The current MenuBar uses in-flow compact menus. Validate any workflows that relied
+on historical horizontal overflow controls. Native Dialog and Drawer release focus and modality
+during dismissal, and DatePicker uses native time selects. Refer to the component contract traces
+when adapting custom focus, motion or layout behavior.
+
 ## Vue components and composables
 
 Use the `Cm*` components for new templates. Some restored names, including `VfButton`, `VfField`, and

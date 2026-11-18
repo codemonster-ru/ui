@@ -46,7 +46,8 @@
     "format:check": "prettier --ignore-path ../../.prettierignore --check .",
     "lint": "eslint .",
     "prepack": "npm run build",
-    "test": "vitest run src --passWithNoTests && npm run build",
+    "test": "npm run build && npm run test:built",
+    "test:built": "vitest run src",
     "typecheck": "vue-tsc -p tsconfig.json --noEmit"
   },
   "keywords": [

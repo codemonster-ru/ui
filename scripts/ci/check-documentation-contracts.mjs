@@ -9,7 +9,21 @@ import { historicalComponentEntries, historicalComponentPattern } from '../build
 import { isDocumentationScriptLanguage } from './documentation-fences.mjs';
 
 const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
-const ignoredDirectoryNames = new Set(['.git', '.npm-cache', 'build', 'coverage', 'dist', 'node_modules', 'vendor']);
+const ignoredDirectoryNames = new Set([
+  '.cache',
+  '.generated',
+  '.git',
+  '.npm-cache',
+  '.release-artifacts',
+  '.vite',
+  'artifacts',
+  'build',
+  'coverage',
+  'dist',
+  'node_modules',
+  'showcase-dist',
+  'vendor',
+]);
 // These archived releases were verified separately for applications that rely on the old layout
 // plugin, presets, and entry points. Keep the exception scoped to the pinned install example.
 const archivedLayoutDependencies = new Set([

@@ -1,7 +1,7 @@
 # Product quality and developer experience
 
 The starting point is `c908b006`, whose product sources match the accepted `e4ff3dea` revision.
-The historical design reference is `d9879116`. See [historical restoration](historical-restoration.md)
+The historical design reference is `d9879116`. See [historical restoration checkpoints](https://github.com/codemonster-ru/ui/blob/857c0e396077a7703a6b0b28c7c731fdb7f7befb/docs/verification/historical-restoration.md)
 for the earlier acceptance and [stored visual renderer](stored-visual-renderer.md) for the limits
 of local pixel comparisons.
 
