@@ -2,6 +2,10 @@
 
 All notable changes to this package will be documented in this file.
 
+## 2.0.0
+
+Ship the stable semantic theme, CSS tokens, and responsive breakpoints.
+
 ## 2.0.0-rc.2
 
 Version bump for the coordinated CodeMonster UI 2.0 release candidate.

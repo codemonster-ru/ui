@@ -1,6 +1,6 @@
 # Migrate from VueForge
 
-This guide starts from VueForge commit `d9879116` and targets the CodeMonster UI `2.0.0-rc.2`
+This guide starts from VueForge commit `d9879116` and targets the CodeMonster UI `2.0.0`
 workspace. Build and install matching workspace tarballs to try these examples in another app.
 [Build and verify a packed Vue consumer](../packages/vue/README.md#installation).
 

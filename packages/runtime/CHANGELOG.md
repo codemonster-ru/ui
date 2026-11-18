@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.0
+
+Ship the stable Vanilla controllers and shared behavior core.
+
 ## 2.0.0-rc.2
 
 Version bump for the coordinated CodeMonster UI 2.0 release candidate.
