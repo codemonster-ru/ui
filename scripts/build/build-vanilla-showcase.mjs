@@ -32,7 +32,7 @@ function escapeHtml(text) {
   return text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
 }
 
-const packageStyles = ['./tokens/tokens.css', './css/fonts.css', './css/styles.css'];
+const packageStylesheet = './css/preview.css';
 
 function page(title, content, script, { base = '', styles = ['./css/showcase.css'] } = {}) {
   return `<!doctype html>
@@ -80,7 +80,7 @@ function renderExample(
       ${canonicalHtml.replaceAll('src="/avatar.png"', 'src="./avatar.png"')}
     </main>`,
     'showcase-demo.js',
-    { styles: packageStyles },
+    { styles: [packageStylesheet] },
   );
   return `<article class="showcase-example" id="${id}">
     ${primary ? '' : `<${heading}>${escapeHtml(title)}</${heading}>`}
@@ -372,7 +372,7 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
             caseMarkup.get('input-enhanced'),
           );
           const frame = page(title, `<div data-layout-example="${slug}">${content}</div>`, 'layout-example.js', {
-            styles: [...packageStyles, './showcase-layout-example.css'],
+            styles: [packageStylesheet, './showcase-layout-example.css'],
           });
           return renderLayoutGuideEntry(
             slug,

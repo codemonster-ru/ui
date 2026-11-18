@@ -55,16 +55,37 @@ await Promise.all([
   cp(resolve(source, 'showcase-demo.js'), resolve(output, 'showcase-demo.js')),
   buildVanillaShowcase(resolve(root, 'contracts'), output),
 ]);
-await build({
-  stdin: {
-    contents:
-      "@import './packages/tokens/dist/tokens.css';\n@import './packages/css/dist/fonts.css';\n@import './packages/css/dist/styles.css';\n@import './examples/shared/showcase-shell.css';\n@import './examples/shared/showcase-typography.css';\n@import './examples/shared/showcase-colors.css';\n@import './examples/shared/showcase-icon-gallery.css';\n@import './examples/shared/showcase-component-reference.css';\n@import './examples/vanilla/showcase.css';",
-    resolveDir: root,
-    loader: 'css',
-  },
-  outfile: resolve(output, 'css/showcase.css'),
-  bundle: true,
-  minify: true,
-  external: ['*.woff2'],
-});
+const packageStyles = [
+  './packages/tokens/dist/tokens.css',
+  './packages/css/dist/fonts.css',
+  './packages/css/dist/styles.css',
+];
+const showcaseStyles = [
+  './examples/shared/showcase-shell.css',
+  './examples/shared/showcase-typography.css',
+  './examples/shared/showcase-colors.css',
+  './examples/shared/showcase-icon-gallery.css',
+  './examples/shared/showcase-component-reference.css',
+  './examples/vanilla/showcase.css',
+];
+
+// The document uses showcase chrome; isolated previews use only the published package styles.
+function bundleStylesheet(file, styles) {
+  return build({
+    stdin: {
+      contents: styles.map((style) => `@import "${style}";`).join('\n'),
+      resolveDir: root,
+      loader: 'css',
+    },
+    outfile: resolve(output, 'css', file),
+    bundle: true,
+    minify: true,
+    external: ['*.woff2'],
+  });
+}
+
+await Promise.all([
+  bundleStylesheet('showcase.css', [...packageStyles, ...showcaseStyles]),
+  bundleStylesheet('preview.css', packageStyles),
+]);
 console.log(`Vanilla assets written to ${output}.`);
