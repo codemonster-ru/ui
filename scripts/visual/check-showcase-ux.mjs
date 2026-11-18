@@ -414,6 +414,10 @@ async function checkAdapter([adapter, base]) {
       });
       const errors = [];
       page.on('pageerror', (error) => errors.push(error.message));
+      page.on('requestfailed', (request) => {
+        const reason = request.failure()?.errorText;
+        if (reason === 'net::ERR_INSUFFICIENT_RESOURCES') errors.push(`${reason} ${request.url()}`);
+      });
       page.on('response', (response) => {
         if (response.status() >= 400) errors.push(`${response.status()} ${response.url()}`);
       });
