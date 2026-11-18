@@ -2,6 +2,10 @@
 
 All notable changes to this package will be documented in this file.
 
+## 2.0.0
+
+Ship the stable Vue components and historical entry points. Skeleton keeps its DOM element when its minimum height changes.
+
 ## 2.0.0-rc.2
 
 Update dependency and peer ranges for the coordinated CodeMonster UI 2.0 release candidate.
