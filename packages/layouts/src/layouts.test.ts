@@ -53,13 +53,16 @@ describe('Vue layouts', () => {
         aside: ({ isSidebarCompact }: CmAdminLayoutScope) => h('button', isSidebarCompact ? 'Compact' : 'Expanded'),
         'mobile-brand': 'Acme',
         'mobile-toggle': ({ mobileToggleAttrs, toggleMobileSidebar }: CmAdminLayoutMobileSidebarScope) =>
-          h('button', { ...mobileToggleAttrs, onClick: toggleMobileSidebar }, 'Menu'),
+          h('div', [
+            h('button', 'Unrelated'),
+            h('button', { ...mobileToggleAttrs, onClick: toggleMobileSidebar }, 'Menu'),
+          ]),
       },
     });
 
     try {
       const aside = wrapper.get('aside');
-      const toggle = wrapper.get('.cm-admin-layout__mobile-toggle button');
+      const toggle = wrapper.get('.cm-admin-layout__mobile-toggle button[aria-controls]');
       expect(aside.attributes('id')).toMatch(/^cm-admin-layout-sidebar-/);
       expect(toggle.attributes('aria-controls')).toBe(aside.attributes('id'));
       expect(aside.text()).toBe('Compact');

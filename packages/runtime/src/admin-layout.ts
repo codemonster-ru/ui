@@ -8,6 +8,7 @@ import {
 } from './core/shell.js';
 import { dispatchCmEvent } from './events.js';
 import type { CmController, CmControllerFactory } from './runtime.js';
+import { CmShellMetricsController } from './shell-metrics.js';
 import { belongsToShell, findShellControl } from './shell-ownership.js';
 
 export interface AdminLayoutStateChangeDetail {
@@ -22,17 +23,21 @@ export interface AdminLayoutStateChangeDetail {
  */
 export class CmAdminLayoutController implements CmController {
   readonly #root: Element;
+  readonly #metrics: CmShellMetricsController;
 
   constructor(root: Element) {
     this.#root = root;
+    this.#metrics = new CmShellMetricsController(root);
   }
 
   connect(): void {
+    this.#metrics.connect();
     this.#root.addEventListener('click', this.#handleClick);
     this.#root.addEventListener('keydown', this.#handleKeydown);
   }
 
   disconnect(): void {
+    this.#metrics.disconnect();
     this.#root.removeEventListener('click', this.#handleClick);
     this.#root.removeEventListener('keydown', this.#handleKeydown);
   }
@@ -44,11 +49,16 @@ export class CmAdminLayoutController implements CmController {
     };
   }
 
-  #commit(next: CmShellState): void {
+  #commit(next: CmShellState, restoreFocus = false): void {
+    const toggle = findShellControl(this.#root, '[data-cm-mobile-sidebar-toggle]');
+    if (this.#state.mobileSidebarOpen && !next.mobileSidebarOpen) {
+      const drawer = this.#root.querySelector(':scope > .cm-admin-layout__aside');
+      if (restoreFocus || drawer?.contains(this.#root.ownerDocument.activeElement))
+        toggle?.focus({ preventScroll: true });
+    }
     this.#root.setAttribute(cmShellAttributes.sidebarCollapsed, String(next.sidebarCollapsed));
     this.#root.setAttribute(cmShellAttributes.mobileSidebarOpen, String(next.mobileSidebarOpen));
 
-    const toggle = findShellControl(this.#root, '[data-cm-mobile-sidebar-toggle]');
     if (toggle) {
       toggle.setAttribute('aria-expanded', String(next.mobileSidebarOpen));
       const labels = {
@@ -71,9 +81,14 @@ export class CmAdminLayoutController implements CmController {
     if (!target || !belongsToShell(this.#root, target)) return;
 
     const state = this.#state;
-    this.#commit(
-      target.hasAttribute('data-cm-sidebar-toggle') ? toggleShellSidebar(state) : toggleShellMobileSidebar(state),
-    );
+    if (target.hasAttribute('data-cm-mobile-sidebar-close')) {
+      this.#commit({ ...state, mobileSidebarOpen: false }, true);
+    } else if (target.hasAttribute('data-cm-sidebar-toggle')) this.#commit(toggleShellSidebar(state));
+    else {
+      // Pointer activation does not focus buttons in all engines. Keep Escape scoped to this shell.
+      target.closest<HTMLElement>('[data-cm-mobile-sidebar-toggle]')?.focus({ preventScroll: true });
+      this.#commit(toggleShellMobileSidebar(state));
+    }
   };
 
   readonly #handleKeydown = (event: Event): void => {
