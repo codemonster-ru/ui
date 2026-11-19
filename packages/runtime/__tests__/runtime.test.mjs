@@ -180,6 +180,36 @@ test('optionally observes inserted removed and retargeted controllers', async ()
   assert.deepEqual(calls, ['connect:first', 'disconnect:first', 'connect:second', 'disconnect:second']);
 });
 
+test('observes AdminShell class membership without reconnecting for styling changes', async () => {
+  const dom = new JSDOM('<main><section></section></main>');
+  const calls = [];
+  const runtime = new CmRuntime().register('shell-metrics', controllerFactory('shell-metrics', calls));
+  const main = dom.window.document.querySelector('main');
+  const shell = main.firstElementChild;
+  const dispose = runtime.observe(main);
+
+  try {
+    shell.classList.add('other');
+    await mutations(dom);
+    assert.deepEqual(calls, []);
+
+    shell.classList.add('cm-admin-shell');
+    await mutations(dom);
+    assert.deepEqual(calls, ['connect:shell-metrics']);
+
+    shell.classList.replace('other', 'changed');
+    await mutations(dom);
+    assert.deepEqual(calls, ['connect:shell-metrics']);
+
+    shell.classList.remove('cm-admin-shell');
+    await mutations(dom);
+    assert.deepEqual(calls, ['connect:shell-metrics', 'disconnect:shell-metrics']);
+  } finally {
+    dispose();
+    dom.window.close();
+  }
+});
+
 test('ignores a subtree inserted and removed in the same mutation batch', async () => {
   const dom = new JSDOM('<main></main>');
   const calls = [];
