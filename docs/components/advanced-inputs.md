@@ -4,6 +4,10 @@
 form values. `CommandPalette` is a modal searchable command list with shared Vue and
 progressive-enhancement behavior.
 
+In Vue, pass names and descriptions with `aria-label`, `aria-labelledby`, and `aria-describedby`.
+The component sets the trigger's button type, combobox role, popup relationship, and ARIA state
+from its props and current interaction.
+
 Load the token and complete component stylesheets described in the [Button guide](./button.md).
 Individual styles are available from the `select.css`, `date-picker.css`, and
 `command-palette.css` npm subpath exports.
