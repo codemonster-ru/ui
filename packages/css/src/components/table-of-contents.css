@@ -22,6 +22,7 @@
   color: var(--cm-color-text-secondary);
   font-size: var(--cm-font-size-md);
   line-height: var(--cm-line-height-tight);
+  overflow-wrap: anywhere;
   text-decoration: none;
 }
 
