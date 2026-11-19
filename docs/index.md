@@ -52,6 +52,7 @@ Vanilla HTML for every shared component. Start with [Button](./components/button
 
 ## Architecture and support
 
+- [Reference quality roadmap](./reference-quality.md) and [component quality matrix](./components/quality-matrix.md).
 - [Package boundaries](./architecture/package-boundaries.md) and
   [rendering strategy](./architecture/rendering-strategy.md).
 - [Platform support](./architecture/platform-support.md) and
