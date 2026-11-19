@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
-import { resolve } from 'node:path';
+import { readFileSync, readdirSync } from 'node:fs';
+import { basename, resolve } from 'node:path';
 import test from 'node:test';
 import { collectComponentCases } from '../contracts/component-cases.mjs';
 import {
@@ -96,4 +97,13 @@ test('builds the reviewed repository first slice for both adapters', () => {
   );
   assert.deepEqual(new Set(fixtures.map(({ platform }) => platform)), new Set(['vue', 'vanilla']));
   assert.equal(new Set(fixtures.map(({ baselineId }) => baselineId)).size, 48);
+
+  const storedDirectory = resolve(import.meta.dirname, '../../visual-baselines/vueforge-cross-platform');
+  const storedManifest = JSON.parse(readFileSync(resolve(storedDirectory, 'manifest.json'), 'utf8'));
+  assert.equal(storedManifest.referenceCommit, fixtures[0].baselineId.split('/')[0]);
+  assert.deepEqual(new Set(storedManifest.sourceFixture.caseIds), new Set(fixtures.map(({ caseId }) => caseId)));
+  assert.deepEqual(
+    new Set(readdirSync(storedDirectory).filter((name) => name.endsWith('.png'))),
+    new Set(fixtures.map(({ snapshotPath }) => basename(snapshotPath))),
+  );
 });

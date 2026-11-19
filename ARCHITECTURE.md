@@ -97,14 +97,9 @@ validate a cross-package invariant.
 
 ## Release hygiene
 
-Before release:
-
-1. Ensure package version bump matches change scope (`patch`/`minor`, avoid unnecessary `major`).
-2. Update package `CHANGELOG.md` with user-visible changes.
-3. Run package-level `check` for touched packages.
-4. Run root `build` and `prepublish:all` before publishing.
-5. Avoid committing generated/local-only artifacts unless intentionally part of package contents.
-6. Keep local `node_modules`, `.npm-cache`, `.DS_Store`, build output, and test coverage out of Git.
+Use the [development checks](README.md#development-checks) while preparing changes and follow the
+[release checklist](docs/release-checklist.md) when preparing a release. Keep local dependencies,
+build output, and coverage out of Git.
 
 ## Non-goals
 

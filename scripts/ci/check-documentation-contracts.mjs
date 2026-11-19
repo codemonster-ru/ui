@@ -36,7 +36,7 @@ function listFilesRecursively(directory, predicate) {
   const files = [];
 
   for (const entry of readdirSync(directory, { withFileTypes: true })) {
-    if (ignoredDirectoryNames.has(entry.name)) {
+    if (ignoredDirectoryNames.has(entry.name) || (directory === repositoryRoot && entry.name === 'artifacts')) {
       continue;
     }
 

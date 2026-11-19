@@ -9,6 +9,23 @@ import { collectComponentCases } from '../contracts/component-cases.mjs';
 import { checkNavigationIconSpacing } from './navigation-icon-spacing.mjs';
 import { checkStepperConnectors } from './stepper-connectors.mjs';
 
+const behavior = process.env.CM_PARITY_BEHAVIOR === '1';
+const contractsDirectory = resolve(import.meta.dirname, '../../contracts');
+const { cases, scenarios, errors } = behavior
+  ? collectBehaviorScenarios(contractsDirectory)
+  : collectComponentCases(contractsDirectory);
+if (errors.length) throw new Error(errors.join('\n'));
+
+const entries = behavior ? scenarios : cases;
+const entryId = behavior ? ({ data }) => data.id : ({ id }) => id;
+const kind = behavior ? 'behavior scenario' : 'visual case';
+const requestedIds = new Set(process.argv.slice(2));
+const availableIds = new Set(entries.map(entryId));
+const unknownIds = [...requestedIds].filter((id) => !availableIds.has(id));
+if (unknownIds.length) throw new Error(`Unknown browser ${kind}(s): ${unknownIds.join(', ')}.`);
+const selected = requestedIds.size ? entries.filter((entry) => requestedIds.has(entryId(entry))) : entries;
+if (!selected.length) throw new Error(`No browser ${kind}s selected.`);
+
 const chromePath = process.env.CHROME_PATH ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const origin = process.env.CM_PARITY_ORIGIN ?? 'http://127.0.0.1:5176';
 const profile = await mkdtemp(join(tmpdir(), 'cm-vanilla-chrome-'));
@@ -88,12 +105,7 @@ try {
   await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
   const viewport = { width: 360, height: 660, mobile: false };
   await send('Emulation.setDeviceMetricsOverride', { ...viewport, deviceScaleFactor: 1 });
-  const { cases, errors } = collectComponentCases(resolve(import.meta.dirname, '../../contracts'));
-  if (process.env.CM_PARITY_BEHAVIOR === '1') {
-    const { scenarios, errors: scenarioErrors } = collectBehaviorScenarios(
-      resolve(import.meta.dirname, '../../contracts'),
-    );
-    if (scenarioErrors.length) throw new Error(scenarioErrors.join('\n'));
+  if (behavior) {
     await send('Emulation.setEmulatedMedia', {
       features: [{ name: 'prefers-reduced-motion', value: 'no-preference' }],
     });
@@ -129,9 +141,7 @@ try {
       observer.observe(dialog, { attributes: true, attributeFilter: ['open'] });
     })()`;
     const result = [];
-    for (const { componentSlug, data } of scenarios.filter(
-      ({ data }) => !process.argv[2] || process.argv.slice(2).includes(data.id),
-    )) {
+    for (const { componentSlug, data } of selected) {
       for (const platform of ['vue', 'vanilla']) {
         const row = { scenario: data.id, platform, failures: [], motion: [] };
         result.push(row);
@@ -291,12 +301,10 @@ try {
     );
     if (result.some(({ failures }) => failures.length) || motionMismatches.length) process.exitCode = 1;
   } else {
-    if (errors.length) throw new Error(errors.join('\n'));
-    const selected = process.argv.slice(2);
     const report = [];
     const animatedCases = new Set();
     let deviceScaleFactor = 1;
-    for (const componentCase of cases.filter(({ id }) => !selected.length || selected.includes(id))) {
+    for (const componentCase of selected) {
       const { id, componentSlug } = componentCase;
       // Chromium at DPR 1 can rasterize the same rounded image differently between captures.
       // Sample the whole image at DPR 2 with the same CSS viewport and comparison tolerance.
@@ -415,7 +423,6 @@ try {
         console.log(JSON.stringify(result));
       }
     }
-    if (!report.length) throw new Error('No canonical cases selected.');
     await writeFile(
       process.env.CM_PARITY_REPORT ?? '/tmp/cm-vanilla-parity.json',
       JSON.stringify(report, null, 2) + '\n',

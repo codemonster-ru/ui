@@ -93,9 +93,11 @@ supported build target and do not add a second legacy bundle to shared packages.
 
 ## Verification
 
-Continuous integration covers Chromium, Firefox, and WebKit engines for canonical rendering and
-interaction cases. Release verification additionally checks representative real Safari and mobile
-browser behavior where engine emulation is insufficient.
+The [GitHub visual job](../../.github/workflows/ci.yml) uses a pinned Chrome for Testing build on
+macOS. Separate local [showcase browser checks](../../scripts/visual/check-showcase-ux.mjs) can
+run on Playwright Chromium, Firefox, and WebKit. Check representative mobile browsers during
+release verification and record native Safari and assistive technology results separately as
+described in the [release checklist](../release-checklist.md).
 
 Tests include:
 
@@ -107,9 +109,6 @@ Tests include:
 - CSS-only linked stylesheets;
 - directly served static assets;
 - no-JavaScript and progressively enhanced Vanilla pages.
-
-The exact automated browser versions are recorded in CI configuration when `CMUI-016` establishes
-workspace conventions.
 
 ## Review policy
 

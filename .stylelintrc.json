@@ -1,6 +1,6 @@
 {
   "extends": ["stylelint-config-standard", "stylelint-config-html"],
-  "ignoreFiles": ["**/dist/**", "**/showcase-dist/**", "**/coverage/**", "**/node_modules/**"],
+  "ignoreFiles": ["artifacts/**", "**/dist/**", "**/showcase-dist/**", "**/coverage/**", "**/node_modules/**"],
   "rules": {
     "import-notation": null,
     "selector-class-pattern": [
