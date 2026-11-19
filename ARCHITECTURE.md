@@ -12,7 +12,6 @@ documentation now live in [`codemonster-ru/vueforge`](https://github.com/codemon
 - `contracts/*` — component manifests, behavior contracts, schemas, and visual-fixture metadata
 - `docs/*` — product, package, architecture, and release documentation
 - `scripts/*` — build, CI, contract, release, and visual-validation tooling
-- `visual-baselines/*` — reviewed visual-regression reference images used by CI
 - `.github/*` — repository workflows; `.githooks/*` — local Git hooks
 
 The root `package.json` is a private npm workspace. Its workspaces are `packages/*` and

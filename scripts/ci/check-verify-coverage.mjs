@@ -16,14 +16,11 @@ import {
  * what everyone reads as "this branch is good" — and twice now that reading was wrong.
  */
 const ciOnlyJobs = {
-  visual:
-    'downloads a pinned Chrome build and captures against live servers; a different browser reports differences that are not real',
+  visual: 'compares the live Vue and Vanilla adapters with a pinned Chrome build',
 };
 
 const ciOnlySteps = {
-  'visual:cross-platform:capture':
-    'drives a pinned Chrome build against the live fixture server; a different browser reports differences that are not real',
-  'visual:cross-platform:serve': 'serves the cross-platform cases for a pinned browser to capture',
+  'visual:cross-platform:serve': 'serves the cross-platform cases for adapter parity checks',
 };
 
 const repositoryRoot = resolve(import.meta.dirname, '../..');

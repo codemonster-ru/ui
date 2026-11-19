@@ -1,5 +1,8 @@
 # Stored component visual baseline renderer
 
+This record describes the former stored PNG check. The
+[visual CI job](../../.github/workflows/ci.yml) now compares Vue and Vanilla directly.
+
 ## Capture provenance
 
 The stored component suite contains 48 PNGs from 12 VueForge fixtures in two themes and two

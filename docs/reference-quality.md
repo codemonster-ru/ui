@@ -14,8 +14,8 @@ Open showcase and release proposals have separate review and integration histori
 - Preserve native HTML, server rendering, progressive enhancement, and existing public contracts.
   An incompatible API proposal requires a versioning and migration decision.
 - Keep a verified baseline and compare intentional visual changes with a control using the same
-  renderer. Record geometry, affected states, and before and after captures. The hosted baseline
-  workflow retains its comparison threshold.
+  renderer. Record geometry, affected states, and before and after captures. The hosted visual
+  job compares Vue and Vanilla rendering and behavior.
 - Use the [component quality matrix](./components/quality-matrix.md) to choose coverage. Keep
   source, automated browser, manual assistive technology, and hosted results attributable to the
   revision and environment that produced them.

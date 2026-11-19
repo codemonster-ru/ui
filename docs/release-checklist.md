@@ -12,7 +12,7 @@ showcase browser regressions against both built sites. Attach results by browser
 theme, and viewport. Record native Safari, VoiceOver and NVDA separately from automated checks.
 
 Keep sections 6–9 pending for an authorized publication. Before publication, record the hosted CI
-result for the exact product commit, including its stored visual comparison. Record any pending
+result for the exact product commit, including the Vue and Vanilla parity check. Record any pending
 manual checks or residual defects in the [candidate readiness report](./release/FINAL_READINESS.md).
 
 ## 1. Choose the release channel
