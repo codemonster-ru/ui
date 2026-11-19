@@ -1,7 +1,8 @@
 import { mount } from '@vue/test-utils';
-import { defineComponent, h, markRaw, type PropType } from 'vue';
-import { describe, expect, it } from 'vitest';
+import { defineComponent, h, markRaw, nextTick, ref, type PropType } from 'vue';
+import { describe, expect, it, vi } from 'vitest';
 
+import CmAccordion from './accordion/CmAccordion.vue';
 import CmBreadcrumbs from './breadcrumbs/CmBreadcrumbs.vue';
 import CmDropdown from './dropdown/CmDropdown.vue';
 import CmLink from './link/CmLink.vue';
@@ -94,6 +95,83 @@ describe('Vue navigation components', () => {
     expect(tabs[2].attributes('aria-selected')).toBe('true');
     expect(wrapper.emitted('update:modelValue')).toEqual([['billing']]);
     wrapper.unmount();
+  });
+
+  it.each([
+    [
+      'Accordion',
+      (attrs: { onKeydown?: (event: KeyboardEvent) => void }) =>
+        h(CmAccordion, { id: 'help', items: [{ id: 'help', title: 'Help', content: 'Help' }], ...attrs }),
+    ],
+    ['Menu', (attrs: { onKeydown?: (event: KeyboardEvent) => void }) => h(CmMenu, { items: menuItems, ...attrs })],
+    [
+      'Tabs',
+      (attrs: { onKeydown?: (event: KeyboardEvent) => void }) =>
+        h(CmTabs, { items: [{ value: 'general', label: 'General' }], ...attrs }),
+    ],
+  ] as const)('updates the %s root listener after mounting', async (_, renderComponent) => {
+    const listening = ref(false);
+    const onKeydown = vi.fn();
+    const wrapper = mount({ render: () => renderComponent(listening.value ? { onKeydown } : {}) });
+    try {
+      listening.value = true;
+      await nextTick();
+      await wrapper.trigger('keydown', { key: 'F2' });
+      expect(onKeydown).toHaveBeenCalledOnce();
+
+      listening.value = false;
+      await nextTick();
+      await wrapper.trigger('keydown', { key: 'F2' });
+      expect(onKeydown).toHaveBeenCalledOnce();
+    } finally {
+      wrapper.unmount();
+    }
+  });
+
+  it('forwards Tabs keydown to the root and respects a capture listener', async () => {
+    const onKeydown = vi.fn();
+    const wrapper = mount(CmTabs, {
+      attachTo: document.body,
+      attrs: {
+        onKeydown,
+        onKeydownCapture: (event: KeyboardEvent) => {
+          if (event.shiftKey) event.preventDefault();
+        },
+      },
+      props: {
+        items: [
+          { value: 'general', label: 'General' },
+          { value: 'billing', label: 'Billing' },
+        ],
+      },
+    });
+    try {
+      const [general, billing] = wrapper.findAll<HTMLButtonElement>('[role="tab"]');
+      general.element.focus();
+      await general.trigger('keydown', { key: 'ArrowRight', shiftKey: true });
+      expect(document.activeElement).toBe(general.element);
+      expect(wrapper.emitted('update:modelValue')).toBeUndefined();
+
+      await general.trigger('keydown', { key: 'ArrowRight' });
+      expect(document.activeElement).toBe(billing.element);
+      expect(onKeydown).toHaveBeenCalledTimes(2);
+    } finally {
+      wrapper.unmount();
+    }
+  });
+
+  it('forwards Menu keydown to the root before its own handling', async () => {
+    const onKeydown = vi.fn((event: KeyboardEvent) => {
+      if (event.key === 'Escape') event.preventDefault();
+    });
+    const wrapper = mount(CmMenu, { attrs: { onKeydown }, props: { items: menuItems } });
+    try {
+      await wrapper.get('[role="menuitem"]').trigger('keydown', { key: 'Escape' });
+      expect(onKeydown).toHaveBeenCalledOnce();
+      expect(wrapper.emitted('closeRequest')).toBeUndefined();
+    } finally {
+      wrapper.unmount();
+    }
   });
 
   it('moves menu focus and reports only enabled selection', async () => {

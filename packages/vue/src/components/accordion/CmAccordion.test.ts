@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils';
 import { h } from 'vue';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import CmAccordion from './CmAccordion.vue';
 import { expectCmWarning } from '../../internal/expect-warning';
@@ -96,6 +96,24 @@ describe('CmAccordion', () => {
       outer.element.focus();
       await outer.trigger('keydown', { key: 'ArrowDown' });
       expect(document.activeElement).toBe(wrapper.get('#outer-billing-trigger').element);
+    } finally {
+      wrapper.unmount();
+    }
+  });
+
+  it('forwards keydown to the root before its own navigation', async () => {
+    const onKeydown = vi.fn((event: KeyboardEvent) => event.preventDefault());
+    const wrapper = mount(CmAccordion, {
+      attachTo: document.body,
+      attrs: { onKeydown },
+      props: { id: 'faq', items },
+    });
+    try {
+      const trigger = wrapper.get<HTMLButtonElement>('#faq-account-trigger');
+      trigger.element.focus();
+      await trigger.trigger('keydown', { key: 'ArrowDown' });
+      expect(onKeydown).toHaveBeenCalledOnce();
+      expect(document.activeElement).toBe(trigger.element);
     } finally {
       wrapper.unmount();
     }

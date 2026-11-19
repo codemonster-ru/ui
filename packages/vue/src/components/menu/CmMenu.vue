@@ -44,7 +44,7 @@ const normalizedItems = computed(() => {
   return items;
 });
 const classes = computed(() => mergeCmClasses('cm-menu', attrs.class));
-const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['role', 'aria-label', 'data-cm-controller', 'onKeydown']));
+const rootAttrs = () => omitCmOwnedAttrs(attrs, ['role', 'aria-label', 'data-cm-controller']);
 const label = computed(() => (attrs['aria-labelledby'] === undefined ? props.ariaLabel : undefined));
 
 function itemClasses(item: CmMenuItem): string {
@@ -75,6 +75,7 @@ function activate(event: MouseEvent, item: CmMenuItem): void {
 }
 
 function move(event: KeyboardEvent): void {
+  if (event.defaultPrevented) return;
   const root = event.currentTarget as HTMLElement;
   const item = (event.target as Element).closest<HTMLElement>('[role="menuitem"]');
   if (item && item.closest('[role="menu"]') !== root) return;
@@ -115,7 +116,7 @@ useCmHydrated();
 </script>
 
 <template>
-  <div v-bind="rootAttrs" :class="classes" role="menu" :aria-label="label" data-cm-controller="menu" @keydown="move">
+  <div v-bind="rootAttrs()" :class="classes" role="menu" :aria-label="label" data-cm-controller="menu" @keydown="move">
     <slot v-if="slots.default" />
     <template v-else>
       <component

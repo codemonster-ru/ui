@@ -117,7 +117,7 @@ watch(
 );
 watch(activeValue, measureIndicator, { flush: 'post' });
 const classes = computed(() => mergeCmClasses('cm-tabs', attrs.class));
-const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['data-cm-controller', 'data-cm-tabs-value', 'onKeydown']));
+const rootAttrs = () => omitCmOwnedAttrs(attrs, ['data-cm-controller', 'data-cm-tabs-value']);
 
 function tabId(item: CmTabItem): string {
   return item.tabId ?? `${baseId.value}-tab-${idSegment(item.value)}`;
@@ -144,6 +144,7 @@ function select(item: CmTabItem, focus = false): void {
 }
 
 function move(event: KeyboardEvent, item: CmTabItem): void {
+  if (event.defaultPrevented) return;
   const target = event.currentTarget as HTMLElement;
   const host = target.closest('[dir]');
   const direction = host?.getAttribute('dir') ?? target.ownerDocument.documentElement.dir;
@@ -173,7 +174,7 @@ useCmHydratedBeforeMount();
 </script>
 
 <template>
-  <div v-bind="rootAttrs" :class="classes" data-cm-controller="tabs" :data-cm-tabs-value="activeValue">
+  <div v-bind="rootAttrs()" :class="classes" data-cm-controller="tabs" :data-cm-tabs-value="activeValue">
     <div
       :id="renderScrollControls ? `${baseId}-list` : undefined"
       ref="tablist"
