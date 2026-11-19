@@ -6,6 +6,8 @@ import { join, resolve } from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 import { PNG } from 'pngjs';
 import { collectComponentCases } from '../contracts/component-cases.mjs';
+import { checkNavigationIconSpacing } from './navigation-icon-spacing.mjs';
+import { checkStepperConnectors } from './stepper-connectors.mjs';
 
 const chromePath = process.env.CHROME_PATH ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const origin = process.env.CM_PARITY_ORIGIN ?? 'http://127.0.0.1:5176';
@@ -343,6 +345,14 @@ try {
             await send('Emulation.setEmulatedMedia', {
               features: [{ name: 'prefers-reduced-motion', value: 'reduce' }],
             });
+            if (componentSlug === 'stepper') {
+              const failures = await checkStepperConnectors({ send, evaluate, id, theme, platform });
+              if (failures.length) (result.stepperFailures ??= []).push(...failures);
+            }
+            if (componentSlug === 'menu-bar' || componentSlug === 'nav-menu') {
+              const failures = await checkNavigationIconSpacing({ send, evaluate, id, theme, platform });
+              if (failures.length) (result.navigationFailures ??= []).push(...failures);
+            }
             if (id === 'accordion-default') {
               const point = await evaluate(`(() => {
               const { x, y, width, height } = document.querySelector('.cm-accordion__trigger').getBoundingClientRect();
@@ -402,7 +412,12 @@ try {
       JSON.stringify(report, null, 2) + '\n',
     );
     console.log(`Compared animation signatures for ${animatedCases.size} animated case(s).`);
-    if (report.some(({ error, differingPixels, motion }) => error || differingPixels !== 0 || !motion.equal))
+    if (
+      report.some(
+        ({ error, differingPixels, motion, stepperFailures, navigationFailures }) =>
+          error || differingPixels !== 0 || !motion.equal || stepperFailures?.length || navigationFailures?.length,
+      )
+    )
       process.exitCode = 1;
   }
 } finally {

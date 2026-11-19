@@ -71,7 +71,7 @@
 .cm-menu-bar__item {
   display: inline-flex;
   align-items: center;
-  gap: var(--cm-space-1);
+  gap: var(--cm-space-2);
   inline-size: 100%;
   padding: var(--cm-space-1) var(--cm-space-2);
   border: 0;
@@ -152,10 +152,12 @@
   background: var(--cm-color-background-surface-selected-active);
 }
 
+/* Rotate the same corner in both writing directions. */
 .cm-menu-bar__icon {
+  flex: none;
   inline-size: 0.4rem;
   block-size: 0.4rem;
-  border-inline-end: var(--cm-border-width) solid currentcolor;
+  border-right: var(--cm-border-width) solid currentcolor;
   border-block-end: var(--cm-border-width) solid currentcolor;
   rotate: 45deg;
 }
@@ -184,7 +186,16 @@
 
 .cm-menu-bar__node:not(.cm-menu-bar__node--depth-0) > .cm-menu-bar__item .cm-menu-bar__icon {
   margin-inline-start: auto;
-  rotate: -45deg;
+}
+
+@media (width > 640px) {
+  .cm-menu-bar__node:not(.cm-menu-bar__node--depth-0) > .cm-menu-bar__item .cm-menu-bar__icon {
+    rotate: -45deg;
+  }
+
+  .cm-menu-bar__node:not(.cm-menu-bar__node--depth-0) > .cm-menu-bar__item .cm-menu-bar__icon:dir(rtl) {
+    rotate: 135deg;
+  }
 }
 
 @media (width <= 640px) {
@@ -203,10 +214,6 @@
 
   .cm-menu-bar__node:not(.cm-menu-bar__node--depth-0) > .cm-menu-bar__submenu {
     margin-inline-start: var(--cm-space-2);
-  }
-
-  .cm-menu-bar__node:not(.cm-menu-bar__node--depth-0) > .cm-menu-bar__item .cm-menu-bar__icon {
-    rotate: 45deg;
   }
 }
 
