@@ -35,7 +35,7 @@ test('preserves the fd793696 layout geometry through CodeMonster tokens', async 
   assert.match(container, /inline-size: 100%/u);
   assert.match(container, /max-inline-size: var\(--cm-breakpoint-xl\)/u);
   assert.match(container, /padding-inline: var\(--cm-space-4\)/u);
-  assert.match(grid, /minmax\(calc\(var\(--cm-space-16\) \* 4\), 1fr\)/u);
+  assert.match(grid, /minmax\(min\(100%, calc\(var\(--cm-space-16\) \* 4\)\), 1fr\)/u);
   assert.match(grid, /gap: var\(--cm-space-4\)/u);
   assert.match(inline, /gap: var\(--cm-space-4\)/u);
   assert.match(section, /padding: var\(--cm-space-4\)/u);
