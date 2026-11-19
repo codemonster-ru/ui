@@ -34,7 +34,7 @@ const examples: Record<string, readonly string[]> = {
   'progress-spinner': ['default', 'danger-lg'],
   skeleton: ['default', 'static-height'],
   field: ['default', 'help-error'],
-  input: ['default', 'invalid', 'disabled', 'readonly', 'enhanced'],
+  input: ['default', 'invalid', 'disabled', 'readonly'],
   textarea: ['default', 'invalid'],
   select: ['default', 'selected', 'clearable'],
   'date-picker': ['default', 'clearable'],

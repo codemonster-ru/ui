@@ -532,7 +532,7 @@ async function checkAdapter([adapter, base]) {
             ((width === 360 && theme === 'dark') || (width === 1440 && theme === 'light'))
           )
             await checkAccessibility(page, `${adapter} ${file}`);
-          if (width === 360 && theme === 'dark') {
+          if (width <= 360 && theme === 'dark') {
             const scale = await doubleTextSize(page, `${adapter} ${name}`);
             await checkViewport(page, `${adapter} ${name} at 200% text size`);
             await scale.evaluate((style) => style.remove());
