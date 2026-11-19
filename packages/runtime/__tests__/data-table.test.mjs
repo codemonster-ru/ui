@@ -20,9 +20,9 @@ test('pinned cells track measured header widths and release the authored table o
   const team = document.querySelector('td[data-cm-data-table-column="team"]');
   const table = document.querySelector('table');
   let scrollportWidth = 540;
-  Object.defineProperty(table.parentElement, 'clientWidth', { get: () => scrollportWidth });
+  table.parentElement.getBoundingClientRect = () => ({ width: scrollportWidth });
   for (const header of table.tHead.rows[0].cells) {
-    Object.defineProperty(header, 'offsetWidth', { value: Number.parseFloat(header.style.inlineSize) });
+    header.getBoundingClientRect = () => ({ width: Number.parseFloat(header.style.inlineSize) });
   }
   let width = 88;
   name.getBoundingClientRect = () => ({ width });
