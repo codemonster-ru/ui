@@ -211,7 +211,8 @@ export function referenceFrameClass(slug: string) {
   if (contentPreviews.has(slug)) modifiers.push('content');
   if (floatingComponents.has(slug)) modifiers.push('floating');
   if (slug === 'date-picker') modifiers.push('calendar');
-  if (slug === 'select' || slug === 'tooltip') modifiers.push('short-popup');
+  if (slug === 'select') modifiers.push('listbox');
+  if (slug === 'tooltip') modifiers.push('short-popup');
   return modifiers.map((modifier) => ` reference-frame--${modifier}`).join('');
 }
 

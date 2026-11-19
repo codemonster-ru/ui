@@ -122,7 +122,6 @@ async function checkReferenceInteractions(page, base, adapter) {
 
   await page.goto(url(base, 'components/select/'));
   const trigger = demo.getByRole('combobox', { name: 'Frequency' });
-  await trigger.press('ArrowDown');
   const sections = await page
     .locator('.reference-section > h2')
     .evaluateAll((headings) => headings.map(({ id }) => id));
@@ -132,14 +131,39 @@ async function checkReferenceInteractions(page, base, adapter) {
     `${adapter}: states follow the live preview`,
   );
   const listbox = demo.getByRole('listbox');
-  await listbox.waitFor();
+  const checkSelectFits = async (input) => {
+    await listbox.waitFor();
+    await preview.locator('iframe[data-reference-expanded]').waitFor();
+    const { top, left, right, bottom, width, height, clientHeight, scrollHeight } = await listbox.evaluate(
+      async (element) => {
+        await new Promise(requestAnimationFrame);
+        const { top, left, right, bottom } = element.getBoundingClientRect();
+        return {
+          top,
+          left,
+          right,
+          bottom,
+          width: innerWidth,
+          height: innerHeight,
+          clientHeight: element.clientHeight,
+          scrollHeight: element.scrollHeight,
+        };
+      },
+    );
+    const label = `${adapter}: Select preview after ${input} open`;
+    assert(top >= 0 && left >= 0 && right <= width && bottom <= height, `${label} fits its frame`);
+    assert.equal(scrollHeight, clientHeight, `${label} exposes both options without scrolling`);
+    assert(height - bottom < 64, `${label} has less than 64 px of space below the listbox`);
+  };
+
+  await trigger.click();
+  await checkSelectFits('pointer');
+  await trigger.click();
+  await listbox.waitFor({ state: 'hidden' });
+
+  await trigger.press('ArrowDown');
+  await checkSelectFits('keyboard');
   assert(await listbox.getByRole('option', { name: 'Daily' }).evaluate((option) => option === document.activeElement));
-  const { top, left, right, bottom, width, height } = await listbox.evaluate((element) => {
-    const { top, left, right, bottom } = element.getBoundingClientRect();
-    return { top, left, right, bottom, width: innerWidth, height: innerHeight };
-  });
-  assert(top >= 0 && left >= 0 && right <= width && bottom <= height, `${adapter}: Select listbox fits its frame`);
-  assert(height - bottom < 64, `${adapter}: Select preview has less than 64 px of space below the open listbox`);
   await page.keyboard.press('ArrowDown');
   await page.keyboard.press('Enter');
   assert.match(await trigger.textContent(), /Weekly/);
