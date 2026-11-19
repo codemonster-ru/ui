@@ -34,7 +34,7 @@ const classes = computed(() =>
     attrs.class,
   ),
 );
-const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['class', 'aria-label']));
+const rootAttrs = () => omitCmOwnedAttrs(attrs, ['class', 'aria-label']);
 const label = computed(
   () => props.label || (typeof attrs['aria-label'] === 'string' ? attrs['aria-label'] : undefined),
 );
@@ -59,7 +59,7 @@ const style = computed(() => {
 <template>
   <svg
     v-if="rendering"
-    v-bind="style ? mergeProps(rootAttrs, { style }) : rootAttrs"
+    v-bind="style ? mergeProps(rootAttrs(), { style }) : rootAttrs()"
     :class="classes"
     xmlns="http://www.w3.org/2000/svg"
     :viewBox="rendering.viewBox"

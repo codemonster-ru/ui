@@ -115,7 +115,7 @@ onMounted(() => {
 const classes = computed(() =>
   mergeCmClasses('cm-command-palette', localOpen.value ? 'cm-command-palette--open' : undefined, attrs.class),
 );
-const rootAttrs = computed(() => {
+const rootAttrs = () => {
   const forwarded = omitCmOwnedAttrs(attrs, [
     'id',
     'open',
@@ -135,7 +135,7 @@ const rootAttrs = computed(() => {
     forwarded.style = [attrs.style, { '--cm-command-palette-max-height': maxHeight }];
   }
   return forwarded;
-});
+};
 
 function updateQuery(event: Event): void {
   const value = (event.target as HTMLInputElement).value;
@@ -205,7 +205,7 @@ useCmHydrated();
   <dialog
     :id="`${props.id}-command-palette`"
     ref="dialog"
-    v-bind="rootAttrs"
+    v-bind="rootAttrs()"
     :class="classes"
     :open="localOpen || undefined"
     :aria-labelledby="`${props.id}-title`"

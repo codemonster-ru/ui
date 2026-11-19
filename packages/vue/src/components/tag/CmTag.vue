@@ -29,9 +29,9 @@ const tone = computed(() => (props.tone === 'warn' ? 'warning' : tones.includes(
 const classes = computed(() =>
   mergeCmClasses('cm-tag', tone.value === 'neutral' ? undefined : `cm-tag--${tone.value}`, attrs.class),
 );
-const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['class']));
+const rootAttrs = () => omitCmOwnedAttrs(attrs, ['class']);
 </script>
 
 <template>
-  <span v-bind="rootAttrs" :class="classes"><slot /></span>
+  <span v-bind="rootAttrs()" :class="classes"><slot /></span>
 </template>

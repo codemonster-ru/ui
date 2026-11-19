@@ -53,9 +53,8 @@ const classes = computed(() =>
     attrs.class,
   ),
 );
-const rootAttrs = computed(() =>
-  omitCmOwnedAttrs(attrs, ['style', 'role', 'aria-label', 'aria-valuemin', 'aria-valuemax', 'aria-valuenow']),
-);
+const rootAttrs = () =>
+  omitCmOwnedAttrs(attrs, ['style', 'role', 'aria-label', 'aria-valuemin', 'aria-valuemax', 'aria-valuenow']);
 const rootStyle = computed(() => {
   const height = props.height;
   let cssHeight: string | undefined;
@@ -74,7 +73,7 @@ const rootStyle = computed(() => {
 
 <template>
   <div
-    v-bind="{ ...rootAttrs, ...rootStyle }"
+    v-bind="{ ...rootAttrs(), ...rootStyle }"
     :class="classes"
     role="progressbar"
     :aria-label="props.label"

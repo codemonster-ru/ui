@@ -76,7 +76,7 @@ const rootStyle = computed(() => {
   if (progress.value !== null) style['--cm-stepper-progress-factor'] = String(progress.value);
   return style;
 });
-const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['class', 'style', 'aria-label', 'data-cm-controller']));
+const rootAttrs = () => omitCmOwnedAttrs(attrs, ['class', 'style', 'aria-label', 'data-cm-controller']);
 
 function stepState(item: CmStepperItem): string {
   return resolveStepState(props.items, activeValue.value, item.value);
@@ -112,7 +112,7 @@ useCmHydrated();
 <template>
   <nav
     ref="root"
-    v-bind="rootAttrs"
+    v-bind="rootAttrs()"
     :class="classes"
     :style="rootStyle"
     :aria-label="props.ariaLabel"

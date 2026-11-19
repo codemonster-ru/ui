@@ -24,11 +24,11 @@ const props = defineProps({
 const attrs = useAttrs();
 const rootElement = computed(() => (elements.includes(props.element) ? props.element : 'section'));
 const classes = computed(() => mergeCmClasses('cm-card', props.compact ? 'cm-card--compact' : undefined, attrs.class));
-const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, []));
+const rootAttrs = () => omitCmOwnedAttrs(attrs, []);
 </script>
 
 <template>
-  <component :is="rootElement" v-bind="rootAttrs" :class="classes">
+  <component :is="rootElement" v-bind="rootAttrs()" :class="classes">
     <header v-if="$slots.header || props.title" class="cm-card__header">
       <slot name="header"
         ><h3 class="cm-card__title">{{ props.title }}</h3></slot

@@ -37,7 +37,7 @@ const classes = computed(() =>
     attrs.class,
   ),
 );
-const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, []));
+const rootAttrs = () => omitCmOwnedAttrs(attrs, []);
 const rel = computed(() => props.rel ?? (props.target === '_blank' ? 'noopener noreferrer' : undefined));
 const destination = computed(() => (props.to === undefined ? { href: props.href } : { to: props.to }));
 
@@ -51,7 +51,7 @@ assertCm(props.href === undefined || props.href.trim() !== '', 'Link href must b
 <template>
   <component
     :is="linkComponent()"
-    v-bind="{ ...rootAttrs, ...destination }"
+    v-bind="{ ...rootAttrs(), ...destination }"
     :class="classes"
     :target="props.target"
     :rel="rel"

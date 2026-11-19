@@ -53,14 +53,13 @@ const classes = computed(() =>
     attrs.class,
   ),
 );
-const rootAttrs = computed(() =>
+const rootAttrs = () =>
   omitCmOwnedAttrs(attrs, [
     'data-cm-controller',
     'data-cm-popover-close-on-outside-click',
     'data-cm-popover-close-on-escape',
     'data-cm-popover-focus-on-open',
-  ]),
-);
+  ]);
 const painted = useCmFloatingPaint(localOpen, panel);
 const teleportTarget = computed(() =>
   painted.value ? resolveCmAnchoredTarget(root.value, props.disableTeleport ? null : props.teleportTo) : null,
@@ -160,7 +159,7 @@ useCmHydrated();
 <template>
   <div
     ref="root"
-    v-bind="rootAttrs"
+    v-bind="rootAttrs()"
     :class="classes"
     data-cm-controller="popover"
     :data-cm-popover-close-on-outside-click="props.closeOnOutsideClick ? undefined : 'false'"

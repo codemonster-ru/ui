@@ -29,7 +29,7 @@ const classes = computed(() =>
     attrs.class,
   ),
 );
-const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, props.disabled ? ['onClick'] : []));
+const rootAttrs = () => omitCmOwnedAttrs(attrs, props.disabled ? ['onClick'] : []);
 
 function activate(event: MouseEvent): void {
   if (props.disabled) {
@@ -43,7 +43,7 @@ function activate(event: MouseEvent): void {
 <template>
   <component
     :is="props.href ? 'a' : 'button'"
-    v-bind="rootAttrs"
+    v-bind="rootAttrs()"
     :class="classes"
     :href="props.disabled ? undefined : props.href"
     :target="props.href ? props.target : undefined"

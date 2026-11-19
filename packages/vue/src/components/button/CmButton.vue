@@ -52,7 +52,7 @@ const classes = computed(() =>
     attrs.class,
   ),
 );
-const rootAttrs = computed(() =>
+const rootAttrs = () =>
   omitCmOwnedAttrs(attrs, [
     'type',
     'href',
@@ -61,8 +61,7 @@ const rootAttrs = computed(() =>
     'aria-disabled',
     'aria-busy',
     ...(isLink.value && isDisabled.value ? ['onClick'] : []),
-  ]),
-);
+  ]);
 
 function preventDisabledLinkActivation(event: MouseEvent): void {
   if (isLink.value && isDisabled.value) {
@@ -74,7 +73,7 @@ function preventDisabledLinkActivation(event: MouseEvent): void {
 <template>
   <component
     :is="isLink ? 'a' : 'button'"
-    v-bind="rootAttrs"
+    v-bind="rootAttrs()"
     :class="classes"
     :type="isLink ? undefined : type"
     :href="isLink && !isDisabled ? props.href : undefined"

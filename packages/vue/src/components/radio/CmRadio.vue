@@ -40,9 +40,8 @@ const size = computed(() => (sizes.includes(props.size) ? props.size : 'md'));
 const classes = computed(() =>
   mergeCmClasses('cm-radio', `cm-radio--${size.value}`, props.invalid ? 'cm-radio--invalid' : undefined, attrs.class),
 );
-const controlAttrs = computed(() =>
-  omitCmOwnedAttrs(attrs, ['style', 'type', 'value', 'checked', 'disabled', 'required', 'aria-invalid']),
-);
+const controlAttrs = () =>
+  omitCmOwnedAttrs(attrs, ['style', 'type', 'value', 'checked', 'disabled', 'required', 'aria-invalid']);
 const rootAttrs = computed(() => (attrs.style === undefined ? {} : { style: attrs.style }));
 
 function selectValue(event: Event): void {
@@ -55,7 +54,7 @@ function selectValue(event: Event): void {
   <label v-bind="rootAttrs" :class="classes">
     <input
       ref="input"
-      v-bind="controlAttrs"
+      v-bind="controlAttrs()"
       class="cm-radio__input"
       type="radio"
       :value="props.value"

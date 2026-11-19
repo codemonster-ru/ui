@@ -42,10 +42,10 @@ const classes = computed(() =>
     attrs.class,
   ),
 );
-const rootAttrs = computed(() => ({
+const rootAttrs = () => ({
   ...omitCmOwnedAttrs(attrs, ['value', 'disabled', 'readonly', 'required', 'aria-invalid', 'onInput']),
   ...(floatingLabel?.value && !attrs.placeholder ? { placeholder: ' ' } : {}),
-}));
+});
 
 function updateValue(event: Event): void {
   emit('update:modelValue', (event.target as HTMLTextAreaElement).value);
@@ -56,7 +56,7 @@ function updateValue(event: Event): void {
 <template>
   <textarea
     ref="input"
-    v-bind="rootAttrs"
+    v-bind="rootAttrs()"
     :class="classes"
     :value="props.modelValue"
     :disabled="props.disabled || undefined"

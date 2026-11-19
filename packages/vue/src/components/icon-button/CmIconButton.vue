@@ -41,12 +41,12 @@ const type = computed(() => (types.includes(props.type) ? props.type : 'button')
 const classes = computed(() =>
   mergeCmClasses('cm-icon-button', `cm-icon-button--${variant.value}`, `cm-icon-button--${size.value}`, attrs.class),
 );
-const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['type', 'disabled', 'aria-label']));
+const rootAttrs = () => omitCmOwnedAttrs(attrs, ['type', 'disabled', 'aria-label']);
 </script>
 
 <template>
   <button
-    v-bind="rootAttrs"
+    v-bind="rootAttrs()"
     :class="classes"
     :type="type"
     :disabled="props.disabled || undefined"

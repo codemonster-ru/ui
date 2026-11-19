@@ -29,9 +29,9 @@ const classes = computed(() =>
     attrs.class,
   ),
 );
-const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, []));
+const rootAttrs = () => omitCmOwnedAttrs(attrs, []);
 </script>
 
 <template>
-  <component :is="rootElement" v-bind="rootAttrs" :class="classes"><slot /></component>
+  <component :is="rootElement" v-bind="rootAttrs()" :class="classes"><slot /></component>
 </template>

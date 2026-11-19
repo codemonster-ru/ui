@@ -39,15 +39,14 @@ const classes = computed(() =>
     attrs.class,
   ),
 );
-const rootAttrs = computed(() =>
+const rootAttrs = () =>
   omitCmOwnedAttrs(attrs, [
     'class',
     'aria-label',
     'data-cm-controller',
     'data-cm-toc-smooth',
     'data-cm-toc-scroll-offset',
-  ]),
-);
+  ]);
 
 function itemHref(item: CmTableOfContentsItem): string {
   return resolveItemHref(item);
@@ -131,7 +130,7 @@ useCmHydrated();
 <template>
   <nav
     ref="root"
-    v-bind="rootAttrs"
+    v-bind="rootAttrs()"
     :class="classes"
     :aria-label="props.ariaLabel"
     :data-cm-controller="enhance ? 'table-of-contents' : undefined"
