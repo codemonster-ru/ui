@@ -100,6 +100,19 @@
   min-inline-size: 0;
 }
 
+/* Keep overlays relative to the field row when a narrow input needs a second row. */
+.cm-input-wrap:where(:has(> .cm-input__trailing):has(> .cm-input__action)) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto;
+  container: cm-input-adornments / inline-size;
+}
+
+.cm-input-wrap:where(:has(> .cm-input__trailing):has(> .cm-input__action))
+  > :is(.cm-input, .cm-input__leading, .cm-input__trailing, .cm-input__action) {
+  grid-area: 1 / 1 / 2 / 2;
+}
+
 .cm-input__leading,
 .cm-input__trailing {
   position: absolute;
@@ -236,6 +249,22 @@
 
 .cm-input-wrap:has(> .cm-input__trailing):has(> .cm-input__action:not([hidden])) > .cm-input {
   padding-inline-end: calc(var(--cm-input-action-inset) + var(--cm-input-actions-space) + var(--cm-icon-size-xl));
+}
+
+@container cm-input-adornments (inline-size < 12rem) {
+  .cm-input-wrap:has(> .cm-input__action:not([hidden])) > .cm-input__trailing {
+    position: static;
+    display: block;
+    grid-row: 2 / 3;
+    justify-self: end;
+    margin-block-start: var(--cm-space-1);
+    overflow-wrap: anywhere;
+    transform: none;
+  }
+
+  .cm-input-wrap:has(> .cm-input__trailing):has(> .cm-input__action:not([hidden])) > .cm-input {
+    padding-inline-end: calc(var(--cm-input-action-inset) + var(--cm-input-actions-space));
+  }
 }
 
 .cm-input__action[hidden],
