@@ -14,3 +14,19 @@ export function omitCmOwnedAttrs(
 
   return Object.fromEntries(Object.entries(attrs).filter(([attribute]) => !omittedAttributes.has(attribute)));
 }
+
+export function mergeCmPickerTriggerAttrs(
+  attrs: Readonly<Record<string, unknown>>,
+  owned: Readonly<Record<string, unknown>>,
+): Record<string, unknown> {
+  const omitted = new Set(['class', 'name', 'value', 'required', ...Object.keys(owned)]);
+  const forwarded = Object.entries(attrs).filter(([attribute]) => {
+    // Vue prefixes forced property and attribute bindings, and the DOM reflects ARIA properties.
+    const name = attribute
+      .replace(/^[.^]/u, '')
+      .replace(/^aria(?=[A-Z])/u, 'aria-')
+      .toLowerCase();
+    return !omitted.has(name);
+  });
+  return { ...Object.fromEntries(forwarded), ...owned };
+}

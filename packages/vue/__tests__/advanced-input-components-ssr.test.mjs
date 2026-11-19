@@ -57,6 +57,56 @@ test('escapes advanced-input option, command, and attribute values during SSR', 
   assert.doesNotMatch(actual, /<script>/u);
 });
 
+for (const { component, props, popup } of [
+  {
+    component: CmSelect,
+    props: { modelValue: 'daily', options: [{ value: 'daily', label: 'Daily' }] },
+    popup: 'listbox',
+  },
+  { component: CmDatePicker, props: { modelValue: '2026-09-02' }, popup: 'dialog' },
+]) {
+  test(`preserves the ${popup} trigger relationship and form value during SSR`, async (context) => {
+    const actual = await renderToString(
+      createSSRApp({
+        render: () =>
+          h('form', [
+            h('p', { id: 'field-help' }, 'Choose a value'),
+            h(component, {
+              ...props,
+              id: 'field',
+              name: 'field',
+              required: true,
+              type: 'submit',
+              role: 'button',
+              'aria-haspopup': 'menu',
+              'aria-controls': 'missing',
+              'aria-required': 'false',
+              'aria-label': 'Project field',
+              'aria-describedby': 'field-help',
+              'data-analytics': 'pick',
+            }),
+          ]),
+      }),
+    );
+    const { window } = new JSDOM(actual);
+    context.after(() => window.close());
+    const form = window.document.querySelector('form');
+    const trigger = form.querySelector('button');
+    const panel = form.querySelector(`[role="${popup}"]`);
+
+    assert.equal(trigger.type, 'button');
+    assert.equal(trigger.getAttribute('role'), 'combobox');
+    assert.equal(trigger.getAttribute('aria-haspopup'), popup);
+    assert.equal(trigger.getAttribute('aria-controls'), panel.id);
+    assert.equal(trigger.getAttribute('aria-expanded'), 'false');
+    assert.equal(trigger.getAttribute('aria-required'), 'true');
+    assert.equal(trigger.getAttribute('aria-label'), 'Project field');
+    assert.equal(trigger.getAttribute('aria-describedby'), 'field-help');
+    assert.equal(trigger.dataset.analytics, 'pick');
+    assert.equal(new window.FormData(form).get('field'), props.modelValue);
+  });
+}
+
 test('omits a disabled Select from form data rendered on the server', async (context) => {
   const actual = await renderToString(
     createSSRApp({

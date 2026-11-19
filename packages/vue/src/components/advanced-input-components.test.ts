@@ -1,6 +1,9 @@
+import type { CmCalendarWeekday } from '@codemonster-ru/ui-runtime/core';
 import { mount } from '@vue/test-utils';
+import { h, nextTick, ref } from 'vue';
 import { afterEach, describe, expect, it } from 'vitest';
 
+import { expectCmWarning } from '../internal/expect-warning';
 import CmCommandPalette from './command-palette/CmCommandPalette.vue';
 import CmDatePicker from './date-picker/CmDatePicker.vue';
 import CmSelect from './select/CmSelect.vue';
@@ -38,6 +41,88 @@ describe('Vue advanced input components', () => {
     expect(wrapper.get('.cm-select__listbox').attributes('hidden')).toBe('');
     wrapper.unmount();
   });
+
+  it.each(['select', 'date-picker'] as const)(
+    'keeps %s trigger semantics when forwarding Vue attributes',
+    async (kind) => {
+      const form = document.createElement('form');
+      document.body.append(form);
+      const submissions: Event[] = [];
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        submissions.push(event);
+      });
+      let clicks = 0;
+      const props = { id: 'field', required: true };
+      const attrs = {
+        name: 'field',
+        'aria-label': 'Project field',
+        'aria-describedby': 'field-help',
+        'data-analytics': 'pick',
+        type: 'submit',
+        '.type': 'submit',
+        role: 'button',
+        ariaHasPopup: 'menu',
+        '^aria-haspopup': 'menu',
+        'ARIA-CONTROLS': 'missing',
+        'aria-expanded': 'true',
+        'aria-invalid': 'true',
+        'aria-required': 'false',
+        'data-cm-filled': 'true',
+        onClick: () => {
+          clicks++;
+        },
+      };
+      const forwardAttrs = ref(false);
+      const wrapper = mount(
+        {
+          render() {
+            const forwarded = forwardAttrs.value ? { ...props, ...attrs } : props;
+            return kind === 'select'
+              ? h(CmSelect, { ...forwarded, options: [{ value: 'daily', label: 'Daily' }] })
+              : h(CmDatePicker, forwarded);
+          },
+        },
+        { attachTo: form },
+      );
+
+      try {
+        const trigger = wrapper.get<HTMLButtonElement>('button');
+        const popup = wrapper.get(kind === 'select' ? '[role="listbox"]' : '[role="dialog"]');
+        expect(trigger.attributes('aria-describedby')).toBeUndefined();
+        forwardAttrs.value = true;
+        await nextTick();
+        expect(trigger.attributes()).toMatchObject({
+          type: 'button',
+          role: 'combobox',
+          'aria-haspopup': kind === 'select' ? 'listbox' : 'dialog',
+          'aria-controls': popup.attributes('id'),
+          'aria-expanded': 'false',
+          'aria-required': 'true',
+          'aria-label': 'Project field',
+          'aria-describedby': 'field-help',
+          'data-analytics': 'pick',
+        });
+        expect(trigger.attributes('aria-invalid')).toBeUndefined();
+        expect(trigger.attributes('data-cm-filled')).toBeUndefined();
+        expect(new FormData(form).getAll('field')).toEqual(['']);
+
+        trigger.element.click();
+        await nextTick();
+        expect(trigger.attributes('aria-expanded')).toBe('true');
+        expect(popup.attributes('hidden')).toBeUndefined();
+        expect(clicks).toBe(1);
+        expect(submissions).toHaveLength(0);
+
+        forwardAttrs.value = false;
+        await nextTick();
+        expect(trigger.attributes('aria-describedby')).toBeUndefined();
+        expect(new FormData(form).has('field')).toBe(false);
+      } finally {
+        wrapper.unmount();
+      }
+    },
+  );
 
   it('refuses a disabled Select option and keeps the listbox open', async () => {
     const wrapper = mount(CmSelect, {
@@ -126,6 +211,17 @@ describe('Vue advanced input components', () => {
 
     expect(wrapper.emitted('valueChange')).toEqual([[value]]);
     expect(new FormData(form).get('date')).toBe(value);
+  });
+
+  it('keeps the DatePicker week-start metadata at its default for an invalid prop', () => {
+    const wrapper = expectCmWarning('firstDayOfWeek', () =>
+      mount(CmDatePicker, { props: { id: 'date', firstDayOfWeek: 7 as CmCalendarWeekday } }),
+    );
+    try {
+      expect(wrapper.get('button.cm-date-picker').attributes('data-cm-first-day-of-week')).toBeUndefined();
+    } finally {
+      wrapper.unmount();
+    }
   });
 
   it('filters CommandPalette and selects the active enabled command', async () => {

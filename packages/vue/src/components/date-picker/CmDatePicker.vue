@@ -8,7 +8,7 @@ import {
 } from '@codemonster-ru/ui-runtime/anchored-position';
 import { useCmFloatingPaint } from '../../internal/floating-paint';
 import { useCmFormReset } from '../../internal/form-reset';
-import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
+import { mergeCmClasses, mergeCmPickerTriggerAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
 import { assertCm, warnCm } from '../../internal/warn';
 import type {
@@ -243,19 +243,33 @@ const classes = computed(() =>
     attrs.class,
   ),
 );
-const triggerAttrs = computed(() =>
-  omitCmOwnedAttrs(attrs, [
-    'id',
-    'name',
-    'value',
-    'disabled',
-    'required',
-    'aria-invalid',
-    'aria-expanded',
-    'data-cm-date-picker-placement',
-    'data-cm-date-picker-teleport-to',
-  ]),
-);
+const triggerAttrs = () =>
+  mergeCmPickerTriggerAttrs(attrs, {
+    id: props.id,
+    type: 'button',
+    role: 'combobox',
+    'aria-haspopup': 'dialog',
+    'aria-controls': calendarId.value,
+    'aria-expanded': isOpen.value,
+    'aria-invalid': props.invalid || undefined,
+    'aria-required': props.required || undefined,
+    'aria-readonly': props.readonly || undefined,
+    disabled: props.disabled || undefined,
+    'data-cm-min': hasTime.value ? minValue.value : minDate.value,
+    'data-cm-max': hasTime.value ? maxValue.value : maxDate.value,
+    'data-cm-placeholder': props.placeholder ?? undefined,
+    'data-cm-filled': currentDates.value.length > 0 || undefined,
+    'data-cm-date-picker-mode': selectionMode.value === 'single' ? undefined : selectionMode.value,
+    'data-cm-date-picker-precision': precision.value === 'day' ? undefined : precision.value,
+    'data-cm-date-picker-show-time': hasTime.value || undefined,
+    'data-cm-date-picker-minute-step': hasTime.value ? minuteStep.value : undefined,
+    'data-cm-date-picker-placement': placement.value === 'bottom-end' ? placement.value : undefined,
+    'data-cm-date-picker-teleport-to': typeof portal.value === 'string' ? portal.value : undefined,
+    'data-cm-date-picker-name': selectionMode.value === 'single' ? undefined : (name.value ?? undefined),
+    'data-cm-locale': typeof props.locale === 'string' ? props.locale : undefined,
+    'data-cm-display-format': props.displayFormat,
+    'data-cm-first-day-of-week': firstDayOfWeek.value || undefined,
+  });
 
 function setOpen(open: boolean, restoreFocus = false): void {
   if (props.disabled || props.readonly) open = false;
@@ -482,33 +496,9 @@ useCmHydrated();
       />
     </template>
     <button
-      :id="props.id"
       ref="triggerRef"
       :class="classes"
-      type="button"
-      role="combobox"
-      aria-haspopup="dialog"
-      :aria-controls="calendarId"
-      :aria-expanded="isOpen"
-      :aria-invalid="props.invalid || undefined"
-      :aria-required="props.required || undefined"
-      :aria-readonly="props.readonly || undefined"
-      :disabled="props.disabled || undefined"
-      :data-cm-min="hasTime ? minValue : minDate"
-      :data-cm-max="hasTime ? maxValue : maxDate"
-      :data-cm-placeholder="props.placeholder ?? undefined"
-      :data-cm-filled="currentDates.length > 0 || undefined"
-      :data-cm-date-picker-mode="selectionMode === 'single' ? undefined : selectionMode"
-      :data-cm-date-picker-precision="precision === 'day' ? undefined : precision"
-      :data-cm-date-picker-show-time="hasTime || undefined"
-      :data-cm-date-picker-minute-step="hasTime ? minuteStep : undefined"
-      :data-cm-date-picker-placement="placement === 'bottom-end' ? placement : undefined"
-      :data-cm-date-picker-teleport-to="typeof portal === 'string' ? portal : undefined"
-      :data-cm-date-picker-name="selectionMode === 'single' ? undefined : (name ?? undefined)"
-      :data-cm-locale="typeof props.locale === 'string' ? props.locale : undefined"
-      :data-cm-display-format="props.displayFormat"
-      :data-cm-first-day-of-week="firstDayOfWeek || undefined"
-      v-bind="triggerAttrs"
+      v-bind="triggerAttrs()"
       @click="setOpen(!isOpen)"
       @keydown="onTriggerKeydown"
     >

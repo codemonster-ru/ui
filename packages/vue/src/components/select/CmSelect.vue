@@ -8,7 +8,7 @@ import {
 } from '@codemonster-ru/ui-runtime/anchored-position';
 import { useCmFloatingPaint } from '../../internal/floating-paint';
 import { useCmFormReset } from '../../internal/form-reset';
-import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
+import { mergeCmClasses, mergeCmPickerTriggerAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
 import { selectClosedKeyAction, selectOpenKeyAction } from '@codemonster-ru/ui-runtime/core';
 import { assertCm, warnCm } from '../../internal/warn';
@@ -98,9 +98,20 @@ const classes = computed(() =>
     attrs.class,
   ),
 );
-const triggerAttrs = computed(() =>
-  omitCmOwnedAttrs(attrs, ['id', 'name', 'value', 'disabled', 'required', 'aria-invalid', 'aria-expanded']),
-);
+const triggerAttrs = () =>
+  mergeCmPickerTriggerAttrs(attrs, {
+    id: props.id,
+    type: 'button',
+    role: 'combobox',
+    'aria-haspopup': 'listbox',
+    'aria-controls': listboxId.value,
+    'aria-expanded': isOpen.value,
+    'aria-invalid': props.invalid || undefined,
+    'aria-required': props.required || undefined,
+    disabled: props.disabled || undefined,
+    'data-cm-placeholder': props.placeholder ?? undefined,
+    'data-cm-filled': currentValue.value !== '' || undefined,
+  });
 
 function enabledOptions(): HTMLButtonElement[] {
   return [
@@ -239,20 +250,9 @@ useCmHydrated();
       :disabled="props.disabled || undefined"
     />
     <button
-      :id="props.id"
       ref="triggerRef"
       :class="classes"
-      type="button"
-      role="combobox"
-      aria-haspopup="listbox"
-      :aria-controls="listboxId"
-      :aria-expanded="isOpen"
-      :aria-invalid="props.invalid || undefined"
-      :aria-required="props.required || undefined"
-      :disabled="props.disabled || undefined"
-      :data-cm-placeholder="props.placeholder ?? undefined"
-      :data-cm-filled="currentValue !== '' || undefined"
-      v-bind="triggerAttrs"
+      v-bind="triggerAttrs()"
       @click="setOpen(!isOpen)"
       @keydown="onTriggerKeydown"
     >
