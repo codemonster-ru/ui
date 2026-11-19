@@ -283,7 +283,9 @@ async function checkAdapter([adapter, base]) {
       });
       page.setDefaultTimeout(10000);
       try {
-        await page.addInitScript((mode) => localStorage.setItem('cm-showcase-theme', mode), theme);
+        await page.addInitScript((mode) => {
+          if (window === window.top) localStorage.setItem('cm-showcase-theme', mode);
+        }, theme);
         for (const [name, path, ready] of routes) {
           await page.goto(url(base, path));
           await page.locator(ready).first().waitFor();
