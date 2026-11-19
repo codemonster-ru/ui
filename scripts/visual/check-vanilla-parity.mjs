@@ -16,6 +16,8 @@ const chrome = spawn(
   chromePath,
   [
     '--headless',
+    // Match the software renderer used by the stored visual comparison.
+    '--disable-gpu',
     '--no-first-run',
     '--no-default-browser-check',
     '--remote-debugging-port=0',
