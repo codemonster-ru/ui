@@ -71,6 +71,64 @@ const focusCases = [
   ['popover-default', [['.cm-popover__trigger']]],
 ];
 
+test(`Input adornments reflow at 320px with 200% text in ${browserName}`, async (context) => {
+  const browser = await playwright[browserName].launch();
+  context.after(() => browser.close());
+  context.diagnostic(`${browserName} ${browser.version()}`);
+
+  for (const platform of ['vue', 'vanilla']) {
+    for (const theme of ['light', 'dark']) {
+      await context.test(`${platform}, ${theme}`, async (caseTest) => {
+        const page = await browser.newPage({
+          viewport: { width: 320, height: 500 },
+          colorScheme: theme,
+          reducedMotion: 'reduce',
+        });
+        caseTest.after(() => page.close());
+        await openCase(page, platform, theme, 'input-enhanced');
+        await page.addStyleTag({
+          content: 'html:root { font-size: 200%; } #visual-root { inline-size: 100%; padding: 16px; }',
+        });
+        await page.evaluate(() => document.fonts.ready);
+        assert.equal(await page.locator('html').evaluate((element) => getComputedStyle(element).fontSize), '32px');
+        assert.equal(await page.locator('html').evaluate((element) => element.scrollWidth), 320);
+
+        const input = page.locator('.cm-input');
+        const leading = page.locator('.cm-input__leading');
+        const trailing = page.locator('.cm-input__trailing');
+        const reveal = page.locator('[data-cm-input-password]');
+        const clear = page.locator('[data-cm-input-clear]');
+        const [field, prefix, suffix, revealBox, clearBox] = await Promise.all(
+          [input, leading, trailing, reveal, clear].map((element) => element.boundingBox()),
+        );
+        assert(suffix.y >= field.y + field.height, 'trailing content has a separate row');
+        assert(
+          suffix.x >= field.x && suffix.x + suffix.width <= field.x + field.width,
+          'trailing text stays within the field width',
+        );
+        assert(
+          prefix.x + prefix.width < revealBox.x && revealBox.x + revealBox.width < clearBox.x,
+          'text and actions have independent space',
+        );
+        for (const box of [prefix, revealBox, clearBox]) {
+          assert(
+            Math.abs(box.y + box.height / 2 - (field.y + field.height / 2)) <= 1,
+            'field adornments stay vertically centred',
+          );
+        }
+
+        await reveal.press('Space');
+        assert.equal(await input.getAttribute('type'), 'text', 'keyboard opens password reveal');
+        assert(await input.evaluate((element) => element === document.activeElement), 'reveal returns focus to Input');
+        await clear.click();
+        assert.equal(await input.inputValue(), '', 'pointer clears the Input');
+        assert(await input.evaluate((element) => element === document.activeElement), 'clear returns focus to Input');
+        assert.equal(await clear.isVisible(), false, 'empty Input hides the clear action');
+      });
+    }
+  }
+});
+
 test(`packaged form and navigation states in ${browserName}`, async (t) => {
   const browser = await playwright[browserName].launch();
   t.after(() => browser.close());
