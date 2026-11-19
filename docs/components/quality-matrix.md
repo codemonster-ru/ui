@@ -1,5 +1,7 @@
 # Component quality matrix
 
+The [visual quality matrix](../verification/reference-visual-quality.md) records the combined product review.
+
 Inventory taken from the `2.0.0-rc.2` contract tree at `857c0e39`. Each component
 links to its manifest with the inputs, slots, events, defaults, and declared states.
 Use the [component reference](./index.md) for framework examples and canonical HTML.

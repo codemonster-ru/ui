@@ -1,0 +1,59 @@
+# CodeMonster UI visual quality matrix
+
+The component list and states come from the [canonical inventory](../components/quality-matrix.md).
+The programmatic review compares actual Vue and Vanilla rendering in light and dark, at 320
+and 1,280 CSS px. It records component rectangle, font size, line height, font weight, border,
+radius, padding, gap and computed foreground and surface. The accompanying captures show the
+default or first published case for each of the 62 contracts. The two recipe-level entries are
+covered in the production catalog as ConfirmDialog and ThemeProvider. Each targeted check
+covers the named states below. The measurement set limits the strength of claims about other
+densities, locales and platform rendering.
+
+| Family | Component coverage | Visual and interaction assessment |
+| --- | --- | --- |
+| Actions | Button, IconButton, Link | Text, hit target and icon size follow the control scale. The narrow showcase wraps action labels when text is enlarged. Compare pointer, keyboard focus and disabled state in the action matrices. |
+| Forms and settings | Field, Fieldset, FormLayout, GroupBox, Input, Textarea, Checkbox, Radio, Switch, ThemeSwitch | Native controls and label spacing follow their shared sizes. Thin borders and focus marks distinguish active, disabled and validation states. At narrow widths, tracks shrink and selectable theme options wrap. A localized GroupBox uses the fieldset inset and wraps both static and collapsible legends. |
+| Pickers and commands | Select, DatePicker, CommandPalette | Compare compact field icons and clear targets, popup boundary and option focus in both themes. Enlarged DatePicker targets and a wrapped calendar retain movement and selection. The Select catalog frame now displays both options. |
+| Navigation | Accordion, Breadcrumbs, Menu, MenuBar, NavMenu, Stepper, TableOfContents, Tabs | Align icon gap and chevron direction in LTR and RTL. Stepper rails end at wrapped rows and pass behind opaque markers without painting through focused rings. Long TableOfContents headings wrap. Menu width can shrink within its container. |
+| Overlays | Dialog, Drawer, Dropdown, Popover, Tooltip, ConfirmDialog | Compare surface padding, edge position, focus treatment and viewport fit in open and closed states. The composed native modal cases keep DatePicker and Tooltip inside the modal and restore focus on Escape. |
+| Feedback and display | Alert, Avatar, Badge, Divider, Icon, ProgressBar, ProgressSpinner, Skeleton, SkeletonGate, Tag | Compare semantic tones and radii, short and long labels, loop and reduced motion, and contrast on the shared surfaces. The Icon contexts stack when the columns become too narrow for the name and copy action. |
+| Surfaces and layout primitives | Card, Container, Grid, Inline, Panel, PageHeader, Section, Stack | Compare surface border, radius, heading/body hierarchy and indentation. Grid tracks keep their default minimum where space permits and shrink below it on a small surface. The deliberately unwrapped Inline example stays in its own scroll region. |
+| Tabular displays | Table, DataTable, ColumnChooser | Compare column alignment, filter and sort affordances, compact density, focus and scroll containers. The warehouse example aligns quantities at the inline end and exposes matching, paged and empty results. |
+| Application shells and regions | AdminLayout, AdminShell, AppShell, AuthLayout, DocumentLayout, ErrorLayout, SetupLayout, AsideArea, ContentArea, FooterArea, HeaderArea, SidebarArea | Compare header clearance, sticky regions, spacing and landmark order in the live layouts. Verify collapsed and expanded sidebar state, tab focus on a long navigation rail, and behavior at a 320 px inner viewport. |
+| Theme provider and semantic roles | ThemeProvider across the catalog and examples | Compare both theme palettes, page and surface text contrast, focus and selected role pairs. User settings include the persisted theme and the composed Workspace settings card. |
+
+## Measured proportions
+
+In the representative state, Button, IconButton, Input and both enhanced pickers share a 36 px
+height, 1 px border and 10 px radius. Their default text is 16 px with a 19.2 px line height.
+Textarea uses 96 px height and a 24 px line height. The selectable Checkbox, Radio and Switch
+examples provide 24 px high labelled targets with a 12 px inset gap. Navigation item samples use
+28 px height and an 8 px label-to-icon gap after correction. Card and Panel use 12 px radius and
+12 px internal spacing. Sortable DataTable header text is 14 px at weight 600. The atlas retains
+individual figures in `artifacts/reference-integration/`.
+
+## Intentional changes and controls
+
+| Finding | Observed change |
+| --- | --- |
+| Large text on the production showcase | At 360 px with a computed 32 px root font, Core scrolled to 453 px in Vue and 461 px in Vanilla, Layouts to 544 px, and Icons to 470 px. Constrained field and layout tracks, wrapped action text and stacked icon examples bring the tested pages to 360 px in both adapters. Existing normal-density layouts remain in the screenshot checks. |
+| Stepper and navigation geometry | The exact PR #29 control reported 80 marker/ring overlays, 24 overflowing Stepper labels, eight rail overshoots and eight wrong wrapped-row endpoints. It also reported 240 gap violations, 104 wrong RTL chevrons and eight distorted icons. The focused paired candidate checks report zero in each category. |
+| Select preview clipping | At 9 rem expanded height, the second option extended 12 px beyond the listbox. At 11.625 rem it sits 5 px inside and the existing 64 px exterior-space limit still holds. Browser checks assert the bounds of both options after pointer and keyboard opening. |
+| Native button contrast | The bare button in the Inline sample measured 3.94:1 on Chromium dark surfaces. Platform foreground and surface colors give 5.33:1 at the same button size. Styled buttons continue to use their semantic foreground and background tokens. |
+| Table filter composition | The warehouse layout filters across all products before pagination, resets to the first page, announces the result count and preserves focus. A zero-result query exposes a named empty state. The sample table retains keyboard access at a 320 px child viewport. |
+
+## Real compositions
+
+- **Warehouse workspace and Admin dashboard.** Both adapters render the same navigation tree,
+  header, filterable data, state badges and paginated table. The mobile shell and its focus
+  clearance use the package's own responsive rules.
+- **Sign-in and settings.** The sign-in preview uses labelled, required native controls. It rejects
+  an empty submission and an invalid address, then announces a successful preview submission.
+  The theme preference persists after reload. The Workspace settings sample shows the responsive
+  Field, Input and Select composition.
+- **Modal and navigation interactions.** The component detail dialog and the popup-in-modal
+  tests cover names, focus return and dismissal. The matrix and Layouts header navigation
+  remain reachable by keyboard at the tested widths.
+
+See the [integration record](reference-integration.md) for exact revisions, independent reviews,
+environment limits and final verification.

@@ -23,6 +23,8 @@ Vanilla examples in an application, follow the
 
 ## Preview locally
 
+![CodeMonster UI visual matrix with the Vue data table, component catalog and theme controls](./docs/assets/reference-showcase.png)
+
 The Vue and Vanilla showcases open on the **Visual matrix**. Use **Layouts** for complete
 forms, navigation, tables and dialogs in sample interfaces.
 

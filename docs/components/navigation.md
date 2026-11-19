@@ -176,10 +176,12 @@ for a vertical Stepper. The vertical sides follow the text direction. Existing `
 `inline` layouts remain available. Vanilla HTML uses the same geometry classes and starts
 with `aria-current="step"` on the authored active button.
 
-The shared stylesheet draws the completed rail and marker from the active step. On a vertical
-Stepper with at least two items, set `--cm-stepper-progress-factor` on the initial HTML to the
-active zero-based index divided by the number of gaps. The Vanilla controller updates it after
-activation. A single step has no rail. Reduced motion removes the rail transition.
+The shared stylesheet draws each connector from the current step. Author
+`aria-current="step"` on the active button in vertical markup as well as horizontal markup.
+For older vertical markup with enabled buttons and no current marker,
+`--cm-stepper-progress-factor` remains the initial rail fallback. Its value is the active
+zero-based index divided by the number of gaps. A single step has no rail. Reduced motion
+removes the rail transition.
 
 ```vue
 <script setup lang="ts">
