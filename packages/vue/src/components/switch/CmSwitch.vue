@@ -51,7 +51,7 @@ const classes = computed(() =>
     attrs.class,
   ),
 );
-const controlAttrs = computed(() =>
+const controlAttrs = () =>
   omitCmOwnedAttrs(attrs, [
     'style',
     'type',
@@ -62,8 +62,7 @@ const controlAttrs = computed(() =>
     'required',
     'aria-checked',
     'aria-invalid',
-  ]),
-);
+  ]);
 const rootAttrs = computed(() => (attrs.style === undefined ? {} : { style: attrs.style }));
 
 function updateChecked(event: Event): void {
@@ -77,7 +76,7 @@ useCmHydrated();
   <label v-bind="rootAttrs" :class="classes" data-cm-controller="switch">
     <input
       ref="input"
-      v-bind="controlAttrs"
+      v-bind="controlAttrs()"
       class="cm-switch__input"
       type="checkbox"
       role="switch"

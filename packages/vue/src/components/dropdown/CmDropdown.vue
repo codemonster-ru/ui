@@ -96,7 +96,7 @@ const classes = computed(() =>
     attrs.class,
   ),
 );
-const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['data-cm-controller', 'data-cm-dropdown-close-on-select']));
+const rootAttrs = () => omitCmOwnedAttrs(attrs, ['data-cm-controller', 'data-cm-dropdown-close-on-select']);
 
 assertCm(props.id.trim() !== '' && props.label.trim() !== '', 'Dropdown id and label must be non-empty strings.');
 
@@ -209,7 +209,7 @@ useCmHydrated();
 <template>
   <div
     ref="root"
-    v-bind="rootAttrs"
+    v-bind="rootAttrs()"
     :class="classes"
     data-cm-controller="dropdown"
     :data-cm-dropdown-close-on-select="props.closeOnSelect ? undefined : 'false'"

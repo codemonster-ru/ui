@@ -48,13 +48,12 @@ const classes = computed(() =>
     attrs.class,
   ),
 );
-const rootAttrs = computed(() =>
-  omitCmOwnedAttrs(attrs, ['role', 'aria-label', 'aria-valuemin', 'aria-valuemax', 'aria-valuenow']),
-);
+const rootAttrs = () =>
+  omitCmOwnedAttrs(attrs, ['role', 'aria-label', 'aria-valuemin', 'aria-valuemax', 'aria-valuenow']);
 </script>
 
 <template>
-  <span v-bind="rootAttrs" :class="classes" role="progressbar" :aria-label="props.label">
+  <span v-bind="rootAttrs()" :class="classes" role="progressbar" :aria-label="props.label">
     <svg class="cm-progress-spinner__svg" viewBox="0 0 50 50" aria-hidden="true" focusable="false">
       <circle class="cm-progress-spinner__track" cx="25" cy="25" r="20" fill="none" :stroke-width="strokeWidth" />
       <circle class="cm-progress-spinner__value" cx="25" cy="25" r="20" fill="none" :stroke-width="strokeWidth" />

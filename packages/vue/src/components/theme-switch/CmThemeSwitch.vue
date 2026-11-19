@@ -38,7 +38,7 @@ const emit = defineEmits<{
 useCmHydrated();
 const attrs = useAttrs();
 const classes = computed(() => mergeCmClasses('cm-theme-switch', attrs.class));
-const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['class', 'data-cm-controller']));
+const rootAttrs = () => omitCmOwnedAttrs(attrs, ['class', 'data-cm-controller']);
 const theme = inject(cmThemeContextKey, null);
 const mode = computed<CmThemeMode>(() =>
   isCmThemeMode(props.modelValue) ? props.modelValue : (theme?.theme.value ?? 'system'),
@@ -71,7 +71,7 @@ function select(value: string): void {
 </script>
 
 <template>
-  <fieldset v-bind="rootAttrs" :class="classes" data-cm-controller="theme-switch">
+  <fieldset v-bind="rootAttrs()" :class="classes" data-cm-controller="theme-switch">
     <legend class="cm-theme-switch__legend">{{ props.legend }}</legend>
     <label v-for="option in props.options" :key="option.value" class="cm-theme-switch__option">
       <input

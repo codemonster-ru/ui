@@ -41,16 +41,16 @@ const minHeight = computed(() => {
 const rootStyle = computed<CSSProperties | undefined>(() =>
   minHeight.value === undefined ? undefined : { minHeight: minHeight.value },
 );
-const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['class', 'style', 'aria-hidden']));
+const rootAttrs = () => omitCmOwnedAttrs(attrs, ['class', 'style', 'aria-hidden']);
 </script>
 
 <template>
   <div
     v-if="attrs.style || rootStyle"
-    v-bind="rootAttrs"
+    v-bind="rootAttrs()"
     :class="classes"
     :style="[attrs.style, rootStyle]"
     aria-hidden="true"
   />
-  <div v-else v-bind="rootAttrs" :class="classes" aria-hidden="true" />
+  <div v-else v-bind="rootAttrs()" :class="classes" aria-hidden="true" />
 </template>

@@ -33,11 +33,11 @@ const classes = computed(() =>
     attrs.class,
   ),
 );
-const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['class']));
+const rootAttrs = () => omitCmOwnedAttrs(attrs, ['class']);
 </script>
 
 <template>
-  <span v-bind="rootAttrs" :class="classes">
+  <span v-bind="rootAttrs()" :class="classes">
     <img v-if="props.image" class="cm-avatar__image" :src="props.image" :alt="props.imageAlt" />
     <span v-else-if="props.label" class="cm-avatar__label">{{ props.label }}</span>
     <slot v-else />

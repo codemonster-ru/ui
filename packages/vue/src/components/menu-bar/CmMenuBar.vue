@@ -47,7 +47,7 @@ const openPath = computed(() => props.openPath ?? localPath.value);
 const classes = computed(() =>
   mergeCmClasses('cm-menu-bar', props.variant === 'pills' && 'cm-menu-bar--pills', attrs.class),
 );
-const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['class', 'aria-label', 'data-cm-controller']));
+const rootAttrs = () => omitCmOwnedAttrs(attrs, ['class', 'aria-label', 'data-cm-controller']);
 
 const menuItems = computed(() => {
   const ancestors = new Map<string, string[]>();
@@ -244,7 +244,7 @@ useCmHydrated();
 <template>
   <nav
     ref="menu"
-    v-bind="rootAttrs"
+    v-bind="rootAttrs()"
     :class="classes"
     :aria-label="props.ariaLabel"
     data-cm-controller="menu-bar"

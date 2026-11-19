@@ -67,9 +67,8 @@ const classes = () =>
     visible.value && hasTooltip() ? 'cm-tooltip--visible' : undefined,
     attrs.class,
   );
-const rootAttrs = computed(() =>
-  omitCmOwnedAttrs(attrs, ['data-cm-controller', 'data-cm-tooltip-open-delay', 'data-cm-tooltip-teleport-to']),
-);
+const rootAttrs = () =>
+  omitCmOwnedAttrs(attrs, ['data-cm-controller', 'data-cm-tooltip-open-delay', 'data-cm-tooltip-teleport-to']);
 const portal = computed(() => (!props.disableTeleport ? props.teleportTo || null : null));
 const painted = useCmFloatingPaint(visible, panelRef);
 const teleportTarget = computed(() => (painted.value ? resolveCmAnchoredTarget(root.value, portal.value) : null));
@@ -194,7 +193,7 @@ useCmHydrated();
 <template>
   <span
     ref="root"
-    v-bind="rootAttrs"
+    v-bind="rootAttrs()"
     :class="classes()"
     :data-cm-controller="hasTooltip() ? 'tooltip' : undefined"
     :data-cm-tooltip-open-delay="props.openDelay === undefined ? undefined : openingDelay"

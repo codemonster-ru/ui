@@ -38,7 +38,7 @@ const describedBy = computed(() => {
 const classes = computed(() =>
   mergeCmClasses('cm-fieldset', isInvalid.value ? 'cm-fieldset--invalid' : undefined, attrs.class),
 );
-const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['id', 'aria-describedby', 'aria-invalid']));
+const rootAttrs = () => omitCmOwnedAttrs(attrs, ['id', 'aria-describedby', 'aria-invalid']);
 const defaultSlotProps = computed<CmFieldsetDefaultSlotProps>(() => ({
   describedBy: describedBy.value,
   invalid: isInvalid.value,
@@ -47,7 +47,7 @@ const defaultSlotProps = computed<CmFieldsetDefaultSlotProps>(() => ({
 
 <template>
   <fieldset
-    v-bind="rootAttrs"
+    v-bind="rootAttrs()"
     :id="props.id"
     :class="classes"
     :aria-describedby="describedBy"

@@ -80,7 +80,7 @@ watchEffect(() => {
 
 const panelId = computed(() => `${props.id}-panel`);
 const classes = computed(() => mergeCmClasses('cm-popover', 'cm-column-chooser', attrs.class));
-const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['class', 'data-cm-controller']));
+const rootAttrs = () => omitCmOwnedAttrs(attrs, ['class', 'data-cm-controller']);
 const teleportTarget = computed(() => (isOpen.value ? resolveCmAnchoredTarget(root.value, props.teleportTo) : null));
 
 function columnLabel(column: CmColumnChooserColumn): string {
@@ -180,7 +180,13 @@ useCmHydrated();
 </script>
 
 <template>
-  <div ref="root" v-bind="rootAttrs" :class="classes" data-cm-controller="popover column-chooser" @keydown="onKeydown">
+  <div
+    ref="root"
+    v-bind="rootAttrs()"
+    :class="classes"
+    data-cm-controller="popover column-chooser"
+    @keydown="onKeydown"
+  >
     <CmAuthoredTrigger
       v-if="props.triggerAsChild && slots.trigger"
       :id="props.id"

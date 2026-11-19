@@ -17,9 +17,9 @@ const props = defineProps({
 const attrs = useAttrs();
 const rootElement = computed(() => props.as ?? (elements.includes(props.element) ? props.element : 'div'));
 const classes = computed(() => mergeCmClasses('cm-stack', attrs.class));
-const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, []));
+const rootAttrs = () => omitCmOwnedAttrs(attrs, []);
 </script>
 
 <template>
-  <component :is="rootElement" v-bind="rootAttrs" :class="classes"><slot /></component>
+  <component :is="rootElement" v-bind="rootAttrs()" :class="classes"><slot /></component>
 </template>

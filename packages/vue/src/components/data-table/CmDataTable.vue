@@ -541,7 +541,7 @@ const classes = computed(() =>
     attrs.class,
   ),
 );
-const rootAttrs = computed(() =>
+const rootAttrs = () =>
   omitCmOwnedAttrs(attrs, [
     'id',
     'data-cm-controller',
@@ -552,8 +552,7 @@ const rootAttrs = computed(() =>
     'data-cm-data-table-page-size',
     'data-cm-data-table-total-rows',
     'data-cm-data-table-selected-count',
-  ]),
-);
+  ]);
 const maskLoading = computed(() => props.loading && props.loadingVariant === 'mask');
 const state = computed(() => {
   if (props.loading && !maskLoading.value) return 'loading';
@@ -820,7 +819,7 @@ useCmHydrated();
 <template>
   <div
     :id="props.id"
-    v-bind="rootAttrs"
+    v-bind="rootAttrs()"
     :class="classes"
     data-cm-controller="data-table"
     :data-cm-data-table-sort-key="activeSort[0]?.key ?? ''"

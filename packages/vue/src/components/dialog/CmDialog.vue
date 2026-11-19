@@ -69,7 +69,7 @@ const classes = computed(() =>
     attrs.class,
   ),
 );
-const rootAttrs = computed(() =>
+const rootAttrs = () =>
   omitCmOwnedAttrs(attrs, [
     'id',
     'open',
@@ -80,8 +80,7 @@ const rootAttrs = computed(() =>
     'data-cm-dialog-state',
     'data-cm-dialog-dismissible',
     'data-cm-dialog-close-on-escape',
-  ]),
-);
+  ]);
 
 useCmHydrated();
 </script>
@@ -90,7 +89,7 @@ useCmHydrated();
   <dialog
     :id="`${props.id}-dialog`"
     ref="dialog"
-    v-bind="rootAttrs"
+    v-bind="rootAttrs()"
     :class="classes"
     :open="localOpen || undefined"
     :aria-label="ariaLabel"

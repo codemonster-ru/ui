@@ -16,7 +16,7 @@ const props = defineProps({
 const attrs = useAttrs();
 const orientation = computed(() => (orientations.includes(props.orientation) ? props.orientation : 'horizontal'));
 const classes = computed(() => mergeCmClasses('cm-divider', `cm-divider--${orientation.value}`, attrs.class));
-const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['class', 'role', 'aria-orientation']));
+const rootAttrs = () => omitCmOwnedAttrs(attrs, ['class', 'role', 'aria-orientation']);
 </script>
 
-<template><hr v-bind="rootAttrs" :class="classes" role="separator" :aria-orientation="orientation" /></template>
+<template><hr v-bind="rootAttrs()" :class="classes" role="separator" :aria-orientation="orientation" /></template>

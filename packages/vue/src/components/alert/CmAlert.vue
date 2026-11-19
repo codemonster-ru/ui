@@ -30,11 +30,11 @@ const classes = computed(() =>
   mergeCmClasses('cm-alert', tone.value === 'info' ? undefined : `cm-alert--${tone.value}`, attrs.class),
 );
 const rootRole = computed(() => (typeof attrs.role === 'string' ? attrs.role : 'status'));
-const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['class', 'role']));
+const rootAttrs = () => omitCmOwnedAttrs(attrs, ['class', 'role']);
 </script>
 
 <template>
-  <section v-bind="rootAttrs" :class="classes" :role="rootRole">
+  <section v-bind="rootAttrs()" :class="classes" :role="rootRole">
     <div v-if="$slots.icon" class="cm-alert__icon" aria-hidden="true"><slot name="icon" /></div>
     <div class="cm-alert__content">
       <p v-if="$slots.title || props.title" class="cm-alert__title">

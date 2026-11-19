@@ -71,7 +71,7 @@ const passwordReveal = computed(() =>
 const classes = computed(() =>
   mergeCmClasses('cm-input', `cm-input--${size.value}`, props.invalid ? 'cm-input--invalid' : undefined, attrs.class),
 );
-const rootAttrs = computed(() => ({
+const rootAttrs = () => ({
   ...omitCmOwnedAttrs(attrs, ['value', 'type', 'disabled', 'readonly', 'required', 'aria-invalid', 'onInput']),
   ...(floatingLabel?.value && !attrs.placeholder ? { placeholder: ' ' } : {}),
   class: classes.value,
@@ -81,7 +81,7 @@ const rootAttrs = computed(() => ({
   readonly: props.readonly || undefined,
   required: props.required || undefined,
   'aria-invalid': props.invalid ? ('true' as const) : undefined,
-}));
+});
 
 function updateValue(event: Event): void {
   currentValue.value = (event.target as HTMLInputElement).value;
@@ -122,7 +122,7 @@ useCmHydrated();
     :data-cm-controller="hasPasswordReveal || hasClear ? 'input' : undefined"
   >
     <span v-if="$slots.leading" class="cm-input__leading"><slot name="leading" /></span>
-    <input ref="inputRef" v-bind="rootAttrs" data-cm-input-control @input="updateValue" />
+    <input ref="inputRef" v-bind="rootAttrs()" data-cm-input-control @input="updateValue" />
     <span v-if="$slots.trailing" class="cm-input__trailing"><slot name="trailing" /></span>
     <button
       v-if="hasPasswordReveal"
@@ -192,5 +192,5 @@ useCmHydrated();
       </span>
     </button>
   </div>
-  <input v-else ref="inputRef" v-bind="rootAttrs" @input="updateValue" />
+  <input v-else ref="inputRef" v-bind="rootAttrs()" @input="updateValue" />
 </template>

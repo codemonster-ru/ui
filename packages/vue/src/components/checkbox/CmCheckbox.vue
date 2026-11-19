@@ -43,9 +43,8 @@ const classes = computed(() =>
     attrs.class,
   ),
 );
-const controlAttrs = computed(() =>
-  omitCmOwnedAttrs(attrs, ['style', 'type', 'value', 'checked', 'disabled', 'required', 'aria-invalid']),
-);
+const controlAttrs = () =>
+  omitCmOwnedAttrs(attrs, ['style', 'type', 'value', 'checked', 'disabled', 'required', 'aria-invalid']);
 const rootAttrs = computed(() => (attrs.style === undefined ? {} : { style: attrs.style }));
 
 function syncIndeterminate(): void {
@@ -72,7 +71,7 @@ function updateChecked(event: Event): void {
   >
     <input
       ref="input"
-      v-bind="controlAttrs"
+      v-bind="controlAttrs()"
       class="cm-checkbox__input"
       type="checkbox"
       :value="props.value"

@@ -28,11 +28,11 @@ const tableClasses = computed(() =>
     props.stickyHeader ? 'cm-table--sticky-header' : undefined,
   ),
 );
-const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, []));
+const rootAttrs = () => omitCmOwnedAttrs(attrs, []);
 </script>
 
 <template>
-  <div v-bind="rootAttrs" :class="rootClasses">
+  <div v-bind="rootAttrs()" :class="rootClasses">
     <div class="cm-table__scroll">
       <table :class="tableClasses">
         <caption v-if="$slots.caption || props.caption" class="cm-table__caption">
