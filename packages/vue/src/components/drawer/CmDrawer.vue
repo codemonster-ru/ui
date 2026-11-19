@@ -84,14 +84,14 @@ const classes = computed(() =>
 function cssLength(value: string | number): string {
   return typeof value === 'number' ? `${value}px` : value;
 }
-const rootAttrs = computed(() => {
+const rootAttrs = () => {
   const forwarded = omitCmOwnedAttrs(attrs, []);
   const style: CSSProperties = {};
   if (props.offsetTop !== undefined) style['--cm-drawer-offset-top'] = cssLength(props.offsetTop);
   if (props.bodyPadding !== undefined) style['--cm-drawer-body-padding'] = cssLength(props.bodyPadding);
   if (Object.keys(style).length) forwarded.style = [attrs.style, style];
   return forwarded;
-});
+};
 
 useCmHydrated();
 </script>
@@ -99,7 +99,7 @@ useCmHydrated();
 <template>
   <dialog
     ref="dialog"
-    v-bind="rootAttrs"
+    v-bind="rootAttrs()"
     :id="`${props.id}-drawer`"
     :class="classes"
     :open="localOpen || undefined"

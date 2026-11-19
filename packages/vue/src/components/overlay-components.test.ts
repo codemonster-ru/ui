@@ -1,4 +1,5 @@
 import { mount } from '@vue/test-utils';
+import { h, nextTick, ref } from 'vue';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import CmDialog from './dialog/CmDialog.vue';
@@ -63,6 +64,35 @@ describe('Vue overlay components', () => {
     expect(wrapper.classes()).toContain('cm-drawer--start');
     await wrapper.get('[data-cm-drawer-close]').trigger('click');
     expect(wrapper.emitted('openChange')).toEqual([[false]]);
+  });
+
+  it('updates the Drawer root attributes and listeners after mounting', async () => {
+    const forwarded = ref(false);
+    const onKeydown = vi.fn();
+    const wrapper = mount({
+      render: () =>
+        h(CmDrawer, {
+          id: 'filters',
+          title: 'Filters',
+          ...(forwarded.value ? { 'data-tracking': 'filters', onKeydown } : {}),
+        }),
+    });
+    try {
+      const dialog = wrapper.get('dialog');
+      forwarded.value = true;
+      await nextTick();
+      expect(dialog.attributes('data-tracking')).toBe('filters');
+      await dialog.trigger('keydown', { key: 'F2' });
+      expect(onKeydown).toHaveBeenCalledOnce();
+
+      forwarded.value = false;
+      await nextTick();
+      expect(dialog.attributes('data-tracking')).toBeUndefined();
+      await dialog.trigger('keydown', { key: 'F2' });
+      expect(onKeydown).toHaveBeenCalledOnce();
+    } finally {
+      wrapper.unmount();
+    }
   });
 
   it.each(['top', 'bottom'] as const)(

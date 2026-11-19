@@ -51,9 +51,7 @@ const renderedOpenItems = computed(() =>
   props.openItems === null ? localOpenItems.value : normalizeOpenItems(props.openItems),
 );
 const classes = computed(() => mergeCmClasses('cm-accordion', attrs.class));
-const rootAttrs = computed(() =>
-  omitCmOwnedAttrs(attrs, ['data-cm-controller', 'data-cm-accordion-multiple', 'onKeydown']),
-);
+const rootAttrs = () => omitCmOwnedAttrs(attrs, ['data-cm-controller', 'data-cm-accordion-multiple']);
 
 function isOpen(id: string): boolean {
   return renderedOpenItems.value.includes(id);
@@ -77,6 +75,7 @@ function toggle(item: CmAccordionItem): void {
 }
 
 function moveFocus(event: KeyboardEvent): void {
+  if (event.defaultPrevented) return;
   const root = event.currentTarget as HTMLElement;
   const trigger = (event.target as HTMLElement).closest<HTMLButtonElement>('.cm-accordion__trigger');
   if (trigger?.closest('.cm-accordion') !== root) return;
@@ -95,7 +94,7 @@ useCmHydrated();
 
 <template>
   <div
-    v-bind="rootAttrs"
+    v-bind="rootAttrs()"
     :class="classes"
     data-cm-controller="accordion"
     :data-cm-accordion-multiple="props.multiple ? 'true' : undefined"
