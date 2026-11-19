@@ -1,30 +1,35 @@
-/**
- * Every exported CodeMonster component must appear in the component guides.
- *
- * check-documentation-contracts.mjs enforces an API page per component for the VueForge line only;
- * it reads `packages/core` and `packages/vueforge-layouts` and knows nothing about `Cm*`. So the
- * whole CodeMonster line was documented by discipline, and discipline held for 46 of 49 — the three
- * that slipped were the three added most recently, which is how this kind of gap always looks.
- *
- * The guides are the public migration boundary the release notes point at, so a component missing
- * from them is a component a consumer cannot migrate to.
- */
+import ts from 'typescript';
 
-const exportPattern = /export \{ default as (Cm[A-Za-z0-9]+) \}/gu;
+const componentName = /^Cm[A-Za-z0-9]+$/u;
+const componentMention = /\bCm[A-Za-z0-9]+\b/gu;
 
-/** Reads the component names an adapter package exports. */
+/** Reads the public names of Vue components re-exported by the adapter packages. */
 export function collectExportedComponents(indexSources) {
   const exported = new Set();
 
   for (const source of indexSources) {
-    for (const match of source.matchAll(exportPattern)) exported.add(match[1]);
+    const index = ts.createSourceFile('index.ts', source, ts.ScriptTarget.Latest);
+    for (const statement of index.statements) {
+      if (!ts.isExportDeclaration(statement) || statement.isTypeOnly) continue;
+
+      const { moduleSpecifier, exportClause } = statement;
+      if (!moduleSpecifier || !ts.isStringLiteral(moduleSpecifier) || !moduleSpecifier.text.endsWith('.vue')) continue;
+      if (!exportClause || !ts.isNamedExports(exportClause)) continue;
+
+      for (const specifier of exportClause.elements) {
+        const name = specifier.name.text;
+        if (!specifier.isTypeOnly && specifier.propertyName?.text === 'default' && componentName.test(name)) {
+          exported.add(name);
+        }
+      }
+    }
   }
 
   return exported;
 }
 
-/** Reports exported components that no component guide mentions. */
+/** Reports exported components that no component guide names. */
 export function findUndocumentedComponents(exported, guideSources) {
-  const guides = guideSources.join('\n');
-  return [...exported].filter((name) => !guides.includes(name)).sort();
+  const documented = new Set(guideSources.flatMap((source) => source.match(componentMention) ?? []));
+  return [...exported].filter((name) => !documented.has(name)).sort();
 }

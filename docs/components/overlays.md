@@ -14,7 +14,7 @@ Individual styles are also available from the `dialog.css`, `drawer.css`, `dropd
   label. Use `defaultOpen` for uncontrolled initial state. The default, `header`, `description`,
   `actions`, and `footer` slots compose its trusted regions. `VfDialog` from the historical entry
   supplies an ID, defaults to backdrop dismissal and focuses the native surface.
-- `Drawer` shares the Dialog composition API and adds logical or physical `side`,
+- `CmDrawer` shares the Dialog composition API and adds logical or physical `side`,
   `size` (`sm`, `md`, `lg`, or `full`), `rounded`, and `dividers`. Use `offsetTop` and
   `bodyPadding` for shell spacing. `VfDrawer` from the historical entry uses physical
   `placement` and defaults to the right edge.
@@ -60,9 +60,10 @@ or to `false` to leave scroll styles alone. `null` uses the normal document lock
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue';
-import { CmDialog, CmPopover, CmTooltip } from '@codemonster-ru/ui-vue';
+import { CmDialog, CmDrawer, CmPopover, CmTooltip } from '@codemonster-ru/ui-vue';
 
 const confirmOpen = ref(false);
+const detailsOpen = ref(false);
 const helpOpen = ref(false);
 </script>
 
@@ -77,6 +78,11 @@ const helpOpen = ref(false);
       <button type="button">Delete</button>
     </template>
   </CmDialog>
+
+  <button type="button" @click="detailsOpen = true">Project details</button>
+  <CmDrawer id="project-details" v-model:open="detailsOpen" title="Project details" side="end" size="md">
+    Project owners can change visibility and access.
+  </CmDrawer>
 
   <CmPopover id="profile-help" v-model:open="helpOpen" label="Profile help">
     <template #trigger><span aria-hidden="true">?</span></template>
