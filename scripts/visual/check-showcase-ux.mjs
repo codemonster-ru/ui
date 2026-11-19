@@ -234,6 +234,28 @@ async function checkWarehouse(page, base, adapter) {
   await pagination.getByRole('button', { name: 'Next page' }).press('Enter');
   await pagination.getByText('Page 2 of 2', { exact: true }).waitFor();
   assert.deepEqual(await available.allTextContents(), ['4', '12'], `${adapter}: page two renders remaining rows`);
+
+  const filter = frame.getByRole('searchbox', { name: 'Filter inventory' });
+  const results = pagination.locator('.cm-data-table__pagination-summary');
+  assert.equal(await results.getAttribute('aria-live'), 'polite');
+  await filter.fill('NORTH');
+  await results.filter({ hasText: /^1-3 of 3$/u }).waitFor();
+  await pagination.getByText('Page 1 of 1', { exact: true }).waitFor();
+  assert.deepEqual(await available.allTextContents(), ['24', '7', '12'], `${adapter}: filtering searches all pages`);
+  assert(await filter.evaluate((control) => control === document.activeElement), `${adapter}: filter focus is stable`);
+
+  await filter.fill('no matching warehouse');
+  await table
+    .getByRole('status')
+    .filter({ hasText: /^No products match your search\.$/u })
+    .waitFor();
+  await results.filter({ hasText: /^0 rows$/u }).waitFor();
+  assert.equal(await available.count(), 0);
+  await filter.fill('');
+  await results.filter({ hasText: /^1-5 of 7$/u }).waitFor();
+  await pagination.getByRole('button', { name: 'Next page' }).press('Enter');
+  await pagination.getByText('Page 2 of 2', { exact: true }).waitFor();
+
   const size = pagination.getByRole('combobox', { name: 'Rows per page' });
   await size.selectOption('10');
   await pagination.getByText('Page 1 of 1', { exact: true }).waitFor();

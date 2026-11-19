@@ -55,6 +55,8 @@ export const dashboardActivity = [
   },
 ];
 export const warehouseTableCaption = 'Warehouse availability';
+export const warehouseFilterLabel = 'Filter inventory';
+export const warehouseEmptyText = 'No products match your search.';
 export const warehouseStockTones = {
   Available: 'success',
   'Low stock': 'warning',

@@ -7,6 +7,8 @@ import {
   regionControls,
   rows,
   steps,
+  warehouseEmptyText,
+  warehouseFilterLabel,
   warehouseNavigation,
   warehouseStockTones,
   warehouseTableCaption,
@@ -73,7 +75,13 @@ function shell(slug) {
 function warehouse() {
   const alignment = (align) => (align ? ` class="cm-data-table__cell--${align}"` : '');
   const status = (value) => `<span class="cm-tag cm-tag--${warehouseStockTones[value]}">${value}</span>`;
-  return `<div id="showcase-warehouse" class="cm-data-table cm-data-table--column-dividers" data-cm-controller="data-table"
+  const filter = renderLayoutField(
+    'warehouse-filter',
+    warehouseFilterLabel,
+    'type="search" aria-controls="showcase-warehouse"',
+  );
+  return `<div data-warehouse-search hidden>${filter}</div>
+    <div id="showcase-warehouse" class="cm-data-table cm-data-table--column-dividers" data-cm-controller="data-table"
       data-cm-data-table-page="1" data-cm-data-table-page-size="5" data-cm-data-table-total-rows="${rows.length}">
   <div class="cm-data-table__scroll" role="region" aria-label="${warehouseTableCaption} table" tabindex="0"><table class="cm-data-table__table">
   <caption class="cm-data-table__caption">${warehouseTableCaption}</caption>
@@ -83,7 +91,9 @@ function warehouse() {
       ({ id, cells }, index) =>
         `<tr data-cm-data-table-row="${id}"${index > 4 ? ' hidden' : ''}>${columns.map(({ key, align }) => `<td${alignment(align)}>${key === 'status' ? status(cells.status) : cells[key]}</td>`).join('')}</tr>`,
     )
-    .join('')}</tbody>
+    .join('')}
+    <tr data-warehouse-empty hidden><td class="cm-data-table__state" colspan="${columns.length}" role="status">${warehouseEmptyText}</td></tr>
+  </tbody>
   </table></div>${warehousePagination()}</div>`;
 }
 
