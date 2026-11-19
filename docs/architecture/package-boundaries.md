@@ -28,19 +28,20 @@ distribution responsibility.
 Component contracts are repository-owned test and documentation inputs initially. They do not
 become a public runtime package until at least two concrete consumers need the same executable API.
 
-## Adapter ownership
+## Integration ownership
 
-| Adapter                   | Owns                                                                            | Must not own                                                     |
-| ------------------------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| `ui-vue`                  | Vue props, emits, slots, reactivity, SSR-safe Vue rendering                     | Canonical styling or React/Angular dependencies                  |
-| `ui-react`                | React props, callbacks, children, refs, SSR-safe React rendering                | Canonical styling or Vue/Angular dependencies                    |
-| `ui-angular`              | Angular inputs, outputs, templates, forms, and lifecycle                        | Canonical styling or Vue/React dependencies                      |
+| Integration | Owns |
+| --- | --- |
+| `ui-vue` | Vue components, props, events, slots, and SSR rendering |
+| `ui-layouts` | Vue page layouts, shells, their regions, and responsive behavior |
+| Vanilla HTML | Template markup and application state, with optional enhancement by `ui-runtime` |
 
-Every adapter translates its native API into the same significant DOM, shared classes, native
-attributes, ARIA state, and behavior contract. Platform syntax may differ where the platform model
-requires it.
+Both integrations implement the same significant DOM, shared classes, native attributes, ARIA
+state, and behavior contract. Use the platform's normal bindings to connect application state.
 
-## Annabel ownership boundary
+Annabel Razor can author the same canonical HTML. Its PHP adapter and layout packages are owned
+by the separate Razor project. See the [layout line decision](./layout-line-ownership.md) and
+[current platform support](./platform-support.md).
 
 ## Dependency direction
 
@@ -63,7 +64,7 @@ shared packages but shared packages must never import adapters.
 
 Additional rules:
 
-- adapters do not depend on one another;
+- `ui-layouts` can compose Vue components and declares `ui-vue` as a peer;
 - `ui-css` may consume generated token artifacts but does not require a JavaScript runtime in the
   browser;
 - `ui-runtime` operates on the canonical HTML contract and does not render application content;
@@ -75,8 +76,8 @@ Additional rules:
 Static and server-rendered components need no shared JavaScript. Interactive components define a
 behavior contract independently from any adapter:
 
-- Vanilla templates render canonical HTML and opts into `ui-runtime` controllers;
-- Vue, React, and Angular normally implement state with their native primitives;
+- Vanilla templates render canonical HTML and opt into `ui-runtime` controllers;
+- Vue components and layouts implement state with Vue primitives;
 - native adapters may reuse framework-independent algorithms, but not DOM controllers that compete
   with the framework lifecycle;
 - all implementations run the same meaningful state, keyboard, focus, and ARIA scenarios.
