@@ -208,7 +208,9 @@ their own controls. In Vanilla HTML, the application owns changes to the authore
 Set a column's `pinned` value to `start` or `end` to keep it in view during horizontal scrolling.
 The table groups visible columns by pin side and preserves their order within each group. It
 uses the rendered header widths to keep adjacent pins aligned after a resize. The logical sides
-follow the text direction.
+follow the text direction. If the pinned columns would leave too little space to expose a complete
+unpinned column, the table scrolls all columns together. Pinning resumes when enough space returns,
+including after resizing the table or its columns.
 
 For Vanilla HTML, [author the pinned header and body cells](../../contracts/data-table/cases/pinned.html)
 in their final order with matching `data-cm-data-table-column` keys and `data-cm-data-table-pin` sides.

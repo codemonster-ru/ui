@@ -6,9 +6,10 @@ import { createRuntime } from './runtime.js';
 import { fillContrastTable, mountOperations } from './showcase-reference.js';
 import { copyIcon, filterIcons } from './showcase-icon-catalog.js';
 import { mountComponentReference } from './showcase-component-reference.js';
-import { revealShowcaseLink } from './showcase-navigation.js';
+import { mountComponentCatalog, revealShowcaseLink } from './showcase-navigation.js';
 
 document.getElementById('showcase-navigation')?.addEventListener('focusin', revealShowcaseLink);
+mountComponentCatalog(document.getElementById('component-catalog'));
 
 const catalog = document.querySelector('.showcase-catalog');
 fillContrastTable(catalog);

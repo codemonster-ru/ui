@@ -74,7 +74,6 @@
   min-inline-size: 0;
   margin-block: var(--cm-space-3);
   margin-inline-end: var(--cm-space-3);
-  overflow: hidden;
   background: var(--cm-color-background-surface);
   border: var(--cm-border-width) solid var(--cm-color-border-default);
   border-radius: var(--cm-radius-surface);

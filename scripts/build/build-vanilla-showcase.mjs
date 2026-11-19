@@ -495,7 +495,7 @@ export async function buildVanillaShowcase(contractsDirectory, output) {
   </header>
   <section id="component-catalog" class="showcase-directory" tabindex="-1" aria-labelledby="showcase-directory-title">
     <h2 id="showcase-directory-title">Component catalog</h2>
-    <div class="showcase-directory__groups">${renderComponentCatalog('./')}</div>
+    ${renderComponentCatalog('./')}
   </section>
   <header class="showcase-state-index">
     <h2>Component states</h2>

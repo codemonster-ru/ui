@@ -55,7 +55,6 @@ root.dataset.ready = 'true';`,
 .fixture-tail { block-size: 520px; }
 .fixture-scroll { overflow: auto; block-size: 460px; margin: 50px 12px 24px; position: relative; transform: translateZ(0); border: 1px solid; }
 .fixture-scroll-spacer { block-size: 96px; }
-.fixture-scroll .cm-admin-shell__workspace { overflow: visible; }
 .fixture-nested { isolation: isolate; max-inline-size: 400px; }
 html[data-fixture-safe] .cm-admin-layout__header { padding-block-start: calc(12px + var(--cm-space-2)); }`;
   const server = createServer(async (request, response) => {
@@ -348,6 +347,13 @@ async function checkLayout(page, row, output) {
     row.opened.drawer.y >= row.opened.header.bottom - 0.5,
   );
   verify(row, 'first item receives a native pointer hit', row.opened.first.center);
+  const content = page.locator('[data-fixture-subject] > .cm-admin-layout__main > main');
+  verify(row, 'content behind the backdrop is inert', (await content.getAttribute('inert')) !== null);
+  verify(
+    row,
+    'the visible navigation toggle is outside the inert region',
+    (await button.evaluate((el) => el.closest('[inert]'))) === null,
+  );
   await shot(page, row, 'opened', output);
   if (row.safe) {
     await page.evaluate(() => {
@@ -404,6 +410,7 @@ async function checkLayout(page, row, output) {
       row.escaped.focus.toggle &&
       (await button.getAttribute('aria-expanded')) === 'false',
   );
+  verify(row, 'content is interactive again after Escape', (await content.getAttribute('inert')) === null);
   const { x, y, width, height } = row.escaped.toggle;
   await page.mouse.click(x + width / 2, y + height / 2);
   await settle(page);

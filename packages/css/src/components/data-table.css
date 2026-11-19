@@ -153,28 +153,40 @@
   inset-block-start: 0;
 }
 
-.cm-data-table__table[data-cm-data-table-pins-ready] > :is(thead, tbody, tfoot) > tr > [data-cm-data-table-pin] {
+.cm-data-table__table[data-cm-data-table-pins-ready]:not([data-cm-data-table-pins-constrained])
+  > :is(thead, tbody, tfoot)
+  > tr
+  > [data-cm-data-table-pin] {
   position: sticky;
   z-index: 1;
   background-color: var(--cm-data-table-cell-surface, var(--cm-color-background-surface));
 }
 
-.cm-data-table__table[data-cm-data-table-pins-ready] > thead > tr > th[data-cm-data-table-pin] {
+.cm-data-table__table[data-cm-data-table-pins-ready]:not([data-cm-data-table-pins-constrained])
+  > thead
+  > tr
+  > th[data-cm-data-table-pin] {
   z-index: 3;
 }
 
-:where(.cm-data-table--sticky-header) .cm-data-table__table[data-cm-data-table-pins-ready] .cm-data-table__head th {
+:where(.cm-data-table--sticky-header)
+  .cm-data-table__table[data-cm-data-table-pins-ready]:not([data-cm-data-table-pins-constrained])
+  .cm-data-table__head
+  th {
   z-index: 2;
 }
 
-.cm-data-table__table[data-cm-data-table-pins-ready]
+.cm-data-table__table[data-cm-data-table-pins-ready]:not([data-cm-data-table-pins-constrained])
   > :is(thead, tbody, tfoot)
   > tr
   > [data-cm-data-table-pin='start'] {
   inset-inline-start: var(--cm-data-table-pin-offset);
 }
 
-.cm-data-table__table[data-cm-data-table-pins-ready] > :is(thead, tbody, tfoot) > tr > [data-cm-data-table-pin='end'] {
+.cm-data-table__table[data-cm-data-table-pins-ready]:not([data-cm-data-table-pins-constrained])
+  > :is(thead, tbody, tfoot)
+  > tr
+  > [data-cm-data-table-pin='end'] {
   inset-inline-end: var(--cm-data-table-pin-offset);
 }
 

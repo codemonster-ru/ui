@@ -18,15 +18,17 @@ Its `build` assumes the npm packages are already built; the root `build:showcase
 
 Both showcases open on the visual matrix and use the same navigation.
 
-- **Visual matrix** (`/` and `/core/`). Scan variants by category and open **Contract examples** for
-  additional cases.
+- **Visual matrix** (`/` and `/core/`). Use **Find a component** to find any public component by
+  display name or Vue export name. Component links open its reference with sizes and states.
+  The matrix groups related variants together and **Contract examples** opens additional cases.
 - **Layouts** (`/layouts/`), **Colors** (`/colors/`), and **Icons** (`/icons/`) are direct header
   links. The links scroll horizontally when they need more room.
 
 Open a component by its direct route, such as `/components/button/`, for live previews, additional
 states, and links to the developer guides in the [repository documentation](../../docs/index.md).
 The header switches between light and dark. Use **Theme** in Visual matrix to return to the system
-preference.
+preference. From the matrix, open **Explore workspaces** and choose a preview width on **Layouts**
+to inspect narrow, tablet, and desktop compositions.
 
 Both production builds emit directory indexes for known routes. Serve `examples/ui-showcase/dist`
 at the origin root or `examples/vanilla/dist` at the origin root or a subdirectory. Serve the

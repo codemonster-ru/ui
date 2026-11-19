@@ -19,6 +19,11 @@ test('pinned cells track measured header widths and release the authored table o
   const name = document.querySelector('th[data-cm-data-table-column="name"]');
   const team = document.querySelector('td[data-cm-data-table-column="team"]');
   const table = document.querySelector('table');
+  let scrollportWidth = 540;
+  Object.defineProperty(table.parentElement, 'clientWidth', { get: () => scrollportWidth });
+  for (const header of table.tHead.rows[0].cells) {
+    Object.defineProperty(header, 'offsetWidth', { value: Number.parseFloat(header.style.inlineSize) });
+  }
   let width = 88;
   name.getBoundingClientRect = () => ({ width });
   const offset = () => team.style.getPropertyValue('--cm-data-table-pin-offset');
@@ -28,10 +33,19 @@ test('pinned cells track measured header widths and release the authored table o
 
   assert.equal(offset(), '88px');
   assert.equal(table.hasAttribute('data-cm-data-table-pins-ready'), true);
+  assert.equal(table.hasAttribute('data-cm-data-table-pins-constrained'), false);
+  scrollportWidth = 294;
+  window.dispatchEvent(new window.Event('resize'));
+  assert.equal(table.hasAttribute('data-cm-data-table-pins-constrained'), true);
+  scrollportWidth = 540;
   width = 96;
   window.dispatchEvent(new window.Event('resize'));
   assert.equal(offset(), '96px');
+  assert.equal(table.hasAttribute('data-cm-data-table-pins-constrained'), false);
+  scrollportWidth = 294;
+  window.dispatchEvent(new window.Event('resize'));
   runtime.stop();
+  assert.equal(table.hasAttribute('data-cm-data-table-pins-constrained'), false);
   assert.equal(table.hasAttribute('data-cm-data-table-pins-ready'), false);
   assert.equal(offset(), '');
 });
