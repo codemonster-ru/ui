@@ -1,52 +1,68 @@
 # CodeMonster UI
 
-CodeMonster UI is a cross-platform design system with shared tokens, CSS, browser behavior, and
-two integration modes: Vue 3 and Vanilla HTML + CSS + JavaScript.
+[![CI status on main](https://github.com/codemonster-ru/ui/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/codemonster-ru/ui/actions/workflows/ci.yml)
 
-## CodeMonster UI 1.1
+CodeMonster UI is a design system for teams building forms, navigation, and application layouts
+with Vue 3 or server-rendered HTML. Both integrations share design tokens, styles, semantic
+markup, and interaction rules. Vanilla pages can use CSS on its own and load the browser
+controllers when they need interactive behavior.
 
-Install the stable Vue packages:
+## Get started
+
+Install the stable 1.1 Vue release from npm.
 
 ```bash
-npm install vue@^3.5.0 @codemonster-ru/ui-vue@^1.1.0 @codemonster-ru/ui-css@^1.1.0
+npm install vue@^3.5.0 @codemonster-ru/ui-tokens@^1.0.1 \
+  @codemonster-ru/ui-css@^1.1.0 @codemonster-ru/ui-vue@^1.1.0
 ```
 
-See the [CodeMonster UI 1.1 release notes](./docs/codemonster-ui-1.1-release-notes.md),
-[2.0 checkout quick starts](./docs/getting-started.md), and
-[Vue and Vanilla component reference](./docs/components/index.md).
+Follow the [1.1 release notes](./docs/codemonster-ui-1.1-release-notes.md) for the stable
+package cohort. This checkout carries the internal `2.0.0-rc.2` candidate. To try its current
+Vue or Vanilla examples in an application, follow the
+[local installation and quick starts](./docs/getting-started.md).
 
 ## Preview locally
 
-Run `npm ci` from the repository root once. Run `npm run preview` to build and open the Vue
-showcase, or `npm run preview:vanilla` to build and open the full Vanilla HTML showcase. Both
-commands are available under the root `package.json` in the VS Code NPM Scripts panel.
+![The Vue showcase in light mode with section links and theme control examples](https://raw.githubusercontent.com/codemonster-ru/ui/857c0e396077a7703a6b0b28c7c731fdb7f7befb/visual-baselines/showcase-excellence-v2/after/vue--core--1440--light.png)
 
-Use `npm run dev` for the Vue showcase with hot reload. See the
-[Vanilla guide](./docs/vanilla.md) for the static assets and template integration.
+From the repository root, run `npm ci` with Node.js 24.15 or newer. Then run `npm run preview`
+to build and open the Vue showcase or `npm run preview:vanilla` to build and open the Vanilla
+showcase. Use `npm run dev` for Vue with hot reload. The
+[showcase guide](./examples/ui-showcase/README.md) describes routes, build outputs, and static hosting.
 
-## VueForge
+## Packages
 
-CodeMonster UI succeeds VueForge, the Vue-only design system this project migrated from. VueForge
-is sunset: no new components, no new fixes. Its packages and documentation now live in
-[`codemonster-ru/vueforge`](https://github.com/codemonster-ru/vueforge), where existing consumers
-can continue to install them; nothing in this repository builds or publishes them anymore.
+The [2.0 checkout](./docs/codemonster-ui-2.0-release-notes.md) builds seven npm packages.
 
-See the [VueForge migration guide](./docs/migrate-from-vueforge.md) for current package entries,
-shared styles, and standalone Vanilla integration.
+| Package | Use |
+| --- | --- |
+| [`@codemonster-ru/ui-tokens`](./packages/tokens/README.md) | Themes, design tokens, and breakpoints |
+| [`@codemonster-ru/ui-css`](./packages/css/README.md) | Shared styles, fonts, and component CSS |
+| [`@codemonster-ru/ui-runtime`](./packages/runtime/README.md) | Vanilla controllers and shared behavior |
+| [`@codemonster-ru/ui-icons`](./packages/icons/README.md) | Framework-independent icon geometry |
+| [`@codemonster-ru/ui-vue`](./packages/vue/README.md) | Vue components |
+| [`@codemonster-ru/ui-layouts`](./packages/layouts/README.md) | Vue page layouts, shells, and regions |
+| [`@codemonster-ru/ui-utilities`](./packages/utilities/README.md) | Optional design-token-based utility CSS |
 
-### Requirements
+## Documentation and architecture
 
-- Node.js `>=24.15.0` for the repository workspace and development scripts. The required version is
-  pinned by [`.nvmrc`](./.nvmrc) and enforced by the root `package.json`.
-- Vue `^3.5.0` for the Vue packages.
-- Published packages may declare narrower runtime requirements in their own manifests; consult the
-  package documentation when consuming them outside this repository.
+- [Documentation index](./docs/index.md) and [component reference](./docs/components/index.md).
+- [Vanilla integration](./docs/vanilla.md) and [server rendering and hydration](./docs/integration.md#server-rendering-and-hydration).
+- [Architecture](./ARCHITECTURE.md) and [component contracts](./contracts/README.md).
+- [VueForge migration](./docs/migrate-from-vueforge.md) from the
+  [archived VueForge project](https://github.com/codemonster-ru/vueforge).
 
-### Documentation
+## Development checks
 
-The [documentation index](./docs/index.md) links to integration guides, design tokens,
-application recipes, and [release notes](./docs/release-notes.md).
+Run `npm run check` for documentation and package checks, and `npm test` for package and UI
+contract tests. The [contribution guide](./CONTRIBUTING.md) explains how to choose focused
+checks and include browser evidence. Use the [release checklist](./docs/release-checklist.md)
+for release verification.
 
-## License
+## Support and contributing
+
+Use [GitHub Issues](https://github.com/codemonster-ru/ui/issues) for usage questions and
+reproducible bugs. Follow the [contribution guide](./CONTRIBUTING.md) for changes or the
+[security policy](./SECURITY.md) to report a vulnerability privately.
 
 CodeMonster UI packages are available under the [MIT License](./LICENSE).

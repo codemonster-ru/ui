@@ -1,0 +1,27 @@
+name: Bug report
+description: Report a reproducible problem in CodeMonster UI.
+body:
+  - type: markdown
+    attributes:
+      value: For a suspected vulnerability, follow the [security policy](https://github.com/codemonster-ru/ui/security/policy).
+  - type: textarea
+    id: behavior
+    attributes:
+      label: What happened?
+      description: Describe the actual and expected behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: How can we reproduce it?
+      description: Share a minimal example or the exact steps. Remove credentials and private data.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Where did it happen?
+      description: Include package versions or the commit, the integration, and relevant browser or operating system details.
+    validations:
+      required: true
