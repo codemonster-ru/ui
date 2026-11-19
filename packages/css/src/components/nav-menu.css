@@ -42,7 +42,7 @@
   cursor: pointer;
 }
 
-.cm-nav-menu__item:hover {
+.cm-nav-menu__item:hover:where(:not(.cm-nav-menu__item--active, .cm-nav-menu__item--disabled)) {
   background: var(--cm-color-background-surface-subtle);
   color: var(--cm-color-text-primary);
 }
@@ -50,6 +50,7 @@
 .cm-nav-menu__item--active {
   background: var(--cm-color-interactive-primary-subtle-background);
   color: var(--cm-color-interactive-primary-subtle-foreground);
+  font-weight: var(--cm-font-weight-semibold);
 }
 
 .cm-nav-menu__item--disabled {
@@ -195,4 +196,16 @@
   .cm-nav-menu__item--top:has(.cm-nav-menu__leading-icon)
   > :is(.cm-nav-menu__icon, .cm-nav-menu__external-icon) {
   display: none;
+}
+
+@media (forced-colors: active) {
+  .cm-nav-menu__item--active:where(:not(.cm-nav-menu__item--disabled)) .cm-nav-menu__label {
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
+
+  .cm-nav-menu__item--active:where(:not(.cm-nav-menu__item--disabled, :focus-visible)) {
+    outline: var(--cm-border-width) solid CanvasText;
+    outline-offset: calc(-1 * var(--cm-border-width));
+  }
 }

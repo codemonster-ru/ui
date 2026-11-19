@@ -1,5 +1,6 @@
 import { mount } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
+import { defineComponent, h, nextTick, ref, type CSSProperties } from 'vue';
 
 import CmAlert from './alert/CmAlert.vue';
 import CmAvatar from './avatar/CmAvatar.vue';
@@ -67,5 +68,47 @@ describe('display components', () => {
       mount(CmSkeleton, { props: { minHeight: 'calc(100% - 1px)' } }),
     );
     expect(unsafe.attributes('style')).toBeUndefined();
+  });
+
+  it('keeps the Skeleton element when the minimum height is added or removed', async () => {
+    const wrapper = mount(CmSkeleton);
+    const element = wrapper.get('div').element;
+    expect(wrapper.attributes('style')).toBeUndefined();
+
+    await wrapper.setProps({ minHeight: 48 });
+    expect(wrapper.get('div').element).toBe(element);
+    expect(wrapper.attributes('style')).toContain('min-height: 48px');
+
+    await wrapper.setProps({ minHeight: null });
+    expect(wrapper.get('div').element).toBe(element);
+    expect(wrapper.attributes('style')).toBeUndefined();
+  });
+
+  it('updates authored Skeleton styles on the same element', async () => {
+    const style = ref<CSSProperties>();
+    const hook = ref<string>();
+    const wrapper = mount(
+      defineComponent({
+        setup: () => () =>
+          h(CmSkeleton, { minHeight: 48, style: style.value, ...(hook.value ? { 'data-hook': hook.value } : {}) }),
+      }),
+    );
+    const element = wrapper.get('div').element;
+
+    style.value = { minHeight: '5px', opacity: 0.5 };
+    hook.value = 'late';
+    await nextTick();
+    expect(wrapper.get('div').element).toBe(element);
+    expect(element.style.minHeight).toBe('48px');
+    expect(element.style.opacity).toBe('0.5');
+    expect(element.dataset.hook).toBe('late');
+
+    style.value = undefined;
+    hook.value = undefined;
+    await nextTick();
+    expect(wrapper.get('div').element).toBe(element);
+    expect(element.style.minHeight).toBe('48px');
+    expect(element.style.opacity).toBe('');
+    expect(element.dataset.hook).toBeUndefined();
   });
 });

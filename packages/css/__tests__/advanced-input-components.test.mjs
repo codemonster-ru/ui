@@ -21,7 +21,7 @@ test('preserves native control and command interaction hooks', async () => {
   assert.match(select, /\.cm-select:focus-visible/u);
   assert.match(select, /\.cm-select-wrap:focus-within/u);
   assert.match(select, /\.cm-select__clear\[hidden\]/u);
-  assert.match(datePicker, /\.cm-date-picker:read-only/u);
+  assert.match(datePicker, /\.cm-date-picker\[aria-readonly='true'\]:not\(:disabled\)/u);
   assert.match(palette, /\.cm-command-palette::backdrop/u);
   assert.match(palette, /\.cm-command-palette__option\[hidden\]/u);
   assert.match(palette, /\.cm-command-palette__idle\[hidden\]/u);

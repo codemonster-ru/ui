@@ -1,6 +1,6 @@
 # Vanilla playground recipe
 
-Run `npm run preview:vanilla` from the repository root and open `playground-example.html` on the local preview server. For deployment, run `npm run build:vanilla` and serve `examples/vanilla/dist` over HTTP. [Example HTML](../../examples/vanilla/playground-example.html) · [Styles](../../examples/vanilla/playground-example.css) · [Preview module](../../examples/vanilla/playground-example.mjs)
+Run `npm run dev:vanilla` from the repository root and open `playground-example.html` on the local server. For deployment, run `npm run build:vanilla` and serve `examples/vanilla/dist` over HTTP. [Example HTML](../../examples/vanilla/playground-example.html) · [Styles](../../examples/vanilla/playground-example.css) · [Preview module](../../examples/vanilla/playground-example.mjs)
 
 Enter a body fragment in HTML, styles in CSS, and a browser script in JavaScript. Run replaces the preview with a fresh document. Reset restores the sample source and starting preview. The example source and starting preview are visible with JavaScript disabled. The recipe accepts HTML, CSS, and JavaScript directly. Vue single-file component compilation requires the Vue playground.
 

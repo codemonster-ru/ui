@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.0
+
+Ship the stable Vanilla controllers and shared behavior core.
+
+Measure sticky header clearance and reveal covered keyboard focus in Vanilla administrative shells.
+
 ## 2.0.0-rc.2
 
 Version bump for the coordinated CodeMonster UI 2.0 release candidate.

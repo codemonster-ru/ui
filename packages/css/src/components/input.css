@@ -50,7 +50,7 @@
 
 .cm-input:focus-visible {
   border-radius: var(--cm-radius-control);
-  outline: none;
+  outline: var(--cm-border-width-thick) solid var(--cm-forced-focus-outline-color, transparent);
   box-shadow: 0 0 0 var(--cm-border-width-thick) var(--cm-color-focus-ring);
 }
 
@@ -84,6 +84,11 @@
 }
 
 .cm-input-wrap {
+  --cm-input-action-size: var(--cm-icon-size-xl);
+  --cm-input-action-inset: 0.625rem;
+  --cm-input-action-step: calc(var(--cm-input-action-size) + var(--cm-space-1));
+  --cm-input-actions-space: 0px;
+
   position: relative;
   display: flex;
   box-sizing: border-box;
@@ -160,13 +165,13 @@
   position: absolute;
   z-index: 1;
   inset-block-start: 50%;
-  inset-inline-end: 0.625rem;
+  inset-inline-end: var(--cm-input-action-inset);
   display: inline-flex;
   flex: none;
   align-items: center;
   justify-content: center;
-  inline-size: 1.375rem;
-  block-size: 1.375rem;
+  inline-size: var(--cm-input-action-size);
+  block-size: var(--cm-input-action-size);
   padding: 0;
   border: 0;
   border-radius: var(--cm-radius-control-tight);
@@ -178,17 +183,21 @@
 }
 
 .cm-input__action:hover {
-  background: transparent;
+  background: var(--cm-color-background-surface-hover);
   color: var(--cm-color-icon-primary);
 }
 
+.cm-input__action:active {
+  background: var(--cm-color-background-surface-active);
+}
+
 .cm-input__action:focus-visible {
-  outline: none;
+  outline: var(--cm-border-width-thick) solid var(--cm-forced-focus-outline-color, transparent);
   box-shadow: 0 0 0 var(--cm-border-width-thick) var(--cm-color-focus-ring);
 }
 
-.cm-input__action:has(+ .cm-input__action) {
-  inset-inline-end: 2.25rem;
+.cm-input__action:has(+ .cm-input__action:not([hidden])) {
+  inset-inline-end: calc(var(--cm-input-action-inset) + var(--cm-input-action-step));
 }
 
 .cm-input__action-icon {
@@ -205,41 +214,28 @@
   display: inline;
 }
 
-.cm-input-wrap:has(.cm-input__trailing):has(.cm-input__action) .cm-input__trailing {
-  inset-inline-end: 2.25rem;
+.cm-input-wrap:has(> .cm-input--sm) {
+  --cm-input-action-inset: var(--cm-space-2);
 }
 
-.cm-input-wrap:has(.cm-input__action) .cm-input {
-  padding-inline-end: 2.125rem;
+.cm-input-wrap:has(> .cm-input__action:not([hidden])) {
+  --cm-input-actions-space: var(--cm-input-action-step);
 }
 
-.cm-input-wrap:has(.cm-input__trailing):has(.cm-input__action) .cm-input {
-  padding-inline-end: 3.625rem;
+.cm-input-wrap:has(> .cm-input__action:not([hidden]) + .cm-input__action:not([hidden])) {
+  --cm-input-actions-space: calc(2 * var(--cm-input-action-step));
 }
 
-.cm-input-wrap:has(.cm-input__action + .cm-input__action) .cm-input {
-  padding-inline-end: 3.625rem;
+.cm-input-wrap:has(> .cm-input__action:not([hidden])) > .cm-input {
+  padding-inline-end: calc(var(--cm-input-action-inset) + var(--cm-input-actions-space));
 }
 
-/* A password toggle standing before the clear action pushes both the input's own padding and the
-   trailing adornment out by one clear button and the gap the reference leaves beside it. */
-.cm-input-wrap:has([data-cm-input-password]):has([data-cm-input-clear]) .cm-input {
-  padding-inline-end: 5.5rem;
+.cm-input-wrap:has(> .cm-input__action:not([hidden])) > .cm-input__trailing {
+  inset-inline-end: calc(var(--cm-input-action-inset) + var(--cm-input-actions-space));
 }
 
-.cm-input-wrap:has([data-cm-input-password]):has([data-cm-input-clear]) .cm-input__trailing {
-  inset-inline-end: 4rem;
-}
-
-.cm-input-wrap:has(.cm-input--sm) .cm-input__action {
-  inset-inline-end: var(--cm-space-2);
-  inline-size: 1.25rem;
-  block-size: 1.25rem;
-}
-
-.cm-input-wrap:has(.cm-input--lg) .cm-input__action {
-  inline-size: var(--cm-icon-size-xl);
-  block-size: var(--cm-icon-size-xl);
+.cm-input-wrap:has(> .cm-input__trailing):has(> .cm-input__action:not([hidden])) > .cm-input {
+  padding-inline-end: calc(var(--cm-input-action-inset) + var(--cm-input-actions-space) + var(--cm-icon-size-xl));
 }
 
 .cm-input__action[hidden],

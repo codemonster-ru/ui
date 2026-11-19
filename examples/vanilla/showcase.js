@@ -6,10 +6,10 @@ import { createRuntime } from './runtime.js';
 import { fillContrastTable, mountOperations } from './showcase-reference.js';
 import { copyIcon, filterIcons } from './showcase-icon-catalog.js';
 import { mountComponentReference } from './showcase-component-reference.js';
-import { mountGuideCopy } from './showcase-guide-copy.js';
-import { mountShowcaseNavigation } from './showcase-navigation.js';
+import { revealShowcaseLink } from './showcase-navigation.js';
 
-mountShowcaseNavigation(document.querySelector('.showcase-topbar'), './');
+document.getElementById('showcase-navigation')?.addEventListener('focusin', revealShowcaseLink);
+
 const catalog = document.querySelector('.showcase-catalog');
 fillContrastTable(catalog);
 for (const button of catalog.querySelectorAll('[data-showcase-copy-color]')) {
@@ -31,9 +31,22 @@ mountLayoutPreviews(catalog);
 mountLayoutRecipes(catalog);
 mountCoreRecipes(catalog);
 const runtime = createRuntime();
-mountCoreMatrices(catalog, runtime);
+mountCoreMatrices(document.getElementById('showcase-main'), runtime);
+const projectTable = document.querySelector('#showcase-projects');
+const projectBody = projectTable?.querySelector('tbody');
+if (projectBody) {
+  const rows = [...projectBody.rows];
+  projectTable.addEventListener('cm:data-table-sort-change', ({ detail: { sort } }) => {
+    const ordered = sort
+      ? rows.slice().sort((left, right) => {
+          const comparison = left.cells[0].textContent.localeCompare(right.cells[0].textContent);
+          return sort.direction === 'ascending' ? comparison : -comparison;
+        })
+      : rows;
+    projectBody.append(...ordered);
+  });
+}
 mountComponentReference(catalog, runtime);
-mountGuideCopy(catalog);
 
 const iconCatalog = document.querySelector('#icon-catalog');
 iconCatalog?.addEventListener('input', filterIcons);

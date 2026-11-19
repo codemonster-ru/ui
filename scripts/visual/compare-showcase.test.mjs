@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdtempSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -28,10 +28,12 @@ function writeCapture(directory, { channel = 0, routes = ['core'], stateCases, s
   );
 }
 
-function compare(baseline, current, diff) {
-  return spawnSync(process.execPath, [scriptPath, `--baseline=${baseline}`, `--current=${current}`, `--diff=${diff}`], {
-    encoding: 'utf8',
-  });
+function compare(baseline, current, diff, ...options) {
+  return spawnSync(
+    process.execPath,
+    [scriptPath, `--baseline=${baseline}`, `--current=${current}`, `--diff=${diff}`, ...options],
+    { encoding: 'utf8' },
+  );
 }
 
 test('passes identical showcase captures with the anti-aliasing threshold', () => {
@@ -75,6 +77,26 @@ test('fails when a pixel channel exceeds the anti-aliasing threshold', () => {
 
   assert.equal(result.status, 1);
   assert.match(result.stdout, /1 changed/u);
+});
+
+test('fails when a manifest references an absent image, including in report-only mode', () => {
+  const root = mkdtempSync(join(tmpdir(), 'cm-showcase-compare-'));
+  const baseline = join(root, 'baseline');
+  const current = join(root, 'current');
+  const diff = join(root, 'diff');
+  const filename = 'core--light--desktop--01.png';
+  writeCapture(baseline);
+  writeCapture(current);
+  rmSync(join(baseline, filename));
+  rmSync(join(current, filename));
+
+  const result = compare(baseline, current, diff, '--report-only=true');
+
+  assert.equal(result.status, 1);
+  assert.deepEqual(JSON.parse(readFileSync(join(diff, 'comparison.json'), 'utf8')).unavailable, [
+    { capture: 'baseline', filename },
+    { capture: 'current', filename },
+  ]);
 });
 
 test('rejects captures from different route matrices', () => {

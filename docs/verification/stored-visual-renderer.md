@@ -52,3 +52,31 @@ To verify a later candidate, publish an authorized verification ref at its SHA a
 `ci.yml` on that ref. The `visual` job should report that SHA, the runner image, the Chrome version,
 and both strict comparisons against the existing stored PNGs. Repository write access is required
 to dispatch the workflow. [Manual workflow dispatch](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/manually-run-a-workflow)
+
+## Showcase Art Direction and Avatar parity
+
+The approved showcase candidate `a9ab85e50a09ebf051f5749c9c394cf463f6de1c` passed both
+48-frame stored comparisons, 362 paired visuals, and 144 behavior cases on hosted `macos-26`
+with Chrome for Testing `151.0.7922.138`. The same Chrome on workstation macOS 27.2.1
+passed all parity and behavior cases. Its comparison against the approved PNGs failed at
+the existing channel threshold of 4, with 44 of 48 changed per adapter. An independent capture
+of `cf6c4ab771daf219863fa291a47f06e032e2d4f9` reproduced that failure and all 96 local PNGs
+were byte-identical to the local candidate captures.
+[Hosted visual job](https://github.com/codemonster-ru/ui/actions/runs/44063914889/job/133972557490)
+
+The separate `avatar-image` parity case is intermittent in dark mode. On macOS 27.2.1
+arm64 and the same Chrome, the unchanged `scripts/visual/check-vanilla-parity.mjs` probe
+at 360 × 660 and DPR 1 exposed the same failure in 3 of 6 fresh runs on `cf6c4ab7` and
+1 of 6 on `838b124a1110ca6fac9bee4afb0850b30d769c4a`. Light mode passed all twelve
+comparisons. The two frames differed at 36 pixels on the four corner arcs of the 40 × 40 px
+image. Of those, 28 exceeded the parity channel tolerance of 2, with a maximum channel
+delta of 5.
+
+The same two PNG hashes and pixel coordinates appeared when capturing the same Vanilla
+page twice with identical DOM, computed styles, and geometry. Explicit decode and two more
+paint frames still reproduced the difference. A temporary browser-only override that
+removed rounded clipping produced zero above-threshold pixels in eight dark-mode pairs.
+The evidence points to rasterization of the rounded clip. The exact Chromium graphics
+backend is unconfirmed. Both themes passed on the final candidate locally and in hosted CI.
+Raw frames, the pixel mask, and run counts are in `reports/avatar/` in the
+`codemonster-ui-final-showcase-polish.zip` review package.

@@ -2,6 +2,10 @@
 
 All notable changes to this package will be documented in this file.
 
+## 2.0.0
+
+Ship the stable utility styles with the matching Tokens dependency.
+
 ## 2.0.0-rc.2
 
 Update the Tokens dependency range for the coordinated CodeMonster UI 2.0 release candidate.

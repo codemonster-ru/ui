@@ -1,0 +1,105 @@
+.layout-example__dashboard-heading,
+.layout-example__sign-in-options {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--cm-space-2) var(--cm-space-4);
+}
+
+.layout-example__dashboard-heading h1 {
+  margin: 0;
+  font-size: var(--cm-font-size-3xl);
+  font-weight: var(--cm-font-weight-semibold);
+  line-height: var(--cm-line-height-tight);
+}
+
+.layout-example__metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0;
+  border: var(--cm-border-width) solid var(--cm-color-border-default);
+  border-radius: var(--cm-radius-surface);
+  background: var(--cm-color-background-surface);
+}
+
+.layout-example__metrics > div {
+  padding: var(--cm-space-4);
+}
+
+.layout-example__metrics > div + div {
+  border-inline-start: var(--cm-border-width) solid var(--cm-color-border-default);
+}
+
+.layout-example__metrics dt {
+  color: var(--cm-color-text-secondary);
+  font-size: var(--cm-font-size-sm);
+}
+
+.layout-example__metrics dd {
+  margin: 0;
+  font-size: var(--cm-font-size-3xl);
+  font-weight: var(--cm-font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+  line-height: var(--cm-line-height-tight);
+}
+
+.layout-example__activity,
+.layout-example__field-row {
+  display: grid;
+  align-items: start;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--cm-space-4);
+}
+
+.layout-example__activity-heading {
+  margin: 0;
+  font-size: var(--cm-font-size-xl);
+  font-weight: var(--cm-font-weight-semibold);
+  line-height: var(--cm-line-height-tight);
+}
+
+.layout-example__activity-list {
+  display: grid;
+  gap: var(--cm-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.layout-example__activity-list > li + li {
+  padding-block-start: var(--cm-space-2);
+  border-block-start: var(--cm-border-width) solid var(--cm-color-border-subtle);
+}
+
+.layout-example__setup-brand,
+.layout-example__setup-progress {
+  display: grid;
+  gap: var(--cm-space-2);
+}
+
+.layout-example__setup-progress {
+  color: var(--cm-color-text-secondary);
+  font-size: var(--cm-font-size-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (width < 64rem) {
+  .layout-example__activity {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (width < 40rem) {
+  .layout-example__field-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .layout-example__metrics > div {
+    padding: var(--cm-space-2);
+  }
+
+  .layout-example__metrics dd {
+    font-size: var(--cm-font-size-xl);
+  }
+}

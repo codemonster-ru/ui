@@ -12,6 +12,7 @@ import {
   useId,
   useSlots,
   watch,
+  watchEffect,
   type FunctionalComponent,
   type PropType,
 } from 'vue';
@@ -48,7 +49,6 @@ const generatedId = useId();
 const root = ref<HTMLElement | null>(null);
 const panelRef = ref<HTMLElement | null>(null);
 const visible = ref(props.defaultVisible);
-const position = ref<{ side: string; style: { left: string; top: string } }>();
 let timer: ReturnType<typeof setTimeout> | undefined;
 let hovered = false;
 let focused = false;
@@ -81,11 +81,7 @@ const CustomTrigger: FunctionalComponent<{ descriptionId?: string }> = ({ descri
     'data-cm-tooltip-custom-trigger': '',
   };
 
-  if (
-    children.length === 1 &&
-    child &&
-    (typeof child.type === 'string' || typeof child.type === 'object' || typeof child.type === 'function')
-  ) {
+  if (children.length === 1 && child && typeof child.type !== 'symbol') {
     const describedBy: unknown = child.props?.['aria-describedby'];
     const descriptions = typeof describedBy === 'string' ? describedBy.split(/\s+/u).filter(Boolean) : [];
     if (descriptionId) descriptions.push(descriptionId);
@@ -104,20 +100,21 @@ function hasTooltip(): boolean {
 }
 
 function clearTimer(): void {
-  if (timer !== undefined) clearTimeout(timer);
+  clearTimeout(timer);
   timer = undefined;
 }
 
 function show(): void {
   if (visible.value || timer !== undefined || !hasTooltip()) return;
-  if (openingDelay.value === 0) {
+  const delay = openingDelay.value;
+  if (delay === 0) {
     visible.value = true;
     return;
   }
   timer = setTimeout(() => {
     timer = undefined;
     visible.value = true;
-  }, openingDelay.value);
+  }, delay);
 }
 
 function hide(): void {
@@ -166,20 +163,29 @@ watch([visible, root], ([open, element], _, onCleanup) => {
   onCleanup(() => document.removeEventListener('keydown', onEscape, true));
 });
 
-watch(
-  [teleportTarget, panelRef, placement],
-  ([target, panel, side], _, onCleanup) => {
-    const trigger = root.value?.querySelector<HTMLElement>('.cm-tooltip__trigger');
-    if (!target || !panel || !trigger) return;
+watchEffect(
+  (onCleanup) => {
+    if (!painted.value) return;
+    const owner = root.value;
+    const trigger = owner?.querySelector<HTMLElement>('.cm-tooltip__trigger');
+    const panel = panelRef.value;
+    if (!panel || !trigger) return;
 
+    const side = placement.value;
     const rtl = trigger.ownerDocument.defaultView?.getComputedStyle(trigger).direction === 'rtl';
-    const direction = side === 'start' ? (rtl ? 'right' : 'left') : side === 'end' ? (rtl ? 'left' : 'right') : side;
-    const stop = observeCmAnchoredPosition(trigger, panel, direction, 10, null, ({ left, top }, resolvedSide) => {
-      position.value = { side: resolvedSide, style: { left, top } };
+    const direction = side === 'top' || side === 'bottom' ? side : side === (rtl ? 'start' : 'end') ? 'right' : 'left';
+    const target = teleportTarget.value;
+    const marker = target ? 'cmTooltipFloating' : 'cmTooltipInline';
+    panel.dataset[marker] = '';
+    const stop = observeCmAnchoredPosition(trigger, panel, direction, 10, target ? null : owner, (style, resolved) => {
+      panel.dataset[marker] = resolved;
+      panel.style.left = style.left;
+      panel.style.top = style.top;
     });
     onCleanup(() => {
       stop();
-      position.value = undefined;
+      delete panel.dataset[marker];
+      panel.removeAttribute('style');
     });
   },
   { flush: 'post' },
@@ -224,8 +230,6 @@ useCmHydrated();
         class="cm-tooltip__content"
         role="tooltip"
         :hidden="!visible"
-        :data-cm-tooltip-floating="teleportTarget ? (position?.side ?? '') : undefined"
-        v-bind="position ? { style: position.style } : {}"
         @pointerenter="onPointerEnter"
         @pointerleave="onPointerLeave"
       >

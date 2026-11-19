@@ -45,6 +45,18 @@
   font-size: var(--cm-font-size-md);
   line-height: var(--cm-line-height-tight);
   cursor: pointer;
+  transition:
+    background-color var(--cm-motion-duration-fast) var(--cm-motion-ease-standard),
+    color var(--cm-motion-duration-fast) var(--cm-motion-ease-standard);
+}
+
+.cm-theme-switch__input:where(:not(:checked, :disabled)) + .cm-theme-switch__label:hover {
+  background: var(--cm-color-background-surface-hover);
+  color: var(--cm-color-text-primary);
+}
+
+.cm-theme-switch__input:where(:not(:checked, :disabled)) + .cm-theme-switch__label:active {
+  background: var(--cm-color-background-surface-active);
 }
 
 .cm-theme-switch__input:checked + .cm-theme-switch__label {
@@ -53,11 +65,18 @@
 }
 
 .cm-theme-switch__input:focus-visible + .cm-theme-switch__label {
-  outline: var(--cm-focus-ring-width) solid var(--cm-color-border-focus);
-  outline-offset: var(--cm-focus-ring-width);
+  outline: var(--cm-focus-ring-width) solid var(--cm-forced-focus-outline-color, var(--cm-color-border-focus));
+  outline-offset: var(--cm-border-width);
 }
 
 .cm-theme-switch__input:disabled + .cm-theme-switch__label {
   color: var(--cm-color-text-disabled);
   cursor: not-allowed;
+}
+
+@media (forced-colors: active) {
+  .cm-theme-switch__input:checked + .cm-theme-switch__label {
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
 }

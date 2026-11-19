@@ -44,7 +44,7 @@ test('respects reduced motion and forced color preferences', () => {
   assert.match(preferencesCss, /transition: none !important;/);
   assert.match(preferencesCss, /animation-duration: var\(--cm-motion-duration-none\) !important;/);
   assert.match(preferencesCss, /@media \(forced-colors: active\)/);
-  assert.match(preferencesCss, /outline-color: Highlight;/);
+  assert.match(preferencesCss, /outline-color: CanvasText;/);
   assert.match(preferencesCss, /color: GrayText;/);
   assert.doesNotMatch(preferencesCss, /--(?:vf|vueforge)-|\.vf-/);
 });

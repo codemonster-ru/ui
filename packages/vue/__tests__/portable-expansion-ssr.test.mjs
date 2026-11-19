@@ -4,7 +4,7 @@ import { dirname, resolve } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { renderToString } from '@vue/server-renderer';
-import { createSSRApp, h } from 'vue';
+import { createSSRApp, createStaticVNode, h } from 'vue';
 import { compareSignificantDom } from '../../../scripts/contracts/significant-dom.mjs';
 import { CmFieldset, CmIconButton, CmProgressBar, CmProgressSpinner } from '../dist/index.js';
 
@@ -40,7 +40,7 @@ function slotsFor(slug, definition) {
       name,
       () => {
         if (slug === 'fieldset') return fieldsetSlotContent(content);
-        if (slug === 'icon-button' && content === '<svg></svg>') return h('svg');
+        if (slug === 'icon-button') return createStaticVNode(content, 1);
         return content;
       },
     ]),

@@ -41,6 +41,33 @@ test('includes an element root in discovery', () => {
   assert.deepEqual(elements, ['DIV', 'SPAN']);
 });
 
+test('enhances existing AdminShell markup with registered shell metrics and releases Vue-owned shells', () => {
+  const dom = new JSDOM(`
+    <main class="cm-admin-shell">
+      <section class="cm-admin-shell" data-cm-controller="shell-metrics"></section>
+    </main>
+  `);
+  const { document, Event } = dom.window;
+  const calls = [];
+  const root = document.querySelector('main');
+  const runtime = new CmRuntime().register('shell-metrics', (element) => {
+    return controllerFactory(element.tagName, calls)();
+  });
+
+  try {
+    runtime.start(root);
+    root.setAttribute(cmFrameworkOwnership.attribute, '');
+    root.dispatchEvent(new Event(cmFrameworkOwnership.claimEvent));
+    runtime.start(root);
+    runtime.stop();
+
+    assert.deepEqual(calls, ['connect:MAIN', 'connect:SECTION', 'disconnect:MAIN', 'disconnect:SECTION']);
+  } finally {
+    runtime.stop();
+    dom.window.close();
+  }
+});
+
 test('rejects invalid and duplicate controller registrations', () => {
   const factory = () => ({ connect() {}, disconnect() {} });
   const runtime = new CmRuntime().register('accordion', factory);

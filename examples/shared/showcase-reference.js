@@ -75,8 +75,11 @@ export function mountOperations(root) {
       if (!(target instanceof Element)) return;
       const navigation = target.closest('[data-operation-nav]');
       if (navigation) {
-        dashboard.querySelector('[data-operation-nav][aria-current]')?.removeAttribute('aria-current');
+        const active = dashboard.querySelector('[data-operation-nav][aria-current]');
+        active?.removeAttribute('aria-current');
+        active?.classList.replace('cm-button--secondary', 'cm-button--ghost');
         navigation.setAttribute('aria-current', 'page');
+        navigation.classList.replace('cm-button--ghost', 'cm-button--secondary');
         const label = navigation.textContent.trim();
         dashboard.querySelector('[data-operation-heading]').textContent =
           label === 'Overview' ? 'Operations overview' : label;

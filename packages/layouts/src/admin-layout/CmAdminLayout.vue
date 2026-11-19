@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, useAttrs, useId, useTemplateRef, watch } from 'vue';
+import { computed, ref, useAttrs, useId, useTemplateRef, watch, watchPostEffect } from 'vue';
+import { CmShellMetricsController } from '@codemonster-ru/ui-runtime';
 import {
   resolveMobileToggleLabel,
   shellEscapeState,
@@ -48,8 +49,15 @@ const slots = defineSlots<{
 const generatedId = `cm-admin-layout-sidebar-${useId()}`;
 const sidebarId = computed(() => props.id ?? generatedId);
 const sidebar = useTemplateRef<HTMLElement>('sidebar');
-useLayoutOwnership(useTemplateRef<HTMLElement>('root'));
+const root = useTemplateRef<HTMLElement>('root');
+useLayoutOwnership(root);
 const mobileToggle = useTemplateRef<HTMLElement>('mobileToggle');
+watchPostEffect((onCleanup) => {
+  if (!root.value || !sidebar.value) return;
+  const metrics = new CmShellMetricsController(root.value);
+  metrics.connect();
+  onCleanup(() => metrics.disconnect());
+});
 
 const localCollapsed = ref(props.sidebarCollapsed ?? props.defaultSidebarCollapsed);
 const localMobileOpen = ref(props.mobileSidebarOpen ?? props.defaultMobileSidebarOpen);
@@ -83,13 +91,24 @@ const toggleLabel = computed(() =>
   }),
 );
 
+function focusToggle(clicked?: HTMLElement): void {
+  const owned = [
+    ...(root.value?.querySelectorAll<HTMLElement>('[data-cm-mobile-sidebar-toggle], [aria-controls]') ?? []),
+  ].filter(
+    (element) =>
+      element.closest('.cm-admin-layout') === root.value && !element.matches(':disabled, [aria-disabled="true"]'),
+  );
+  const toggle =
+    clicked ??
+    owned.find((element) => element.hasAttribute('data-cm-mobile-sidebar-toggle')) ??
+    owned.find((element) => element.getAttribute('aria-controls') === sidebarId.value) ??
+    mobileToggle.value?.querySelector<HTMLElement>('button:not(:disabled), [tabindex="0"]');
+  toggle?.focus({ preventScroll: true });
+}
+
 function restoreToggleFocus(): void {
   const active = sidebar.value?.ownerDocument.activeElement;
-  if (!active || !sidebar.value?.contains(active)) return;
-  void nextTick(() => {
-    if (state.value.mobileSidebarOpen || sidebar.value?.ownerDocument.activeElement !== active) return;
-    mobileToggle.value?.querySelector<HTMLElement>('button:not(:disabled), [tabindex="0"]')?.focus();
-  });
+  if (active && sidebar.value?.contains(active)) focusToggle();
 }
 
 function commit(next: CmShellState): void {
@@ -158,12 +177,27 @@ function onClick(event: MouseEvent): void {
     return;
   }
 
-  if (target.closest('[data-cm-mobile-sidebar-close]')) closeMobileSidebar();
-  else if (target.closest('[data-cm-mobile-sidebar-toggle]')) toggleMobileSidebar();
+  if (target.closest('[data-cm-mobile-sidebar-close]')) {
+    if (state.value.mobileSidebarOpen) focusToggle();
+    closeMobileSidebar();
+  } else {
+    const toggle = target.closest('[data-cm-mobile-sidebar-toggle]');
+    if (toggle instanceof HTMLElement) {
+      focusToggle(toggle);
+      toggleMobileSidebar();
+    }
+  }
 }
 
 function onKeydown(event: KeyboardEvent): void {
-  if (event.key !== 'Escape' || event.defaultPrevented) return;
+  if (
+    event.key !== 'Escape' ||
+    event.defaultPrevented ||
+    !(event.target instanceof Element) ||
+    event.target.closest('[data-cm-controller~="app-shell"], [data-cm-controller~="admin-layout"]') !==
+      event.currentTarget
+  )
+    return;
 
   const next = shellEscapeState(state.value);
   if (next === null) return;

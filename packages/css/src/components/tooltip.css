@@ -36,7 +36,7 @@
   position: absolute;
   z-index: 1;
   inline-size: max-content;
-  max-inline-size: calc(var(--cm-space-16) * 4);
+  max-inline-size: min(calc(var(--cm-space-16) * 4), calc(100vw - 2 * var(--cm-tooltip-gap)));
   padding-block: var(--cm-space-2);
   padding-inline: var(--cm-space-3);
   border: var(--cm-border-width) solid var(--cm-color-border-inverse);
@@ -46,18 +46,23 @@
   box-shadow: var(--cm-shadow-overlay);
   font-size: var(--cm-font-size-xl);
   line-height: var(--cm-line-height-normal);
+  overflow-wrap: anywhere;
+}
+
+.cm-tooltip:dir(rtl) {
+  --cm-tooltip-inline-center: 50%;
 }
 
 .cm-tooltip--top .cm-tooltip__content {
   inset-block-end: calc(100% + var(--cm-tooltip-gap));
   inset-inline-start: 50%;
-  transform: translateX(-50%);
+  transform: translateX(var(--cm-tooltip-inline-center, -50%));
 }
 
 .cm-tooltip--bottom .cm-tooltip__content {
   inset-block-start: calc(100% + var(--cm-tooltip-gap));
   inset-inline-start: 50%;
-  transform: translateX(-50%);
+  transform: translateX(var(--cm-tooltip-inline-center, -50%));
 }
 
 .cm-tooltip--start .cm-tooltip__content {
@@ -73,10 +78,13 @@
 }
 
 .cm-tooltip__content[data-cm-tooltip-floating] {
-  --cm-tooltip-gap: 10px;
-
   position: fixed;
   z-index: calc(var(--cm-z-index-sticky, 10) + 5);
+}
+
+.cm-tooltip__content:is([data-cm-tooltip-floating], [data-cm-tooltip-inline]) {
+  --cm-tooltip-gap: 10px;
+
   inset: 0 auto auto 0;
   transform: none;
 }
@@ -87,40 +95,57 @@
   content: '';
 }
 
-.cm-tooltip--top .cm-tooltip__content:not([data-cm-tooltip-floating])::before,
-.cm-tooltip__content[data-cm-tooltip-floating='top']::before {
+.cm-tooltip--top .cm-tooltip__content:where(:not([data-cm-tooltip-floating], [data-cm-tooltip-inline]))::before,
+.cm-tooltip__content:is([data-cm-tooltip-floating='top'], [data-cm-tooltip-inline='top'])::before {
   inset: 100% 0 auto;
   height: calc(var(--cm-tooltip-gap) + var(--cm-border-width));
 }
 
-.cm-tooltip--bottom .cm-tooltip__content:not([data-cm-tooltip-floating])::before,
-.cm-tooltip__content[data-cm-tooltip-floating='bottom']::before {
+.cm-tooltip--bottom .cm-tooltip__content:where(:not([data-cm-tooltip-floating], [data-cm-tooltip-inline]))::before,
+.cm-tooltip__content:is([data-cm-tooltip-floating='bottom'], [data-cm-tooltip-inline='bottom'])::before {
   inset: auto 0 100%;
   height: calc(var(--cm-tooltip-gap) + var(--cm-border-width));
 }
 
-.cm-tooltip--start .cm-tooltip__content:not([data-cm-tooltip-floating])::before,
-.cm-tooltip--end .cm-tooltip__content:not([data-cm-tooltip-floating])::before,
-.cm-tooltip__content[data-cm-tooltip-floating='left']::before,
-.cm-tooltip__content[data-cm-tooltip-floating='right']::before {
+:is(.cm-tooltip--start, .cm-tooltip--end)
+  .cm-tooltip__content:where(:not([data-cm-tooltip-floating], [data-cm-tooltip-inline]))::before,
+.cm-tooltip__content:is(
+    [data-cm-tooltip-floating='left'],
+    [data-cm-tooltip-floating='right'],
+    [data-cm-tooltip-inline='left'],
+    [data-cm-tooltip-inline='right']
+  )::before {
   inset-block: 0;
   inline-size: calc(var(--cm-tooltip-gap) + var(--cm-border-width));
 }
 
-.cm-tooltip--start .cm-tooltip__content:not([data-cm-tooltip-floating])::before {
+.cm-tooltip--start .cm-tooltip__content:where(:not([data-cm-tooltip-floating], [data-cm-tooltip-inline]))::before {
   inset-inline-start: 100%;
 }
 
-.cm-tooltip--end .cm-tooltip__content:not([data-cm-tooltip-floating])::before {
+.cm-tooltip--end .cm-tooltip__content:where(:not([data-cm-tooltip-floating], [data-cm-tooltip-inline]))::before {
   inset-inline-end: 100%;
 }
 
-.cm-tooltip__content[data-cm-tooltip-floating='left']::before {
+.cm-tooltip__content:is([data-cm-tooltip-floating='left'], [data-cm-tooltip-inline='left'])::before {
   inset: 0 auto 0 100%;
 }
 
-.cm-tooltip__content[data-cm-tooltip-floating='right']::before {
+.cm-tooltip__content:is([data-cm-tooltip-floating='right'], [data-cm-tooltip-inline='right'])::before {
   inset: 0 100% 0 auto;
+}
+
+/* Keep a shifted inline panel reachable from a small trigger at the viewport edge. */
+.cm-tooltip__content[data-cm-tooltip-inline]::before {
+  --cm-tooltip-hover-inset: min(0px, calc(2 * var(--cm-border-width) - var(--cm-tooltip-gap)));
+}
+
+.cm-tooltip__content:is([data-cm-tooltip-inline='top'], [data-cm-tooltip-inline='bottom'])::before {
+  inset-inline: var(--cm-tooltip-hover-inset);
+}
+
+.cm-tooltip__content:is([data-cm-tooltip-inline='left'], [data-cm-tooltip-inline='right'])::before {
+  inset-block: var(--cm-tooltip-hover-inset);
 }
 
 .cm-tooltip__content[data-cm-tooltip-floating='top']::after,

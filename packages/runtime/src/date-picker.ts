@@ -433,6 +433,7 @@ export class CmDatePickerController implements CmController {
   #focusDay(): void {
     const day = this.#calendar.querySelector<HTMLButtonElement>(`${daySelector}[tabindex="0"]`);
     (day ?? this.#calendar).focus();
+    day?.scrollIntoView?.({ block: 'nearest' });
   }
 
   #renderGrid(): void {

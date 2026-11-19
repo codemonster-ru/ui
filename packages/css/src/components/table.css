@@ -16,11 +16,11 @@
 
 .cm-table {
   inline-size: 100%;
-  min-inline-size: calc(var(--cm-space-16) * 9);
   border-collapse: separate;
   border-spacing: 0;
   color: var(--cm-color-text-primary);
   font-size: var(--cm-font-size-xl);
+  font-variant-numeric: tabular-nums;
   font-weight: var(--cm-font-weight-regular);
   line-height: var(--cm-line-height-normal);
 }
@@ -28,8 +28,8 @@
 .cm-table__caption {
   padding: var(--cm-field-padding-lg);
   border-block-end: var(--cm-border-width) solid var(--cm-color-border-divider);
-  color: var(--cm-color-text-secondary);
-  font-weight: var(--cm-font-weight-medium);
+  color: var(--cm-color-text-primary);
+  font-weight: var(--cm-font-weight-semibold);
   text-align: start;
 }
 
@@ -41,9 +41,10 @@
 
 .cm-table__head th {
   border-block-end: var(--cm-border-width) solid var(--cm-color-border-divider);
-  background: var(--cm-color-background-surface);
-  color: var(--cm-color-text-primary);
-  font-weight: var(--cm-font-weight-medium);
+  background: var(--cm-color-background-surface-subtle);
+  color: var(--cm-color-text-secondary);
+  font-size: var(--cm-text-label-font-size);
+  font-weight: var(--cm-font-weight-semibold);
 }
 
 .cm-table__body > tr + tr > td {

@@ -1,7 +1,14 @@
 import { renderShowcaseTabs } from './showcase-tabs.mts';
 import * as icons from '@codemonster-ru/ui-icons';
 import { iconCatalog, iconNames, type IconName } from '@codemonster-ru/ui-icons/catalog';
-import { colorHero, contrastRows, families, semanticSwatches } from './showcase-colors.mts';
+import {
+  colorSections,
+  colorsTitle,
+  contrastRows,
+  families,
+  releaseChecks,
+  semanticSwatches,
+} from './showcase-colors.mts';
 
 const themes = ['light', 'dark'] as const;
 const surfaces = [
@@ -34,26 +41,45 @@ export function renderColorScales() {
     )
     .join('');
   return `<div class="color-system">
-    <header class="color-system__hero">
-      <p class="color-system__eyebrow">${colorHero.eyebrow}</p>
-      <h1>${colorHero.title}</h1><p>${colorHero.description}</p>
+    <header class="showcase-intro color-system__intro">
+      <h1>${colorsTitle}</h1>
+      <p>Compare palette steps, see semantic roles in both themes, and check contrast pairs.</p>
+      <nav class="color-system__navigation" aria-label="On this page">${colorSections
+        .map(({ id, label }) => `<a class="cm-link" href="./colors/#${id}">${label}</a>`)
+        .join('')}</nav>
     </header>
     <section class="color-system__section" aria-labelledby="primitive-scales">
-      <div class="color-system__section-heading"><h2 id="primitive-scales">Primitive scales</h2>
-      <p>Every displayed step has a concrete semantic use in light, dark, or interaction states.</p></div>
+      <div class="color-system__section-heading"><h2 id="primitive-scales">Primitive scales</h2></div>
       <div class="color-system__families">${palette}</div>
     </section>
     <section class="color-system__section" aria-labelledby="theme-pairings">
-      <div class="color-system__section-heading"><h2 id="theme-pairings">Light and dark semantic pairings</h2>
-      <p>Both panels use the same roles, but each mode selects materials independently.</p></div>
+      <div class="color-system__section-heading"><h2 id="theme-pairings">Light and dark semantic pairings</h2></div>
       <div class="color-system__theme-grid">${themes
         .map(
           (mode) => `<article class="color-system__theme" data-cm-theme="${mode}">
           <header class="color-system__theme-header"><h3>${mode}</h3><span>scoped theme</span></header>
+          ${renderReleaseChecks()}
           <div class="color-system__semantic-grid">${semantics}</div>${renderThemeControls(mode)}</article>`,
         )
         .join('')}</div>
     </section>${renderContrastTable()}</div>`;
+}
+
+function renderReleaseChecks() {
+  const { title, environment, checks, blocker } = releaseChecks;
+  return `<section class="cm-panel color-system__release">
+    <header class="color-system__release-header">
+      <h4>${title}</h4>
+      <span class="cm-badge cm-badge--primary">${environment}</span>
+    </header>
+    <ul class="color-system__release-checks" role="list">${checks
+      .map(
+        ({ label, status, tone }) =>
+          `<li><span>${label}</span><span class="cm-tag cm-tag--${tone}">${status}</span></li>`,
+      )
+      .join('')}</ul>
+    ${alert('danger', blocker.title, blocker.body)}
+  </section>`;
 }
 
 function renderThemeControls(mode: (typeof themes)[number]) {
@@ -105,16 +131,17 @@ function renderThemeControls(mode: (typeof themes)[number]) {
 
 function renderContrastTable() {
   return `<section class="color-system__section" aria-labelledby="contrast-matrix">
-    <div class="color-system__section-heading"><h2 id="contrast-matrix">Supported contrast matrix</h2>
-      <p>Ratios use the current theme tokens rendered in sRGB.</p></div>
-    <div class="color-system__contrast-table-wrap" role="region" tabindex="0" aria-label="Contrast ratios">
-      <table class="color-system__contrast-table"><thead><tr><th scope="col">Pairing</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
-      <tbody>${contrastRows
+    <div class="color-system__section-heading"><h2 id="contrast-matrix">Supported contrast matrix</h2></div>
+    <div class="cm-table-wrap">
+      <div class="cm-table__scroll" role="region" tabindex="0" aria-label="Contrast ratios">
+      <table class="cm-table cm-table--compact">
+      <thead class="cm-table__head"><tr><th scope="col">Pairing</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
+      <tbody class="cm-table__body">${contrastRows
         .map(
           ([label, foreground, background]) => `<tr><th scope="row">${label}</th>
           ${themes.map((mode) => `<td><span data-cm-theme="${mode}" data-contrast-foreground="--cm-color-${foreground}" data-contrast-background="--cm-color-${background}"></span></td>`).join('')}</tr>`,
         )
-        .join('')}</tbody></table>
+        .join('')}</tbody></table></div>
     </div>
   </section>`;
 }
@@ -133,8 +160,6 @@ function iconSvg(rendering: icons.CmIconRendering, family: string, variant: stri
 }
 
 export const iconIntro = {
-  description:
-    'Compare classic and duotone icons. Brand marks use their canonical form when a requested weight is unavailable.',
   samples: [
     { icon: icons.arrowLeft, label: 'Back', family: 'classic', variant: 'regular' },
     { icon: icons.gear, label: 'Settings', family: 'classic', variant: 'solid' },
@@ -144,27 +169,64 @@ export const iconIntro = {
 } as const;
 
 export function renderIconIntro() {
-  return `<p class="showcase-icon-intro-note">${iconIntro.description}</p>
-    <div class="showcase-matrix-row">${iconIntro.samples
-      .map(({ icon, label, family, variant }, index) => {
-        const supportsRequestedStyle = Object.hasOwn(icon, `${family}/${variant}`);
-        const rendering = icons.resolveCmIcon(icon, family, variant);
-        if (!rendering) throw new Error(`Missing showcase icon: ${label}`);
-        return iconSvg(
-          rendering,
-          supportsRequestedStyle ? family : 'classic',
-          supportsRequestedStyle ? variant : 'solid',
-          `icon-intro-${index}`,
-        ).replace('aria-hidden="true"', `role="img" aria-label="${label}" focusable="false"`);
-      })
-      .join('')}</div>`;
+  return `<div class="showcase-matrix-row">${iconIntro.samples
+    .map(({ icon, label, family, variant }, index) => {
+      const supportsRequestedStyle = Object.hasOwn(icon, `${family}/${variant}`);
+      const rendering = icons.resolveCmIcon(icon, family, variant);
+      if (!rendering) throw new Error(`Missing showcase icon: ${label}`);
+      return iconSvg(
+        rendering,
+        supportsRequestedStyle ? family : 'classic',
+        supportsRequestedStyle ? variant : 'solid',
+        `icon-intro-${index}`,
+      ).replace('aria-hidden="true"', `role="img" aria-label="${label}" focusable="false"`);
+    })
+    .join('')}</div>`;
+}
+
+export const iconContexts = {
+  navigation: { title: 'Navigation', label: 'Open Layouts', icon: 'grid' },
+  action: { title: 'Action', label: 'Copy name', icon: 'copy', name: 'download' },
+  status: { title: 'Status', label: 'Deployed', icon: 'checkCircle' },
+} as const;
+
+function renderIconContexts() {
+  const { navigation, action, status } = iconContexts;
+  const glyph = (name: IconName) =>
+    iconSvg(icons.resolveCmIcon(icons[name], 'classic', 'regular')!, 'classic', 'regular', `context-${name}`);
+  return `<section class="catalog-contexts" aria-labelledby="catalog-contexts-title">
+    <h2 id="catalog-contexts-title">Icons in context</h2>
+    <div class="catalog-contexts__grid">
+      <article class="catalog-contexts__sample">
+        <h3>${navigation.title}</h3>
+        <a class="cm-link cm-link--underline-hover catalog-contexts__link" href="./layouts/">
+          ${glyph(navigation.icon)}<span>${navigation.label}</span>
+        </a>
+      </article>
+      <article class="catalog-contexts__sample">
+        <h3>${action.title}</h3>
+        <div class="catalog-contexts__action" data-icon-name="${action.name}">
+          <code>${action.name}</code>
+          <button class="cm-button cm-button--secondary cm-button--sm" type="button" data-copy-icon
+            aria-label="${action.label}: ${action.name}">
+            <span class="cm-button__leading">${glyph(action.icon)}</span>
+            <span class="cm-button__label">${action.label}</span>
+          </button>
+        </div>
+      </article>
+      <article class="catalog-contexts__sample">
+        <h3>${status.title}</h3>
+        <span class="cm-badge cm-badge--success">${glyph(status.icon)}${status.label}</span>
+      </article>
+    </div>
+  </section>`;
 }
 
 export function renderIconCatalog() {
   const system = iconNames.filter((name) => !iconCatalog[name].brand);
   const brands = iconNames.filter((name) => iconCatalog[name].brand);
   const copyButton = (name: IconName) =>
-    `<button type="button" data-copy-icon aria-label="Copy ${name} icon name">Copy</button>`;
+    button('Copy', 'ghost', ` data-copy-icon aria-label="Copy ${name} icon name"`, 'sm');
   function entryAttributes(name: IconName) {
     const { keywords, title } = iconCatalog[name];
     const search = [name, title, ...keywords]
@@ -179,46 +241,59 @@ export function renderIconCatalog() {
     if (!rendering) throw new Error(`Missing catalog icon: ${name} ${family}/${variant}`);
     return iconSvg(rendering, family, variant, `catalog-${name}-${family}-${variant}`);
   }
-  function familyPanel(family: icons.CmIconFamily, title: string, description: string) {
+  function familyPanel(family: icons.CmIconFamily, title: string) {
     return `<section data-icon-group>
-      <header class="family-heading"><h2>${title}</h2><p>${description}</p></header>
-      <div class="variant-table" role="table" tabindex="0" aria-label="${title} icon weights">
-        <div class="variant-row variant-row--head" role="row">
-          <strong role="columnheader">Icon</strong>
-          ${icons.cmIconVariants.map((variant) => `<strong role="columnheader">${variant}</strong>`).join('')}
-        </div>
-        ${system
+      <header class="family-heading"><h2>${title}</h2></header>
+      <div class="cm-table-wrap">
+        <div class="cm-table__scroll" role="region" tabindex="0" aria-label="${title} icon weights">
+        <table class="cm-table cm-table--compact cm-table--column-dividers">
+        <thead class="cm-table__head"><tr>
+          <th class="catalog-name" scope="col">Icon</th>
+          ${icons.cmIconVariants.map((variant) => `<th class="catalog-weight" scope="col">${variant}</th>`).join('')}
+        </tr></thead>
+        <tbody class="cm-table__body">${system
           .map(
-            (name) => `<div class="variant-row" role="row" ${entryAttributes(name)}>
-              <div class="icon-identity" role="rowheader"><strong>${name}</strong>${copyButton(name)}</div>
-              ${icons.cmIconVariants.map((variant) => `<span role="cell">${symbol(name, family, variant)}</span>`).join('')}
-            </div>`,
+            (name) => `<tr ${entryAttributes(name)}>
+              <th class="catalog-name" scope="row"><div class="catalog-entry"><code>${name}</code>${copyButton(name)}</div></th>
+              ${icons.cmIconVariants.map((variant) => `<td class="catalog-weight">${symbol(name, family, variant)}</td>`).join('')}
+            </tr>`,
           )
-          .join('')}
+          .join('')}</tbody></table></div>
       </div>
       <p class="catalog-empty" data-icon-empty hidden>No system icons match.</p>
     </section>`;
   }
   return `<section class="icon-catalog" id="icon-catalog" aria-labelledby="icon-catalog-heading">
-    <header class="page-heading">
-      <div><p class="eyebrow">Complete icon catalog</p><h1 id="icon-catalog-heading">System and brand icons</h1></div>
-      <p>Find an icon, compare every system weight at 32 px, and copy its typed catalog name.</p>
+    <header class="showcase-intro catalog-intro">
+      <h1 id="icon-catalog-heading">System and brand icons</h1>
+      <p>Compare four weights in each family and copy icon names for use in code.</p>
     </header>
     <div class="catalog-toolbar">
-      <label class="catalog-search"><span>Find an icon</span><input class="cm-input" id="icon-catalog-search" type="search" placeholder="Search by name or keyword"></label>
+      <div class="cm-field catalog-search">
+        <label class="cm-field__label" for="icon-catalog-search">Find an icon</label>
+        <div class="cm-field__control"><div class="cm-input-wrap" data-cm-controller="input">
+          <input class="cm-input cm-input--md" id="icon-catalog-search" type="search" placeholder="Search by name or keyword" data-cm-input-control>
+          <button class="cm-input__action" type="button" aria-label="Clear input" data-cm-input-clear hidden>
+            <span aria-hidden="true"><svg class="cm-input__action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><line x1="5.75" y1="5.75" x2="18.25" y2="18.25"/><line x1="18.25" y1="5.75" x2="5.75" y2="18.25"/></svg></span>
+          </button>
+        </div></div>
+      </div>
       <p role="status"><span data-icon-count data-total="${iconNames.length}">${iconNames.length} of ${iconNames.length} icons</span><span data-icon-copy-status></span></p>
+      <a class="cm-link catalog-brands-link" href="./icons/#brand-icons-heading">Brand icons</a>
     </div>
-    <div class="family-tabs">${renderShowcaseTabs('catalog', 'Icon families', [
-      { title: 'Classic', panel: familyPanel('classic', 'Classic', 'Original single-color family.') },
-      { title: 'Duotone', panel: familyPanel('duotone', 'Duotone', 'Two-color Solid; outline weights match Classic.') },
-    ])}</div>
+    ${renderIconContexts()}
+    ${renderShowcaseTabs('catalog', 'Icon families', [
+      { title: 'Classic', panel: familyPanel('classic', 'Classic') },
+      { title: 'Duotone', panel: familyPanel('duotone', 'Duotone') },
+    ])}
     <section class="brand-section" data-icon-group aria-labelledby="brand-icons-heading">
-      <header class="family-heading"><h2 id="brand-icons-heading">Brands</h2>
-      <p>Trademark assets use their approved single-color shape and the solid variant.</p></header>
+      <header class="family-heading"><h2 id="brand-icons-heading">Brands</h2></header>
       <div class="brand-grid">${brands
         .map(
-          (name) => `<article class="brand-card" ${entryAttributes(name)}>${symbol(name, 'classic', 'solid')}
-            <strong>${name}</strong>${copyButton(name)}</article>`,
+          (
+            name,
+          ) => `<article class="cm-panel catalog-brand" ${entryAttributes(name)}>${symbol(name, 'classic', 'solid')}
+            <code>${name}</code>${copyButton(name)}</article>`,
         )
         .join('')}</div>
       <p class="catalog-empty" data-icon-empty hidden>No brand icons match.</p>
@@ -272,11 +347,11 @@ export function renderOperations() {
             );
           const command = (label: string, name: keyof typeof operationIcons, slot: string = name) =>
             `<button type="button" class="cm-icon-button cm-icon-button--secondary cm-icon-button--${size}" aria-label="${label}" data-operation-action="${label}">${symbol(name, slot)}</button>`;
-          const projects = `<section class="showcase-panel">
+          const projects = `<section class="cm-panel showcase-panel">
         <div class="showcase-matrix-row"><h4>Projects</h4><label for="${id}-filter">Status</label>
           <select id="${id}-filter" class="cm-input cm-input--${size}" data-operation-filter><option value="active">Active</option><option value="archived">Archived</option></select>
         </div>
-        <div class="cm-table__scroll" tabindex="0" aria-label="Project rows"><table class="cm-table${compact ? ' cm-table--compact' : ''}">
+        <div class="cm-table-wrap"><div class="cm-table__scroll" role="region" tabindex="0" aria-label="Project rows"><table class="cm-table${compact ? ' cm-table--compact' : ''}">
           <thead class="cm-table__head"><tr><th scope="col">Project</th><th scope="col">Owner</th><th scope="col">Status</th><th scope="col">Actions</th></tr></thead>
           <tbody class="cm-table__body">${rows
             .map(
@@ -286,15 +361,15 @@ export function renderOperations() {
               <td>${command(`Edit ${name}`, 'pencil', `edit-${index}`)} ${command(`Delete ${name}`, 'trash', `delete-${index}`)}</td></tr>`,
             )
             .join('')}</tbody>
-        </table></div>
+        </table></div></div>
         <div class="showcase-matrix-row"><span data-operation-count aria-live="polite">1–2 of 3</span>
           ${button('Previous page', 'secondary', ' data-operation-page="previous" disabled', size)}
           ${button('Next page', 'secondary', ' data-operation-page="next"', size)}
         </div>
       </section>`;
-          return `<article id="${id}" class="showcase-panel showcase-operation" data-cm-theme="${mode}" data-operation>
+          return `<article id="${id}" class="cm-panel showcase-panel showcase-operation" data-cm-theme="${mode}" data-operation>
         <h3>${mode === 'light' ? 'Light' : 'Dark'} · ${compact ? 'compact' : 'regular'}</h3>
-        <div class="cm-app-shell cm-app-shell--sidebar-content">
+        <div class="cm-app-shell cm-app-shell--sidebar-content cm-app-shell--fit-content">
           <header class="cm-app-shell__header showcase-operation-toolbar">
             <strong>${symbol('grid', 'brand')} CodeMonster UI</strong>
             <input class="cm-input cm-input--${size}" type="search" aria-label="Search projects" placeholder="Search projects" data-operation-search>
@@ -302,7 +377,7 @@ export function renderOperations() {
           </header>
           <div class="cm-app-shell__body">
             <aside class="cm-app-shell__sidebar"><nav class="showcase-operation-nav" aria-label="Workspace navigation">
-              ${navigation.map((label, index) => `<button class="cm-button cm-button--ghost cm-button--${size}" type="button" data-operation-nav${index === 0 ? ' aria-current="page"' : ''}>${symbol((['house', 'users', 'folder', 'chartBar', 'gear'] as const)[index], `nav-${index}`)} <span>${label}</span></button>`).join('')}
+              ${navigation.map((label, index) => `<button class="cm-button cm-button--${index === 0 ? 'secondary' : 'ghost'} cm-button--${size}" type="button" data-operation-nav${index === 0 ? ' aria-current="page"' : ''}>${symbol((['house', 'users', 'folder', 'chartBar', 'gear'] as const)[index], `nav-${index}`)} <span>${label}</span></button>`).join('')}
             </nav><p>${symbol('user', 'user')} Ada Lovelace</p></aside>
             <div class="cm-app-shell__content showcase-reference-controls">
               <div class="showcase-matrix-row"><h4 data-operation-heading>Operations overview</h4>${command('Download report', 'download')}</div>
@@ -310,9 +385,9 @@ export function renderOperations() {
                 {
                   title: `${symbol('grid', 'tab-overview')} Overview`,
                   panel: `<div class="showcase-operation-metrics">
-                  <div class="showcase-panel">${symbol('users', 'metric-users')} Active users <strong>12,480</strong></div>
-                  <div class="showcase-panel">${symbol('database', 'metric-storage')} Storage <strong>68%</strong></div>
-                  <div class="showcase-panel">${symbol('cloud', 'metric-uptime')} Uptime <strong>99.98%</strong></div>
+                  <div class="cm-panel showcase-panel">${symbol('users', 'metric-users')} Active users <strong>12,480</strong></div>
+                  <div class="cm-panel showcase-panel">${symbol('database', 'metric-storage')} Storage <strong>68%</strong></div>
+                  <div class="cm-panel showcase-panel">${symbol('cloud', 'metric-uptime')} Uptime <strong>99.98%</strong></div>
                 </div>${alert('warning', 'Backup', 'Backup requires attention.')}${alert('info', 'Updates', '3 updates are ready.')}`,
                 },
                 {
@@ -325,7 +400,7 @@ export function renderOperations() {
                 },
               ])}
               ${projects}
-              <div class="showcase-panel showcase-matrix-row">${symbol('message', 'empty')} <strong>No pending messages</strong> ${command('Upload a message', 'upload')}</div>
+              <div class="cm-panel showcase-panel showcase-matrix-row">${symbol('message', 'empty')} <strong>No pending messages</strong> ${command('Upload a message', 'upload')}</div>
               <p role="status" data-operation-status></p>
             </div>
           </div>

@@ -1,0 +1,20 @@
+{
+  "name": "@codemonster-ru/ui-vanilla-example",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "npm --prefix ../.. run build -w @codemonster-ru/ui-tokens -w @codemonster-ru/ui-icons -w @codemonster-ru/ui-runtime -w @codemonster-ru/ui-css && node ../../scripts/build/build-vanilla.mjs",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@codemonster-ru/ui-css": "file:../../packages/css",
+    "@codemonster-ru/ui-icons": "file:../../packages/icons",
+    "@codemonster-ru/ui-runtime": "file:../../packages/runtime",
+    "@codemonster-ru/ui-tokens": "file:../../packages/tokens"
+  },
+  "devDependencies": {
+    "vite": "^6.4.2"
+  }
+}

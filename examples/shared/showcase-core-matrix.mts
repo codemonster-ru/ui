@@ -64,6 +64,9 @@ export function renderCoreMatrix(slug: string, read: (id: string) => string | un
       if (source === undefined) throw new Error(`Missing showcase matrix case: ${id}`);
       const ids = new Set([...source.matchAll(/\bid="([^"]+)"/gu)].map((match) => match[1]));
       const prefix = `matrix-${id}-`;
+      const exampleTitle = name.replaceAll('-', ' ');
+      const matrixLabel = `${coreComponentTitle(slug)} · ${exampleTitle}`;
+      const labelId = `${prefix}label`;
       const closedSource =
         slug === 'dropdown' && (name === 'composed' || name === 'pills')
           ? source
@@ -73,6 +76,11 @@ export function renderCoreMatrix(slug: string, read: (id: string) => string | un
           : source;
       const html = closedSource
         .replaceAll('src="/avatar.png"', `src="${avatar}"`)
+        .replace(/(<nav\b[^>]*\baria-label="[^"]+)"/gu, `$1 · ${matrixLabel}"`)
+        .replace(
+          /class="(cm-(?:data-)?table__scroll)"/gu,
+          `class="$1" role="region" aria-label="${matrixLabel}" tabindex="0"`,
+        )
         .replace(
           /\b(id|name|for|form|list|aria-controls|aria-describedby|aria-labelledby|aria-activedescendant|aria-owns)="([^"]+)"/gu,
           (_, attribute: string, value: string) =>
@@ -83,9 +91,10 @@ export function renderCoreMatrix(slug: string, read: (id: string) => string | un
         )
         .replace(/href="#([^"]+)"/gu, (match, target: string) =>
           ids.has(target) ? `href="#${prefix}${target}"` : match,
-        );
+        )
+        .replace(/(class="cm-accordion__panel"[^>]*\baria-labelledby="[^"]+)"/gu, `$1 ${labelId}"`);
       const modal = ['dialog', 'drawer', 'command-palette'].includes(slug);
-      return `<div class="core-example"><p class="core-example-label">${name.replaceAll('-', ' ')}</p>
+      return `<div class="core-example"><p id="${labelId}" class="core-example-label">${exampleTitle}</p>
       ${modal ? `<button type="button" class="cm-button cm-button--secondary cm-button--md" data-matrix-open>Open ${slug.replaceAll('-', ' ')}</button>` : ''}
       ${html}</div>`;
     })

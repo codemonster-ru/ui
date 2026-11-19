@@ -17,13 +17,13 @@ const buttonVariants = ['secondary', 'ghost', 'secondary'] as const;
 </script>
 
 <template>
-  <section id="theme" class="showcase-group">
-    <header>
+  <section id="theme" class="showcase-group" tabindex="-1">
+    <header class="showcase-group-heading">
       <h2>Theme</h2>
-      <p>Provide color-mode state and let users switch between system, light, and dark themes.</p>
+      <CmLink href="/colors/" underline="hover">Colors and contrast</CmLink>
     </header>
-    <div class="showcase-grid">
-      <article class="showcase-panel core-theme-card">
+    <div class="core-theme-grid">
+      <article class="cm-panel showcase-panel core-theme-card">
         <h3>Theme provider</h3>
         <div class="core-theme-controls">
           <CmButton
@@ -42,7 +42,7 @@ const buttonVariants = ['secondary', 'ghost', 'secondary'] as const;
           <CmTag tone="contrast">resolved: {{ resolved }}</CmTag>
         </div>
       </article>
-      <article class="showcase-panel core-theme-card">
+      <article class="cm-panel showcase-panel core-theme-card">
         <h3>Theme switch</h3>
         <div class="core-theme-controls">
           <VfThemeSwitch />
@@ -64,15 +64,7 @@ const buttonVariants = ['secondary', 'ghost', 'secondary'] as const;
             :label="resolved === 'dark' ? 'Dark' : 'Light'"
           />
         </div>
-        <p class="showcase-muted core-theme-switch-note">
-          The switch reflects the resolved theme and turns system mode into an explicit light or dark choice after
-          interaction.
-        </p>
-      </article>
-      <article class="showcase-panel core-theme-card">
-        <h3>Color roles</h3>
-        <p class="showcase-muted">The same semantic roles map to different palettes in light and dark.</p>
-        <p class="showcase-muted"><CmLink href="/colors/">Explore color and contrast</CmLink></p>
+        <p class="showcase-muted core-theme-switch-note">Toggling from System chooses Light or Dark explicitly.</p>
       </article>
     </div>
   </section>

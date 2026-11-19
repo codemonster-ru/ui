@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import showcaseGroups from '../../shared/showcase-groups.json';
 import showcasePages from '../../shared/showcase-pages.json';
 import CoreFeedback from './CoreFeedback.vue';
 import CoreForms from './CoreForms.vue';
@@ -15,41 +14,38 @@ import { iconIntro, renderOperations } from '../../shared/showcase-reference.mts
 import { actionMatrices, buttonMatrices } from '../../shared/showcase-matrices.mts';
 import type { CmButtonProps, CmIconButtonProps, CmLinkProps } from '@codemonster-ru/ui-vue';
 import typography from '../../shared/showcase-typography.html?raw';
-import { defineAsyncComponent, nextTick, onMounted, onUnmounted, ref, type Component } from 'vue';
+import projects from '../../../contracts/data-table/cases/default.case.json';
+import { renderComponentCatalog, renderHomeCopy } from '../../shared/showcase-home.mts';
+import { defineAsyncComponent, nextTick, onUnmounted, ref, type Component } from 'vue';
 import { CmRuntime, createCmTabsController } from '@codemonster-ru/ui-runtime';
 import { mountOperations } from '../../shared/showcase-reference.js';
 import { gear, moon, sun } from '@codemonster-ru/ui-icons';
 import LayoutShowcase from './LayoutShowcase.vue';
-import { CmButton, CmIcon, CmIconButton, CmLink, useCmTheme } from '@codemonster-ru/ui-vue';
-import { renderShowcaseNavigation, showcaseActions } from '../../shared/showcase-navigation.mts';
-import { mountShowcaseNavigation } from '../../shared/showcase-navigation.js';
+import { CmBadge, CmButton, CmDataTable, CmIcon, CmIconButton, CmLink, useCmTheme } from '@codemonster-ru/ui-vue';
+import {
+  coreShowcaseGroups,
+  renderCoreSectionNavigation,
+  renderLayoutSectionNavigation,
+  renderShowcaseNavigation,
+} from '../../shared/showcase-navigation.mts';
+import { revealShowcaseLink } from '../../shared/showcase-navigation.js';
 
 const IconsShowcase = defineAsyncComponent(async () => (await import('./IconsShowcase.vue')) as { default: Component });
-const CodeBlockShowcase = defineAsyncComponent(
-  async () => (await import('./CodeBlockShowcase.vue')) as { default: Component },
-);
-const PlaygroundShowcase = defineAsyncComponent(
-  async () => (await import('./PlaygroundShowcase.vue')) as { default: Component },
-);
 const ComponentReference = defineAsyncComponent(
   async () => (await import('./ComponentReference.vue')) as { default: Component },
 );
-const ApplicationExamples = defineAsyncComponent(
-  async () => (await import('./ApplicationExamples.vue')) as { default: Component },
-);
-const DocumentationShowcase = defineAsyncComponent(
-  async () => (await import('./DocumentationShowcase.vue')) as { default: Component },
-);
 
-const page = showcasePages.find(({ id }) => location.pathname.split('/')[1] === id) ?? showcasePages[0];
+const pageId = location.pathname.split('/')[1] || 'core';
+const page = showcasePages.find(({ id }) => id === pageId) ?? showcasePages[0];
 const currentPage = page.id;
 document.title = `${page.label} · CodeMonster UI Vue`;
-const header = ref<HTMLElement>();
-const navigation = renderShowcaseNavigation(currentPage, location.pathname, '', true);
-let unmountNavigation: (() => void) | undefined;
-onMounted(() => {
-  if (header.value) unmountNavigation = mountShowcaseNavigation(header.value, '/');
-});
+const navigation = renderShowcaseNavigation(currentPage, location.pathname, '');
+const sectionNavigation =
+  currentPage === 'core'
+    ? renderCoreSectionNavigation('')
+    : currentPage === 'layouts'
+      ? renderLayoutSectionNavigation('')
+      : '';
 
 const coreSections = {
   overlay: CoreOverlay as Component,
@@ -59,8 +55,6 @@ const coreSections = {
   navigation: CoreNavigation as Component,
   modals: CoreModals as Component,
 };
-const coreGroups = showcaseGroups.filter(({ id }) => id !== 'layouts' && id !== 'icons');
-const coreLinks = [...coreGroups.slice(0, 1), { id: 'typography', title: 'Typography' }, ...coreGroups.slice(1)];
 const referenceContent = ref<HTMLElement | null>(null);
 const referenceRuntime = new CmRuntime().register('tabs', createCmTabsController);
 const showIconExamples = ref(false);
@@ -73,10 +67,7 @@ async function openIconExamples(event: Event) {
   mountOperations(referenceContent.value);
   referenceRuntime.start(referenceContent.value);
 }
-onUnmounted(() => {
-  referenceRuntime.stop();
-  unmountNavigation?.();
-});
+onUnmounted(() => referenceRuntime.stop());
 
 const buttonExamples = buttonMatrices as Record<
   string,
@@ -93,18 +84,17 @@ const { theme: themeMode, resolvedTheme, setTheme: selectTheme, toggleTheme } = 
 </script>
 
 <template>
-  <a class="showcase-skip" href="#showcase-main">Skip to content</a>
-  <header ref="header" class="showcase-topbar">
+  <CmLink class="showcase-skip" href="#showcase-main">Skip to content</CmLink>
+  <header class="showcase-topbar">
     <div class="showcase-header">
-      <a class="showcase-brand" href="/core/">CodeMonster UI <span>Vue</span></a>
+      <CmLink class="showcase-brand" href="/">CodeMonster UI <CmBadge>Vue</CmBadge></CmLink>
       <!-- eslint-disable-next-line vue/no-v-html -- Shared navigation uses repository-owned route metadata. -->
-      <div class="showcase-menu" v-html="navigation" />
-      <!-- eslint-disable-next-line vue/no-v-html -- Shared navigation controls are static markup. -->
-      <div class="showcase-header__actions" v-html="showcaseActions" />
+      <div class="showcase-menu" @focusin="revealShowcaseLink" v-html="navigation" />
       <CmIconButton
         class="showcase-theme"
         :label="resolvedTheme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'"
         variant="secondary"
+        size="lg"
         @click="toggleTheme"
       >
         <CmIcon :icon="resolvedTheme === 'dark' ? moon : sun" />
@@ -117,38 +107,50 @@ const { theme: themeMode, resolvedTheme, setTheme: selectTheme, toggleTheme } = 
     :class="{ 'showcase-layouts': currentPage === 'layouts' }"
     tabindex="-1"
   >
-    <header v-if="page.title" class="showcase-intro" :class="{ 'showcase-intro--core': currentPage === 'core' }">
-      <p class="showcase-intro__eyebrow">{{ page.label }}</p>
+    <header v-if="currentPage === 'core'" class="showcase-intro showcase-home">
+      <!-- eslint-disable-next-line vue/no-v-html -- Shared showcase copy uses repository-owned links. -->
+      <div class="showcase-home__copy" v-html="renderHomeCopy('', '/')" />
+      <section class="showcase-home__demo" aria-label="Live data table example">
+        <CmDataTable v-bind="projects.props" id="showcase-projects" sorting-mode="client" />
+        <div class="showcase-home__demo-footer">
+          <p>Sort by Name.</p>
+          <CmLink href="/components/data-table/" underline="hover">DataTable reference</CmLink>
+        </div>
+      </section>
+    </header>
+    <header v-else-if="page.title" class="showcase-intro">
       <h1>{{ page.title }}</h1>
-      <p>{{ page.description }}</p>
-      <div v-if="currentPage === 'core'" class="showcase-intro__actions">
-        <a class="showcase-intro__primary" href="/docs/getting-started/">Get started</a>
-        <CmLink href="/components/">Browse components</CmLink>
-      </div>
+      <!-- eslint-disable-next-line vue/no-v-html -- Shared navigation uses repository-owned route metadata. -->
+      <div v-if="sectionNavigation" v-html="sectionNavigation" />
     </header>
     <template v-if="currentPage === 'core'">
-      <nav class="showcase-jump" aria-label="On this page">
-        <p>On this page</p>
-        <ul>
-          <li v-for="item in coreLinks" :key="item.id">
-            <a :href="`#${item.id}`">{{ item.title }}</a>
-          </li>
-        </ul>
-      </nav>
+      <section
+        id="component-catalog"
+        class="showcase-directory"
+        tabindex="-1"
+        aria-labelledby="showcase-directory-title"
+      >
+        <h2 id="showcase-directory-title">Component catalog</h2>
+        <!-- eslint-disable-next-line vue/no-v-html -- Component links come from the shared showcase inventory. -->
+        <div class="showcase-directory__groups" v-html="renderComponentCatalog('/')" />
+      </section>
+      <header class="showcase-state-index">
+        <h2>Component states</h2>
+        <!-- eslint-disable-next-line vue/no-v-html -- Shared navigation uses repository-owned route metadata. -->
+        <div v-html="sectionNavigation" />
+      </header>
       <CoreTheme :mode="themeMode" :resolved="resolvedTheme" @select="selectTheme" @toggle="toggleTheme" />
-      <section id="typography" class="showcase-group">
+      <section id="typography" class="showcase-group" tabindex="-1">
         <header>
           <h2>Typography</h2>
-          <p>Review the heading, body, content, and prose styles shared by CodeMonster UI interfaces.</p>
         </header>
         <!-- eslint-disable-next-line vue/no-v-html -- Repository-owned showcase markup. -->
         <div v-html="typography" />
       </section>
-      <template v-for="{ id, title, description, components } in coreGroups.slice(1)" :key="id">
-        <section :id="id" class="showcase-group">
+      <template v-for="{ id, title, components } in coreShowcaseGroups.slice(1)" :key="id">
+        <section :id="id" class="showcase-group" tabindex="-1">
           <header>
             <h2>{{ title }}</h2>
-            <p>{{ description }}</p>
           </header>
           <CoreMatrix v-if="id === 'actions'" title="Button and link variants">
             <div class="core-matrix-wide core-matrix-cell">
@@ -208,21 +210,16 @@ const { theme: themeMode, resolvedTheme, setTheme: selectTheme, toggleTheme } = 
       </template>
     </template>
     <ComponentReference v-else-if="currentPage === 'components'" />
-    <DocumentationShowcase v-else-if="currentPage === 'docs'" />
-    <ApplicationExamples v-else-if="currentPage === 'examples'" />
     <ColorsShowcase v-else-if="currentPage === 'colors'" />
     <div v-else-if="currentPage === 'layouts'" class="layout-guide">
       <LayoutShowcase />
     </div>
-    <CodeBlockShowcase v-else-if="currentPage === 'codeblock'" :theme="resolvedTheme" />
-    <PlaygroundShowcase v-else-if="currentPage === 'playground'" :theme="resolvedTheme" />
     <template v-else>
       <IconsShowcase />
       <details class="icon-showcase-extras" @toggle="openIconExamples">
         <summary>Icon component and operations examples</summary>
-        <section v-if="showIconExamples" id="demo-icon" class="showcase-panel">
+        <section v-if="showIconExamples" id="demo-icon" class="cm-panel showcase-panel">
           <h3>Icon</h3>
-          <p>{{ iconIntro.description }}</p>
           <div class="showcase-matrix-row">
             <CmIcon v-for="sample in iconIntro.samples" :key="sample.label" v-bind="sample" />
           </div>

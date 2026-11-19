@@ -18,6 +18,7 @@
 .cm-panel__title {
   margin: 0;
   font-size: var(--cm-text-body-font-size);
-  font-weight: var(--cm-text-body-font-weight);
+  font-weight: var(--cm-font-weight-semibold);
   line-height: var(--cm-text-body-line-height);
+  overflow-wrap: anywhere;
 }

@@ -26,7 +26,7 @@ test('preserves the reference Input state matrix and adornment geometry', async 
   assert.match(input, /\.cm-input:read-only:not\(:disabled\)::placeholder/u);
   assert.match(input, /\.cm-input-wrap:has\(\.cm-input__leading\) \.cm-input/u);
   assert.match(input, /padding-inline-start: 2\.125rem;/u);
-  assert.match(input, /\.cm-input__action:has\(\+ \.cm-input__action\)/u);
+  assert.match(input, /\.cm-input__action:has\(\+ \.cm-input__action:not\(\[hidden\]\)\)/u);
   assert.ok(
     input.indexOf('.cm-input:disabled {') >
       input.indexOf(".cm-input[aria-invalid='true']:is(:focus, :focus-visible, :hover)"),
