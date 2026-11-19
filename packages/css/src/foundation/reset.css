@@ -25,8 +25,15 @@ optgroup,
 select,
 textarea {
   margin: 0;
-  color: inherit;
   font: inherit;
+}
+
+/* Native buttons keep the browser's matching ButtonText and ButtonFace colors. */
+input,
+optgroup,
+select,
+textarea {
+  color: inherit;
 }
 
 img,
