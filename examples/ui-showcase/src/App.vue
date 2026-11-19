@@ -16,7 +16,7 @@ import type { CmButtonProps, CmIconButtonProps, CmLinkProps } from '@codemonster
 import typography from '../../shared/showcase-typography.html?raw';
 import projects from '../../../contracts/data-table/cases/default.case.json';
 import { renderComponentCatalog, renderHomeCopy } from '../../shared/showcase-home.mts';
-import { defineAsyncComponent, nextTick, onUnmounted, ref, type Component } from 'vue';
+import { defineAsyncComponent, nextTick, onMounted, onUnmounted, ref, type Component } from 'vue';
 import { CmRuntime, createCmTabsController } from '@codemonster-ru/ui-runtime';
 import { mountOperations } from '../../shared/showcase-reference.js';
 import { gear, moon, sun } from '@codemonster-ru/ui-icons';
@@ -28,7 +28,7 @@ import {
   renderLayoutSectionNavigation,
   renderShowcaseNavigation,
 } from '../../shared/showcase-navigation.mts';
-import { revealShowcaseLink } from '../../shared/showcase-navigation.js';
+import { mountComponentCatalog, revealShowcaseLink } from '../../shared/showcase-navigation.js';
 
 const IconsShowcase = defineAsyncComponent(async () => (await import('./IconsShowcase.vue')) as { default: Component });
 const ComponentReference = defineAsyncComponent(
@@ -55,6 +55,9 @@ const coreSections = {
   navigation: CoreNavigation as Component,
   modals: CoreModals as Component,
 };
+const catalogContent = ref<HTMLElement | null>(null);
+onMounted(() => mountComponentCatalog(catalogContent.value));
+
 const referenceContent = ref<HTMLElement | null>(null);
 const referenceRuntime = new CmRuntime().register('tabs', createCmTabsController);
 const showIconExamples = ref(false);
@@ -126,13 +129,14 @@ const { theme: themeMode, resolvedTheme, setTheme: selectTheme, toggleTheme } = 
     <template v-if="currentPage === 'core'">
       <section
         id="component-catalog"
+        ref="catalogContent"
         class="showcase-directory"
         tabindex="-1"
         aria-labelledby="showcase-directory-title"
       >
         <h2 id="showcase-directory-title">Component catalog</h2>
         <!-- eslint-disable-next-line vue/no-v-html -- Component links come from the shared showcase inventory. -->
-        <div class="showcase-directory__groups" v-html="renderComponentCatalog('/')" />
+        <div v-html="renderComponentCatalog('/')" />
       </section>
       <header class="showcase-state-index">
         <h2>Component states</h2>

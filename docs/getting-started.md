@@ -39,11 +39,11 @@ npm install "$ui_tarballs"/*.tgz
 Use Node `^22.22.3`, `^24.15.0`, or `>=26.0.0` for Node consumers, including Vue SSR.
 Vue integrations require Vue `^3.5.0`. The package group depends on the integration:
 
-| Integration | Workspaces to pack and install |
-| --- | --- |
-| Vue | Tokens, CSS, Runtime, Icons, and Vue. Add Layouts for page layouts and shells. |
-| Vanilla with controllers | Tokens, CSS, and Runtime. Add Icons if you import icon geometry. |
-| CSS only | Tokens and CSS. |
+| Integration              | Workspaces to pack and install                                                 |
+| ------------------------ | ------------------------------------------------------------------------------ |
+| Vue                      | Tokens, CSS, Runtime, Icons, and Vue. Add Layouts for page layouts and shells. |
+| Vanilla with controllers | Tokens, CSS, and Runtime. Add Icons if you import icon geometry.               |
+| CSS only                 | Tokens and CSS.                                                                |
 
 Add Utilities when using its utility stylesheet. For an app with no package manager or JS
 bundler, follow the [standalone browser assets guide](./vanilla.md#browser-assets).
@@ -101,6 +101,11 @@ Import the components used by each module. Types are exported alongside componen
 For server rendering, use the same component imports and your framework's Vue SSR entry.
 Deliver the stylesheets through the browser build or the document layout. See the
 [SSR and hydration guide](./integration.md#server-rendering-and-hydration).
+
+Continue with a [DataTable](./components/data-tables.md#datatable-data-model), a
+[navigation menu](./components/navigation.md#nested-navigation), or a
+[dialog](./components/overlays.md#vue). The [theme recipe](./recipes/theme-switch.md#server-rendering)
+shows how to reuse the same preference in server rendering and hydration.
 
 ## Vanilla HTML, CSS, and JavaScript
 

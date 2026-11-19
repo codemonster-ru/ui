@@ -226,6 +226,23 @@
   font-weight: var(--cm-font-weight-semibold);
 }
 
+.showcase-directory__filter:not([hidden]) {
+  display: grid;
+  max-inline-size: 24rem;
+  gap: var(--cm-space-1);
+  margin-block-start: var(--cm-space-3);
+}
+
+.showcase-directory__filter label {
+  font-weight: var(--cm-font-weight-medium);
+}
+
+.showcase-directory__filter p {
+  margin: 0;
+  color: var(--cm-color-text-secondary);
+  font-size: var(--cm-text-label-font-size);
+}
+
 .showcase-directory__groups {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));

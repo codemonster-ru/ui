@@ -492,6 +492,25 @@ async function checkSectionNavigation(page, adapter) {
   await sectionNav.waitFor();
 }
 
+async function checkCatalogSearch(page, base, adapter) {
+  await page.goto(url(base, '#component-catalog'));
+  const catalog = page.locator('#component-catalog');
+  const search = catalog.getByRole('searchbox', { name: 'Find a component' });
+  await search.waitFor();
+  assert.equal(await catalog.locator('details li a').count(), 64, `${adapter}: all components remain in the catalog`);
+  await catalog.locator('details summary').first().click();
+  const originalOpen = await catalog.locator('details[open] summary').allTextContents();
+  await search.fill('CmDatePicker');
+  const links = catalog.locator('details li a:visible');
+  assert.equal(await links.count(), 1, `${adapter}: an export name finds a single component`);
+  assert.match(await links.first().getAttribute('href'), /components\/date-picker\/$/);
+  await search.fill('no matching component');
+  assert.equal(await links.count(), 0);
+  assert.equal(await catalog.getByRole('status').textContent(), 'No matching components');
+  await search.fill('');
+  assert.deepEqual(await catalog.locator('details[open] summary').allTextContents(), originalOpen);
+}
+
 async function checkAdapter([adapter, base]) {
   for (const [width, height] of viewports) {
     for (const theme of ['light', 'dark']) {
@@ -542,8 +561,10 @@ async function checkAdapter([adapter, base]) {
           await checkReferenceFrames(page, base, adapter);
           await checkDatePickerContrast(page, base, adapter);
         }
-        if ((width === 360 && theme === 'dark') || (width === 1440 && theme === 'light'))
+        if ((width === 360 && theme === 'dark') || (width === 1440 && theme === 'light')) {
           await checkReferenceInteractions(page, base, adapter);
+          await checkCatalogSearch(page, base, adapter);
+        }
         if ((width <= 360 || width === 1440) && theme === 'dark') await checkNavigation(page, base, adapter, width);
         if (width === 1440 && theme === 'dark') {
           await checkLayoutViewport(page, base, adapter);

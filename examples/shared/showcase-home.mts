@@ -12,7 +12,7 @@ export function renderHomeCopy(path: string, base: string) {
 }
 
 export function renderComponentCatalog(base: string) {
-  return groups
+  const entriesByGroup = groups
     .map(({ id, title, components }) => {
       const entries =
         id === 'theme'
@@ -27,4 +27,10 @@ export function renderComponentCatalog(base: string) {
       return `<details><summary>${title}</summary><ul>${links.join('')}</ul></details>`;
     })
     .join('');
+  return `<div class="showcase-directory__filter" data-component-filter hidden>
+    <label for="component-catalog-search">Find a component</label>
+    <input class="cm-input" id="component-catalog-search" type="search" autocomplete="off">
+    <p role="status"></p>
+  </div>
+  <div class="showcase-directory__groups">${entriesByGroup}</div>`;
 }

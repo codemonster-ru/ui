@@ -1,6 +1,7 @@
 const outerShell = '.cm-admin-shell, .cm-admin-layout';
 const headerSelector = ':scope > .cm-admin-layout__main > .cm-admin-layout__header';
 const measuredAttribute = 'data-cm-admin-layout-measured';
+const openAttribute = 'data-cm-mobile-sidebar-open';
 const drawerStart = '--cm-admin-layout-drawer-start';
 const drawerSize = '--cm-admin-layout-drawer-size';
 const stickyStart = '--cm-admin-layout-sticky-start';
@@ -20,8 +21,32 @@ export function observeAdminLayoutGeometry(root: Element): () => void {
     if (topbar) outerHeaders.push(topbar);
   }
 
+  const main = root.querySelector(':scope > .cm-admin-layout__main');
+  const backdrop = root.querySelector(':scope > .cm-admin-layout__mobile-backdrop');
+  const ownedInert = new Set<HTMLElement>();
   const visualViewport = view.visualViewport;
   let tracksScroll = false;
+  const releaseCoveredRegions = () => {
+    for (const region of ownedInert) region.removeAttribute('inert');
+    ownedInert.clear();
+  };
+  const updateCoveredRegions = () => {
+    if (!tracksScroll || !backdrop || root.getAttribute(openAttribute) !== 'true') {
+      releaseCoveredRegions();
+      return;
+    }
+    const coveredRegions = main?.querySelectorAll<HTMLElement>(
+      ':scope > :is(.cm-admin-layout__content, .cm-admin-layout__footer)',
+    );
+    for (const region of coveredRegions ?? []) {
+      if (region.hasAttribute('inert')) continue;
+      if (region.contains(root.ownerDocument.activeElement)) {
+        header.querySelector<HTMLElement>('[data-cm-mobile-sidebar-toggle]')?.focus({ preventScroll: true });
+      }
+      region.setAttribute('inert', '');
+      ownedInert.add(region);
+    }
+  };
   const setPixels = (name: string, value: number) => {
     const cssValue = `${value}px`;
     if (root.style.getPropertyValue(name) !== cssValue) root.style.setProperty(name, cssValue);
@@ -39,6 +64,7 @@ export function observeAdminLayoutGeometry(root: Element): () => void {
         visualViewport?.removeEventListener('scroll', schedule);
       }
     }
+    updateCoveredRegions();
     if (!mobile) return;
 
     const bounds = root.getBoundingClientRect();
@@ -84,12 +110,17 @@ export function observeAdminLayoutGeometry(root: Element): () => void {
       update();
     });
   };
+  const states = typeof view.MutationObserver === 'function' ? new view.MutationObserver(updateCoveredRegions) : null;
+  states?.observe(root, { attributes: true, attributeFilter: [openAttribute] });
+  if (main) states?.observe(main, { childList: true });
   const resize = typeof view.ResizeObserver === 'function' ? new view.ResizeObserver(schedule) : null;
   for (const element of [root, header, ...ancestors, ...outerHeaders]) resize?.observe(element);
   view.addEventListener('resize', schedule);
   visualViewport?.addEventListener('resize', schedule);
   update();
   return () => {
+    states?.disconnect();
+    releaseCoveredRegions();
     resize?.disconnect();
     if (frame) view.cancelAnimationFrame(frame);
     view.removeEventListener('scroll', schedule, true);
