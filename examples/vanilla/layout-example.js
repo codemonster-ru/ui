@@ -9,8 +9,9 @@ const setup = root.querySelector('.cm-setup-layout');
 const form = root.querySelector('[data-layout-auth]');
 
 followShowcaseFrameTheme(() => {});
-createRuntime().start(root);
-mountWarehousePagination(root);
+const runtime = createRuntime();
+runtime.start(root);
+mountWarehousePagination(root, runtime);
 
 function selectNavigation(item) {
   for (const button of item.closest('nav').querySelectorAll('[data-cm-nav-menu-value]')) {

@@ -10,6 +10,8 @@ import {
   regionControls,
   rows,
   steps,
+  warehouseEmptyText,
+  warehouseFilterLabel,
   warehouseNavigation,
   warehouseStockTones,
   warehouseTableCaption,
@@ -45,6 +47,7 @@ import {
 } from '@codemonster-ru/ui-vue';
 import logo from '../../shared/vueforge-logo-icon.svg';
 import { vScrollableTable } from './scrollable-table';
+import { matchesWarehouseFilter } from '../../shared/showcase-layout-recipes.js';
 
 const { slug } = defineProps<{ slug: LayoutExampleSlug }>();
 const submitted = ref(false);
@@ -67,10 +70,18 @@ const warehouseBranches = ref<readonly string[]>(['commerce']);
 const shellNav = ref('warehouse-availability');
 const warehousePage = ref(1);
 const warehousePageSize = ref(5);
-const warehouseRows = computed(() =>
-  rows.slice((warehousePage.value - 1) * warehousePageSize.value, warehousePage.value * warehousePageSize.value),
+const warehouseQuery = ref('');
+const matchingProducts = computed(() =>
+  rows.filter(({ cells }) => matchesWarehouseFilter(Object.values(cells), warehouseQuery.value)),
 );
-const pageCount = computed(() => Math.ceil(rows.length / warehousePageSize.value));
+const warehouseRows = computed(() =>
+  matchingProducts.value.slice(
+    (warehousePage.value - 1) * warehousePageSize.value,
+    warehousePage.value * warehousePageSize.value,
+  ),
+);
+const pageCount = computed(() => Math.max(1, Math.ceil(matchingProducts.value.length / warehousePageSize.value)));
+watch(warehouseQuery, () => (warehousePage.value = 1));
 const step = ref(initialSetupStep);
 const stepIndex = computed(() => steps.findIndex(({ value }) => value === step.value));
 const acceptedLicense = ref(false);
@@ -220,6 +231,9 @@ function setMode(kind: 'app' | 'document', value: string) {
         aria-label="Admin shell navigation"
     /></template>
     <CmStack>
+      <CmField v-slot="{ controlId }" control-id="warehouse-filter" :label="warehouseFilterLabel">
+        <CmInput :id="controlId" v-model="warehouseQuery" type="search" aria-controls="showcase-warehouse" />
+      </CmField>
       <CmDataTable
         v-scrollable-table="warehouseTableCaption"
         id="showcase-warehouse"
@@ -230,7 +244,8 @@ function setMode(kind: 'app' | 'document', value: string) {
         column-dividers
         :page-size="warehousePageSize"
         :page-count="pageCount"
-        :total-rows="rows.length"
+        :total-rows="matchingProducts.length"
+        :empty-text="warehouseEmptyText"
         :page-size-options="[5, 10]"
         @update:page-size="
           warehousePageSize = $event;
