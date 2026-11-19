@@ -7,18 +7,24 @@ const indexes = ['packages/vue/src/index.ts', 'packages/layouts/src/index.ts'].m
   readFileSync(join(repositoryRoot, path), 'utf8'),
 );
 const guidesDirectory = join(repositoryRoot, 'docs/components');
-const guides = readdirSync(guidesDirectory)
-  .filter((entry) => entry.endsWith('.md'))
-  .map((entry) => readFileSync(join(guidesDirectory, entry), 'utf8'));
+const catalogFiles = new Set(['index.md', 'quality-matrix.md']);
+const guidePaths = readdirSync(guidesDirectory)
+  .filter((entry) => entry.endsWith('.md') && !catalogFiles.has(entry))
+  .map((entry) => join(guidesDirectory, entry));
+guidePaths.push(
+  join(repositoryRoot, 'docs/recipes/confirm-dialog.md'),
+  join(repositoryRoot, 'docs/recipes/theme-switch.md'),
+);
+const guides = guidePaths.map((path) => readFileSync(path, 'utf8'));
 
 const exported = collectExportedComponents(indexes);
 const undocumented = findUndocumentedComponents(exported, guides);
 
 if (undocumented.length > 0) {
-  console.error('[component-documentation] Exported components no guide in docs/components mentions:');
+  console.error(
+    '[component-documentation] Exported components missing from the component guides and maintained recipes:',
+  );
   for (const name of undocumented) console.error(`[component-documentation]   ${name}`);
-  console.error('[component-documentation] The guides are the public migration boundary the release notes point at,');
-  console.error('[component-documentation] so a component missing from them is one a consumer cannot migrate to.');
   process.exit(1);
 }
 

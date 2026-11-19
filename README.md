@@ -50,7 +50,7 @@ The [2.0 checkout](./docs/codemonster-ui-2.0-release-notes.md) builds seven npm 
 - [Vanilla integration](./docs/vanilla.md) and [server rendering and hydration](./docs/integration.md#server-rendering-and-hydration).
 - [Architecture](./ARCHITECTURE.md) and [component contracts](./contracts/README.md).
 - [VueForge migration](./docs/migrate-from-vueforge.md) from the
-  [archived VueForge project](https://github.com/codemonster-ru/vueforge).
+  [VueForge repository](https://github.com/codemonster-ru/vueforge).
 
 ## Development checks
 
