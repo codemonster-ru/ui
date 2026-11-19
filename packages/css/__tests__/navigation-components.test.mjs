@@ -63,7 +63,7 @@ test('preserves the reference Tabs geometry on the canonical DOM', async () => {
 test('preserves the reference Menu surface and item geometry', async () => {
   const menu = await readFile(new URL('../src/components/menu.css', import.meta.url), 'utf8');
 
-  assert.match(menu, /min-inline-size: 12rem;/u);
+  assert.match(menu, /min-inline-size: min\(100%, 12rem\);/u);
   assert.match(menu, /padding: var\(--cm-space-2\);/u);
   assert.match(menu, /border-radius: var\(--cm-radius-control\);/u);
   assert.match(menu, /min-block-size: var\(--cm-control-height-sm\);/u);
