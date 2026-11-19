@@ -1,5 +1,7 @@
 # CodeMonster UI reference quality roadmap
 
+Continue with the [reference integration record](./verification/reference-integration.md) for the combined candidate.
+
 This roadmap continues the [maturity roadmap](./codemonster-ui-roadmap-v2.md) after
 `857c0e396077a7703a6b0b28c7c731fdb7f7befb`. The [RC.2 evidence](./verification/codemonster-ui-2.0-rc.2.md)
 covers its recorded local and hosted revisions. The working branch is `codex/reference-quality`.

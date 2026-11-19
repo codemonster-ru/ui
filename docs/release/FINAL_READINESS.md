@@ -1,5 +1,7 @@
 # CodeMonster UI 2.0 readiness
 
+This handoff records PR #29. The [reference integration record](../verification/reference-integration.md) covers the combined product.
+
 **BLOCKED.** The stable candidate awaits native VoiceOver and Windows NVDA acceptance, and
 the npm organization owner must verify Trusted Publishing and arrange the Icons and Layouts
 bootstrap. See the [quality gates](QUALITY_GATES.md) for the status of each release check.

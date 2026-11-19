@@ -9,7 +9,7 @@ const showcase = resolve(root, 'examples/ui-showcase');
 const vanilla = resolve(root, 'examples/vanilla/dist');
 const entryBudget = 95 * 1024;
 const chunkBudget = 500_000;
-const parkedDependencies =
+const standaloneToolDependencies =
   /\/node_modules\/(?:typescript|shiki|@shikijs|@codemonster-ru\/vueforge-(?:playground(?:-core)?|codeblock))\//u;
 const compilerWorker = /(?:^|\/)typescriptWorker-[\w-]+\.js$/u;
 
@@ -37,7 +37,7 @@ for (const entry of ['index.html', 'case.html', 'layout-example.html']) {
 
 for (const asset of output) {
   if (asset.type === 'chunk') {
-    const forbidden = Object.keys(asset.modules).find((id) => parkedDependencies.test(id));
+    const forbidden = Object.keys(asset.modules).find((id) => standaloneToolDependencies.test(id));
     assert(!forbidden, `${asset.fileName} bundles a standalone tool dependency: ${forbidden}`);
   }
   if (/\.m?js$/u.test(asset.fileName)) {

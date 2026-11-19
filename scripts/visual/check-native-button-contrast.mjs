@@ -46,27 +46,23 @@ async function measure(button, styled) {
     const background = backgroundLayers.reduce((pixels, layer) => over(rgba(layer), pixels), [1, 1, 1]);
     const foreground = over(rgba(style.color), background);
     const [lighter, darker] = [luminance(foreground), luminance(background)].sort((left, right) => right - left);
-    const probe = element.cloneNode(true);
-    probe.style.position = 'absolute';
-    probe.style.visibility = 'hidden';
-    probe.style.color = isStyled ? 'var(--cm-color-interactive-primary-foreground)' : 'revert';
-    if (isStyled) {
-      probe.style.backgroundColor = 'var(--cm-color-interactive-primary-background)';
-    }
-    element.after(probe);
-    const expected = getComputedStyle(probe);
+    const authoredStyle = element.getAttribute('style');
+    const original = { color: style.color, background: style.backgroundColor, size: size(element) };
     try {
+      element.style.transition = 'none';
+      element.style.color = isStyled ? 'var(--cm-color-interactive-primary-foreground)' : 'revert';
+      if (isStyled) element.style.backgroundColor = 'var(--cm-color-interactive-primary-background)';
+      const expected = getComputedStyle(element);
       return {
+        ...original,
         contrast: (lighter + 0.05) / (darker + 0.05),
-        color: style.color,
-        background: style.backgroundColor,
         expectedColor: expected.color,
         expectedBackground: expected.backgroundColor,
-        size: size(element),
-        referenceSize: size(probe),
+        referenceSize: size(element),
       };
     } finally {
-      probe.remove();
+      if (authoredStyle === null) element.removeAttribute('style');
+      else element.setAttribute('style', authoredStyle);
     }
   }, styled);
 }

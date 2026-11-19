@@ -29,8 +29,8 @@ The header switches between light and dark. Use **Theme** in Visual matrix to re
 preference.
 
 Both production builds emit directory indexes for known routes. Serve `examples/ui-showcase/dist`
-at the origin root or `examples/vanilla/dist` at the origin root or a subdirectory. Enable directory
-indexes on the static server. No catch-all rewrite is required for known URLs.
+at the origin root or `examples/vanilla/dist` at the origin root or a subdirectory. Serve the
+`index.html` for each known directory and keep automatic directory listings disabled.
 
 Component previews load the package tokens, Inter fonts, and component styles. The examples use
 the theme selected in the header. In Layouts, the width controls resize the preview document so
