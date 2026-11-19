@@ -11,6 +11,7 @@
 }
 
 .cm-stepper__list {
+  isolation: isolate;
   display: flex;
   inline-size: 100%;
   min-inline-size: 0;
@@ -57,6 +58,9 @@
 }
 
 .cm-stepper__marker {
+  /* Keep the numeral and its rings above both connector implementations. */
+  position: relative;
+  z-index: 1;
   display: inline-flex;
   flex-shrink: 0;
   align-items: center;
@@ -81,6 +85,7 @@
   flex-direction: column;
   gap: 0.125rem;
   min-inline-size: 0;
+  overflow-wrap: anywhere;
 }
 
 .cm-stepper__label {
@@ -121,11 +126,6 @@
   background: var(--cm-color-border-disabled);
 }
 
-.cm-stepper__item:first-child .cm-stepper__connector--before,
-.cm-stepper__item:last-child .cm-stepper__connector--after {
-  visibility: hidden;
-}
-
 .cm-stepper__item--disabled .cm-stepper__marker {
   border-color: var(--cm-color-border-disabled);
   background: var(--cm-color-background-surface-disabled);
@@ -149,8 +149,11 @@
   gap: var(--cm-space-3);
 }
 
-.cm-stepper--vertical .cm-stepper__list:has(> :nth-child(2))::before,
-.cm-stepper--vertical .cm-stepper__list:has(> :nth-child(2))::after {
+/* Preserve the authored progress factor for markup without an active step attribute. */
+.cm-stepper--vertical
+  .cm-stepper__list:where(:has(> :nth-child(2)):has(button:enabled):not(:has([aria-current='step'])))::before,
+.cm-stepper--vertical
+  .cm-stepper__list:where(:has(> :nth-child(2)):has(button:enabled):not(:has([aria-current='step'])))::after {
   position: absolute;
   inset-block: calc(var(--cm-stepper-marker-size) / 2);
   inset-inline-start: calc((var(--cm-stepper-marker-size) - var(--cm-stepper-rail-size)) / 2);
@@ -161,15 +164,15 @@
   pointer-events: none;
 }
 
-.cm-stepper--vertical .cm-stepper__list:has(> :nth-child(2))::after {
+.cm-stepper--vertical .cm-stepper__list::after {
   background: var(--cm-stepper-progress-color);
   transform: scaleY(var(--cm-stepper-progress-factor, 0));
   transform-origin: top;
   transition: transform var(--cm-motion-duration-normal) var(--cm-motion-ease-standard);
 }
 
-.cm-stepper--vertical.cm-stepper--content-start .cm-stepper__list:has(> :nth-child(2))::before,
-.cm-stepper--vertical.cm-stepper--content-start .cm-stepper__list:has(> :nth-child(2))::after {
+.cm-stepper--vertical.cm-stepper--content-start .cm-stepper__list::before,
+.cm-stepper--vertical.cm-stepper--content-start .cm-stepper__list::after {
   inset-inline: auto calc((var(--cm-stepper-marker-size) - var(--cm-stepper-rail-size)) / 2);
 }
 
@@ -190,7 +193,41 @@
 }
 
 .cm-stepper--vertical .cm-stepper__connector {
+  position: absolute;
+  inset-inline-start: calc((var(--cm-stepper-marker-size) - var(--cm-stepper-rail-size)) / 2);
+  inline-size: var(--cm-stepper-rail-size);
+  block-size: auto;
+  background: var(--cm-stepper-rail-color);
+  pointer-events: none;
+}
+
+.cm-stepper--vertical.cm-stepper--content-start .cm-stepper__connector {
+  inset-inline: auto calc((var(--cm-stepper-marker-size) - var(--cm-stepper-rail-size)) / 2);
+}
+
+/* Each marker sits at the center of its own row, even when the label wraps. */
+.cm-stepper--vertical .cm-stepper__connector--before {
+  inset-block: calc(var(--cm-space-3) / -2) 50%;
+}
+
+.cm-stepper--vertical .cm-stepper__connector--after {
+  inset-block: 50% calc(var(--cm-space-3) / -2);
+}
+
+.cm-stepper--vertical
+  .cm-stepper__list:where(:has(button:enabled):not(:has([aria-current='step'])))
+  .cm-stepper__connector {
   display: none;
+}
+
+.cm-stepper__item:first-child .cm-stepper__connector--before,
+.cm-stepper__item:last-child .cm-stepper__connector--after {
+  visibility: hidden;
+}
+
+.cm-stepper--vertical .cm-stepper__item:has(~ .cm-stepper__item > [aria-current='step']) .cm-stepper__connector,
+.cm-stepper--vertical .cm-stepper__item:has(> [aria-current='step']) .cm-stepper__connector--before {
+  background: var(--cm-stepper-progress-color);
 }
 
 .cm-stepper--content-inline .cm-stepper__trigger {
@@ -223,7 +260,7 @@
 @media (prefers-reduced-motion: reduce) {
   .cm-stepper__connector,
   .cm-stepper__marker,
-  .cm-stepper--vertical .cm-stepper__list:has(> :nth-child(2))::after {
+  .cm-stepper--vertical .cm-stepper__list::after {
     transition: none;
   }
 }
