@@ -298,7 +298,11 @@ async function checkAdapter([adapter, base]) {
           )
             await checkAccessibility(page, `${adapter} ${file}`);
           if (width === 360 && theme === 'dark' && name !== 'icons') {
-            const scale = await page.addStyleTag({ content: 'html { font-size: 200%; }' });
+            const rootFontSize = () =>
+              page.evaluate(() => Number.parseFloat(getComputedStyle(document.documentElement).fontSize));
+            const defaultSize = await rootFontSize();
+            const scale = await page.addStyleTag({ content: 'html:root { font-size: 200%; }' });
+            assert.equal(await rootFontSize(), defaultSize * 2, `${adapter} ${name}: effective root text size`);
             await checkViewport(page, `${adapter} ${name} at 200% text size`);
             await scale.evaluate((style) => style.remove());
           }

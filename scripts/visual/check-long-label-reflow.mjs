@@ -93,13 +93,16 @@ test(`packaged long-label reflow in ${browserName}`, async (t) => {
             }
 
             await page.evaluate(() => document.fonts.ready);
-            const width = await page.evaluate(() => document.documentElement.scrollWidth);
+            const { width, available } = await page.evaluate(() => ({
+              width: document.documentElement.scrollWidth,
+              available: document.documentElement.clientWidth,
+            }));
             if (captureDir) {
               const capture = resolve(captureDir, `${fixture}--${platform}--${theme}--${dir}.png`);
               await page.screenshot({ path: capture, animations: 'disabled', caret: 'hide' });
               subtest.diagnostic(`document scroll width ${width}px`);
             }
-            assert.equal(width, 320, 'the document does not require horizontal scrolling');
+            assert.equal(width, available, 'the document does not require horizontal scrolling');
 
             if (fixture === 'group-box-default') {
               const trigger = page.getByRole('button', { name: groupTitle });
