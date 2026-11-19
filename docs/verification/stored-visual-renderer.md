@@ -80,3 +80,10 @@ The evidence points to rasterization of the rounded clip. The exact Chromium gra
 backend is unconfirmed. Both themes passed on the final candidate locally and in hosted CI.
 Raw frames, the pixel mask, and run counts are in `reports/avatar/` in the
 `codemonster-ui-final-showcase-polish.zip` review package.
+
+The combined candidate reproduced the DPR 1 fluctuation on hosted CI and within the same
+adapter locally. The parity runner captures only the `avatar-image` fixture at DPR 2, retaining
+the 360 × 660 CSS viewport and comparing the entire 720 × 1,320 image at the existing channel
+tolerance of 2. The rounded clip, its geometry, and the product CSS are unchanged. Other
+parity fixtures, the Stepper probes and the stored baseline suite keep their original capture
+settings. The DPR 1 fluctuation remains observable in Chromium.

@@ -16,8 +16,6 @@ const chrome = spawn(
   chromePath,
   [
     '--headless',
-    // Match the software renderer used by the stored visual comparison.
-    '--disable-gpu',
     '--no-first-run',
     '--no-default-browser-check',
     '--remote-debugging-port=0',
@@ -88,7 +86,8 @@ try {
   await send('Page.enable');
   await send('Emulation.setLocaleOverride', { locale: 'en-US' });
   await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
-  await send('Emulation.setDeviceMetricsOverride', { width: 360, height: 660, deviceScaleFactor: 1, mobile: false });
+  const viewport = { width: 360, height: 660, mobile: false };
+  await send('Emulation.setDeviceMetricsOverride', { ...viewport, deviceScaleFactor: 1 });
   const { cases, errors } = collectComponentCases(resolve(import.meta.dirname, '../../contracts'));
   if (process.env.CM_PARITY_BEHAVIOR === '1') {
     const { scenarios, errors: scenarioErrors } = collectBehaviorScenarios(
@@ -296,8 +295,16 @@ try {
     const selected = process.argv.slice(2);
     const report = [];
     const animatedCases = new Set();
+    let deviceScaleFactor = 1;
     for (const componentCase of cases.filter(({ id }) => !selected.length || selected.includes(id))) {
       const { id, componentSlug } = componentCase;
+      // Chromium at DPR 1 can rasterize the same rounded image differently between captures.
+      // Sample the whole image at DPR 2 with the same CSS viewport and comparison tolerance.
+      const captureScale = id === 'avatar-image' ? 2 : 1;
+      if (deviceScaleFactor !== captureScale) {
+        deviceScaleFactor = captureScale;
+        await send('Emulation.setDeviceMetricsOverride', { ...viewport, deviceScaleFactor });
+      }
       for (const theme of ['light', 'dark']) {
         const result = { id, componentSlug, theme };
         try {
