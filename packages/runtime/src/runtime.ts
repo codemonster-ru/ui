@@ -16,6 +16,7 @@ interface ConnectedController {
 const controllerAttribute = 'data-cm-controller';
 const controllerSelector = `[${controllerAttribute}]`;
 const adminShellClass = 'cm-admin-shell';
+const adminShellClassToken = /(?:^|[\t\n\f\r ])cm-admin-shell(?:$|[\t\n\f\r ])/u;
 const shellMetricsName = 'shell-metrics';
 // A framework adapter renders the same controller hook so its markup matches the canonical DOM,
 // but it owns that element's state declaratively. It marks the element once it has taken over, and
@@ -110,6 +111,7 @@ export class CmRuntime {
     }
 
     this.start(root);
+    const observeAdminShells = this.#factories.has(shellMetricsName);
     const observer = new MutationObserverConstructor((records) => {
       const added = new Set<ParentNode>();
       const changed = new Map<Element, Set<string>>();
@@ -118,6 +120,12 @@ export class CmRuntime {
       for (const record of records) {
         if (record.type === 'attributes') {
           const element = record.target as Element;
+          // Ordinary styling changes do not retarget a controller.
+          if (
+            record.attributeName === 'class' &&
+            element.classList.contains(adminShellClass) === adminShellClassToken.test(record.oldValue ?? '')
+          )
+            continue;
           if (root.contains(element)) changed.set(element, controllerNames(element));
           continue;
         }
@@ -139,7 +147,10 @@ export class CmRuntime {
       added.forEach((node) => this.start(node));
     });
     observer.observe(root, {
-      attributeFilter: [controllerAttribute, hydratedAttribute],
+      attributeFilter: observeAdminShells
+        ? [controllerAttribute, hydratedAttribute, 'class']
+        : [controllerAttribute, hydratedAttribute],
+      attributeOldValue: observeAdminShells,
       attributes: true,
       childList: true,
       subtree: true,
