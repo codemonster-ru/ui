@@ -25,8 +25,8 @@ explains how to run both integrations locally.
 - For changes to shared contracts, configuration, or the lockfile, run `npm run verify`.
 - For visual or interaction changes, try the affected states in the Vue and Vanilla showcases
   where applicable. Include the browser, theme, and viewport in your evidence. For intentional
-  visual changes, capture before and after and follow the
-  [visual baseline instructions](./visual-baselines/README.md).
+  visual changes, capture before and after. The
+  [visual CI job](./.github/workflows/ci.yml) compares Vue and Vanilla rendering and behavior.
 
 Describe the problem, the change, and the checks you ran when opening a pull request. Release
 verification follows the [release checklist](./docs/release-checklist.md).

@@ -54,6 +54,6 @@ both themes and at mobile and desktop viewports, and the following checks pass t
 - clean npm and Composer consumer checks;
 - documentation and packaged-asset checks.
 
-The full VueForge showcase parity effort completed on 2026-08-29 and closed the M12 gate; VueForge
-itself is since sunset. Cross-platform visual comparison continues as a Vue-versus-Razor check
-against `visual-baselines/vueforge-cross-platform`, independent of that now-retired reference.
+The full VueForge showcase parity effort completed on 2026-08-29 and closed the M12 gate. At the
+time, Vue and Razor were compared against the stored VueForge component snapshots. The current
+[visual CI job](../../.github/workflows/ci.yml) compares Vue and Vanilla directly.

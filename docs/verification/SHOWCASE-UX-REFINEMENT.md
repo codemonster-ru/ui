@@ -14,7 +14,7 @@ and approved visual baselines are unchanged.
 | P1       | Integrated guides                                    | Compile 67 authoritative Markdown sources at build time, with raw HTML disabled and internal links rewritten. Vue loads the selected guide; Vanilla serves full HTML. Both builds emit directory indexes and one search index.    |
 | P1       | Narrow layout                                        | Keep calendar popups above adjacent controls, let edge tooltips use the existing portal option, and contain Core form controls, typography, and readable reference previews.                                                      |
 | P2       | Release Workspace                                    | Move status to a dedicated summary, align filters with deployment results, and give release creation a clear entry point. The same four views and local interactions remain available.                                            |
-| P1       | Review, verification, and evidence                   | See the checks below and the [versioned before/after captures](../../visual-baselines/showcase-excellence-v2/README.md).                                                                                                          |
+| P1       | Review, verification, and evidence                   | See the checks below and the [versioned before/after captures][v2-captures].                                                                                                                                                      |
 
 The server only needs directory index support for known routes. Vanilla can also be hosted
 under a subdirectory. The Markdown parser is a build dependency; the code blocks show language
@@ -62,3 +62,5 @@ reader, other browser engine, hosted CI, push, or publication was performed. The
 matrix has pre-existing accessibility findings outside the refined pages; this change does not
 claim full WCAG conformance. The unrelated input gallery remains the only pre-existing untracked
 material in the checkout.
+
+[v2-captures]: https://github.com/codemonster-ru/ui/blob/9c647201e25405c89bb98aab2031a6161ff2f96c/visual-baselines/showcase-excellence-v2/README.md

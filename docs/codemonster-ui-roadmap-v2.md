@@ -198,7 +198,7 @@ for presentation while retaining the completed semantic, accessibility, and cros
       `fd793696f50d3be0fcd3788f0f8f751c63869963` for the VueForge Core, Colors, Layouts, Icons,
       CodeBlock, and Playground showcase routes, including the exact package styles, deterministic
       fonts, animation settings, content, data, themes, and viewport sizes. The reviewed 312-image
-      baseline is stored in `visual-baselines/vueforge-showcase`.
+      baseline was recorded in `visual-baselines/vueforge-showcase`.
 - [x] `CMUI-193` Add a browser screenshot harness that renders frozen VueForge and current
       CodeMonster UI references side by side, stores reviewed baselines, produces image diffs, and
       fails CI above an explicitly documented anti-aliasing tolerance.

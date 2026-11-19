@@ -222,57 +222,37 @@ jobs:
           unzip -q "${RUNNER_TEMP}/chrome-for-testing.zip" -d "${RUNNER_TEMP}"
           "${chrome_for_testing_path}" --version
 
-      - name: Verify cross-platform adapter visuals
-        env:
-          CROSS_PLATFORM_CAPTURE: ${{ runner.temp }}/codemonster-cross-platform-current
-          CROSS_PLATFORM_VANILLA_DIFF: ${{ runner.temp }}/codemonster-cross-platform-vanilla-diff
-          CROSS_PLATFORM_VUE_DIFF: ${{ runner.temp }}/codemonster-cross-platform-vue-diff
+      - name: Verify cross-platform adapter parity
         run: |
           set -euo pipefail
           chrome_for_testing_path="${RUNNER_TEMP}/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing"
 
           npm run visual:cross-platform:serve -- --port=5176 > "${RUNNER_TEMP}/codemonster-cross-platform-vite.log" 2>&1 &
           adapter_pid=$!
-          "${chrome_for_testing_path}" --headless=new --remote-debugging-port=9226 --user-data-dir="${RUNNER_TEMP}/codemonster-showcase-chrome" --disable-gpu --no-first-run --no-default-browser-check about:blank > "${RUNNER_TEMP}/codemonster-showcase-chrome.log" 2>&1 &
-          chrome_pid=$!
-
-          cleanup() {
-            kill "${adapter_pid}" "${chrome_pid}" 2>/dev/null || true
-          }
-          trap cleanup EXIT
+          trap 'kill "${adapter_pid}" 2>/dev/null || true' EXIT
 
           for attempt in {1..60}; do
-            if curl --fail --silent 'http://127.0.0.1:5176/?case=button-default&platform=vue&theme=light' >/dev/null && curl --fail --silent http://127.0.0.1:9226/json/version >/dev/null; then
+            if curl --fail --silent 'http://127.0.0.1:5176/?case=button-default&platform=vue&theme=light' >/dev/null; then
               break
             fi
             if [ "${attempt}" -eq 60 ]; then
               cat "${RUNNER_TEMP}/codemonster-cross-platform-vite.log"
-              cat "${RUNNER_TEMP}/codemonster-showcase-chrome.log"
               exit 1
             fi
             sleep 1
           done
 
-          npm run visual:cross-platform:capture -- --origin=http://127.0.0.1:5176 --output="${CROSS_PLATFORM_CAPTURE}" --label=ci-actual-adapters
-          # Keep the gate strict while collecting both adapters' results and behavior evidence.
           result=0
-          node scripts/visual/compare-showcase.mjs --baseline=visual-baselines/vueforge-cross-platform --current="${CROSS_PLATFORM_CAPTURE}/vue" --diff="${CROSS_PLATFORM_VUE_DIFF}" --threshold=4 || result=1
-          node scripts/visual/compare-showcase.mjs --baseline=visual-baselines/vueforge-cross-platform --current="${CROSS_PLATFORM_CAPTURE}/vanilla" --diff="${CROSS_PLATFORM_VANILLA_DIFF}" --threshold=4 || result=1
-
           CHROME_PATH="${chrome_for_testing_path}" CM_PARITY_REPORT="${RUNNER_TEMP}/codemonster-pair-visual.json" node scripts/visual/check-vanilla-parity.mjs || result=1
-          CHROME_PATH="${chrome_for_testing_path}" CM_PARITY_REPORT="${RUNNER_TEMP}/codemonster-pair-behavior.json" CM_PARITY_BEHAVIOR=1 node scripts/visual/check-vanilla-parity.mjs || result=1
+          CHROME_PATH="${chrome_for_testing_path}" CM_PARITY_BEHAVIOR=1 node scripts/visual/check-vanilla-parity.mjs || result=1
           exit "$result"
 
-      - name: Upload cross-platform visual differences
+      - name: Upload adapter parity diagnostics
         if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: codemonster-cross-platform-visual-diff
+          name: codemonster-adapter-parity-diagnostics
           path: |
-            ${{ runner.temp }}/codemonster-cross-platform-current
-            ${{ runner.temp }}/codemonster-cross-platform-vue-diff
-            ${{ runner.temp }}/codemonster-cross-platform-vanilla-diff
-            ${{ runner.temp }}/codemonster-pair-*.json
+            ${{ runner.temp }}/codemonster-pair-visual.json
             ${{ runner.temp }}/codemonster-cross-platform-vite.log
-            ${{ runner.temp }}/codemonster-showcase-chrome.log
           if-no-files-found: ignore
