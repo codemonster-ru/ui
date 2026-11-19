@@ -47,7 +47,7 @@
     "lint": "npm run lint --workspaces --if-present --include-workspace-root=false",
     "lint:all": "npm run lint && npm run lint:styles && npm run lint:html && npm run lint:md && npm run lint:data",
     "lint:data": "prettier --check \"**/*.{json,yml,yaml}\"",
-    "lint:html": "htmlhint \"**/*.html\" --format unix --nocolor",
+    "lint:html": "htmlhint \"**/*.html\" --ignore \"artifacts/**\" --format unix --nocolor",
     "lint:md": "markdownlint-cli2 \"**/*.md\"",
     "lint:styles": "stylelint \"**/*.{css,scss,sass,vue}\" --allow-empty-input --formatter unix",
     "pack:all:dry-run": "node ./scripts/ci/run-code-monster-ui-workspaces.mjs pack:dry-run",
