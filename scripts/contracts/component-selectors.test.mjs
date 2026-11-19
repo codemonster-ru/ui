@@ -93,7 +93,10 @@ test('preserves Button focus and disabled accessibility hooks', () => {
   assert.match(buttonCss, /\.cm-button:focus-visible[\s\S]*var\(--cm-color-focus-ring\)/);
   assert.match(buttonCss, /\.cm-button:disabled,/);
   assert.match(buttonCss, /\.cm-button\[aria-disabled='true'\]/);
-  assert.match(buttonCss, /@media \(forced-colors: active\)[\s\S]*outline-color: Highlight;/);
+  assert.match(
+    buttonCss,
+    /@media \(forced-colors: active\)[\s\S]*\.cm-button:focus-visible\s*{[^}]*outline-color: CanvasText;/,
+  );
   assert.match(buttonCss, /border-color: GrayText;/);
   assert.doesNotMatch(buttonCss, /pointer-events:\s*none/);
   assert.doesNotMatch(buttonCss, /cm-button--(?:disabled|loading)|data-cm-state/);

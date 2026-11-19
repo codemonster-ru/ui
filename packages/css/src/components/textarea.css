@@ -50,7 +50,7 @@
 
 .cm-textarea:focus-visible {
   border-radius: var(--cm-radius-control);
-  outline: none;
+  outline: var(--cm-border-width-thick) solid var(--cm-forced-focus-outline-color, transparent);
   box-shadow: 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
 }
 

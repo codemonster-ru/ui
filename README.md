@@ -17,18 +17,25 @@ npm install vue@^3.5.0 @codemonster-ru/ui-tokens@^1.0.1 \
 ```
 
 Follow the [1.1 release notes](./docs/codemonster-ui-1.1-release-notes.md) for the stable
-package cohort. This checkout carries the internal `2.0.0-rc.2` candidate. To try its current
-Vue or Vanilla examples in an application, follow the
+package cohort. This checkout builds the unpublished `2.0.0` candidate. To try its Vue or
+Vanilla examples in an application, follow the
 [local installation and quick starts](./docs/getting-started.md).
 
 ## Preview locally
 
-![The Vue showcase in light mode with section links and theme control examples](https://raw.githubusercontent.com/codemonster-ru/ui/857c0e396077a7703a6b0b28c7c731fdb7f7befb/visual-baselines/showcase-excellence-v2/after/vue--core--1440--light.png)
+The Vue and Vanilla showcases open on the **Visual matrix**. Use **Layouts** for complete
+forms, navigation, tables and dialogs in sample interfaces.
 
-From the repository root, run `npm ci` with Node.js 24.15 or newer. Then run `npm run preview`
-to build and open the Vue showcase or `npm run preview:vanilla` to build and open the Vanilla
-showcase. Use `npm run dev` for Vue with hot reload. The
-[showcase guide](./examples/ui-showcase/README.md) describes routes, build outputs, and static hosting.
+From the repository root, run `npm ci` with the Node.js version in [`.nvmrc`](./.nvmrc).
+
+| Task | Vue showcase | Vanilla showcase |
+| --- | --- | --- |
+| Develop with browser updates | `npm run dev` · [5177](http://127.0.0.1:5177) | `npm run dev:vanilla` · [5178](http://127.0.0.1:5178) |
+| Build the local showcase | `npm run build:showcase` | `npm run build:vanilla` |
+| Open the existing build | `npm run preview` · [4173](http://127.0.0.1:4173) | `npm run preview:vanilla` · [4174](http://127.0.0.1:4174) |
+
+Build once before previewing an adapter. The [showcase guide](./examples/ui-showcase/README.md)
+describes component routes, layout examples and static hosting.
 
 ## Packages
 

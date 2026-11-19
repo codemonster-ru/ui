@@ -1,4 +1,5 @@
 import { followShowcaseFrameTheme, saveShowcaseTheme } from './showcase-theme.js';
+import { fitShowcaseFrame } from './showcase-component-reference.js';
 import { createRuntime } from './runtime.js';
 
 const demo = document.querySelector('.showcase-demo');
@@ -17,21 +18,6 @@ demo.addEventListener('click', (event) => {
 });
 demo.addEventListener('cm:theme-change', (event) => saveShowcaseTheme(event.detail.mode));
 
-if (demo.hasAttribute('data-showcase-sort-rows')) {
-  const body = demo.querySelector('tbody');
-  const rows = [...body.rows];
-  demo.addEventListener('cm:data-table-sort-change', ({ detail: { sort } }) => {
-    // The Name column is the first and only sortable column in this demo.
-    const ordered = sort
-      ? [...rows].sort((left, right) => {
-          const comparison = left.cells[0].textContent.localeCompare(right.cells[0].textContent);
-          return sort.direction === 'descending' ? -comparison : comparison;
-        })
-      : rows;
-    body.append(...ordered);
-  });
-}
-
 const modal = demo.querySelector('dialog[data-cm-controller]');
 if (modal) {
   document.querySelector('#showcase-open').addEventListener('click', () => {
@@ -39,9 +25,4 @@ if (modal) {
   });
 }
 
-const frame = window.frameElement;
-if (frame && !frame.matches('.showcase-frame--tall, .reference-frame--tall')) {
-  new ResizeObserver(() => {
-    frame.style.blockSize = `${Math.ceil(demo.getBoundingClientRect().height)}px`;
-  }).observe(demo);
-}
+fitShowcaseFrame(demo);

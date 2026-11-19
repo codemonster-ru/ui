@@ -5,7 +5,7 @@ import { buildVanillaShowcase } from './build-vanilla-showcase.mjs';
 
 const root = resolve(import.meta.dirname, '../..');
 const source = resolve(root, 'examples/vanilla');
-const output = resolve(source, 'dist');
+const output = resolve(source, process.argv.includes('--dev') ? '.generated' : 'dist');
 
 await rm(output, { recursive: true, force: true });
 await mkdir(output, { recursive: true });
@@ -44,33 +44,48 @@ await Promise.all([
     resolve(root, 'examples/shared/showcase-component-reference.js'),
     resolve(output, 'showcase-component-reference.js'),
   ),
+  cp(resolve(root, 'examples/shared/showcase-layout-example.css'), resolve(output, 'showcase-layout-example.css')),
   cp(resolve(root, 'examples/shared/showcase-layout-recipes.js'), resolve(output, 'showcase-layout-recipes.js')),
   cp(resolve(source, 'showcase-layouts.js'), resolve(output, 'showcase-layouts.js')),
+  cp(resolve(source, 'layout-example.js'), resolve(output, 'layout-example.js')),
   cp(resolve(root, 'examples/shared/showcase-core-recipes.js'), resolve(output, 'showcase-core-recipes.js')),
   cp(resolve(source, 'showcase.js'), resolve(output, 'showcase.js')),
   cp(resolve(root, 'examples/shared/showcase-theme.js'), resolve(output, 'showcase-theme.js')),
-  cp(resolve(root, 'examples/shared/showcase-guide-copy.js'), resolve(output, 'showcase-guide-copy.js')),
   cp(resolve(root, 'examples/shared/showcase-navigation.js'), resolve(output, 'showcase-navigation.js')),
   cp(resolve(source, 'showcase-demo.js'), resolve(output, 'showcase-demo.js')),
-  cp(resolve(source, 'application-examples.js'), resolve(output, 'application-examples.js')),
-  build({
-    entryPoints: [resolve(root, 'examples/shared/application-example-data.mts')],
-    outfile: resolve(output, 'application-example-data.js'),
-    format: 'esm',
-    minify: true,
-  }),
   buildVanillaShowcase(resolve(root, 'contracts'), output),
 ]);
-await build({
-  stdin: {
-    contents:
-      "@import './packages/tokens/dist/tokens.css';\n@import './packages/css/dist/fonts.css';\n@import './packages/css/dist/styles.css';\n@import './examples/shared/showcase-shell.css';\n@import './examples/shared/showcase-typography.css';\n@import './examples/shared/showcase-colors.css';\n@import './examples/shared/showcase-icon-gallery.css';\n@import './examples/shared/showcase-component-reference.css';\n@import './examples/shared/showcase-guides.css';\n@import './examples/shared/application-examples.css';\n@import './examples/vanilla/showcase.css';",
-    resolveDir: root,
-    loader: 'css',
-  },
-  outfile: resolve(output, 'css/showcase.css'),
-  bundle: true,
-  minify: true,
-  external: ['*.woff2'],
-});
+const packageStyles = [
+  './packages/tokens/dist/tokens.css',
+  './packages/css/dist/fonts.css',
+  './packages/css/dist/styles.css',
+];
+const showcaseStyles = [
+  './examples/shared/showcase-shell.css',
+  './examples/shared/showcase-typography.css',
+  './examples/shared/showcase-colors.css',
+  './examples/shared/showcase-icon-gallery.css',
+  './examples/shared/showcase-component-reference.css',
+  './examples/vanilla/showcase.css',
+];
+
+// The document uses showcase chrome; isolated previews use only the published package styles.
+function bundleStylesheet(file, styles) {
+  return build({
+    stdin: {
+      contents: styles.map((style) => `@import "${style}";`).join('\n'),
+      resolveDir: root,
+      loader: 'css',
+    },
+    outfile: resolve(output, 'css', file),
+    bundle: true,
+    minify: true,
+    external: ['*.woff2'],
+  });
+}
+
+await Promise.all([
+  bundleStylesheet('showcase.css', [...packageStyles, ...showcaseStyles]),
+  bundleStylesheet('preview.css', packageStyles),
+]);
 console.log(`Vanilla assets written to ${output}.`);

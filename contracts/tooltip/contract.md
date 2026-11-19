@@ -22,6 +22,12 @@ focused or hovered without moving focus. The panel remains in the DOM and `hidde
 whether it is visible.
 `defaultVisible` sets only the initial render state.
 
+Once enhanced, an inline tooltip moves in the viewport and flips to the opposite side when
+needed. The panel remains inside its authored container and can still be clipped by an ancestor
+with `overflow: hidden`, scrolling overflow, or paint containment. To escape such an ancestor,
+choose a portal target outside the clipping container. Before enhancement the Tooltip follows
+its CSS placement.
+
 The visible tooltip can be positioned in another container. Use `teleportTo` with a selector or
 element in Vue, or `data-cm-tooltip-teleport-to` with a selector in Vanilla. A `body` target
 inside an open dialog keeps the tooltip in that dialog. Vue `disableTeleport`, `null`, or

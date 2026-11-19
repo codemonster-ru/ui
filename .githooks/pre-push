@@ -4,8 +4,11 @@ set -e
 echo "Checking clean dependency installation..."
 npm run check:clean-install
 
+echo "Building workspace packages..."
+npm run build
+
 echo "Running workspace typecheck..."
-npm run typecheck --workspaces --if-present
+npm run typecheck
 
 echo "Running workspace tests..."
-npm run test:ci-like
+npm test --workspaces --if-present --include-workspace-root=false

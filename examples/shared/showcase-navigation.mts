@@ -1,41 +1,36 @@
-import { bars, chevronDown, magnifyingGlass, resolveCmIcon } from '@codemonster-ru/ui-icons';
 import pages from './showcase-pages.json' with { type: 'json' };
+import groups from './showcase-groups.json' with { type: 'json' };
+import { layoutExamples } from './showcase-layout-data.mts';
 
-type ShowcaseIcon = typeof bars;
+export const coreShowcaseGroups = groups.filter(({ id }) => id !== 'layouts' && id !== 'icons');
 
-function icon(geometry: ShowcaseIcon) {
-  const rendering = resolveCmIcon(geometry, 'classic', 'regular');
-  if (!rendering) throw new Error('Missing showcase navigation icon');
-  const { viewBox, body } = rendering;
-  return `<svg class="cm-icon cm-icon--regular cm-icon--classic" viewBox="${viewBox}" aria-hidden="true" focusable="false">${body}</svg>`;
+function renderSectionNavigation(sections: { id: string; title: string }[], path: string, label: string) {
+  return `<nav class="showcase-section-navigation" aria-label="${label}">
+    <ul>${sections.map(({ id, title }) => `<li><a class="cm-link cm-link--underline-hover" href="${path}#${id}">${title}</a></li>`).join('')}</ul>
+  </nav>`;
 }
 
-export const showcaseActions = `
-  <button class="showcase-header-button" data-showcase-search-open type="button" aria-label="Search components and guides" aria-haspopup="dialog">${icon(magnifyingGlass)}<span>Search</span></button>
-  <button class="showcase-header-button showcase-menu-toggle" data-showcase-menu-toggle type="button" aria-label="Menu" aria-expanded="false" aria-controls="showcase-navigation">${icon(bars)}</button>
-`;
+export function renderCoreSectionNavigation(path: string) {
+  const sections = [coreShowcaseGroups[0], { id: 'typography', title: 'Typography' }, ...coreShowcaseGroups.slice(1)];
+  return renderSectionNavigation(sections, path, 'Component state sections');
+}
 
-export function renderShowcaseNavigation(current: string, path: string, base: string, vue: boolean) {
-  const available = pages.filter(({ vueOnly }) => vue || !vueOnly);
-  const active = (id: string) => id === current;
+export function renderLayoutSectionNavigation(path: string) {
+  const sections = [
+    ...layoutExamples.map(({ slug, label }) => ({ id: `demo-${slug}`, title: label })),
+    { id: 'layout-primitives', title: 'Layout primitives' },
+  ];
+  return renderSectionNavigation(sections, path, 'Layout examples');
+}
+
+export function renderShowcaseNavigation(current: string, path: string, base: string) {
+  const available = pages.filter(({ detailOnly }) => !detailOnly);
   const link = ({ id, label }: (typeof pages)[number]) => {
     const href = `/${id}/`;
     const state = path === href || path === href.slice(0, -1) || (id === 'core' && path === '/') ? 'page' : 'location';
-    return `<li><a href="${base}${href}"${active(id) ? ` aria-current="${state}"` : ''}>${label}</a></li>`;
+    return `<li><a class="cm-link" href="${base}${href}"${id === current ? ` aria-current="${state}"` : ''}>${label}</a></li>`;
   };
-  const resources = available.filter(({ resource }) => resource);
   return `<nav class="showcase-navigation" id="showcase-navigation" aria-label="Site navigation">
-    <ul class="showcase-navigation__primary">
-      ${available
-        .filter(({ resource }) => !resource)
-        .map(link)
-        .join('')}
-      <li>
-        <details class="showcase-resources">
-          <summary${resources.some(({ id }) => active(id)) ? ' data-current' : ''}>Resources ${icon(chevronDown)}</summary>
-          <ul>${resources.map(link).join('')}</ul>
-        </details>
-      </li>
-    </ul>
+    <ul class="showcase-navigation__primary">${available.map(link).join('')}</ul>
   </nav>`;
 }

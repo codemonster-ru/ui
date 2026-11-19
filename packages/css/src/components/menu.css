@@ -50,15 +50,13 @@
 
 .cm-menu__item:disabled,
 .cm-menu__item[aria-disabled='true'] {
-  border-color: var(--cm-color-border-disabled);
-  background: var(--cm-color-background-surface-disabled);
   color: var(--cm-color-text-disabled);
   cursor: not-allowed;
 }
 
 .cm-menu__item:focus-visible:not(:disabled, [aria-disabled='true']) {
   border-color: var(--cm-color-border-focus);
-  outline: none;
+  outline: var(--cm-focus-ring-width) solid var(--cm-forced-focus-outline-color, transparent);
   box-shadow: 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
   color: var(--cm-color-selected-foreground);
 }
@@ -72,6 +70,7 @@
 .cm-menu__item--active:hover {
   background: transparent;
   color: var(--cm-color-selected-foreground);
+  font-weight: var(--cm-font-weight-semibold);
 }
 
 .cm-menu__item--danger {
@@ -92,5 +91,10 @@
   .cm-menu__item:disabled,
   .cm-menu__item[aria-disabled='true'] {
     color: GrayText;
+  }
+
+  .cm-menu__item--active:not(:disabled, [aria-disabled='true']) {
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
   }
 }

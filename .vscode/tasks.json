@@ -2,21 +2,9 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "monorepo:typecheck:watch",
-      "type": "shell",
-      "command": "npm run typecheck --workspaces --if-present -- --watch --preserveWatchOutput",
-      "isBackground": true,
-      "problemMatcher": "$tsc-watch",
-      "presentation": {
-        "reveal": "always",
-        "panel": "shared",
-        "clear": false
-      }
-    },
-    {
       "label": "monorepo:lint:once",
       "type": "shell",
-      "command": "npm run lint --workspaces --if-present",
+      "command": "npm run lint",
       "isBackground": false,
       "problemMatcher": "$eslint-stylish",
       "presentation": {
@@ -91,18 +79,9 @@
       "problemMatcher": []
     },
     {
-      "label": "monorepo:diagnostics:watch",
-      "dependsOrder": "parallel",
-      "dependsOn": ["monorepo:typecheck:watch", "monorepo:quality:once"],
-      "runOptions": {
-        "runOn": "folderOpen"
-      },
-      "problemMatcher": []
-    },
-    {
       "label": "monorepo:check:once",
       "type": "shell",
-      "command": "npm run lint:all && npm run typecheck --workspaces --if-present",
+      "command": "npm run build && npm run lint:all && npm run typecheck",
       "problemMatcher": "$tsc",
       "presentation": {
         "reveal": "always",

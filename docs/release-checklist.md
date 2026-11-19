@@ -6,14 +6,14 @@ that will receive the package tags. VueForge releases belong to the archived pro
 ## Internal CodeMonster UI 2.0 candidate
 
 Use the [draft 2.0 changelog](./codemonster-ui-2.0-release-notes.md) for the seven-package
-`2.0.0-rc.2` cohort. For an internal handoff, complete sections 1–5 and retain the seven `.tgz`
+`2.0.0` cohort. For an internal handoff, complete sections 1–5 and retain the seven `.tgz`
 files with SHA-256 digests and the product commit SHA. Run the Vanilla production build and the
 showcase browser regressions against both built sites. Attach results by browser engine, adapter,
 theme, and viewport. Record native Safari, VoiceOver and NVDA separately from automated checks.
 
 Keep sections 6–9 pending for an authorized publication. Before publication, record the hosted CI
 result for the exact product commit, including its stored visual comparison. Record any pending
-manual checks or residual defects in the candidate's risk register.
+manual checks or residual defects in the [candidate readiness report](./release/FINAL_READINESS.md).
 
 ## 1. Choose the release channel
 
@@ -37,6 +37,9 @@ The tag preparation script derives `next` whenever the version contains a prerel
   vulnerable `1.x` formatter dependency that `@vue/test-utils` declares.
 - Review the [2.0 draft changelog](./codemonster-ui-2.0-release-notes.md).
 - Confirm npm Trusted Publishing is configured for `.github/workflows/release-from-tag.yml`.
+  For a package name absent from the registry, arrange a first-publication bootstrap with the
+  npm organization owner. npm requires an existing package for Trusted Publishing setup.
+  [npm trust documentation](https://docs.npmjs.com/cli/v11/commands/npm-trust/)
 - Confirm the workflow has only `contents: write` and `id-token: write` permissions.
 
 ## 3. Run the complete verification sequence
@@ -51,9 +54,9 @@ npm run typecheck
 npm run lint:all
 npm run build
 npm run check:packed-consumers
-npm run build:demo
-node scripts/ci/check-deferred-runtime-budgets.mjs
+npm run build:showcase
 npm run build:vanilla
+node scripts/ci/check-deferred-runtime-budgets.mjs
 npm run prepublish:all
 ```
 
@@ -64,16 +67,15 @@ All commands must pass on the release commit. Also confirm:
   advisory remains accepted.
 - `npm ls --all` reports a valid dependency graph after the clean lockfile installation.
 - ESM, CommonJS, Node ESM, SSR, and declaration-resolution smokes pass.
-- Tree-shaking and deferred-runtime budgets pass.
+- Tree-shaking and showcase JavaScript budgets pass.
 - `git diff --check` reports no whitespace errors.
 - `git status --short` contains only reviewed release changes before the release commit, and is empty
   after that commit.
 
 ## 4. Inspect tarballs
 
-`npm run prepublish:all` builds and runs dry-run packs for every npm package. For a CodeMonster UI
-only train, `npm run prepublish:ui` provides the focused build and dry run. Dry runs print proposed
-archive contents but do not create `.tgz` files. Review those file lists and inspect each target
+`npm run prepublish:all` builds and runs dry-run packs for every npm package. Dry runs print
+proposed archive contents but do not create `.tgz` files. Review those file lists and inspect each target
 explicitly when release metadata changes:
 
 ```bash

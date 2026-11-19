@@ -25,8 +25,9 @@
 .cm-card__title {
   margin: 0;
   font-size: var(--cm-font-size-xl);
-  font-weight: var(--cm-font-weight-regular);
+  font-weight: var(--cm-font-weight-semibold);
   line-height: var(--cm-line-height-normal);
+  overflow-wrap: anywhere;
 }
 
 .cm-card__body {

@@ -1,5 +1,5 @@
 <template data-core-group="surfaces">
-  <article class="showcase-panel showcase-panel--wide">
+  <article class="cm-panel showcase-panel showcase-panel--wide">
     <h3>Surfaces visual QA matrix</h3>
     <div class="showcase-surface-matrix">
       <div>
@@ -23,35 +23,52 @@
       </div>
       <div>
         <p class="showcase-label">Panel · default</p>
-        <section class="showcase-panel">
-          <h4>Supporting Context</h4>
+        <section class="cm-panel">
+          <h4 class="cm-panel__title">Supporting Context</h4>
           <p>Panel content with regular treatment.</p>
         </section>
       </div>
       <div>
         <p class="showcase-label">Panel · subtle</p>
-        <section class="showcase-panel showcase-panel--subtle">
-          <h4>Subtle Context</h4>
+        <section class="cm-panel cm-panel--subtle">
+          <h4 class="cm-panel__title">Subtle Context</h4>
           <p>Subtle panel treatment for quiet grouping.</p>
         </section>
       </div>
       <div>
         <p class="showcase-label">Group · default</p>
-        <section class="showcase-panel">
-          <h4>Shipping address</h4>
-          <p>1234 Elm Street, San Francisco, CA 94102</p>
-        </section>
+        <fieldset class="cm-group-box cm-group-box--titled">
+          <legend class="cm-group-box__legend">Shipping address</legend>
+          <div class="cm-group-box__content">1234 Elm Street, San Francisco, CA 94102</div>
+        </fieldset>
       </div>
       <div>
         <p class="showcase-label">Group · collapsible</p>
-        <details class="showcase-panel">
-          <summary>Invoice details</summary>
-          <p>Invoice #1024 · Design service · $120.00</p>
-        </details>
+        <fieldset class="cm-group-box cm-group-box--titled cm-group-box--collapsible" data-cm-controller="group-box">
+          <legend class="cm-group-box__legend">
+            <button
+              class="cm-button cm-button--ghost cm-button--md cm-group-box__trigger"
+              type="button"
+              id="showcase-invoice-trigger"
+              aria-controls="showcase-invoice-content"
+              aria-expanded="true"
+            >
+              <span class="cm-button__label cm-group-box__title">Invoice details</span>
+            </button>
+          </legend>
+          <div
+            class="cm-group-box__content"
+            id="showcase-invoice-content"
+            aria-labelledby="showcase-invoice-trigger"
+            role="region"
+          >
+            Invoice #1024 · Design service · $120.00
+          </div>
+        </fieldset>
       </div>
       <div>
         <p class="showcase-label">Table · caption and footer</p>
-        <div class="cm-table__scroll">
+        <div class="cm-table__scroll" role="region" aria-label="Team availability" tabindex="0">
           <table class="cm-table">
             <caption class="cm-table__caption">
               Team availability
@@ -94,7 +111,7 @@
       </div>
       <div>
         <p class="showcase-label">Table · striped</p>
-        <div class="cm-table__scroll">
+        <div class="cm-table__scroll" role="region" aria-label="Striped project table" tabindex="0">
           <table class="cm-table cm-table--striped">
             <thead class="cm-table__head">
               <tr>
@@ -146,7 +163,7 @@
   </article>
 </template>
 <template data-core-group="forms">
-  <article class="showcase-panel showcase-panel--wide">
+  <article class="cm-panel showcase-panel showcase-panel--wide">
     <h3>Stack + Field · recommended form stack</h3>
     <div class="cm-stack showcase-form-stack">
       <p>Use Stack for spacing between fields. Field groups the label, control, description, and error.</p>
@@ -178,7 +195,7 @@
       </div>
     </div>
   </article>
-  <article class="showcase-panel showcase-panel--wide">
+  <article class="cm-panel showcase-panel showcase-panel--wide">
     <h3>Workspace settings</h3>
     <div class="showcase-settings-fields">
       <label for="recipe-workspace">Workspace name</label>
@@ -221,7 +238,7 @@
   </article>
 </template>
 <template data-core-group="modals">
-  <article class="showcase-panel">
+  <article class="cm-panel showcase-panel">
     <h3>Confirm deletion</h3>
     <button
       class="cm-button cm-button--danger cm-button--md"
@@ -231,18 +248,25 @@
     >
       <span class="cm-button__label">Delete example user</span>
     </button>
-    <dialog id="recipe-confirm" class="showcase-panel" aria-labelledby="recipe-confirm-title">
+    <dialog
+      id="recipe-confirm"
+      class="cm-dialog cm-dialog--sm"
+      aria-labelledby="recipe-confirm-title"
+      aria-describedby="recipe-confirm-description"
+    >
       <form method="dialog">
-        <h4 id="recipe-confirm-title">Delete example user?</h4>
-        <p>This action cannot be undone.</p>
-        <div class="showcase-matrix-row">
+        <header class="cm-dialog__header">
+          <h4 class="cm-dialog__title" id="recipe-confirm-title">Delete example user?</h4>
+        </header>
+        <p class="cm-dialog__body" id="recipe-confirm-description">This action cannot be undone.</p>
+        <footer class="cm-dialog__footer">
           <button class="cm-button cm-button--secondary cm-button--md" value="cancel" autofocus>
             <span class="cm-button__label">Cancel</span>
           </button>
           <button class="cm-button cm-button--danger cm-button--md" value="delete">
             <span class="cm-button__label">Delete user</span>
           </button>
-        </div>
+        </footer>
       </form>
     </dialog>
     <output id="recipe-confirm-result" aria-live="polite"></output>

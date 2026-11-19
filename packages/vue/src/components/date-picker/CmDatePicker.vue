@@ -310,6 +310,7 @@ function setFocusedDate(value: string, focus: boolean): void {
     if (!isOpen.value || focusedDate.value !== value || !calendar) return;
     const day = calendar.querySelector<HTMLButtonElement>(`[data-cm-date-picker-value="${value}"]:not(:disabled)`);
     (day ?? calendar).focus();
+    day?.scrollIntoView?.({ block: 'nearest' });
   });
 }
 

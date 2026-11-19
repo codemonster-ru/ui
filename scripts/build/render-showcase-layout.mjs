@@ -1,18 +1,21 @@
+import { bars, resolveCmIcon } from '@codemonster-ru/ui-icons';
+import { renderLayoutField, renderPageLayout } from '../../examples/shared/showcase-layout-samples.mts';
 import {
   columns,
-  defaultPreview,
-  nav,
-  previews,
+  dashboardActivity,
+  dashboardStats,
   regionControls,
   rows,
   steps,
   warehouseNavigation,
-  layoutNavIconStyle,
+  warehouseStockTones,
+  warehouseTableCaption,
   initialSetupStep,
   warehousePagination,
 } from '../../examples/shared/showcase-layout-data.mts';
 
-const brand = '<span class="layout-brand"><img src="./annabel-logo-icon.svg" alt=""><strong>Annabel</strong></span>';
+const brand =
+  '<span class="cm-inline cm-inline--nowrap"><img src="./annabel-logo-icon.svg" width="24" height="24" alt=""><strong>Annabel</strong></span>';
 
 function navigation(items, active, label = 'Main navigation') {
   function list(nodes, level = 0) {
@@ -28,7 +31,7 @@ function navigation(items, active, label = 'Main navigation') {
       })
       .join('')}</ul>`;
   }
-  return `<nav class="cm-nav-menu cm-nav-menu--sidebar" aria-label="${label}"${items === warehouseNavigation || items === steps ? ` style="${layoutNavIconStyle}"` : ''} data-cm-controller="nav-menu">${list(items)}</nav>`;
+  return `<nav class="cm-nav-menu cm-nav-menu--sidebar" aria-label="${label}" data-cm-controller="nav-menu">${list(items)}</nav>`;
 }
 
 function shell(slug) {
@@ -37,7 +40,7 @@ function shell(slug) {
   const labels = ['Content', 'Sidebar + content', 'Sidebar + content + aside'];
   const prefix = 'cm-' + slug;
   const repeat = (count, content) => Array.from({ length: count }, (_, i) => `<p>${content(i + 1)}</p>`).join('');
-  return `<div class="cm-tabs" data-cm-controller="tabs" data-cm-tabs-value="content">
+  return `<div class="cm-container cm-stack"><div class="cm-tabs" data-cm-controller="tabs" data-cm-tabs-value="content">
     <div class="cm-tabs__list" role="tablist">${modes
       .map(
         (mode, i) =>
@@ -47,87 +50,109 @@ function shell(slug) {
       .join('')}</div>
     ${modes.map((mode, i) => `<div id="${slug}-regions-panel-${mode}" role="tabpanel" aria-labelledby="${slug}-regions-tab-${mode}" tabindex="0"${i === 0 ? '' : ' hidden'}></div>`).join('')}
   </div>
-  <div class="layout-preview__toolbar">${regionControls
-    .filter(({ key }) => key !== 'notches' || !app)
-    .map(({ key, label }) => `<label><input type="checkbox" data-region-control="${key}"> ${label}</label>`)
-    .join('')}</div>
-  <div class="layout-preview__frame"><div class="${prefix} ${prefix}--content" data-preview-shell data-cm-controller="shell-metrics">
+  <div class="cm-inline">${regionControls
+    .filter(({ key }) => (key !== 'notches' || !app) && (key !== 'plain' || app))
+    .map(
+      ({ key, label }) => `<label class="cm-switch cm-switch--md" data-cm-controller="switch">
+      <input class="cm-switch__input" type="checkbox" role="switch" aria-checked="false" data-region-control="${key}">
+      <span class="cm-switch__control" aria-hidden="true"><span class="cm-switch__thumb"></span></span>
+      <span class="cm-switch__content">${label}</span></label>`,
+    )
+    .join('')}</div></div>
+  <div class="${prefix} ${prefix}--content ${prefix}--fit-content ${prefix}--header-static ${prefix}--sidebar-static ${prefix}--aside-static" data-preview-shell data-cm-controller="${app ? 'app-shell shell-metrics' : 'shell-metrics'}">
     <header class="${prefix}__header" data-cm-sticky-header><strong>Header</strong></header>
     <div class="${prefix}__subheader" data-cm-sticky-subheader hidden><strong>Subheader</strong></div>
     <div class="${prefix}__${app ? 'body' : 'content'}">
       <aside class="${prefix}__sidebar" hidden><div class="cm-stack"><strong>Sidebar</strong>${repeat(8, (n) => 'Navigation section ' + n)}</div></aside>
-      <main class="${prefix}__${app ? 'content' : 'main'}"><div class="cm-stack"><strong class="layout-content-subheader" hidden>Content subheader</strong><strong>Content</strong>${repeat(10, (n) => `Section ${n}. Scroll the preview to see how the regions move with the document.`)}</div></main>
+      <main class="${prefix}__${app ? 'content' : 'main'}"><div class="${prefix}__content-subheader" hidden><strong>Content subheader</strong></div><div class="cm-stack"><strong>Content</strong>${repeat(10, (n) => `Section ${n}. Scroll the preview to see how the regions move with the document.`)}</div></main>
       <aside class="${prefix}__aside" hidden><div class="cm-stack"><strong>Aside</strong>${repeat(8, (n) => 'Related information ' + n)}</div></aside>
     </div><footer class="${prefix}__footer"><strong>Footer</strong></footer>
-  </div></div>`;
+  </div>`;
 }
 
 function warehouse() {
-  return `<div id="showcase-warehouse" class="cm-data-table cm-data-table--column-dividers" data-warehouse-static>
-  <div class="cm-data-table__scroll"><table class="cm-data-table__table">
-  <thead class="cm-data-table__head"><tr>${columns.map(({ header }) => `<th scope="col">${header}</th>`).join('')}</tr></thead>
+  const alignment = (align) => (align ? ` class="cm-data-table__cell--${align}"` : '');
+  const status = (value) => `<span class="cm-tag cm-tag--${warehouseStockTones[value]}">${value}</span>`;
+  return `<div id="showcase-warehouse" class="cm-data-table cm-data-table--column-dividers" data-cm-controller="data-table"
+      data-cm-data-table-page="1" data-cm-data-table-page-size="5" data-cm-data-table-total-rows="${rows.length}">
+  <div class="cm-data-table__scroll" role="region" aria-label="${warehouseTableCaption} table" tabindex="0"><table class="cm-data-table__table">
+  <caption class="cm-data-table__caption">${warehouseTableCaption}</caption>
+  <thead class="cm-data-table__head"><tr>${columns.map(({ header, align }) => `<th scope="col"${alignment(align)}>${header}</th>`).join('')}</tr></thead>
   <tbody class="cm-data-table__body">${rows
     .map(
       ({ id, cells }, index) =>
-        `<tr data-cm-data-table-row="${id}"${index > 4 ? ' hidden' : ''}>${columns.map(({ key }) => `<td>${cells[key]}</td>`).join('')}</tr>`,
+        `<tr data-cm-data-table-row="${id}"${index > 4 ? ' hidden' : ''}>${columns.map(({ key, align }) => `<td${alignment(align)}>${key === 'status' ? status(cells.status) : cells[key]}</td>`).join('')}</tr>`,
     )
     .join('')}</tbody>
-  </table></div></div>${warehousePagination()}`;
+  </table></div>${warehousePagination()}</div>`;
 }
 
-function setup(enhancedInput) {
+function passwordReveal(enhancedInput) {
   const reveal = enhancedInput?.match(/<button\b[^>]*\bdata-cm-input-password\b[^>]*>.*?<\/button>/s)?.[0];
   if (!reveal) throw new Error('Missing password reveal action in enhanced Input case.');
-  const password = `<div class="setup-preview-field"><label for="setup-preview-password">Database password</label>
-    <div class="cm-input-wrap" data-cm-controller="input"><input class="cm-input cm-input--md" id="setup-preview-password"
-      data-preview-field="password" data-cm-input-control type="password" placeholder="Password">
-    ${reveal.replaceAll('Show secret', 'Show password').replaceAll('Hide secret', 'Hide password')}</div></div>`;
+  return reveal.replaceAll('Show secret', 'Show password').replaceAll('Hide secret', 'Hide password');
+}
 
-  const field = (label, key, value = '', type = 'text') =>
-    `<label>${label}<input class="cm-input cm-input--md" data-preview-field="${key}" value="${value}" type="${type}"${key === 'host' ? ' aria-describedby="setup-host-help"><small id="setup-host-help">Hostname, socket, or private address.</small>' : '>'}</label>`;
-  return `<main class="cm-setup-layout cm-setup-layout--aside-left" data-cm-controller="setup-layout">
-    <div class="cm-setup-layout__panel"><div class="cm-setup-layout__brand">${brand}<div class="setup-preview-progress" hidden><span>Step 2 of ${steps.length}</span><progress value="2" max="${steps.length}" aria-label="Setup progress"></progress></div></div>
+function setup(revealButton) {
+  const field = (label, key, value = '', type = 'text', description = '', reveal = '') =>
+    renderLayoutField('setup-preview-' + key, label, `data-preview-field="${key}" value="${value}" type="${type}"`, {
+      description,
+      revealButton: reveal,
+    });
+  return `<main class="cm-setup-layout cm-setup-layout--fit-content cm-setup-layout--aside-left" data-cm-controller="setup-layout">
+    <div class="cm-setup-layout__panel"><div class="cm-setup-layout__brand"><div class="layout-example__setup-brand">${brand}<div class="layout-example__setup-progress" data-setup-progress>
+      <span>Step 2 of ${steps.length}</span>
+      <div class="cm-progress-bar" role="progressbar" aria-label="Setup progress" aria-valuemin="0" aria-valuenow="2" aria-valuemax="${steps.length}">
+        <span class="cm-progress-bar__value" style="inline-size:${(2 / steps.length) * 100}%"></span>
+      </div>
+    </div></div></div>
     <aside class="cm-setup-layout__aside">${navigation(steps, initialSetupStep, 'Installation steps')}</aside>
     <header class="cm-setup-layout__header"><div class="cm-setup-layout__heading"><h1 class="cm-setup-layout__title">${steps[1].label}</h1>
     <p class="cm-setup-layout__description">Configure the CMS environment before the first administrator account is created.</p></div></header>
     <section class="cm-setup-layout__main"><div class="cm-setup-layout__body">
-    <label data-preview-step="license" hidden><input type="checkbox"> Accept terms</label><div class="cm-stack setup-preview-fields" data-preview-step="database">${field('Host', 'host', '127.0.0.1')}${field('Port', 'port', '3306')}${field('Database name', 'name', 'annabel')}${field('Database user', 'user', 'annabel_user')}${password}</div>
+    <label class="cm-checkbox cm-checkbox--md" data-preview-step="license" hidden><input class="cm-checkbox__input" type="checkbox"><span class="cm-checkbox__control" aria-hidden="true"><span class="cm-checkbox__mark"></span></span><span class="cm-checkbox__content">Accept terms</span></label><div class="cm-stack" data-preview-step="database">
+      <div class="layout-example__field-row">${field('Host', 'host', '127.0.0.1', 'text', 'Hostname, socket, or private address.')}${field('Port', 'port', '3306')}</div>
+      ${field('Database name', 'name', 'annabel')}
+      <div class="layout-example__field-row">${field('Database user', 'user', 'annabel_user')}${field('Database password', 'password', '', 'password', '', revealButton)}</div>
+    </div>
     <div data-preview-step="admin" hidden>${field('Email', 'email', '', 'email')}</div><p data-preview-step="finish" hidden></p><p data-setup-complete role="status" hidden>Setup preview completed.</p></div>
     <div class="cm-setup-layout__actions"><button class="cm-button cm-button--secondary cm-button--md" type="button" data-preview-back>Back</button>
     <button class="cm-button cm-button--primary cm-button--md" type="button" data-preview-next><span class="cm-button__label">Continue</span></button></div>
     </section></div></main>`;
 }
 
-export function renderLayoutPreview(slug, markup, enhancedInput) {
-  const sizes = `<fieldset class="layout-preview__sizes"><legend>Preview width</legend>${previews
-    .map(
-      ({ value, width }) =>
-        `<label><input type="radio" name="${slug}-preview" value="${value}" data-preview-width="${width}"${value === defaultPreview ? ' checked' : ''}><span>${value}</span></label>`,
-    )
-    .join('')}</fieldset>`;
-  let content;
-  if (slug === 'app-shell' || slug === 'document-layout') content = shell(slug);
-  if (slug === 'setup-layout') content = `<div class="layout-preview__frame">${setup(enhancedInput)}</div>`;
+export function renderLayoutExample(slug, markup, enhancedInput) {
+  if (slug === 'error-layout') return renderPageLayout(slug);
+  if (slug === 'auth-layout') return renderPageLayout(slug, passwordReveal(enhancedInput));
+  if (slug === 'app-shell' || slug === 'document-layout') return shell(slug);
+  if (slug === 'setup-layout') return setup(passwordReveal(enhancedInput));
   if (slug === 'admin-layout') {
-    const dashboard = `<div class="cm-stack"><div class="layout-preview__toolbar"><strong>Dashboard</strong><button class="cm-button cm-button--primary cm-button--sm" type="button">Create post</button></div>
-      <div class="cm-grid">${['Published: 24', 'Drafts: 8', 'Views: 12,480'].map((stat) => `<div class="cm-card"><div class="cm-card__body">${stat}</div></div>`).join('')}</div>
-      <article class="cm-card"><header class="cm-card__header">Recent inventory changes</header><div class="cm-card__body"><p>Warehouse A · 24 items received</p><p>Warehouse B · 8 items reserved</p><p>Warehouse C · 3 items returned</p></div></article>
-      <article class="cm-card"><header class="cm-card__header">Stock alerts</header><div class="cm-card__body"><p>Wireless keyboard · 2 items remaining</p><p>USB-C dock · out of stock</p><p>Studio monitor · reorder threshold reached</p></div></article></div>`;
-    content = `<div class="layout-preview__frame">${markup
+    const sidebarIcon = resolveCmIcon(bars, 'classic', 'regular');
+    if (!sidebarIcon) throw new Error('Missing the sidebar icon for the dashboard example.');
+    const dashboard = `<div class="cm-stack"><div class="layout-example__dashboard-heading"><h1>Dashboard</h1><button class="cm-button cm-button--primary cm-button--sm" type="button">Create post</button></div>
+      <dl class="layout-example__metrics">${dashboardStats.map(({ label, value }) => `<div><dt>${label}</dt><dd>${value}</dd></div>`).join('')}</dl>
+      <div class="layout-example__activity">${dashboardActivity
+        .map(
+          ({ title, items }) =>
+            `<section class="cm-card"><header class="cm-card__header"><h2 class="layout-example__activity-heading">${title}</h2></header><div class="cm-card__body"><ul class="layout-example__activity-list" role="list">${items.map((item) => `<li>${item}</li>`).join('')}</ul></div></section>`,
+        )
+        .join('')}</div></div>`;
+    return markup
       .replaceAll('workspace', 'showcase-admin-layout')
       .replace('>Acme<', `>${brand}<`)
-      .replace('>Navigation<', `>${navigation(nav, 'dashboard')}<`)
+      .replace('>Navigation<', `>${navigation(warehouseNavigation, 'dashboard')}<`)
       .replace(
         '<div class="cm-admin-layout__header-content">Projects</div>',
-        `<div class="cm-admin-layout__mobile-brand">${brand}</div><div class="cm-admin-layout__header-content"><button class="cm-button cm-button--ghost cm-button--sm" type="button" data-cm-sidebar-toggle>Toggle sidebar</button></div>`,
+        `<div class="cm-admin-layout__mobile-brand">${brand}</div><div class="cm-admin-layout__header-content"><button class="cm-icon-button cm-icon-button--ghost cm-icon-button--md" type="button" aria-label="Toggle sidebar" data-cm-sidebar-toggle><span class="cm-icon-button__icon" aria-hidden="true"><svg class="cm-icon cm-icon--classic cm-icon--regular" viewBox="${sidebarIcon.viewBox}" aria-hidden="true" focusable="false">${sidebarIcon.body}</svg></span></button></div>`,
       )
       .replace(
         '>Dashboard</main>',
         `>${dashboard}</main><footer class="cm-admin-layout__footer">Inventory workspace</footer>`,
-      )}</div>`;
+      );
   }
   if (slug === 'admin-shell') {
-    content = `<div class="layout-preview__frame">${markup
+    return markup
+      .replace('class="cm-admin-shell"', 'class="cm-admin-shell cm-admin-shell--fit-content"')
       .replace('>Acme<', `>${brand}<`)
       .replace(
         '</header>',
@@ -137,10 +162,7 @@ export function renderLayoutPreview(slug, markup, enhancedInput) {
         '>Navigation<',
         `>${navigation(warehouseNavigation, 'warehouse-availability', 'Admin shell navigation')}<`,
       )
-      .replace(
-        '>Workspace</main>',
-        `><div class="cm-stack"><h4>Warehouse availability</h4>${warehouse()}</div></main>`,
-      )}</div>`;
+      .replace('>Workspace</main>', `><div class="cm-stack">${warehouse()}</div></main>`);
   }
-  return `${sizes}<p class="layout-preview__caption"></p><div class="layout-preview" style="max-inline-size:1280px">${content}</div>`;
+  throw new Error(`Unknown layout example: ${slug}`);
 }

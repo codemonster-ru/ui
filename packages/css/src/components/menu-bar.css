@@ -85,7 +85,9 @@
   cursor: pointer;
 }
 
-.cm-menu-bar__item:hover {
+.cm-menu-bar__item:hover:where(
+    :not(.cm-menu-bar__item--active, .cm-menu-bar__item--open, :disabled, [aria-disabled='true'])
+  ) {
   background: var(--cm-color-background-surface-subtle);
   color: var(--cm-color-text-primary);
 }
@@ -103,6 +105,7 @@
 
 .cm-menu-bar__item--active:not(:disabled, [aria-disabled='true']) {
   color: var(--cm-color-selected-foreground);
+  font-weight: var(--cm-font-weight-semibold);
 }
 
 .cm-menu-bar--pills .cm-menu-bar__list {
@@ -204,5 +207,12 @@
 
   .cm-menu-bar__node:not(.cm-menu-bar__node--depth-0) > .cm-menu-bar__item .cm-menu-bar__icon {
     rotate: 45deg;
+  }
+}
+
+@media (forced-colors: active) {
+  .cm-menu-bar__item--active:not(:disabled, [aria-disabled='true']) {
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
   }
 }

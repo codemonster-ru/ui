@@ -13,7 +13,6 @@ import {
   referenceFrameClass,
   referenceSupplements,
   renderReferenceDetail,
-  renderReferenceIndex,
   renderReferenceMissing,
   renderReferenceSupplement,
   type ReferenceCase,
@@ -47,7 +46,6 @@ function preview(example: ReferenceCase, primary: boolean, option?: { label: str
   const description = !option && referenceCaseDescription(example);
   const query = new URLSearchParams({
     case: example.id,
-    view: 'reference',
     ...(option ? { [option.prop]: option.value } : {}),
   });
   return `<article class="reference-example">
@@ -58,7 +56,6 @@ function preview(example: ReferenceCase, primary: boolean, option?: { label: str
 }
 
 function markup() {
-  if (!slug) return renderReferenceIndex(groups, components, '');
   if (supplement) return renderReferenceSupplement(supplement, catalog, '');
   if (!component) return renderReferenceMissing('');
   const cases = Object.entries(caseModules)

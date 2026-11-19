@@ -37,14 +37,25 @@ const baselineNames = new Set(baselineManifest.screenshots.map(({ filename }) =>
 const currentNames = new Set(currentManifest.screenshots.map(({ filename }) => filename));
 const missing = [...baselineNames].filter((filename) => !currentNames.has(filename)).sort();
 const unexpected = [...currentNames].filter((filename) => !baselineNames.has(filename)).sort();
+const unavailable = [];
 const comparisons = [];
 
 if (diffDirectory) mkdirSync(diffDirectory, { recursive: true });
 
+for (const [capture, directory, filenames] of [
+  ['baseline', baselineDirectory, baselineNames],
+  ['current', currentDirectory, currentNames],
+]) {
+  for (const filename of [...filenames].sort()) {
+    if (!existsSync(resolve(directory, filename))) unavailable.push({ capture, filename });
+  }
+}
+const unavailableNames = new Set(unavailable.map(({ filename }) => filename));
+
 for (const filename of [...baselineNames].filter((name) => currentNames.has(name)).sort()) {
+  if (unavailableNames.has(filename)) continue;
   const baselinePath = resolve(baselineDirectory, filename);
   const currentPath = resolve(currentDirectory, filename);
-  if (!existsSync(baselinePath) || !existsSync(currentPath)) continue;
 
   const baseline = PNG.sync.read(readFileSync(baselinePath));
   const current = PNG.sync.read(readFileSync(currentPath));
@@ -98,6 +109,7 @@ const report = {
   missing,
   threshold: channelThreshold,
   topDifferences: changed.slice(0, 25),
+  unavailable,
   unexpected,
 };
 
@@ -107,8 +119,10 @@ writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`);
 console.log(
   `Compared ${comparisons.length} screenshots: ${changed.length} changed, ${missing.length} missing, ${unexpected.length} unexpected.`,
 );
+if (unavailable.length)
+  console.error(`${unavailable.length} screenshots listed in the manifests are absent from disk.`);
 console.log(`Report: ${reportPath}`);
 
-if (!reportOnly && (changed.length > 0 || missing.length > 0 || unexpected.length > 0)) {
+if (unavailable.length > 0 || (!reportOnly && (changed.length > 0 || missing.length > 0 || unexpected.length > 0))) {
   process.exitCode = 1;
 }

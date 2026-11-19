@@ -17,10 +17,11 @@ test('styles the canonical Card surface and compact state', () => {
   assert.match(css, /\.cm-card--compact\s*\{[^}]*padding: var\(--cm-space-3\);/s);
 });
 
-test('preserves the frozen Card text rhythm', () => {
+test('distinguishes the Card title within the shared text rhythm', () => {
   assert.match(css, /\.cm-card\s*\{[^}]*line-height: var\(--cm-line-height-normal\);/s);
   assert.match(css, /\.cm-card__title\s*\{[^}]*font-size: var\(--cm-font-size-xl\);/s);
-  assert.match(css, /\.cm-card__title\s*\{[^}]*font-weight: var\(--cm-font-weight-regular\);/s);
+  assert.match(css, /\.cm-card__title\s*\{[^}]*font-weight: var\(--cm-font-weight-semibold\);/s);
+  assert.match(css, /\.cm-card__title\s*\{[^}]*overflow-wrap: anywhere;/s);
   assert.match(css, /\.cm-card__title\s*\{[^}]*line-height: var\(--cm-line-height-normal\);/s);
   assert.doesNotMatch(css, /\.cm-card__title\s*\{[^}]*font-family:/s);
 });
