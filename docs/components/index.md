@@ -16,6 +16,8 @@ Interactive Vanilla markup may need the [browser runtime](../vanilla.md). See th
 [ConfirmDialog](../recipes/confirm-dialog.md) for their respective Vue and Vanilla integrations.
 For compatibility exports, use the [VueForge migration guide](../migrate-from-vueforge.md).
 
+See the [component quality matrix](./quality-matrix.md) for declared states and fixture coverage.
+
 ## Actions and forms
 
 | Component | Vue guide | Vanilla contract or HTML |

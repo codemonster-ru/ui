@@ -97,6 +97,8 @@ that threshold. There is no design-change tolerance.
 - Do not use the decision log as an implementation journal. Link routine visual-fix evidence from
   the relevant work item, issue, or commit instead.
 
+The [reference quality roadmap](./reference-quality.md) tracks the work after the 2.0 candidate.
+
 ## Progress
 
 - Current phase: Phase 19 — VueForge visual compatibility

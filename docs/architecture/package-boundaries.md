@@ -39,8 +39,8 @@ become a public runtime package until at least two concrete consumers need the s
 Both integrations implement the same significant DOM, shared classes, native attributes, ARIA
 state, and behavior contract. Use the platform's normal bindings to connect application state.
 
-Annabel Razor can author the same canonical HTML. Its PHP adapter and layout packages are owned
-by the separate Razor project. See the [layout line decision](./layout-line-ownership.md) and
+Annabel Razor can author the same canonical HTML. The separate Razor project owns its PHP adapter
+and layouts. See the [layout line decision](./layout-line-ownership.md) and
 [current platform support](./platform-support.md).
 
 ## Dependency direction
