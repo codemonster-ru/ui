@@ -52,6 +52,7 @@ npm run lint:all
 npm run build
 npm run check:packed-consumers
 npm run build:demo
+node scripts/ci/check-deferred-runtime-budgets.mjs
 npm run build:vanilla
 npm run prepublish:all
 ```
