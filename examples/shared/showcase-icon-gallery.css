@@ -171,6 +171,7 @@
 
 @media (width <= 620px) {
   .icon-catalog .catalog-contexts__grid {
+    container: icon-contexts / inline-size;
     grid-template-columns: minmax(0, 1fr);
   }
 
@@ -184,5 +185,11 @@
 
   .icon-catalog .catalog-search {
     grid-column: 1 / -1;
+  }
+}
+
+@container icon-contexts (width < 13rem) {
+  .icon-catalog .catalog-contexts__sample {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

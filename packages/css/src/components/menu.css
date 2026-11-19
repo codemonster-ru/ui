@@ -1,6 +1,6 @@
 .cm-menu {
   display: flex;
-  min-inline-size: 12rem;
+  min-inline-size: min(100%, 12rem);
   flex-direction: column;
   gap: var(--cm-space-1);
   padding: var(--cm-space-2);

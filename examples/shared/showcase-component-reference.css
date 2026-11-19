@@ -219,7 +219,7 @@
 
 .component-reference .reference-frame--listbox {
   /* Give the short Select example enough space within its 40dvh listbox limit. */
-  --reference-open-height: 11.75rem;
+  --reference-open-height: 11.625rem;
 }
 
 .component-reference iframe[data-reference-expanded] {
