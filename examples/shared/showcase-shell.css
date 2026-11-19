@@ -118,6 +118,7 @@
   max-inline-size: 80rem;
   margin-inline: auto;
   padding: var(--cm-space-8) var(--cm-space-4) var(--cm-space-5);
+  overflow-wrap: anywhere;
 }
 
 .showcase-intro {
@@ -836,5 +837,18 @@
 
   .showcase-core .core-avatar-panel-header {
     flex-wrap: wrap;
+  }
+
+  .showcase-content :is(.cm-button, .cm-badge) {
+    max-inline-size: 100%;
+    white-space: normal;
+  }
+
+  .showcase-core :is(input, select, textarea, .cm-switch) {
+    max-inline-size: 100%;
+  }
+
+  .layout-guide .cm-inline--nowrap {
+    overflow-x: auto;
   }
 }

@@ -29,6 +29,8 @@ const routes = [
   ['core-alias', 'core/', '.showcase-intro h1'],
   ['button', 'components/button/', '[data-reference-preview="button"]'],
   ['data-table', 'components/data-table/#api', '#api'],
+  ['layouts', 'layouts/', '#layout-primitives'],
+  ['colors', 'colors/', '#contrast-matrix'],
   ['icons', 'icons/', '#icon-catalog'],
 ];
 const representative = new Set(['core--1440--light', 'core--360--dark', 'button--390--dark']);
@@ -45,6 +47,15 @@ async function screenshot(page, name) {
   if (!output) return;
   await page.evaluate(() => document.fonts.ready);
   await page.screenshot({ path: resolve(output, `${name}.png`), animations: 'disabled', caret: 'hide' });
+}
+
+async function doubleTextSize(page, label) {
+  const rootFontSize = () =>
+    page.evaluate(() => Number.parseFloat(getComputedStyle(document.documentElement).fontSize));
+  const defaultSize = await rootFontSize();
+  const scale = await page.addStyleTag({ content: 'html:root { font-size: 200%; }' });
+  assert.equal(await rootFontSize(), defaultSize * 2, `${label}: effective root text size`);
+  return scale;
 }
 
 async function checkViewport(page, label) {
@@ -134,25 +145,24 @@ async function checkReferenceInteractions(page, base, adapter) {
   const checkSelectFits = async (input) => {
     await listbox.waitFor();
     await preview.locator('iframe[data-reference-expanded]').waitFor();
-    const { top, left, right, bottom, width, height, clientHeight, scrollHeight } = await listbox.evaluate(
-      async (element) => {
-        await new Promise(requestAnimationFrame);
-        const { top, left, right, bottom } = element.getBoundingClientRect();
-        return {
-          top,
-          left,
-          right,
-          bottom,
-          width: innerWidth,
-          height: innerHeight,
-          clientHeight: element.clientHeight,
-          scrollHeight: element.scrollHeight,
-        };
-      },
-    );
+    const { top, left, right, bottom, width, height, optionsFit } = await listbox.evaluate(async (element) => {
+      await new Promise(requestAnimationFrame);
+      const { top, left, right, bottom } = element.getBoundingClientRect();
+      const style = getComputedStyle(element);
+      const visibleTop = top + parseFloat(style.borderTopWidth);
+      const visibleBottom = bottom - parseFloat(style.borderBottomWidth);
+      const options = [...element.querySelectorAll('[role="option"]')];
+      const optionsFit =
+        options.length === 2 &&
+        options.every((option) => {
+          const rect = option.getBoundingClientRect();
+          return rect.top >= visibleTop && rect.bottom <= visibleBottom;
+        });
+      return { top, left, right, bottom, width: innerWidth, height: innerHeight, optionsFit };
+    });
     const label = `${adapter}: Select preview after ${input} open`;
     assert(top >= 0 && left >= 0 && right <= width && bottom <= height, `${label} fits its frame`);
-    assert.equal(scrollHeight, clientHeight, `${label} exposes both options without scrolling`);
+    assert(optionsFit, `${label} exposes both options without scrolling`);
     assert(height - bottom < 64, `${label} has less than 64 px of space below the listbox`);
   };
 
@@ -305,6 +315,40 @@ async function expectPreviewWidth(frame, width) {
   assert.equal(await frame.evaluate((iframe) => iframe.contentWindow.innerWidth), width);
 }
 
+async function checkAuthForm(page, base, adapter) {
+  await page.goto(url(base, 'layouts/#demo-auth-layout'), { waitUntil: 'domcontentloaded' });
+  const frame = page.locator('#demo-auth-layout iframe');
+  await frame.scrollIntoViewIfNeeded();
+  const example = frame.contentFrame();
+  const email = example.getByRole('textbox', { name: 'Email' });
+  const submit = example.getByRole('button', { name: 'Sign in' });
+  await submit.click();
+  assert(
+    await email.evaluate((input) => input.validity.valueMissing && input === document.activeElement),
+    `${adapter}: the form focuses its first missing field`,
+  );
+
+  await email.fill('not-an-email');
+  await example.getByLabel(/^Password\b/u).fill('preview-password');
+  await submit.click();
+  assert(await email.evaluate((input) => input.validity.typeMismatch), `${adapter}: invalid email is rejected`);
+
+  await email.fill('preview@example.test');
+  await submit.click();
+  await example.getByText('Sign-in preview submitted.', { exact: true }).waitFor();
+}
+
+async function checkThemePreference(page, base) {
+  await page.goto(base, { waitUntil: 'domcontentloaded' });
+  const toggle = page.locator('.showcase-theme');
+  await toggle.click();
+  await page.locator('html[data-cm-theme="light"]').waitFor({ state: 'attached' });
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await page.locator('html[data-cm-theme="light"]').waitFor({ state: 'attached' });
+  await toggle.click();
+  await page.locator('html[data-cm-theme="dark"]').waitFor({ state: 'attached' });
+}
+
 async function checkNavigation(page, base, adapter, width) {
   if (width === 360) {
     for (const path of [
@@ -353,7 +397,7 @@ async function checkNavigation(page, base, adapter, width) {
     return link.getBoundingClientRect().right > link.closest('nav').getBoundingClientRect().right + 1;
   });
   assert.equal(lastLinkClipped, false, `${adapter} ${width}: all routes fit at default text size`);
-  const scale = await page.addStyleTag({ content: 'html { font-size: 200%; }' });
+  const scale = await doubleTextSize(page, `${adapter} navigation`);
   await checkViewport(page, `${adapter} navigation at 200% text size`);
   await links.first().focus();
   for (const link of (await links.all()).slice(1)) {
@@ -471,7 +515,8 @@ async function checkAdapter([adapter, base]) {
       page.setDefaultNavigationTimeout(30000);
       try {
         await page.addInitScript((mode) => {
-          if (window === window.top) localStorage.setItem('cm-showcase-theme', mode);
+          if (window === window.top && !localStorage.getItem('cm-showcase-theme'))
+            localStorage.setItem('cm-showcase-theme', mode);
         }, theme);
         for (const [name, path, ready] of routes) {
           // Core has hundreds of deferred previews. The route and theme checks below establish page readiness.
@@ -487,12 +532,8 @@ async function checkAdapter([adapter, base]) {
             ((width === 360 && theme === 'dark') || (width === 1440 && theme === 'light'))
           )
             await checkAccessibility(page, `${adapter} ${file}`);
-          if (width === 360 && theme === 'dark' && name !== 'icons') {
-            const rootFontSize = () =>
-              page.evaluate(() => Number.parseFloat(getComputedStyle(document.documentElement).fontSize));
-            const defaultSize = await rootFontSize();
-            const scale = await page.addStyleTag({ content: 'html:root { font-size: 200%; }' });
-            assert.equal(await rootFontSize(), defaultSize * 2, `${adapter} ${name}: effective root text size`);
+          if (width === 360 && theme === 'dark') {
+            const scale = await doubleTextSize(page, `${adapter} ${name}`);
             await checkViewport(page, `${adapter} ${name} at 200% text size`);
             await scale.evaluate((style) => style.remove());
           }
@@ -507,6 +548,8 @@ async function checkAdapter([adapter, base]) {
         if (width === 1440 && theme === 'dark') {
           await checkLayoutViewport(page, base, adapter);
           await checkWarehouse(page, base, adapter);
+          await checkAuthForm(page, base, adapter);
+          await checkThemePreference(page, base);
         }
         assert.deepEqual(errors, [], `${adapter} ${width} ${theme}: network/runtime errors`);
       } finally {
