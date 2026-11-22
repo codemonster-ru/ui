@@ -102,11 +102,15 @@
   font-size: var(--cm-control-font-size-lg);
 }
 
-.cm-radio:hover:has(.cm-radio__input:not(:disabled)) .cm-radio__input:not(:checked) + .cm-radio__control {
+.cm-radio:hover:where(:has(.cm-radio__input:not(:disabled)))
+  .cm-radio__input:where(:not(:checked))
+  + .cm-radio__control {
   border-color: var(--cm-color-interactive-primary-border);
 }
 
-.cm-radio:active:has(.cm-radio__input:not(:disabled)) .cm-radio__input:not(:checked) + .cm-radio__control {
+.cm-radio:active:where(:has(.cm-radio__input:not(:disabled)))
+  .cm-radio__input:where(:not(:checked))
+  + .cm-radio__control {
   border-color: var(--cm-color-interactive-primary-border);
   background: var(--cm-color-background-surface-active);
 }
@@ -120,7 +124,8 @@
   transform: scale(1);
 }
 
-.cm-radio:hover:has(.cm-radio__input:checked:not(:disabled)) .cm-radio__control {
+.cm-radio:hover:where(:has(.cm-radio__input:checked:not(:disabled))) .cm-radio__control {
+  border-color: var(--cm-color-text-link-hover);
   background: var(--cm-color-background-surface-hover);
 }
 
@@ -129,14 +134,34 @@
 }
 
 .cm-radio__input:focus-visible + .cm-radio__control {
-  border-color: var(--cm-color-border-focus);
   outline: var(--cm-focus-ring-width) solid var(--cm-forced-focus-outline-color, transparent);
-  box-shadow: 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
 }
 
-.cm-radio--invalid:has(.cm-radio__input:not(:disabled)) .cm-radio__control,
-.cm-radio__input[aria-invalid='true']:not(:disabled) + .cm-radio__control {
+.cm-radio:where(.cm-radio--invalid, :has(.cm-radio__input[aria-invalid='true']))
+  .cm-radio__input:enabled
+  + .cm-radio__control {
   border-color: var(--cm-color-status-danger-border);
+}
+
+.cm-radio:where(.cm-radio--invalid, :has(.cm-radio__input[aria-invalid='true'])):hover
+  .cm-radio__input:enabled
+  + .cm-radio__control {
+  border-color: var(--cm-color-interactive-primary-border);
+}
+
+.cm-radio .cm-radio__input:enabled:focus + .cm-radio__control {
+  border-color: var(--cm-color-border-focus);
+}
+
+.cm-radio:where(:not(:active)) .cm-radio__input:enabled:checked:focus-visible + .cm-radio__control {
+  background-color: light-dark(var(--cm-palette-primary-200), var(--cm-color-background-surface));
+}
+
+.cm-radio:hover:where(:not(:active)) .cm-radio__input:enabled:checked:focus-visible + .cm-radio__control {
+  background-color: light-dark(
+    color-mix(in oklch, var(--cm-palette-primary-200) 80%, var(--cm-palette-primary-300)),
+    var(--cm-color-background-surface-hover)
+  );
 }
 
 .cm-radio__input:disabled + .cm-radio__control {

@@ -50,17 +50,6 @@
   font-size: var(--cm-font-size-2xl);
 }
 
-.cm-select:focus,
-.cm-select:focus-visible {
-  border-color: var(--cm-color-border-focus);
-}
-
-.cm-select:focus-visible {
-  border-radius: var(--cm-radius-control);
-  outline: var(--cm-border-width-thick) solid var(--cm-forced-focus-outline-color, transparent);
-  box-shadow: 0 0 0 var(--cm-border-width-thick) var(--cm-color-focus-ring);
-}
-
 .cm-select:disabled {
   border-color: var(--cm-color-border-disabled);
   background: var(--cm-color-background-surface-disabled);
@@ -69,15 +58,21 @@
   box-shadow: none;
 }
 
-.cm-select:hover:not(:disabled, .cm-select--invalid, :focus, :focus-visible) {
+.cm-select:is(.cm-select--invalid, [aria-invalid='true']):where(:not(:disabled)) {
+  border-color: var(--cm-color-status-danger-border);
+}
+
+.cm-select:hover:where(:not(:disabled, :focus)) {
   border-color: var(--cm-color-interactive-primary-border);
 }
 
-.cm-select--invalid,
-.cm-select[aria-invalid='true'],
-.cm-select--invalid:is(:hover, :focus, :focus-visible),
-.cm-select[aria-invalid='true']:is(:hover, :focus, :focus-visible) {
-  border-color: var(--cm-color-status-danger-border);
+.cm-select:focus {
+  border-color: var(--cm-color-border-focus);
+}
+
+.cm-select:focus-visible {
+  border-radius: var(--cm-radius-control);
+  outline: var(--cm-border-width-thick) solid var(--cm-forced-focus-outline-color, transparent);
 }
 
 .cm-select-wrap {
@@ -203,7 +198,7 @@
 
 .cm-select__listbox {
   position: absolute;
-  z-index: 1;
+  z-index: 2;
   inset-block-start: calc(100% + 2px);
   inset-inline-start: 0;
   inline-size: 100%;

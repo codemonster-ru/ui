@@ -43,32 +43,6 @@
   color: var(--cm-color-text-placeholder);
 }
 
-.cm-textarea:focus,
-.cm-textarea:focus-visible {
-  border-color: var(--cm-color-border-focus);
-}
-
-.cm-textarea:focus-visible {
-  border-radius: var(--cm-radius-control);
-  outline: var(--cm-border-width-thick) solid var(--cm-forced-focus-outline-color, transparent);
-  box-shadow: 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
-}
-
-.cm-textarea--invalid,
-.cm-textarea[aria-invalid='true'],
-.cm-textarea--invalid:focus,
-.cm-textarea--invalid:focus-visible,
-.cm-textarea[aria-invalid='true']:focus,
-.cm-textarea[aria-invalid='true']:focus-visible,
-.cm-textarea--invalid:hover:not(:disabled, :focus, :focus-visible),
-.cm-textarea[aria-invalid='true']:hover:not(:disabled, :focus, :focus-visible) {
-  border-color: var(--cm-color-status-danger-border);
-}
-
-.cm-textarea:hover:not(:disabled, :read-only, .cm-textarea--invalid, [aria-invalid='true'], :focus, :focus-visible) {
-  border-color: var(--cm-color-interactive-primary-border);
-}
-
 .cm-textarea:disabled {
   border-color: var(--cm-color-border-disabled);
   background: var(--cm-color-background-surface-disabled);
@@ -76,7 +50,7 @@
   cursor: not-allowed;
 }
 
-.cm-textarea:read-only:not(:disabled, .cm-textarea--invalid, [aria-invalid='true']) {
+.cm-textarea:read-only:where(:not(:disabled, .cm-textarea--invalid, [aria-invalid='true'])) {
   border-color: var(--cm-color-border-default);
   background: var(--cm-color-background-surface-subtle);
   color: var(--cm-color-text-secondary);
@@ -85,6 +59,23 @@
 
 .cm-textarea:read-only:not(:disabled, .cm-textarea--invalid, [aria-invalid='true'])::placeholder {
   color: var(--cm-color-text-secondary);
+}
+
+.cm-textarea:is(.cm-textarea--invalid, [aria-invalid='true']):where(:not(:disabled)) {
+  border-color: var(--cm-color-status-danger-border);
+}
+
+.cm-textarea:hover:where(:not(:disabled, :read-only, :focus)) {
+  border-color: var(--cm-color-interactive-primary-border);
+}
+
+.cm-textarea:focus {
+  border-color: var(--cm-color-border-focus);
+}
+
+.cm-textarea:focus-visible {
+  border-radius: var(--cm-radius-control);
+  outline: var(--cm-border-width-thick) solid var(--cm-forced-focus-outline-color, transparent);
 }
 
 @media (forced-colors: active) {

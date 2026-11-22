@@ -20,18 +20,32 @@ test('preserves the reference Input state matrix and adornment geometry', async 
   const input = await readComponent('input');
 
   assert.match(input, /border: var\(--cm-border-width\) solid var\(--cm-color-border-interactive\);/u);
-  assert.match(input, /\.cm-input:focus,[\s\S]*border-color: var\(--cm-color-border-focus\);/u);
-  assert.match(input, /box-shadow: 0 0 0 var\(--cm-border-width-thick\) var\(--cm-color-focus-ring\);/u);
-  assert.match(input, /\.cm-input--invalid:is\(:focus, :focus-visible, :hover\)/u);
-  assert.match(input, /\.cm-input:read-only:not\(:disabled\)::placeholder/u);
+  assert.match(input, /\.cm-input:focus \{\s*border-color: var\(--cm-color-border-focus\);/u);
+  assert.match(input, /\.cm-input__action:focus-visible \{[^}]*box-shadow:/u);
+  assert.match(input, /\.cm-input:read-only:where\(:not\(:disabled\)\)::placeholder/u);
   assert.match(input, /\.cm-input-wrap:has\(\.cm-input__leading\) \.cm-input/u);
   assert.match(input, /padding-inline-start: 2\.125rem;/u);
   assert.match(input, /\.cm-input__action:has\(\+ \.cm-input__action:not\(\[hidden\]\)\)/u);
-  assert.ok(
-    input.indexOf('.cm-input:disabled {') >
-      input.indexOf(".cm-input[aria-invalid='true']:is(:focus, :focus-visible, :hover)"),
-    'disabled input state must override the invalid border',
-  );
+});
+
+test('uses a single border for interactive fields in standard color modes', async () => {
+  for (const name of ['input', 'textarea', 'select', 'date-picker']) {
+    const css = await readComponent(name);
+    const selector = `.cm-${name}`;
+    const invalid = `${selector}--invalid, [aria-invalid='true']`;
+    const rest = `${selector}:is(${invalid}):where(:not(:disabled)) {\n  border-color: var(--cm-color-status-danger-border);`;
+    const hover = `${selector}:hover:where(`;
+    const focus = `${selector}:focus {\n  border-color: var(--cm-color-border-focus);`;
+    assert.ok(css.includes(rest), `${name} shows the error border at rest when enabled`);
+    assert.ok(css.indexOf(hover) > css.indexOf(rest), `${name} gives hover priority over invalid`);
+    assert.ok(css.indexOf(focus) > css.indexOf(hover), `${name} gives focus priority over hover`);
+    for (const rule of css.matchAll(
+      new RegExp(`\\.cm-${name}:focus(?:-visible)?(?=[ {:\\n,])[^{}]*\\{([^}]*)\\}`, 'gu'),
+    )) {
+      assert.doesNotMatch(rule[1], /box-shadow:/u);
+    }
+    assert.match(css, new RegExp(`\\.cm-${name}:focus-visible \\{[^}]*--cm-forced-focus-outline-color`, 'u'));
+  }
 });
 
 test('preserves the reference Field and Fieldset text rhythm', async () => {

@@ -39,48 +39,39 @@
   color: var(--cm-color-text-placeholder);
 }
 
-.cm-input:hover:where(:not(:disabled, :read-only)) {
-  border-color: var(--cm-color-interactive-primary-border);
+.cm-input:disabled {
+  border-color: var(--cm-color-border-disabled);
+  background: var(--cm-color-background-surface-disabled);
+  color: var(--cm-color-text-disabled);
+  cursor: not-allowed;
 }
 
-.cm-input:focus,
-.cm-input:focus-visible {
-  border-color: var(--cm-color-border-focus);
-}
-
-.cm-input:focus-visible {
-  border-radius: var(--cm-radius-control);
-  outline: var(--cm-border-width-thick) solid var(--cm-forced-focus-outline-color, transparent);
-  box-shadow: 0 0 0 var(--cm-border-width-thick) var(--cm-color-focus-ring);
-}
-
-.cm-input:read-only:not(:disabled) {
+.cm-input:read-only:where(:not(:disabled)) {
   border-color: var(--cm-color-border-default);
   background: var(--cm-color-background-surface-subtle);
   color: var(--cm-color-text-secondary);
   cursor: default;
 }
 
-.cm-input:read-only:not(:disabled)::placeholder {
+.cm-input:read-only:where(:not(:disabled))::placeholder {
   color: var(--cm-color-text-secondary);
 }
 
-.cm-input--invalid,
-.cm-input[aria-invalid='true'] {
+.cm-input:is(.cm-input--invalid, [aria-invalid='true']):where(:not(:disabled)) {
   border-color: var(--cm-color-status-danger-border);
 }
 
-.cm-input--invalid:is(:focus, :focus-visible, :hover),
-.cm-input[aria-invalid='true']:is(:focus, :focus-visible, :hover) {
-  border-color: var(--cm-color-status-danger-border);
+.cm-input:hover:where(:not(:disabled, :read-only, :focus)) {
+  border-color: var(--cm-color-interactive-primary-border);
 }
 
-/* stylelint-disable-next-line no-descending-specificity -- Native disabled state must win over invalid. */
-.cm-input:disabled {
-  border-color: var(--cm-color-border-disabled);
-  background: var(--cm-color-background-surface-disabled);
-  color: var(--cm-color-text-disabled);
-  cursor: not-allowed;
+.cm-input:focus {
+  border-color: var(--cm-color-border-focus);
+}
+
+.cm-input:focus-visible {
+  border-radius: var(--cm-radius-control);
+  outline: var(--cm-border-width-thick) solid var(--cm-forced-focus-outline-color, transparent);
 }
 
 .cm-input-wrap {
