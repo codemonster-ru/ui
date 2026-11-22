@@ -56,7 +56,10 @@ test('server-renders the historical page window, custom labels and current page'
     }),
   );
 
-  assert.match(html, /<button[^>]*aria-current="page"[^>]*aria-label="Current page 10 \/ 20"[^>]*>10<\/button>/u);
+  assert.match(
+    html.replace(/<!--[\s\S]*?-->/gu, ''),
+    /<button[^>]*aria-current="page"[^>]*aria-label="Current page 10 \/ 20"[^>]*><span class="cm-button__label">10<\/span><\/button>/u,
+  );
   assert.deepEqual(
     [...html.matchAll(/aria-label="Jump to (\d+)"/gu)].map((match) => match[1]),
     ['1', '9', '11', '20'],
