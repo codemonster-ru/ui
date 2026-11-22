@@ -34,7 +34,7 @@
   --cm-tooltip-gap: calc(var(--cm-space-2) + var(--cm-border-width-thick));
 
   position: absolute;
-  z-index: 1;
+  z-index: 2;
   inline-size: max-content;
   max-inline-size: min(calc(var(--cm-space-16) * 4), calc(100vw - 2 * var(--cm-tooltip-gap)));
   padding-block: var(--cm-space-2);
@@ -44,7 +44,7 @@
   background: var(--cm-color-background-inverse);
   color: var(--cm-color-text-inverse);
   box-shadow: var(--cm-shadow-overlay);
-  font-size: var(--cm-font-size-xl);
+  font-size: var(--cm-font-size-md);
   line-height: var(--cm-line-height-normal);
   overflow-wrap: anywhere;
 }
@@ -184,4 +184,9 @@
   .cm-tooltip__content {
     border: var(--cm-border-width) solid CanvasText;
   }
+}
+
+/* A hovered tooltip can coexist with another tooltip opened by keyboard focus. */
+.cm-tooltip:hover > .cm-tooltip__content:not([data-cm-tooltip-floating]) {
+  z-index: 3;
 }

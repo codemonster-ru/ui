@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { setTimeout as delay } from 'node:timers/promises';
 import { JSDOM } from 'jsdom';
+import { resolveCmAnchoredTarget } from '../dist/anchored-position.js';
 import {
   CmRuntime,
   createCmDialogController,
@@ -9,6 +10,29 @@ import {
   createCmPopoverController,
   createCmTooltipController,
 } from '../dist/index.js';
+
+test('keeps explicit portals inside the trigger’s nearest native dialog', (context) => {
+  const { window } = new JSDOM(`
+    <div id="external"></div>
+    <dialog>
+      <div id="outer-target"></div>
+      <dialog id="inner"><div id="trigger"></div><div id="local"></div></dialog>
+    </dialog>
+  `);
+  context.after(() => window.close());
+  const { document } = window;
+  const trigger = document.querySelector('#trigger');
+  const inner = document.querySelector('#inner');
+  const external = document.querySelector('#external');
+
+  for (const target of ['body', document.body, '#external', external, '#outer-target']) {
+    assert.equal(resolveCmAnchoredTarget(trigger, target), inner);
+  }
+  assert.equal(resolveCmAnchoredTarget(trigger, '#local'), document.querySelector('#local'));
+  assert.equal(resolveCmAnchoredTarget(trigger, false), null);
+  assert.equal(resolveCmAnchoredTarget(trigger, '#missing'), null);
+  assert.equal(resolveCmAnchoredTarget(external, 'body'), document.body);
+});
 
 for (const [name, factory, html] of [
   ['dialog', createCmDialogController, modalHtml('dialog')],

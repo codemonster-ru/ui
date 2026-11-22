@@ -24,6 +24,12 @@ icons, and `select` with the original item object after the model/change events.
 `CmMenuBar` and Vanilla event continue to report the selected value. Top-level items wrap.
 At viewport widths up to 640 px, expanded submenus stack in their own rows, including on
 server-rendered pages with authored open branches. Wider viewports use the inline cascade.
+Once enhanced, Vue and Vanilla flip or shift those panels to keep them reachable at viewport edges.
+In a Dialog or Drawer, scrolling the top-level opener fully out of the modal body closes the
+entire open path. If focus was in that branch, it moves to the nearest visible enabled top-level
+item, or to the modal when none is visible, without scrolling the body.
+From that modal focus, Tab moves to a visible control without scrolling the body.
+The clipped opener stays out of the Tab order until it comes back into view.
 
 `VfMenuBar` switches enabled branches on mouse hover after the first branch opens. Leaving
 the bar closes it after 120 ms, and moving back into the bar or a submenu cancels the timer.

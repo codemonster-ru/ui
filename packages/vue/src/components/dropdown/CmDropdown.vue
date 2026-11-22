@@ -80,7 +80,7 @@ const menuAttrs = computed(() => ({
         style: {
           ...coordinates.value,
           position: 'fixed',
-          minWidth: `max(${portalWidth.value}px, var(--cm-space-16) * 3)`,
+          '--cm-dropdown-anchor-width': `${portalWidth.value}px`,
         },
       }
     : coordinates.value

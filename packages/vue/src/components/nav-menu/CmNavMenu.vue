@@ -71,7 +71,8 @@ const classes = computed(() =>
     attrs.class,
   ),
 );
-const rootAttrs = () => omitCmOwnedAttrs(attrs, ['class', 'aria-label', 'data-cm-controller']);
+const rootAttrs = () =>
+  omitCmOwnedAttrs(attrs, ['class', 'aria-label', 'data-cm-controller', 'data-cm-nav-menu-expand-mode']);
 
 function onToggle(value: string): void {
   const next = toggleBranchValue(props.items, expanded.value, value, expandMode.value);
@@ -93,7 +94,13 @@ useCmHydrated();
 </script>
 
 <template>
-  <nav v-bind="rootAttrs()" :class="classes" :aria-label="props.ariaLabel" data-cm-controller="nav-menu">
+  <nav
+    v-bind="rootAttrs()"
+    :class="classes"
+    :aria-label="props.ariaLabel"
+    data-cm-controller="nav-menu"
+    :data-cm-nav-menu-expand-mode="expandMode === 'single' ? 'single' : undefined"
+  >
     <ul class="cm-nav-menu__list">
       <CmNavMenuNode
         v-for="item in props.items"
@@ -105,7 +112,11 @@ useCmHydrated();
         :link-component="props.linkComponent"
         @toggle="onToggle"
         @select="onSelect"
-      />
+      >
+        <template v-for="name in Object.keys($slots)" #[name]="scope">
+          <slot :name="name" v-bind="scope" />
+        </template>
+      </CmNavMenuNode>
     </ul>
   </nav>
 </template>

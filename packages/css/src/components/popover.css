@@ -4,7 +4,7 @@
 
 .cm-popover__panel {
   position: absolute;
-  z-index: 1;
+  z-index: 2;
   inset-block-start: calc(100% + var(--cm-space-2) + var(--cm-border-width-thick));
   inset-inline-start: 0;
   inline-size: min(calc(100vw - 2 * var(--cm-space-4)), calc(var(--cm-space-16) * 5 + var(--cm-space-4) * 2));
