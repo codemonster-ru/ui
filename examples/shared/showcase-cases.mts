@@ -1013,7 +1013,7 @@ export function showcaseComponentCases(
     // Use the same content when comparing size, variant, and state.
     const tone = feedbackPalettes.has(slug) ? showcasePropValue(slug, 'tone', effectiveProps.tone) : undefined;
     const alert = slug === 'alert' && typeof tone === 'string' ? alertExamples[tone] : undefined;
-    const slots = buttonStyle && slug === 'button' ? { default: 'OK' } : { ...fixture.slots };
+    const slots: ShowcaseCase['slots'] = buttonStyle && slug === 'button' ? { default: 'OK' } : { ...fixture.slots };
     if (alert) {
       slots.title = alert.title;
       slots.default = alert.text;
