@@ -86,8 +86,6 @@
 }
 
 .catalog-icon .cm-button__leading {
-  --cm-icon-size: var(--cm-icon-size-lg);
-
   inline-size: var(--cm-icon-size-lg);
   block-size: var(--cm-icon-size-lg);
 }
