@@ -435,7 +435,7 @@
 
 /* Leave room for nested menus and labels beside step markers. */
 #preview-menu-bar-compact-edge,
-#preview-stepper-default--contentPosition-inline {
+[id='preview-stepper-default--contentPosition-inline'] {
   grid-column: 1 / -1;
 }
 
