@@ -17,5 +17,5 @@
 .cm-column-chooser__options {
   display: flex;
   flex-direction: column;
-  gap: var(--cm-space-1);
+  gap: var(--cm-space-2);
 }
