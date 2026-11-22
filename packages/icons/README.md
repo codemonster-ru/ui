@@ -11,7 +11,7 @@ Current version: `@codemonster-ru/ui-icons@2.0.0-rc.2` — unpublished internal 
 
 ## Status
 
-This package owns the rendered geometry of 116 icons across two families and four variants, as data
+This package owns the rendered geometry of 119 icons across two families and four variants, as data
 rather than as a rendering engine. Vue consumes the stored geometry directly. Vanilla templates can embed the corresponding SVG.
 
 That is the point. The VueForge renderer is 2,135 lines carrying per-icon masks, duotone exceptions,
@@ -65,6 +65,7 @@ npm run generate -w @codemonster-ru/ui-icons -- /path/to/built/vueforge-icons <s
 The generator reads a built `@codemonster-ru/vueforge-icons` package and renders every combination
 in Node. Pass the source commit for an unpacked archive. In a source checkout the generator can
 read the revision from Git. `src/generated/provenance.json` records the source version and revision.
+The CodeMonster sorting icons are authored in `src/sort-icons.ts` and live outside the generated directory.
 
 ## Shape
 

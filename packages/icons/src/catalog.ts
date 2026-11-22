@@ -1,7 +1,7 @@
 import catalog from './catalog-data/catalog.json' with { type: 'json' };
 import core from './catalog-data/core.json' with { type: 'json' };
 import groups from './catalog-data/groups.json' with { type: 'json' };
-import type { cmIconNames } from './generated/index.js';
+import type { cmIconNames } from './index.js';
 import { cmIconFamilies, cmIconVariants, type CmIconFamily, type CmIconVariant } from './types.js';
 
 export type IconName = (typeof cmIconNames)[number];
