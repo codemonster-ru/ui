@@ -36,28 +36,24 @@
 .cm-table :where(th, td) {
   padding: var(--cm-field-padding-lg);
   text-align: start;
-  vertical-align: top;
+  vertical-align: middle;
 }
 
 .cm-table__head th {
   border-block-end: var(--cm-border-width) solid var(--cm-color-border-divider);
   background: var(--cm-color-background-surface-subtle);
   color: var(--cm-color-text-secondary);
-  font-size: var(--cm-text-label-font-size);
   font-weight: var(--cm-font-weight-semibold);
 }
 
-.cm-table__body > tr + tr > td {
+.cm-table__body > tr + tr > :where(th, td),
+.cm-table__foot > tr > :where(th, td) {
   border-block-start: var(--cm-border-width) solid var(--cm-color-border-divider);
 }
 
 .cm-table__foot {
   background: var(--cm-color-background-surface);
   color: var(--cm-color-text-secondary);
-}
-
-.cm-table__foot > tr:first-child > td {
-  border-block-start: var(--cm-border-width) solid var(--cm-color-border-divider);
 }
 
 .cm-table--compact :where(th, td) {

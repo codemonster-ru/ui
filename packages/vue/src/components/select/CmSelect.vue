@@ -10,7 +10,7 @@ import { useCmFloatingPaint } from '../../internal/floating-paint';
 import { useCmFormReset } from '../../internal/form-reset';
 import { mergeCmClasses, mergeCmPickerTriggerAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
-import { selectClosedKeyAction, selectOpenKeyAction } from '@codemonster-ru/ui-runtime/core';
+import { selectClosedKeyAction, selectOpenKeyAction, selectPaginationTabTarget } from '@codemonster-ru/ui-runtime/core';
 import { assertCm, warnCm } from '../../internal/warn';
 import type { CmSelectOption, CmSelectPlacement, CmSelectSize } from './select.types';
 
@@ -86,7 +86,13 @@ const teleportTarget = computed(() =>
 );
 const listboxStyle = computed(() =>
   teleportTarget.value
-    ? { ...positionStyle.value, position: 'fixed' as const, minWidth: `${portalWidth.value ?? 0}px` }
+    ? {
+        ...positionStyle.value,
+        position: 'fixed' as const,
+        width: 'max-content',
+        maxWidth: '100dvw',
+        minWidth: `${portalWidth.value ?? 0}px`,
+      }
     : positionStyle.value,
 );
 
@@ -109,6 +115,8 @@ const triggerAttrs = () =>
     'aria-invalid': props.invalid || undefined,
     'aria-required': props.required || undefined,
     disabled: props.disabled || undefined,
+    'data-cm-select-teleport-to':
+      !props.disableTeleport && typeof props.teleportTo === 'string' ? props.teleportTo : undefined,
     'data-cm-placeholder': props.placeholder ?? undefined,
     'data-cm-filled': currentValue.value !== '' || undefined,
   });
@@ -142,10 +150,22 @@ function clearValue(): void {
   setOpen(false, true);
 }
 
+function onTab(event: KeyboardEvent): void {
+  const trigger = triggerRef.value;
+  if (!trigger) return;
+  const destination = selectPaginationTabTarget(trigger, event.shiftKey);
+  setOpen(false);
+  if (destination) event.preventDefault();
+  // Resume native tab navigation from the trigger when pagination has no explicit destination.
+  (destination ?? trigger).focus({ preventScroll: !destination || destination === trigger });
+}
+
 function onTriggerKeydown(event: KeyboardEvent): void {
   if (props.disabled) return;
   if (isOpen.value) {
-    if (event.key === 'Escape') {
+    if (event.key === 'Tab') {
+      onTab(event);
+    } else if (event.key === 'Escape') {
       event.preventDefault();
       event.stopPropagation();
       setOpen(false, true);
@@ -170,6 +190,11 @@ function onTriggerKeydown(event: KeyboardEvent): void {
 }
 
 function onListboxKeydown(event: KeyboardEvent): void {
+  if (event.key === 'Tab') {
+    onTab(event);
+    return;
+  }
+
   const options = enabledOptions();
   const action = selectOpenKeyAction(event.key, {
     activeIndex: options.indexOf(document.activeElement as HTMLButtonElement),

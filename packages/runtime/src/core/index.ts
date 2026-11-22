@@ -9,6 +9,7 @@ export type { CmAccordionCoreItem } from './accordion.js';
 export {
   ariaSortFor,
   clampPage,
+  compareDataTableSortValues,
   resolveColumnChooserState,
   resolveVisibleColumns,
   toggleAllColumns,
@@ -95,7 +96,7 @@ export {
   shellStickyOffsets,
 } from './shell.js';
 export type { CmSetupFocusTarget, CmShellState, CmStickyRegions } from './shell.js';
-export { selectClosedKeyAction, selectOpenKeyAction } from './select.js';
+export { selectClosedKeyAction, selectOpenKeyAction, selectPaginationTabTarget } from './select.js';
 export { nextStepperValue, resolveStepperProgress, resolveStepperValue, resolveStepState } from './stepper.js';
 export type { CmStepperCoreItem, CmStepperStepState } from './stepper.js';
 export {

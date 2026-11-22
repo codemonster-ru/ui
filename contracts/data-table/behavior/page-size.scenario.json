@@ -3,7 +3,8 @@
   "id": "data-table-page-size",
   "case": "data-table-interactive",
   "steps": [
-    { "action": "setValue", "target": "page-size", "value": "25" },
+    { "action": "click", "target": "page-size" },
+    { "action": "click", "target": "page-size-option-25" },
     { "expect": "attribute", "target": "root", "name": "data-cm-data-table-page-size", "value": "25" },
     { "expect": "attribute", "target": "root", "name": "data-cm-data-table-page", "value": "1" },
     { "expect": "attribute", "target": "root", "name": "data-cm-data-table-page-count", "value": "1" },

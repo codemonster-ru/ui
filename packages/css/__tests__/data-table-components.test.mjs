@@ -20,6 +20,9 @@ test('preserves responsive table and interactive data-table hooks', async () => 
   assert.match(table, /overflow-x: auto/u);
   assert.match(table, /\.cm-table--sticky-header/u);
   assert.match(dataTable, /\[aria-sort='ascending'\]/u);
+  assert.match(dataTable, /@import '\.\/checkbox\.css';/u);
+  assert.match(dataTable, /@import '\.\/button\.css';/u);
+  assert.match(dataTable, /@import '\.\/select\.css';/u);
   assert.match(dataTable, /\.cm-data-table__row--selected/u);
   assert.match(dataTable, /\.cm-data-table__page-button:focus-visible/u);
   assert.match(dataTable, /@media \(forced-colors: active\)/u);
@@ -36,13 +39,14 @@ test('uses the shared type and spacing roles and retains intrinsic table layout'
     assert.match(css, /font-weight: var\(--cm-font-weight-regular\)/u);
     assert.match(css, /padding: var\(--cm-field-padding-lg\)/u);
     assert.match(css, /padding: var\(--cm-field-padding-md\)/u);
-    assert.match(css, /vertical-align: top/u);
+    assert.match(css, /vertical-align: middle/u);
     assert.match(css, /var\(--cm-color-background-surface\) 65%/u);
   }
 
-  assert.match(table, /\.cm-table__body > tr \+ tr > td/u);
-  assert.match(table, /\.cm-table__foot > tr:first-child > td/u);
-  assert.match(dataTable, /\.cm-data-table__body > tr \+ tr > td/u);
+  assert.match(table, /\.cm-table__body > tr \+ tr > :where\(th, td\)/u);
+  assert.match(table, /\.cm-table__foot > tr > :where\(th, td\)/u);
+  assert.match(dataTable, /\.cm-data-table__body > tr \+ tr > :where\(th, td\)/u);
+  assert.match(dataTable, /\.cm-data-table__table > tfoot > tr > :where\(th, td\)/u);
   assert.match(dataTable, /inline-size: calc\(var\(--cm-space-4\) \+ var\(--cm-space-1\)\)/u);
   assert.doesNotMatch(table, /\.cm-table\s*\{[^}]*min-inline-size:/u);
   assert.doesNotMatch(dataTable, /\.cm-data-table__table\s*\{[^}]*min-inline-size:/u);

@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { chevronLeft, chevronRight } from '@codemonster-ru/ui-icons/controls';
-import { computed, nextTick, useTemplateRef, watch } from 'vue';
+import { computed, nextTick, ref, useId, useTemplateRef, watch } from 'vue';
+import CmButton from '../button/CmButton.vue';
 import CmIconButton from '../icon-button/CmIconButton.vue';
 import CmIcon from '../icon/CmIcon.vue';
+import CmSelect from '../select/CmSelect.vue';
 import type { VfDataTableLabels } from './historical-data-table.types';
 
 const props = defineProps<{
@@ -18,6 +20,16 @@ const props = defineProps<{
   nextPageLabel?: string;
 }>();
 const emit = defineEmits<{ pageChange: [page: number]; pageSizeChange: [size: number] }>();
+
+const pageSizeId = `cm-data-table-page-size-${useId()}`;
+const pageSizeChoices = computed(() =>
+  props.pageSizeOptions.map((size) => ({ value: String(size), label: String(size) })),
+);
+const selectedSize = ref(String(props.pageSize));
+watch(
+  () => props.pageSize,
+  (size) => (selectedSize.value = String(size)),
+);
 
 const items = computed<(number | 'start-ellipsis' | 'end-ellipsis')[]>(() => {
   const { page, pageCount: count } = props;
@@ -48,11 +60,12 @@ function changePage(page: number): void {
   if (page !== props.page) emit('pageChange', page);
 }
 
-function changeSize(event: Event): void {
-  const select = event.currentTarget as HTMLSelectElement;
-  const size = Number(select.value);
-  select.value = String(props.pageSize);
+async function changeSize(value: string): Promise<void> {
+  const size = Number(value);
+  selectedSize.value = value;
   if (size !== props.pageSize && props.pageSizeOptions.includes(size)) emit('pageSizeChange', size);
+  await nextTick();
+  selectedSize.value = String(props.pageSize);
 }
 
 const actions = useTemplateRef<HTMLDivElement>('actions');
@@ -78,18 +91,20 @@ watch(
 
 <template>
   <span v-if="summary !== undefined" class="cm-data-table__pagination-summary" aria-live="polite">{{ summary }}</span>
-  <label v-if="props.pageSizeOptions.length" class="cm-data-table__page-size">
-    <span>{{ props.labels.rows ?? 'Rows' }}</span>
-    <select
+  <div v-if="pageSizeChoices.length" class="cm-data-table__page-size">
+    <label :for="pageSizeId">{{ props.labels.rows ?? 'Rows' }}</label>
+    <CmSelect
+      :id="pageSizeId"
+      :options="pageSizeChoices"
+      :model-value="selectedSize"
+      size="sm"
+      teleport-to="body"
+      tabindex="0"
       data-cm-data-table-page-size-control
       :aria-label="props.rowsPerPageLabel ?? props.labels.rowsPerPage ?? 'Rows per page'"
-      @change="changeSize"
-    >
-      <option v-for="size in props.pageSizeOptions" :key="size" :value="size" :selected="size === props.pageSize">
-        {{ size }}
-      </option>
-    </select>
-  </label>
+      @value-change="changeSize"
+    />
+  </div>
   <div ref="actions" class="cm-data-table__pagination-actions">
     <CmIconButton
       size="sm"
@@ -102,16 +117,17 @@ watch(
     </CmIconButton>
     <template v-for="item in items" :key="item">
       <span v-if="typeof item !== 'number'" class="cm-data-table__pagination-ellipsis" aria-hidden="true">…</span>
-      <button
+      <CmButton
         v-else
-        type="button"
         class="cm-data-table__page-button cm-data-table__pagination-page"
+        size="sm"
+        variant="ghost"
         :aria-current="item === props.page ? 'page' : undefined"
         :aria-label="pageLabel(item)"
         @click="changePage(item)"
       >
         {{ item }}
-      </button>
+      </CmButton>
     </template>
     <CmIconButton
       size="sm"

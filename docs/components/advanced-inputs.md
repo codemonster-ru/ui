@@ -58,6 +58,11 @@ Register `createCmSelectController` in Vanilla HTML: it owns opening, keyboard m
 clearing, and listbox placement. Without it the control renders its current value and a form still
 submits that value through the hidden input, but the value cannot be changed.
 
+Use `placement="bottom-end"` in Vue to align the listbox with the end of the trigger. In Vanilla,
+set `data-cm-placement="bottom-end"` on the listbox. To keep the listbox outside a clipped container,
+pass `teleportTo` in Vue or set `data-cm-select-teleport-to` on the Vanilla trigger. Vue's
+`disableTeleport` leaves the listbox in place; for Vanilla omit the teleport attribute.
+
 `required` is announced through `aria-required` and is not enforced by the browser, because a
 component-owned control sits outside constraint validation. Refusing an empty submission is the
 application's responsibility.

@@ -1,5 +1,6 @@
 import {
   ariaSortFor,
+  compareDataTableSortValues,
   formatTemplate,
   nextSortState,
   sortLabelFor,
@@ -16,6 +17,7 @@ import {
 import { dispatchCmEvent } from './events.js';
 import { observeDataTablePins } from './data-table-pinning.js';
 import type { CmController, CmControllerFactory } from './runtime.js';
+import type { SelectValueChangeDetail } from './select.js';
 
 export type DataTableSortDirection = 'ascending' | 'descending';
 
@@ -65,9 +67,22 @@ function nonNegativeInteger(value: string | null): number | null {
   return value !== null && Number.isInteger(parsed) && parsed >= 0 ? parsed : null;
 }
 
+function readSortValue(value: string | null): string | number | null {
+  if (value === null) return null;
+  try {
+    const parsed: unknown = JSON.parse(value);
+    if (typeof parsed === 'string' || (typeof parsed === 'number' && Number.isFinite(parsed))) return parsed;
+  } catch {
+    // Treat malformed authored values like missing cells.
+  }
+  return null;
+}
+
 export class CmDataTableController implements CmController {
   readonly #root: Element;
   readonly #table: HTMLTableElement;
+  readonly #originalOrder = new WeakMap<HTMLTableRowElement, number>();
+  #nextRowIndex = 0;
   #stopPinning: (() => void) | undefined;
   #stopResizeGuide?: () => void;
   #drag:
@@ -114,6 +129,7 @@ export class CmDataTableController implements CmController {
     }
     this.#root.addEventListener('click', this.#handleClick);
     this.#root.addEventListener('change', this.#handleChange);
+    this.#root.addEventListener('cm:select-value-change', this.#handlePageSizeSelection);
     this.#root.addEventListener('focusin', this.#handleResizeFocus);
     this.#root.addEventListener('keydown', this.#handleResizeKey);
     this.#root.addEventListener('dblclick', this.#handleResizeDoubleClick);
@@ -127,6 +143,7 @@ export class CmDataTableController implements CmController {
   disconnect(): void {
     this.#root.removeEventListener('click', this.#handleClick);
     this.#root.removeEventListener('change', this.#handleChange);
+    this.#root.removeEventListener('cm:select-value-change', this.#handlePageSizeSelection);
     this.#root.removeEventListener('focusin', this.#handleResizeFocus);
     this.#root.removeEventListener('keydown', this.#handleResizeKey);
     this.#root.removeEventListener('dblclick', this.#handleResizeDoubleClick);
@@ -283,8 +300,16 @@ export class CmDataTableController implements CmController {
       return;
     }
 
-    const pageSize = target.closest<HTMLSelectElement>(pageSizeSelector);
-    if (pageSize && this.#root.contains(pageSize)) this.#requestPageSize(pageSize);
+    const pageSize = target.closest<HTMLSelectElement>(`select${pageSizeSelector}`);
+    if (pageSize && this.#root.contains(pageSize)) this.#requestPageSize(pageSize.value);
+  };
+
+  readonly #handlePageSizeSelection = (event: Event): void => {
+    const target = this.#eventElement(event);
+    if (!target?.matches('.cm-select-wrap')) return;
+    const control = target.querySelector<HTMLButtonElement>(`:scope > button${pageSizeSelector}`);
+    const value = (event as CustomEvent<SelectValueChangeDetail>).detail?.value;
+    if (control && !control.disabled && typeof value === 'string') this.#requestPageSize(value);
   };
 
   #eventElement(event: Event): Element | null {
@@ -371,9 +396,61 @@ export class CmDataTableController implements CmController {
       }[sortLabelFor(sort, key)];
       button.setAttribute('aria-label', formatTemplate(template, { column: this.#sortLabel(button) }));
     }
+    if (this.#root.getAttribute('data-cm-data-table-sort-mode') === 'client') {
+      for (const body of this.#table.tBodies) this.#sortBody(body, sort);
+    }
+  }
+
+  #sourceIndex(row: HTMLTableRowElement): number {
+    const saved = this.#originalOrder.get(row);
+    if (saved !== undefined) return saved;
+    const authored = nonNegativeInteger(row.getAttribute('data-cm-data-table-source-index'));
+    const index = authored ?? this.#nextRowIndex;
+    this.#originalOrder.set(row, index);
+    this.#nextRowIndex = Math.max(this.#nextRowIndex, index + 1);
+    return index;
+  }
+
+  #sortBody(body: HTMLTableSectionElement, sort: CmDataTableSortState | null): void {
+    const rows = Array.from(body.rows);
+    const detailRows = new Set<HTMLTableRowElement>();
+    const entries = rows.flatMap((row, index) => {
+      if (!row.matches(rowSelector)) return [];
+      const next = rows[index + 1];
+      const detail = next?.classList.contains('cm-data-table__expanded-row') ? next : undefined;
+      if (detail) detailRows.add(detail);
+      const cell = sort && Array.from(row.cells).find((cell) => cell.dataset.cmDataTableColumn === sort.key);
+      return [
+        { row, detail, index: this.#sourceIndex(row), value: cell?.getAttribute('data-cm-data-table-sort-value') },
+      ];
+    });
+    // A server may have sorted by a column it did not render.
+    if (sort && !entries.some(({ value }) => value != null)) return;
+    const sorted = entries.map((entry) => ({ ...entry, value: readSortValue(entry.value ?? null) }));
+    sorted.sort(
+      (left, right) =>
+        (sort ? compareDataTableSortValues(left.value, right.value, sort.direction) : 0) || left.index - right.index,
+    );
+
+    // Move existing nodes, including any adjacent details, and leave unrelated rows in their slots.
+    let index = 0;
+    const ordered = rows.flatMap((row) => {
+      if (detailRows.has(row)) return [];
+      if (!row.matches(rowSelector)) return [row];
+      const entry = sorted[index++];
+      return entry.detail ? [entry.row, entry.detail] : [entry.row];
+    });
+    let anchor: HTMLTableRowElement | null = null;
+    for (const row of ordered.reverse()) {
+      if (row.nextElementSibling !== anchor) body.insertBefore(row, anchor);
+      anchor = row;
+    }
   }
 
   #sortLabel(button: HTMLElement): string {
+    const label = button.querySelector(':scope > .cm-button__label');
+    if (label) return label.textContent?.trim() ?? '';
+
     const indicator = button.querySelector('.cm-data-table__sort-indicator');
     const indicatorText = indicator?.textContent ?? '';
     const completeText = button.textContent ?? '';
@@ -425,8 +502,8 @@ export class CmDataTableController implements CmController {
     dispatchCmEvent<DataTablePageChangeDetail>(this.#root, 'data-table-page-change', { page });
   }
 
-  #requestPageSize(control: HTMLSelectElement): void {
-    const pageSize = positiveInteger(control.value, 0);
+  #requestPageSize(value: string): void {
+    const pageSize = positiveInteger(value, 0);
     const current = positiveInteger(this.#root.getAttribute('data-cm-data-table-page-size'), 0);
     if (pageSize === 0 || pageSize === current) return;
     const page = positiveInteger(this.#root.getAttribute('data-cm-data-table-page'), 1);

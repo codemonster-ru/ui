@@ -54,7 +54,15 @@
       "type": "string",
       "required": false,
       "default": "Clear selection"
-    }
+    },
+    "placement": {
+      "type": "enum",
+      "required": false,
+      "default": "bottom-start",
+      "values": ["bottom-start", "bottom-end"]
+    },
+    "teleportTo": { "type": "string", "required": false },
+    "disableTeleport": { "type": "boolean", "required": false, "default": false }
   },
   "slots": {
     "leading": {

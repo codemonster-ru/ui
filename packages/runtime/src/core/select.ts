@@ -1,5 +1,7 @@
+import { cmFocusableSelector } from './disclosure.js';
+
 /**
- * Select keyboard rules, with no DOM and no framework.
+ * Framework-independent Select keyboard rules.
  *
  * A select behaves as two different widgets depending on whether its listbox is open, so the rules
  * come in two functions rather than one with a mode flag.
@@ -69,4 +71,28 @@ export function selectOpenKeyAction(
   }
 
   return null;
+}
+
+export function selectPaginationTabTarget(trigger: HTMLButtonElement, backwards: boolean): HTMLElement | null {
+  if (!trigger.hasAttribute('data-cm-data-table-page-size-control')) return null;
+  const pagination = trigger.closest('.cm-data-table__pagination');
+  if (!pagination) return null;
+
+  if (!backwards) {
+    return pagination.querySelector<HTMLButtonElement>('button[data-cm-data-table-page-action="next"]:not(:disabled)');
+  }
+
+  return (
+    Array.from(pagination.querySelectorAll<HTMLElement>(cmFocusableSelector))
+      .reverse()
+      .find(
+        (element) =>
+          Boolean(trigger.compareDocumentPosition(element) & trigger.DOCUMENT_POSITION_PRECEDING) &&
+          element.tabIndex >= 0 &&
+          !element.matches(':disabled') &&
+          !element.closest('[inert], [aria-disabled="true"]') &&
+          element.getClientRects().length > 0 &&
+          element.ownerDocument.defaultView?.getComputedStyle(element).visibility === 'visible',
+      ) ?? trigger
+  );
 }
