@@ -5,10 +5,9 @@ Use a native fieldset to give related controls a shared legend. A collapsible Gr
 Give the trigger and content unique IDs and connect them with `aria-controls` and
 `aria-labelledby`. The trigger's `aria-expanded` and the content's `hidden` state agree.
 
-A collapsed GroupBox excludes its fields from validation and submission. Vue removes the
-content slot. Vanilla retains the existing controls and marks the fieldset disabled, which leaves
-the first legend's trigger available while excluding the other descendants. Reopening a Vanilla
-GroupBox preserves edited form values.
+A collapsed GroupBox hides its content and disables the fieldset in Vue and Vanilla. The first
+legend's trigger remains available while the fields are excluded from validation and submission.
+The controls stay mounted, so reopening the group preserves edited form values.
 
 For Vanilla disclosure, set `data-cm-controller="group-box"`. Set the root fieldset's `disabled`
 attribute only when starting collapsed and disable the trigger separately to prevent toggling.

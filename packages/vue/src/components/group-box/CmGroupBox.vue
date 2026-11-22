@@ -65,6 +65,7 @@ useCmHydrated();
         :disabled="props.disabled"
         class="cm-group-box__trigger"
         variant="ghost"
+        size="md"
         @click="toggle"
       >
         <template #leading>
@@ -88,7 +89,7 @@ useCmHydrated();
       :role="canCollapse ? 'region' : undefined"
       class="cm-group-box__content"
     >
-      <slot v-if="!isCollapsed" :collapsed="isCollapsed" />
+      <slot :collapsed="isCollapsed" />
     </div>
   </fieldset>
 </template>
