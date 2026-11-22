@@ -12,6 +12,7 @@
 
 .cm-fieldset__legend {
   margin: 0;
+  margin-block-end: var(--cm-space-2);
   padding: 0;
   color: var(--cm-color-text-primary);
   font-size: var(--cm-font-size-md);
