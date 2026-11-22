@@ -23,6 +23,12 @@ for (const slug of ['checkbox', 'radio', 'switch']) {
     assert.ok(inputRule);
     assert.match(inputRule, /opacity: 0;/u);
     assert.doesNotMatch(inputRule, /display: none;/u);
+    const focus = css.match(
+      new RegExp(`\\.cm-${slug}__input:focus-visible \\+ \\.cm-${slug}__control \\{([^}]*)\\}`, 'u'),
+    )?.[1];
+    assert.ok(focus);
+    assert.match(focus, /--cm-forced-focus-outline-color/u);
+    assert.doesNotMatch(focus, /box-shadow:/u);
   });
 }
 
@@ -35,7 +41,6 @@ test('preserves frozen selection-control geometry and typography', async () => {
     assert.match(css, /align-items: flex-start;/u);
     assert.match(css, /gap: var\(--cm-space-3\);/u);
     assert.match(css, /font-size: var\(--cm-control-font-size-md\);/u);
-    assert.match(css, /box-shadow: 0 0 0 var\(--cm-focus-ring-width\) var\(--cm-color-focus-ring\);/u);
     assert.match(css, /border-color: var\(--cm-color-interactive-primary-border\);/u);
   }
 

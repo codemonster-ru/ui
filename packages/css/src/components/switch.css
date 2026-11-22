@@ -143,35 +143,80 @@
   transform: translateX(calc(var(--cm-switch-thumb-travel) * -1));
 }
 
-.cm-switch:hover:has(.cm-switch__input:not(:disabled)) .cm-switch__control {
+.cm-switch:hover:where(:has(.cm-switch__input:not(:disabled))) .cm-switch__control {
   border-color: var(--cm-color-interactive-primary-border);
   background: var(--cm-color-background-surface-hover);
 }
 
-.cm-switch:hover:has(.cm-switch__input:checked:not(:disabled)) .cm-switch__control {
+.cm-switch:hover:where(:has(.cm-switch__input:checked:not(:disabled))) .cm-switch__control {
   border-color: var(--cm-color-interactive-primary-hover-background);
   background: var(--cm-color-interactive-primary-hover-background);
 }
 
-.cm-switch:active:has(.cm-switch__input:not(:checked, :disabled)) .cm-switch__control {
+.cm-switch:active:where(:has(.cm-switch__input:not(:checked, :disabled))) .cm-switch__control {
   border-color: var(--cm-color-interactive-primary-border);
   background: var(--cm-color-background-surface-active);
 }
 
-.cm-switch:active:has(.cm-switch__input:checked:not(:disabled)) .cm-switch__control {
-  border-color: var(--cm-color-interactive-primary-active-background);
-  background: var(--cm-color-interactive-primary-active-background);
-}
-
 .cm-switch__input:focus-visible + .cm-switch__control {
-  border-color: var(--cm-color-border-focus);
   outline: var(--cm-focus-ring-width) solid var(--cm-forced-focus-outline-color, transparent);
-  box-shadow: 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
 }
 
-.cm-switch--invalid:has(.cm-switch__input:not(:disabled)) .cm-switch__control,
-.cm-switch__input[aria-invalid='true']:not(:disabled) + .cm-switch__control {
+.cm-switch:where(.cm-switch--invalid, :has(.cm-switch__input[aria-invalid='true']))
+  .cm-switch__input:enabled
+  + .cm-switch__control {
   border-color: var(--cm-color-status-danger-border);
+}
+
+.cm-switch:where(.cm-switch--invalid, :has(.cm-switch__input[aria-invalid='true'])):hover
+  .cm-switch__input:enabled
+  + .cm-switch__control {
+  border-color: var(--cm-color-interactive-primary-border);
+}
+
+.cm-switch .cm-switch__input:enabled:focus + .cm-switch__control {
+  border-color: var(--cm-color-border-focus);
+}
+
+.cm-switch .cm-switch__input:enabled:checked:focus + .cm-switch__control {
+  border-color: light-dark(var(--cm-palette-neutral-1000), var(--cm-palette-neutral-0));
+}
+
+.cm-switch:where(:not(:active, .cm-switch--static))
+  .cm-switch__input:enabled:checked:focus-visible
+  + .cm-switch__control {
+  background-color: light-dark(var(--cm-palette-primary-400), var(--cm-color-interactive-primary-background));
+}
+
+.cm-switch:hover:where(:not(:active)) .cm-switch__input:enabled:checked:focus + .cm-switch__control {
+  background-color: light-dark(
+    color-mix(
+      in oklch,
+      var(--cm-color-interactive-primary-background) 60%,
+      var(--cm-color-interactive-primary-hover-background)
+    ),
+    var(--cm-color-interactive-primary-hover-background)
+  );
+}
+
+.cm-switch:hover:where(:not(:active, .cm-switch--static))
+  .cm-switch__input:enabled:checked:focus-visible
+  + .cm-switch__control {
+  background-color: light-dark(var(--cm-palette-primary-500), var(--cm-color-interactive-primary-hover-background));
+}
+
+.cm-switch:active:where(:not(.cm-switch--static), .cm-switch--invalid, :has(.cm-switch__input[aria-invalid='true']))
+  .cm-switch__input:enabled:checked
+  + .cm-switch__control {
+  border-color: light-dark(var(--cm-palette-neutral-1000), var(--cm-palette-neutral-0));
+  background-color: light-dark(
+    color-mix(
+      in oklch,
+      var(--cm-color-interactive-primary-background) 80%,
+      var(--cm-color-interactive-primary-active-background)
+    ),
+    var(--cm-color-interactive-primary-active-background)
+  );
 }
 
 .cm-switch__input:disabled + .cm-switch__control {
@@ -193,7 +238,9 @@
   cursor: not-allowed;
 }
 
-.cm-switch--static .cm-switch__input:not(:disabled, :focus-visible, [aria-invalid='true']) + .cm-switch__control {
+.cm-switch--static:where(:not(.cm-switch--invalid))
+  .cm-switch__input:not(:disabled, :focus-visible, [aria-invalid='true'])
+  + .cm-switch__control {
   border-color: var(--cm-color-border-interactive);
   background: var(--cm-color-background-surface);
 }
