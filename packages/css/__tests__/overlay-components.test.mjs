@@ -38,6 +38,50 @@ test('preserves modal, focus, hidden, and logical-placement hooks', async () => 
   assert.doesNotMatch(`${dialog}${drawer}${popover}${tooltip}`, /^\s*(?:(?:margin|padding|border)-)?(?:left|right):/mu);
 });
 
+test('keeps anchored panels outside the scroll clip of native modals', async () => {
+  for (const component of ['dialog', 'drawer']) {
+    const css = await readBuiltStyles(component);
+    assert.match(css, /\.cm-drawer__body\) \{[^}]*overflow: auto;/u);
+    assert.match(
+      css,
+      /:is\(\.cm-dialog, \.cm-drawer\):modal\s+:is\(\.cm-tooltip__content, \.cm-dropdown__menu, \.cm-popover__panel, \.cm-select__listbox, \.cm-date-picker__calendar\) \{\s+position: fixed;/u,
+    );
+  }
+});
+
+test('keeps inline popups above floating labels and clear buttons', async () => {
+  const [tooltip, select, datePicker, field, dropdown, popover, menuBar] = await Promise.all(
+    ['tooltip', 'select', 'date-picker', 'field', 'dropdown', 'popover', 'menu-bar'].map(readBuiltStyles),
+  );
+  const layer = (css, part) => {
+    const start = css.indexOf(`${part} {`);
+    assert(start >= 0, `Missing CSS rule for ${part}`);
+    const declaration = css.slice(start + part.length + 2).split('}')[0];
+    const match = declaration.match(/z-index: (\d+);/u);
+    assert(match, `Missing layer for ${part}`);
+    return Number(match[1]);
+  };
+  const controls = [
+    layer(field, '> .cm-field__label'),
+    layer(select, '.cm-select__clear'),
+    layer(datePicker, '.cm-date-picker__clear'),
+  ];
+  for (const [css, part] of [
+    [tooltip, '.cm-tooltip__content'],
+    [select, '.cm-select__listbox'],
+    [datePicker, '.cm-date-picker__calendar'],
+    [dropdown, '.cm-dropdown__menu'],
+    [popover, '.cm-popover__panel'],
+    [menuBar, '.cm-menu-bar__submenu'],
+  ]) {
+    assert(layer(css, part) > Math.max(...controls), `${part} should cover adjacent form chrome`);
+  }
+  assert(
+    layer(tooltip, '.cm-tooltip:hover > .cm-tooltip__content:not([data-cm-tooltip-floating])') >
+      layer(tooltip, '.cm-tooltip__content'),
+  );
+});
+
 test('keeps native modal motion and exit safety in each standalone stylesheet', async () => {
   const [dialog, drawer, palette] = await Promise.all(['dialog', 'drawer', 'command-palette'].map(readBuiltStyles));
   for (const css of [dialog, drawer, palette]) {

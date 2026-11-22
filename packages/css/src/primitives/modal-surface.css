@@ -57,6 +57,26 @@
   color: var(--cm-color-text-primary);
 }
 
+/* Keep panels in the native modal layer while escaping the body's scroll clip. */
+:is(.cm-dialog, .cm-drawer):modal
+  :is(.cm-tooltip__content, .cm-dropdown__menu, .cm-popover__panel, .cm-select__listbox, .cm-date-picker__calendar) {
+  position: fixed;
+}
+
+@media (width > 640px) {
+  :is(.cm-dialog, .cm-drawer):modal .cm-menu-bar__submenu {
+    position: fixed;
+  }
+}
+
+:is(.cm-dialog, .cm-drawer):modal .cm-dropdown__menu {
+  --cm-dropdown-anchor-width: var(--cm-floating-anchor-width, 0px);
+}
+
+:is(.cm-dialog, .cm-drawer):modal .cm-select__listbox {
+  inline-size: var(--cm-floating-anchor-width, max-content);
+}
+
 :is(.cm-dialog__actions, .cm-drawer__actions) {
   display: inline-flex;
   align-items: center;

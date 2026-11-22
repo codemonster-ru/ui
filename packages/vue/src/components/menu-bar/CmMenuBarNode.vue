@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { externalLink } from '@codemonster-ru/ui-icons/controls';
-import { computed, resolveComponent, useId, type Component, type PropType } from 'vue';
+import { attachCmMenuBarSubmenuPosition } from '@codemonster-ru/ui-runtime/anchored-position';
+import { computed, resolveComponent, useId, useTemplateRef, watchEffect, type Component, type PropType } from 'vue';
 
+import { useCmFloatingPaint } from '../../internal/floating-paint';
 import CmIcon from '../icon/CmIcon.vue';
 import type { CmMenuBarItem } from './menu-bar.types';
 
@@ -20,9 +22,31 @@ const props = defineProps({
 const emit = defineEmits<{ toggle: [value: string]; select: [value: string] }>();
 const panelId = useId();
 
+defineSlots<Record<string, (scope: { item: CmMenuBarItem }) => unknown>>();
+
+const itemSlot = computed(
+  () =>
+    `item${props.item.value
+      .split('-')
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join('')}`,
+);
 const isGroup = computed(() => props.item.kind === 'group');
 const hasChildren = computed(() => !isGroup.value && (props.item.children?.length ?? 0) > 0);
 const isOpen = computed(() => props.openPath.includes(props.item.value));
+const branch = useTemplateRef<HTMLButtonElement>('branch');
+const submenu = useTemplateRef<HTMLUListElement>('submenu');
+const painted = useCmFloatingPaint(isOpen, submenu);
+
+watchEffect(
+  (onCleanup) => {
+    // The historical wrapper positions its teleported top-level submenus.
+    if (!painted.value || !branch.value || !submenu.value || props.submenuTarget) return;
+    onCleanup(attachCmMenuBarSubmenuPosition(branch.value, submenu.value, props.depth === 0));
+  },
+  { flush: 'post' },
+);
+
 const isActive = computed(() => !hasChildren.value && props.activeValue === props.item.value);
 const tabindex = computed(() => (props.item.disabled || props.tabbableValue !== props.item.value ? -1 : 0));
 const nodeClasses = computed(() => [
@@ -89,11 +113,16 @@ function select(event: MouseEvent): void {
           :submenu-target="props.submenuTarget"
           @toggle="$emit('toggle', $event)"
           @select="$emit('select', $event)"
-        />
+        >
+          <template v-for="name in Object.keys($slots)" #[name]="scope">
+            <slot :name="name" v-bind="scope" />
+          </template>
+        </CmMenuBarNode>
       </ul>
     </template>
     <button
       v-else-if="hasChildren"
+      ref="branch"
       :class="itemClasses"
       type="button"
       role="menuitem"
@@ -107,7 +136,7 @@ function select(event: MouseEvent): void {
       @click="$emit('toggle', props.item.value)"
     >
       <CmIcon v-if="props.item.leadingIcon" :icon="props.item.leadingIcon" :size="'var(--cm-icon-size-sm)'" />
-      <slot :name="`item${props.item.value}`" :item="props.item"
+      <slot :name="itemSlot" :item="props.item"
         ><span class="cm-menu-bar__label">{{ props.item.label }}</span></slot
       ><span class="cm-menu-bar__icon" aria-hidden="true"></span>
     </button>
@@ -126,13 +155,14 @@ function select(event: MouseEvent): void {
       @click="select"
     >
       <CmIcon v-if="props.item.leadingIcon" :icon="props.item.leadingIcon" :size="'var(--cm-icon-size-sm)'" />
-      <slot :name="`item${props.item.value}`" :item="props.item"
+      <slot :name="itemSlot" :item="props.item"
         ><span class="cm-menu-bar__label">{{ props.item.label }}</span></slot
       >
       <CmIcon v-if="isLink && props.item.target === '_blank'" :icon="externalLink" size="var(--cm-icon-size-sm)" />
     </component>
     <Teleport v-if="hasChildren" :to="props.submenuTarget ?? 'body'" :disabled="!props.submenuTarget">
       <ul
+        ref="submenu"
         :id="props.submenuTarget ? panelId : undefined"
         class="cm-menu-bar__submenu"
         role="menu"
@@ -150,7 +180,11 @@ function select(event: MouseEvent): void {
           :link-component="props.linkComponent"
           @toggle="$emit('toggle', $event)"
           @select="$emit('select', $event)"
-        />
+        >
+          <template v-for="name in Object.keys($slots)" #[name]="scope">
+            <slot :name="name" v-bind="scope" />
+          </template>
+        </CmMenuBarNode>
       </ul>
     </Teleport>
   </li>

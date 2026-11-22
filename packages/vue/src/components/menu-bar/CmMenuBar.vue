@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, useAttrs, useTemplateRef, watch, watchEffect, type Component, type PropType } from 'vue';
 
+import { focusCmModalMenuBarFallback, observeCmModalMenuBarAnchor } from '@codemonster-ru/ui-runtime/anchored-position';
 import { menuBarKeyAction } from '@codemonster-ru/ui-runtime/core';
 import { useCmHydrated } from '../../internal/hydration';
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
@@ -36,7 +37,9 @@ const itemSelector = '[data-cm-menu-bar-branch], [data-cm-menu-bar-value]';
 const selected = ref(props.defaultValue);
 const activeValue = computed(() => (props.modelValue === undefined ? selected.value : props.modelValue));
 const focusedValue = ref<string | null>(null);
+const clippedTabStop = ref<string>();
 const pendingFocus = ref<{ branch: string; edge: 'first' | 'last' } | null>(null);
+let dismissingHiddenAnchor = false;
 
 const localPath = ref<string[]>([]);
 watchEffect(() => {
@@ -63,7 +66,10 @@ const menuItems = computed(() => {
   collect(props.items, []);
   return { ancestors, first };
 });
-const tabbableValue = computed(() => focusedValue.value ?? menuItems.value.first);
+const tabbableValue = computed(() => {
+  const value = focusedValue.value ?? menuItems.value.first;
+  return value === clippedTabStop.value ? null : value;
+});
 
 function ancestorsOf(value: string): string[] {
   return menuItems.value.ancestors.get(value) ?? [];
@@ -148,6 +154,43 @@ function topItem(item: HTMLElement): HTMLElement | undefined {
   return top === undefined ? item : branchItem(top);
 }
 
+watch(
+  [menu, () => openPath.value[0]],
+  ([root, value], _, onCleanup) => {
+    const branch = value === undefined ? undefined : branchItem(value);
+    if (!root || !branch) return;
+    const stop = observeCmModalMenuBarAnchor(branch, () => {
+      clippedTabStop.value = value;
+      const focused = (root.getRootNode() as Document | ShadowRoot).activeElement;
+      if (
+        focused === branch ||
+        (focused instanceof HTMLElement && root.contains(focused) && ancestorsOf(itemValue(focused))[0] === value)
+      ) {
+        dismissingHiddenAnchor = true;
+        focusCmModalMenuBarFallback(branch, enabledItems(root.firstElementChild));
+        dismissingHiddenAnchor = false;
+      }
+      pendingFocus.value = null;
+      setOpenPath([]);
+    });
+    if (stop) onCleanup(stop);
+  },
+  { flush: 'post' },
+);
+
+watch(
+  clippedTabStop,
+  (value, _, onCleanup) => {
+    const branch = value === undefined ? undefined : branchItem(value);
+    if (!branch) return;
+    const stop = observeCmModalMenuBarAnchor(branch, undefined, () => {
+      clippedTabStop.value = undefined;
+    });
+    if (stop) onCleanup(stop);
+  },
+  { flush: 'post' },
+);
+
 watch(openPath, (path) => {
   const root = menu.value;
   const focused = (root?.getRootNode() as Document | ShadowRoot | undefined)?.activeElement;
@@ -165,8 +208,10 @@ watch(
     if (!branch) return;
     const id = branch.getAttribute('aria-controls');
     const panel = id ? (branch.getRootNode() as Document | ShadowRoot).getElementById(id) : branch.nextElementSibling;
+    if (!panel) return;
     const entries = enabledItems(panel);
-    (request.edge === 'last' ? entries[entries.length - 1] : entries[0])?.focus();
+    const preventScroll = panel.ownerDocument.defaultView?.getComputedStyle(panel).position !== 'static';
+    (request.edge === 'last' ? entries[entries.length - 1] : entries[0])?.focus({ preventScroll });
   },
   { flush: 'post' },
 );
@@ -182,7 +227,7 @@ function onFocusOut(event: FocusEvent): void {
   const item = eventItem(event);
   const top = item && topItem(item);
   focusedValue.value = top ? itemValue(top) : null;
-  if (openPath.value.length) setOpenPath([]);
+  if (!dismissingHiddenAnchor && openPath.value.length) setOpenPath([]);
 }
 
 function onKeydown(event: KeyboardEvent): void {
@@ -266,7 +311,11 @@ useCmHydrated();
         :submenu-target="props.submenuTarget"
         @toggle="onToggle"
         @select="onSelect"
-      />
+      >
+        <template v-for="name in Object.keys($slots)" #[name]="scope">
+          <slot :name="name" v-bind="scope" />
+        </template>
+      </CmMenuBarNode>
     </ul>
     <slot name="scrollControls" />
   </nav>

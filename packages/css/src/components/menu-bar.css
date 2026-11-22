@@ -164,7 +164,7 @@
 
 .cm-menu-bar__submenu {
   position: absolute;
-  z-index: 1;
+  z-index: 2;
   min-inline-size: 10rem;
   padding: var(--cm-space-1);
   border: var(--cm-border-width) solid var(--cm-color-border-default);

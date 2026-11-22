@@ -18,6 +18,15 @@ const props = defineProps({
 defineEmits<{ toggle: [value: string]; select: [item: CmNavMenuItem] }>();
 
 const hasChildren = computed(() => (props.item.children?.length ?? 0) > 0);
+defineSlots<Record<string, (scope: { item: CmNavMenuItem }) => unknown>>();
+
+const itemSlot = computed(
+  () =>
+    `item${props.item.value
+      .split('-')
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join('')}`,
+);
 const isGroup = computed(() => props.item.kind === 'group');
 const isBranchItem = computed(() => hasChildren.value && !isGroup.value);
 const isExpanded = computed(() => isGroup.value || props.expandedValues.includes(props.item.value));
@@ -80,7 +89,7 @@ const branchClasses = computed(() => [
     >
       <span class="cm-nav-menu__item-content">
         <CmIcon v-if="props.item.leadingIcon" class="cm-nav-menu__leading-icon" :icon="props.item.leadingIcon" />
-        <slot :name="`item${props.item.value}`" :item="props.item">
+        <slot :name="itemSlot" :item="props.item">
           <span class="cm-nav-menu__label">{{ props.item.label }}</span>
         </slot>
       </span>
@@ -104,7 +113,7 @@ const branchClasses = computed(() => [
     >
       <span class="cm-nav-menu__item-content">
         <CmIcon v-if="props.item.leadingIcon" class="cm-nav-menu__leading-icon" :icon="props.item.leadingIcon" />
-        <slot :name="`item${props.item.value}`" :item="props.item">
+        <slot :name="itemSlot" :item="props.item">
           <span class="cm-nav-menu__label">{{ props.item.label }}</span>
         </slot>
       </span>
@@ -122,7 +131,11 @@ const branchClasses = computed(() => [
           :link-component="props.linkComponent"
           @toggle="$emit('toggle', $event)"
           @select="$emit('select', $event)"
-        />
+        >
+          <template v-for="name in Object.keys($slots)" #[name]="scope">
+            <slot :name="name" v-bind="scope" />
+          </template>
+        </CmNavMenuNode>
       </ul>
     </div>
   </li>

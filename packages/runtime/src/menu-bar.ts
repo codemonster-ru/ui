@@ -1,3 +1,9 @@
+import {
+  afterCmFloatingExit,
+  attachCmMenuBarSubmenuPosition,
+  focusCmModalMenuBarFallback,
+  observeCmModalMenuBarAnchor,
+} from './anchored-position.js';
 import { menuBarKeyAction } from './core/menu-bar.js';
 import { dispatchCmEvent } from './events.js';
 import type { CmController, CmControllerFactory } from './runtime.js';
@@ -12,6 +18,11 @@ const topNodeSelector = '.cm-menu-bar__node--depth-0';
 
 export class CmMenuBarController implements CmController {
   readonly #root: Element;
+  readonly #placements = new Map<HTMLElement, () => void>();
+  #stopAnchorObservation?: () => void;
+  #tabStop?: HTMLElement;
+  #clippedTabStop?: HTMLElement;
+  #stopClippedTabStopObservation?: () => void;
 
   constructor(root: Element) {
     this.#root = root;
@@ -25,6 +36,9 @@ export class CmMenuBarController implements CmController {
     this.#root.ownerDocument.addEventListener('click', this.#handleDocumentClick);
     const top = this.#topLevelItems();
     this.#setTabStop(top.find((item) => item.tabIndex === 0) ?? top[0]);
+    for (const branch of this.#root.querySelectorAll<HTMLElement>(`${branchSelector}[aria-expanded="true"]`)) {
+      if (branch.closest('.cm-menu-bar') === this.#root) this.#setOpen(branch, true);
+    }
   }
 
   disconnect(): void {
@@ -33,6 +47,11 @@ export class CmMenuBarController implements CmController {
     this.#root.removeEventListener('focusin', this.#handleFocusIn);
     this.#root.removeEventListener('focusout', this.#handleFocusOut);
     this.#root.ownerDocument.removeEventListener('click', this.#handleDocumentClick);
+    this.#stopAnchorObservation?.();
+    this.#stopAnchorObservation = undefined;
+    this.#clearClippedTabStop();
+    for (const stop of this.#placements.values()) stop();
+    this.#placements.clear();
   }
 
   #submenuOf(item: HTMLElement): HTMLElement | null {
@@ -41,10 +60,36 @@ export class CmMenuBarController implements CmController {
 
   #setOpen(branch: HTMLElement, open: boolean): void {
     const submenu = this.#submenuOf(branch);
+    const closing = submenu && !submenu.hidden && !open;
+    const node = branch.closest('.cm-menu-bar__node');
     branch.setAttribute('aria-expanded', String(open));
     branch.classList.toggle('cm-menu-bar__item--open', open);
-    branch.closest('.cm-menu-bar__node')?.classList.toggle('cm-menu-bar__node--open', open);
-    if (submenu) submenu.hidden = !open;
+    node?.classList.toggle('cm-menu-bar__node--open', open);
+    if (!submenu) return;
+    submenu.hidden = !open;
+    const topLevel = node?.matches(topNodeSelector) === true;
+    if (topLevel && (open || closing)) {
+      this.#stopAnchorObservation?.();
+      this.#stopAnchorObservation = open
+        ? observeCmModalMenuBarAnchor(branch, () => {
+            this.#excludeClippedTabStop(branch);
+            const focused = (branch.getRootNode() as Document | ShadowRoot).activeElement;
+            if (focused === branch || submenu.contains(focused))
+              focusCmModalMenuBarFallback(branch, this.#topLevelItems());
+            this.#closeOthers(null);
+          })
+        : undefined;
+    }
+    const stop = this.#placements.get(submenu);
+    if (open && !stop) {
+      this.#placements.set(submenu, attachCmMenuBarSubmenuPosition(branch, submenu, topLevel));
+    } else if (closing && stop) {
+      afterCmFloatingExit(submenu, () => {
+        if (this.#placements.get(submenu) !== stop) return;
+        stop();
+        this.#placements.delete(submenu);
+      });
+    }
   }
 
   /** A menu bar shows one path, so opening anywhere closes whatever is not on the way to it. */
@@ -54,10 +99,6 @@ export class CmMenuBarController implements CmController {
       if (keep && (branch === keep || branch.closest('.cm-menu-bar__node')?.contains(keep))) continue;
       this.#setOpen(branch, false);
     }
-  }
-
-  #entriesOf(branch: HTMLElement): HTMLElement[] {
-    return this.#entriesIn(this.#submenuOf(branch));
   }
 
   #entriesIn(list: Element | null | undefined): HTMLElement[] {
@@ -73,9 +114,28 @@ export class CmMenuBarController implements CmController {
   }
 
   #setTabStop(item: HTMLElement | undefined): void {
+    this.#tabStop = item;
     for (const candidate of this.#root.querySelectorAll<HTMLElement>(itemSelector)) {
-      if (candidate.closest('.cm-menu-bar') === this.#root) candidate.tabIndex = candidate === item ? 0 : -1;
+      if (candidate.closest('.cm-menu-bar') === this.#root)
+        candidate.tabIndex = candidate === item && candidate !== this.#clippedTabStop ? 0 : -1;
     }
+  }
+
+  #excludeClippedTabStop(branch: HTMLElement): void {
+    this.#stopClippedTabStopObservation?.();
+    this.#clippedTabStop = branch;
+    this.#setTabStop(this.#tabStop);
+    this.#stopClippedTabStopObservation = observeCmModalMenuBarAnchor(branch, undefined, () =>
+      this.#clearClippedTabStop(),
+    );
+  }
+
+  #clearClippedTabStop(): void {
+    this.#stopClippedTabStopObservation?.();
+    this.#stopClippedTabStopObservation = undefined;
+    if (!this.#clippedTabStop) return;
+    this.#clippedTabStop = undefined;
+    this.#setTabStop(this.#tabStop);
   }
 
   #topEntry(item: HTMLElement): HTMLElement | null {
@@ -160,8 +220,12 @@ export class CmMenuBarController implements CmController {
       case 'open': {
         this.#closeOthers(item);
         this.#setOpen(item, true);
-        const entries = this.#entriesOf(item);
-        (action.focus === 'last' ? entries[entries.length - 1] : entries[0])?.focus();
+        const panel = this.#submenuOf(item);
+        if (!panel) return;
+        const entries = this.#entriesIn(panel);
+        // The first placement can flip away from the CSS fallback before the next paint.
+        const preventScroll = panel.ownerDocument.defaultView?.getComputedStyle(panel).position !== 'static';
+        (action.focus === 'last' ? entries[entries.length - 1] : entries[0])?.focus({ preventScroll });
         return;
       }
       case 'focus-sibling': {
