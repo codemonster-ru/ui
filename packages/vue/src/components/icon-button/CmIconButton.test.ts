@@ -17,13 +17,13 @@ describe('CmIconButton', () => {
     expect(wrapper.find('[data-icon="search"]').exists()).toBe(true);
   });
 
-  it('renders finite configuration and disabled state', () => {
+  it.each(['submit', 'reset'] as const)('renders type=%s and disabled state', (type) => {
     const wrapper = mount(CmIconButton, {
-      props: { label: 'Delete', variant: 'danger', size: 'lg', type: 'submit', disabled: true },
+      props: { label: 'Delete', variant: 'danger', size: 'lg', type, disabled: true },
     });
 
     expect(wrapper.classes()).toEqual(['cm-icon-button', 'cm-icon-button--danger', 'cm-icon-button--lg']);
-    expect(wrapper.attributes()).toMatchObject({ type: 'submit', disabled: '', 'aria-label': 'Delete' });
+    expect(wrapper.attributes()).toMatchObject({ type, disabled: '', 'aria-label': 'Delete' });
   });
 
   it('merges classes, forwards safe root attributes, and preserves native activation', async () => {
