@@ -47,7 +47,6 @@ test('CSS references resolve to custom properties published by ui-css or ui-toke
   const libraryCss = await listCssFiles(resolve(cssRoot, 'src'));
   const showcaseCss = [
     ...(await listCssFiles(resolve(root, 'examples/shared'))),
-    resolve(root, 'examples/ui-showcase/src/showcase.css'),
     resolve(root, 'examples/vanilla/showcase.css'),
   ];
   const definitionSources = [

@@ -1,33 +1,38 @@
 import { cmBreakpoints } from '@codemonster-ru/ui-tokens';
 
-export const previews = [['min', 320], ...Object.entries(cmBreakpoints)].map(([value, width]) => ({
-  value: String(value),
-  width: Number(width),
-  label: `${value} · ${width} px`,
-}));
-export const defaultPreview = 'xl';
-
 export const regionControls = [
   { key: 'plain', label: 'Plain columns' },
-  { key: 'subheader', label: 'Show subheader' },
-  { key: 'content-subheader', label: 'Show content subheader' },
+  { key: 'subheader', label: 'Subheader' },
+  { key: 'content-subheader', label: 'Content subheader' },
   { key: 'header', label: 'Sticky header' },
   { key: 'sidebar', label: 'Sticky sidebar' },
   { key: 'aside', label: 'Sticky aside' },
   { key: 'notches', label: 'Edge notches' },
 ] as const;
 
+export const shellTabs = [
+  { value: 'content', label: 'Content', content: '' },
+  { value: 'sidebar-content', label: 'With sidebar', content: '' },
+  { value: 'sidebar-content-aside', label: 'With aside', content: '' },
+] as const;
+
 export const layoutExamples = [
-  { slug: 'admin-shell', title: 'CmAdminShell', label: 'Warehouse workspace', contract: true },
-  { slug: 'admin-layout', title: 'CmAdminLayout', label: 'Admin dashboard', contract: true },
-  { slug: 'setup-layout', title: 'CmSetupLayout', label: 'Installation flow', contract: true },
-  { slug: 'app-shell', title: 'CmAppShell', label: 'App shell', contract: true },
-  { slug: 'document-layout', title: 'CmDocumentLayout', label: 'Document layout', contract: true },
-  { slug: 'auth-layout', title: 'CmAuthLayout', label: 'Sign-in page', contract: false },
-  { slug: 'error-layout', title: 'CmErrorLayout', label: 'Error page', contract: false },
+  { slug: 'admin-shell', title: 'Admin Shell' },
+  { slug: 'admin-layout', title: 'Admin Layout' },
+  { slug: 'setup-layout', title: 'Setup Layout' },
+  { slug: 'app-shell', title: 'App Shell' },
+  { slug: 'document-layout', title: 'Document Layout' },
+  { slug: 'auth-layout', title: 'Auth Layout' },
+  { slug: 'error-layout', title: 'Error Layout' },
 ] as const;
 
 export type LayoutExampleSlug = (typeof layoutExamples)[number]['slug'];
+
+export function layoutPreviewChoices(slug: LayoutExampleSlug) {
+  const widths: number[] = [320, cmBreakpoints.lg];
+  if (slug === 'app-shell' || slug === 'document-layout') widths.push(cmBreakpoints.xl);
+  return [{ value: 'fit', label: 'Fit' }, ...widths.map((width) => ({ value: String(width), label: `${width} px` }))];
+}
 
 export const dashboardStats = [
   { label: 'Published', value: '24' },
@@ -99,15 +104,3 @@ export const warehouseNavigation = [
   },
   { value: 'settings', label: 'Settings' },
 ];
-
-export function warehousePagination() {
-  return `<nav class="cm-data-table__pagination" aria-label="Table pagination">
-    <label class="cm-data-table__page-size"><span>Rows per page</span>
-      <select data-cm-data-table-page-size-control><option value="5">5</option><option value="10">10</option></select>
-    </label>
-    <span class="cm-data-table__pagination-summary" aria-live="polite">1-5 of ${rows.length}</span>
-    <button class="cm-data-table__page-button" type="button" data-cm-data-table-page-action="previous" aria-label="Previous page" disabled>Previous</button>
-    <span class="cm-data-table__page-summary" aria-live="polite">Page 1 of ${Math.ceil(rows.length / 5)}</span>
-    <button class="cm-data-table__page-button" type="button" data-cm-data-table-page-action="next" aria-label="Next page">Next</button>
-  </nav>`;
-}

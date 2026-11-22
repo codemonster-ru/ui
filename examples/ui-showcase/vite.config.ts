@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
+import * as compiler from 'vue/compiler-sfc';
 import { showcasePagesPlugin } from './showcase-pages-plugin.mjs';
 import { workspaceDevelopment } from './workspace-development';
 
@@ -21,13 +22,18 @@ export default defineConfig(({ command, isPreview }) => ({
     rollupOptions: {
       input: {
         index: resolve(import.meta.dirname, 'index.html'),
-        case: resolve(import.meta.dirname, 'case.html'),
         layout: resolve(import.meta.dirname, 'layout-example.html'),
+      },
+      output: {
+        manualChunks(id) {
+          if (/\/contracts\/[^/]+\/(?:manifest|cases\/[^/]+\.case)\.json$/u.test(id)) return 'showcase-cases';
+        },
       },
     },
   },
   plugins: [
-    vue(),
+    // File watcher events can arrive before the plugin's buildStart hook.
+    vue({ compiler }),
     command === 'serve' && !isPreview && workspaceDevelopment(),
     isPreview && {
       name: 'codemonster-showcase-preview-build',

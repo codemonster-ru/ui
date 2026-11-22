@@ -29,7 +29,7 @@ function checkAsset(name, source) {
 const { output } = await build({ root: showcase, build: { write: false }, logLevel: 'warn' });
 const chunks = output.filter(({ type }) => type === 'chunk');
 
-for (const entry of ['index.html', 'case.html', 'layout-example.html']) {
+for (const entry of ['index.html', 'layout-example.html']) {
   const chunk = chunks.find(({ facadeModuleId }) => facadeModuleId === resolve(showcase, entry));
   assert(chunk, `Missing Vue showcase entry: ${entry}`);
   checkEntry(`Vue ${entry}`, chunk.code);
@@ -46,7 +46,13 @@ for (const asset of output) {
 }
 
 // Vanilla ships separate ES modules and keeps its standalone code examples as static HTML.
-for (const entry of ['runtime.js', 'showcase.js', 'showcase-demo.js', 'layout-example.js', 'playground-example.mjs']) {
+for (const entry of [
+  'runtime.js',
+  'showcase.js',
+  'showcase-inline.mjs',
+  'layout-example.js',
+  'playground-example.mjs',
+]) {
   checkEntry(`Vanilla ${entry}`, readFileSync(resolve(vanilla, entry)));
 }
 for (const file of readdirSync(vanilla, { recursive: true, withFileTypes: true })) {

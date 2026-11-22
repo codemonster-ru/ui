@@ -1,65 +1,145 @@
 import { followShowcaseTheme, saveShowcaseTheme } from './showcase-theme.js';
-import { mountCoreMatrices, mountCoreRecipes } from './showcase-core-recipes.js';
-import { mountLayoutRecipes } from './showcase-layout-recipes.js';
 import { mountLayoutPreviews } from './showcase-layouts.js';
 import { createRuntime } from './runtime.js';
-import { fillContrastTable, mountOperations } from './showcase-reference.js';
+import { fillContrastTable } from './showcase-reference.js';
 import { copyIcon, filterIcons } from './showcase-icon-catalog.js';
-import { mountComponentReference } from './showcase-component-reference.js';
-import { mountComponentCatalog, revealShowcaseLink } from './showcase-navigation.js';
+import { revealShowcaseLink } from './showcase-navigation.js';
+import { handleShowcaseDemoClick, selectShowcaseNavItem } from './showcase-inline.mjs';
 
 document.getElementById('showcase-navigation')?.addEventListener('focusin', revealShowcaseLink);
-mountComponentCatalog(document.getElementById('component-catalog'));
 
 const catalog = document.querySelector('.showcase-catalog');
+catalog.addEventListener('click', (event) => {
+  const launcher = event.target.closest('[data-showcase-open]');
+  const target = launcher?.dataset.showcaseOpen;
+  const demo = target ? document.getElementById(target) : event.target.closest('.showcase-demo');
+  if (!demo) return;
+  if (launcher) {
+    const dialog = demo.querySelector('dialog');
+    dialog.dispatchEvent(new CustomEvent(`cm:${dialog.dataset.cmController}-open-request`));
+  }
+  selectShowcaseNavItem(event.target.closest('[data-cm-nav-menu-value]'));
+  handleShowcaseDemoClick(demo, event);
+});
+
 fillContrastTable(catalog);
-for (const button of catalog.querySelectorAll('[data-showcase-copy-color]')) {
-  button.disabled = false;
-  button.addEventListener('click', async () => {
-    const figure = button.closest('figure');
-    const code = figure.querySelector('code');
-    const status = figure.querySelector('[role="status"]');
-    try {
-      await navigator.clipboard.writeText(code.textContent);
-      status.textContent = 'Copied';
-    } catch {
-      status.textContent = 'Copy unavailable';
+mountLayoutPreviews(catalog);
+createRuntime().start(catalog);
+
+const columnChooserExample = catalog.querySelector('[data-showcase-example="column-chooser-default"]');
+if (columnChooserExample) {
+  const table = columnChooserExample.querySelector('table');
+  const columnKeys = [...columnChooserExample.querySelectorAll('[data-cm-column-chooser-key]')].map(
+    (option) => option.dataset.cmColumnChooserKey,
+  );
+  columnChooserExample.addEventListener('cm:column-chooser-visible-columns-change', ({ detail }) => {
+    const visible = new Set(detail.visibleColumnKeys);
+    for (const row of table.rows) {
+      for (const cell of row.cells) cell.hidden = !visible.has(columnKeys[cell.cellIndex]);
     }
   });
 }
-mountOperations(catalog);
-mountLayoutPreviews(catalog);
-mountLayoutRecipes(catalog);
-mountCoreRecipes(catalog);
-const runtime = createRuntime();
-mountCoreMatrices(document.getElementById('showcase-main'), runtime);
-const projectTable = document.querySelector('#showcase-projects');
-const projectBody = projectTable?.querySelector('tbody');
-if (projectBody) {
-  const rows = [...projectBody.rows];
-  projectTable.addEventListener('cm:data-table-sort-change', ({ detail: { sort } }) => {
-    const ordered = sort
-      ? rows.slice().sort((left, right) => {
-          const comparison = left.cells[0].textContent.localeCompare(right.cells[0].textContent);
-          return sort.direction === 'ascending' ? comparison : -comparison;
-        })
-      : rows;
-    projectBody.append(...ordered);
+
+for (const invalidFieldset of catalog.querySelectorAll(
+  ':is([data-showcase-example="fieldset-invalid"], [data-showcase-example="fieldset-help-error"]) .cm-fieldset',
+)) {
+  const error = invalidFieldset.querySelector('.cm-fieldset__error');
+  const description = invalidFieldset.querySelector('.cm-fieldset__description');
+  const setInvalid = (invalid) => {
+    error.hidden = !invalid;
+    invalidFieldset.classList.toggle('cm-fieldset--invalid', invalid);
+    if (invalid) invalidFieldset.setAttribute('aria-invalid', 'true');
+    else invalidFieldset.removeAttribute('aria-invalid');
+    const describedBy = [description?.id, invalid ? error.id : null].filter(Boolean).join(' ');
+    if (describedBy) invalidFieldset.setAttribute('aria-describedby', describedBy);
+    else invalidFieldset.removeAttribute('aria-describedby');
+  };
+  invalidFieldset.addEventListener('change', ({ target }) => setInvalid(!target.checked));
+  invalidFieldset.closest('form')?.addEventListener('reset', () => {
+    setInvalid(true);
+    invalidFieldset.querySelector('input[type="radio"][value="email"]')?.focus();
   });
 }
-mountComponentReference(catalog, runtime);
+
+const confirmationExamples = catalog.querySelector('#demo-confirm-dialog');
+if (confirmationExamples) {
+  const status = confirmationExamples.querySelector('[data-confirm-result] .cm-tag');
+  for (const example of confirmationExamples.querySelectorAll('[data-showcase-example]')) {
+    const launcher = example.querySelector('[data-showcase-open]');
+    const dialog = example.querySelector('dialog');
+    const [cancel, confirm] = dialog.querySelectorAll('.cm-confirm-dialog__actions button');
+    const requestClose = () => dialog.dispatchEvent(new CustomEvent('cm:dialog-close-request'));
+    const report = (result) => {
+      status.textContent = `${launcher.textContent.trim()} · ${result}`;
+      status.style.removeProperty('display');
+    };
+    let confirming = false;
+
+    cancel.setAttribute('data-cm-dialog-close', '');
+    confirm.addEventListener('click', () => {
+      if (!example.hasAttribute('data-confirm-keep-open')) {
+        confirming = true;
+        requestClose();
+        confirming = false;
+      }
+      report('Confirmed');
+    });
+    dialog.addEventListener('cm:dialog-open-change', ({ detail: { open } }) => {
+      if (!open && !confirming) report('Cancelled');
+    });
+    dialog.addEventListener('click', ({ target }) => {
+      if (target === dialog && dialog.dataset.cmDialogDismissible !== 'false') requestClose();
+    });
+
+    const finish = dialog.querySelector('[data-confirm-finish]');
+    if (finish) {
+      const close = dialog.querySelector('.cm-dialog__close');
+      const surface = dialog.querySelector('.cm-dialog__surface');
+      const spinner = confirm.querySelector('.cm-button__spinner');
+      const setLoading = (loading) => {
+        dialog.dataset.cmDialogDismissible = String(!loading);
+        cancel.disabled = confirm.disabled = close.disabled = loading;
+        close.style.display = loading ? 'none' : '';
+        finish.style.display = loading ? '' : 'none';
+        surface.toggleAttribute('data-autofocus', loading);
+        cancel.toggleAttribute('data-autofocus', !loading);
+        if (loading) {
+          confirm.setAttribute('aria-busy', 'true');
+          confirm.prepend(spinner);
+        } else {
+          confirm.removeAttribute('aria-busy');
+          spinner.remove();
+        }
+      };
+      launcher.addEventListener('click', () => setLoading(true));
+      finish.addEventListener('click', () => {
+        setLoading(false);
+        cancel.focus();
+      });
+    }
+  }
+}
+
+const paginatedTable = catalog.querySelector('[data-showcase-client-pagination]');
+if (paginatedTable) {
+  const rows = [...paginatedTable.querySelectorAll('[data-cm-data-table-row]')];
+  const updatePage = () => {
+    const size = Number(paginatedTable.dataset.cmDataTablePageSize);
+    const start = (Number(paginatedTable.dataset.cmDataTablePage) - 1) * size;
+    rows.forEach((row, index) => {
+      row.hidden = index < start || index >= start + size;
+    });
+  };
+  paginatedTable.addEventListener('cm:data-table-page-change', updatePage);
+  paginatedTable.addEventListener('cm:data-table-page-size-change', updatePage);
+}
 
 const iconCatalog = document.querySelector('#icon-catalog');
 iconCatalog?.addEventListener('input', filterIcons);
 iconCatalog?.addEventListener('click', copyIcon);
 
 const themeButton = document.querySelector('#showcase-theme');
-const themeModeLabel = document.querySelector('[data-showcase-theme-mode]');
-const themeResolvedLabel = document.querySelector('[data-showcase-theme-resolved]');
-const themeButtons = document.querySelectorAll('[data-showcase-set-theme]');
-const themeToggles = document.querySelectorAll('[data-showcase-theme-toggle]');
 const themeIcons = document.querySelectorAll('[data-showcase-theme-icon]');
-const themeLabels = document.querySelectorAll('[data-showcase-theme-label]');
 const systemTheme = window.matchMedia('(prefers-color-scheme: dark)');
 const themeDefault = 'system';
 let themeMode = themeDefault;
@@ -67,32 +147,16 @@ const isDark = (mode) => mode === 'dark' || (mode === 'system' && systemTheme.ma
 const syncThemeControls = (mode) => {
   themeMode = mode;
   const dark = isDark(mode);
-  for (const input of document.querySelectorAll('#showcase-theme-example input')) {
+  for (const input of catalog.querySelectorAll(
+    '.showcase-demo [data-cm-controller="theme-switch"] input[type="radio"]',
+  )) {
     input.checked = input.value === mode;
   }
   for (const icon of themeIcons) {
     icon.toggleAttribute('hidden', icon.dataset.showcaseThemeIcon !== (dark ? 'moon' : 'sun'));
   }
-  for (const label of themeLabels) label.textContent = dark ? 'Dark' : 'Light';
-  for (const control of themeToggles) {
-    if (control instanceof HTMLInputElement) {
-      control.checked = dark;
-      control.setAttribute('aria-checked', String(dark));
-    } else {
-      control.setAttribute('aria-label', dark ? 'Switch to light theme' : 'Switch to dark theme');
-    }
-    control.disabled = false;
-  }
   themeButton.setAttribute('aria-label', dark ? 'Switch to light theme' : 'Switch to dark theme');
   themeButton.hidden = false;
-  if (themeModeLabel) themeModeLabel.textContent = `mode: ${mode}`;
-  if (themeResolvedLabel) themeResolvedLabel.textContent = `resolved: ${dark ? 'dark' : 'light'}`;
-  for (const button of themeButtons) {
-    if (button.dataset.showcaseSetTheme !== 'toggle') {
-      button.setAttribute('aria-pressed', String(button.dataset.showcaseSetTheme === mode));
-    }
-    button.disabled = false;
-  }
 };
 followShowcaseTheme(syncThemeControls, themeDefault);
 systemTheme.addEventListener('change', () => syncThemeControls(themeMode));
@@ -102,26 +166,6 @@ function selectTheme(mode) {
   syncThemeControls(next);
 }
 themeButton.addEventListener('click', () => selectTheme('toggle'));
-for (const button of themeButtons) {
-  button.addEventListener('click', () => selectTheme(button.dataset.showcaseSetTheme));
-}
-for (const control of themeToggles) {
-  if (control instanceof HTMLInputElement) {
-    control.addEventListener('change', () => selectTheme(control.checked ? 'dark' : 'light'));
-  } else {
-    control.addEventListener('click', () => selectTheme('toggle'));
-  }
-}
-
 catalog.addEventListener('cm:theme-change', (event) => {
   selectTheme(event.detail.mode);
-});
-
-const search = document.querySelector('#showcase-search');
-const cards = [...document.querySelectorAll('[data-layout-contracts] .showcase-card')];
-const empty = document.querySelector('#showcase-empty');
-search?.addEventListener('input', () => {
-  const query = search.value.trim().toLowerCase();
-  for (const card of cards) card.hidden = !card.textContent.toLowerCase().includes(query);
-  empty.hidden = cards.some((card) => !card.hidden);
 });

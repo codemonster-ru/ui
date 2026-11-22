@@ -1,37 +1,35 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue';
-import { CmLink } from '@codemonster-ru/ui-vue';
+import { CmGrid, CmPanel } from '@codemonster-ru/ui-vue';
+import groups from '../../shared/showcase-groups.json';
 import { layoutExamples } from '../../shared/showcase-layout-data.mts';
-import LayoutPrimitives from './LayoutPrimitives.vue';
 import LayoutPreview from './LayoutPreview.vue';
-import ContractExamples from './ContractExamples.vue';
+import ContractExamples from './ContractExamples';
 
-const viewport = ref(window.innerWidth);
-const syncViewport = () => {
-  viewport.value = window.innerWidth;
-};
-onMounted(() => window.addEventListener('resize', syncViewport));
-onUnmounted(() => window.removeEventListener('resize', syncViewport));
+const layoutSlugs = groups.find(({ id }) => id === 'layouts')!.components;
+const shellSlugs = new Set<string>(layoutExamples.map(({ slug }) => slug));
+const primitives = layoutSlugs.filter((slug) => !shellSlugs.has(slug) && !slug.endsWith('-area'));
+const regions = layoutSlugs.filter((slug) => slug.endsWith('-area'));
 </script>
 
 <template>
-  <section
-    v-for="{ slug, title, label, contract } in layoutExamples"
-    :id="'demo-' + slug"
-    :key="slug"
-    class="showcase-group layout-guide-entry"
-    :aria-labelledby="'layout-title-' + slug"
-    tabindex="-1"
-  >
-    <header class="showcase-group-heading">
-      <h2 :id="'layout-title-' + slug">{{ label }}</h2>
-      <CmLink :href="'/components/' + slug + '/'" underline="hover">{{ title }}</CmLink>
-    </header>
-    <LayoutPreview :slug="slug" :title="title" />
-    <ContractExamples v-if="contract" :slug="slug" />
-  </section>
-  <section id="layout-primitives" class="layout-guide" aria-labelledby="layout-primitives-title" tabindex="-1">
-    <h2 id="layout-primitives-title">Layout primitives</h2>
-    <LayoutPrimitives :viewport="viewport" />
-  </section>
+  <CmPanel id="layout-shells" class="showcase-group" aria-labelledby="group-layout-shells" tabindex="-1">
+    <h2 id="group-layout-shells" class="showcase-group-label">Application shells</h2>
+    <CmGrid class="showcase-component-list">
+      <ContractExamples v-for="{ slug, title } in layoutExamples" :key="slug" :slug="slug">
+        <LayoutPreview :slug="slug" :title="title" />
+      </ContractExamples>
+    </CmGrid>
+  </CmPanel>
+  <CmPanel id="layout-primitives" class="showcase-group" aria-labelledby="group-layout-primitives" tabindex="-1">
+    <h2 id="group-layout-primitives" class="showcase-group-label">Layout primitives</h2>
+    <CmGrid class="showcase-component-list">
+      <ContractExamples v-for="slug in primitives" :key="slug" :slug="slug" />
+    </CmGrid>
+  </CmPanel>
+  <CmPanel id="layout-components" class="showcase-group" aria-labelledby="group-layout-components" tabindex="-1">
+    <h2 id="group-layout-components" class="showcase-group-label">Layout regions</h2>
+    <CmGrid class="showcase-component-list">
+      <ContractExamples v-for="slug in regions" :key="slug" :slug="slug" />
+    </CmGrid>
+  </CmPanel>
 </template>

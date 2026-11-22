@@ -15,7 +15,6 @@ import '@codemonster-ru/ui-utilities/utilities.css';
 import App from './App.vue';
 import '../../shared/showcase-shell.css';
 import '../../shared/showcase-typography.css';
-import './showcase.css';
 
 createApp({
   render: () => h(CmThemeProvider, { storageKey: showcaseThemeStorageKey }, { default: () => h(App as Component) }),

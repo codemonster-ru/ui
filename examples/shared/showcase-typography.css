@@ -1,3 +1,24 @@
-.showcase-typography-tokens {
+.showcase-typography {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
+  gap: var(--cm-space-5);
+}
+
+.showcase-typography-row {
+  grid-template-columns: minmax(0, 7.25rem) minmax(0, 1fr);
+  align-items: baseline;
+  gap: var(--cm-space-2);
   overflow-wrap: anywhere;
+}
+
+@media (width < 60rem) {
+  .showcase-typography {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (width < 38rem) {
+  .showcase-typography {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

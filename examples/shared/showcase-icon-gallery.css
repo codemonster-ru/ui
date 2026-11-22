@@ -1,86 +1,54 @@
 .icon-catalog {
   min-inline-size: 0;
   color: var(--cm-color-text-primary);
-  font-size: var(--cm-text-body-font-size);
-  line-height: var(--cm-text-body-line-height);
 }
 
-.icon-catalog .catalog-intro {
-  display: grid;
+.icon-catalog .catalog-intro h1 {
+  margin: 0;
+}
+
+.catalog-demos {
+  --showcase-variant-width: 16rem;
+}
+
+.catalog-styles {
+  grid-template-columns: max-content repeat(4, minmax(0, 1fr));
+  place-items: center;
+  gap: var(--cm-space-2) var(--cm-space-1);
+  font-size: var(--cm-font-size-xs);
+}
+
+.catalog-weight:first-child {
+  grid-column: 2;
+}
+
+.catalog-family {
+  justify-self: start;
+}
+
+.catalog-sizes {
+  align-items: end;
+}
+
+.catalog-sizes > .cm-stack {
+  align-items: center;
   gap: var(--cm-space-2);
-  padding-block-end: var(--cm-space-6);
+  font-size: var(--cm-font-size-xs);
 }
 
-.icon-catalog .catalog-intro :is(h1, p) {
-  margin: 0;
-}
-
-.icon-catalog .catalog-intro p {
-  max-inline-size: 62ch;
-  color: var(--cm-color-text-secondary);
-}
-
-.icon-catalog .catalog-contexts {
-  display: grid;
-  gap: var(--cm-space-3);
-  margin-block-end: var(--cm-space-6);
-}
-
-.icon-catalog .catalog-contexts h2 {
-  margin: 0;
-  font-size: var(--cm-font-size-2xl);
-}
-
-.icon-catalog .catalog-contexts__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
-  gap: var(--cm-space-2);
-}
-
-.icon-catalog .catalog-contexts__sample {
-  display: grid;
-  min-inline-size: 0;
-  place-items: center start;
-  gap: var(--cm-space-1) var(--cm-space-3);
-  padding: var(--cm-space-2) var(--cm-space-3);
-  border: var(--cm-border-width) solid var(--cm-color-border-default);
-  border-radius: var(--cm-radius-surface);
-  background: var(--cm-color-background-surface);
-}
-
-.icon-catalog .catalog-contexts__sample h3 {
-  margin: 0;
-  color: var(--cm-color-text-secondary);
-  font-size: var(--cm-text-label-font-size);
-  font-weight: var(--cm-text-label-font-weight);
-}
-
-.icon-catalog .catalog-contexts__link {
+.catalog-context-link {
   min-block-size: var(--cm-control-height-sm);
   align-items: center;
   gap: var(--cm-space-2);
-  font-size: var(--cm-text-label-font-size);
+  align-self: start;
 }
 
-.icon-catalog .catalog-contexts__action {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--cm-space-1) var(--cm-space-2);
-}
-
-.icon-catalog .family-heading h2 {
-  margin: 0;
-  font-family: var(--cm-font-family-heading);
-  font-size: var(--cm-font-size-2xl);
-}
-
-.icon-catalog .catalog-toolbar {
+.catalog-toolbar {
   display: grid;
-  grid-template-columns: minmax(12rem, 24rem) minmax(0, 1fr) auto;
+  grid-template-columns: minmax(10rem, 20rem) minmax(0, 1fr) auto;
   align-items: end;
-  gap: var(--cm-space-2) var(--cm-space-4);
-  margin-block-end: var(--cm-space-6);
+  gap: var(--cm-space-1) var(--cm-space-4);
+  margin-block-end: var(--cm-space-3);
 }
 
 .icon-catalog :is(.catalog-toolbar p, .catalog-empty) {
@@ -88,108 +56,56 @@
   color: var(--cm-color-text-secondary);
 }
 
-.icon-catalog .catalog-search {
-  min-inline-size: 0;
-}
-
-.icon-catalog :is(.catalog-toolbar p, .catalog-brands-link) {
-  min-block-size: var(--cm-control-height-md);
+.catalog-toolbar > :is(p, .catalog-brands-link) {
+  min-block-size: var(--cm-control-height-sm);
+  align-content: center;
+  align-items: center;
   font-size: var(--cm-text-label-font-size);
 }
 
-.icon-catalog .catalog-toolbar p {
-  align-content: center;
+.catalog-results {
+  grid-column: 1 / -1;
   font-variant-numeric: tabular-nums;
 }
 
-.icon-catalog .catalog-brands-link {
-  align-items: center;
+.catalog-icons {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 10rem), 1fr));
+  gap: var(--cm-space-1);
 }
 
-.icon-catalog .family-heading {
-  margin-block-end: var(--cm-space-3);
+.icon-catalog .catalog-icon {
+  min-inline-size: 0;
+  justify-content: start;
+  text-align: start;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
-.icon-catalog table:has(.catalog-weight) {
-  min-inline-size: 34rem;
-  table-layout: fixed;
+.icon-catalog .catalog-icon[hidden] {
+  display: none;
 }
 
-.icon-catalog .catalog-weight {
-  inline-size: 16.5%;
-  text-align: center;
-  vertical-align: middle;
-}
+.catalog-icon .cm-button__leading {
+  --cm-icon-size: var(--cm-icon-size-lg);
 
-.icon-catalog :is(.catalog-weight, .catalog-brand) > svg {
   inline-size: var(--cm-icon-size-lg);
   block-size: var(--cm-icon-size-lg);
-}
-
-.icon-catalog tr + tr > .catalog-name {
-  border-block-start: var(--cm-border-width) solid var(--cm-color-border-divider);
-}
-
-.icon-catalog .catalog-entry {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--cm-space-3);
-}
-
-.icon-catalog :is(.catalog-entry, .catalog-brand, .catalog-contexts__action) code {
-  overflow-wrap: anywhere;
-  font-family: var(--cm-font-family-mono);
-  font-size: var(--cm-text-label-font-size);
-  font-weight: var(--cm-text-label-font-weight);
-}
-
-.icon-catalog .catalog-empty {
-  padding: var(--cm-space-4);
-}
-
-.icon-catalog .brand-section {
-  margin-block-start: var(--cm-space-10);
 }
 
 .icon-catalog #brand-icons-heading {
   scroll-margin-block-start: var(--cm-space-4);
 }
 
-.icon-catalog .brand-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
-  gap: var(--cm-space-4);
-}
-
-.icon-catalog .catalog-brand:not([hidden]) {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
-  gap: var(--cm-space-2);
-}
-
 @media (width <= 620px) {
-  .icon-catalog .catalog-contexts__grid {
-    container: icon-contexts / inline-size;
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .icon-catalog .catalog-contexts__sample {
-    grid-template-columns: 5rem minmax(0, 1fr);
-  }
-
-  .icon-catalog .catalog-toolbar {
+  .catalog-toolbar {
     grid-template-columns: minmax(0, 1fr) auto;
   }
 
-  .icon-catalog .catalog-search {
+  .catalog-search {
     grid-column: 1 / -1;
   }
-}
 
-@container icon-contexts (width < 13rem) {
-  .icon-catalog .catalog-contexts__sample {
-    grid-template-columns: minmax(0, 1fr);
+  .catalog-icons {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 7.5rem), 1fr));
   }
 }

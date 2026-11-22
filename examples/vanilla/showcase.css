@@ -1,45 +1,4 @@
-.showcase-filter {
-  display: grid;
-  gap: var(--cm-space-2);
-  max-inline-size: 26rem;
-  margin-block: var(--cm-space-4);
-}
-
-.showcase-catalog,
-.showcase-variants {
+.showcase-catalog {
   display: grid;
   gap: var(--cm-space-4);
-}
-
-.showcase-card h3:not(.showcase-icon-intro-heading) {
-  margin: 0 0 var(--cm-space-3);
-}
-
-.showcase-example {
-  scroll-margin-block-start: var(--cm-space-4);
-}
-
-.showcase-example > h4 {
-  margin: 0;
-}
-
-.showcase-example > p {
-  margin-block: var(--cm-space-1) 0;
-  color: var(--cm-color-text-secondary);
-}
-
-.showcase-frame {
-  display: block;
-  inline-size: 100%;
-  block-size: 8rem;
-  min-block-size: 5rem;
-  border: 0;
-}
-
-.showcase-frame--floating {
-  min-block-size: 18rem;
-}
-
-.showcase-frame--tall {
-  block-size: 30rem;
 }

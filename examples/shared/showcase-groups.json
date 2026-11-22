@@ -12,20 +12,17 @@
   {
     "id": "overlay",
     "title": "Overlay",
-    "matrix": "Overlay visual QA matrix",
     "components": ["tooltip", "dropdown", "popover"]
   },
   {
     "id": "surfaces",
     "title": "Surface Components",
-    "components": ["card", "panel", "divider", "fieldset", "group-box", "table", "data-table", "column-chooser"]
+    "components": ["card", "panel", "divider", "fieldset", "group-box", "table", "data-table"]
   },
   {
     "id": "feedback",
     "title": "Feedback",
-    "matrix": "Feedback visual QA matrix",
-    "recipeAfter": "skeleton",
-    "components": ["alert", "avatar", "badge", "tag", "progress-bar", "progress-spinner", "skeleton", "skeleton-gate"]
+    "components": ["alert", "badge", "tag", "progress-bar", "progress-spinner", "avatar", "skeleton", "skeleton-gate"]
   },
   {
     "id": "forms",
@@ -35,8 +32,6 @@
   {
     "id": "navigation",
     "title": "Navigation and Disclosure",
-    "matrix": "Navigation visual QA matrix",
-    "recipeAfter": "breadcrumbs",
     "components": [
       "breadcrumbs",
       "page-header",
