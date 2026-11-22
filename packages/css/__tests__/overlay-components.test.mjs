@@ -70,7 +70,7 @@ test('keeps inline popups above floating labels and clear buttons', async () => 
     [tooltip, '.cm-tooltip__content'],
     [select, '.cm-select__listbox'],
     [datePicker, '.cm-date-picker__calendar'],
-    [dropdown, '.cm-dropdown__menu'],
+    [dropdown, '.cm-dropdown__menu.cm-menu'],
     [popover, '.cm-popover__panel'],
     [menuBar, '.cm-menu-bar__submenu'],
   ]) {
@@ -144,7 +144,18 @@ test('preserves the fd793696 overlay geometry through CodeMonster tokens', async
   assert.doesNotMatch(dropdown, /\.cm-dropdown__trigger::after/u);
   assert.match(dropdown, /\.cm-dropdown__trigger[\s\S]*padding: var\(--cm-button-padding-md\);/u);
   assert.match(dropdown, /font-size: var\(--cm-control-font-size-md\);/u);
-  assert.match(dropdown, /min-inline-size: max\(100%, calc\(var\(--cm-space-16\) \* 3\)\)/u);
+  const dropdownMenu = dropdown.match(/\.cm-dropdown__menu\.cm-menu \{[^}]*\}/u)?.[0] ?? '';
+  assert.match(dropdownMenu, /--cm-dropdown-viewport-width: calc\(100dvw - 2 \* var\(--cm-space-4\)\);/u);
+  assert.match(dropdownMenu, /inline-size: max-content;/u);
+  assert.match(
+    dropdownMenu,
+    /min-inline-size: min\(var\(--cm-dropdown-viewport-width\), var\(--cm-dropdown-anchor-width, 100%\)\);/u,
+  );
+  assert.match(dropdownMenu, /max-inline-size: var\(--cm-dropdown-viewport-width\);/u);
+  assert.match(
+    dropdown,
+    /\.cm-dropdown__menu\.cm-menu:has\(> \.cm-icon-button\):not\(:has\(> :not\(\.cm-icon-button\)\)\) \{\s*min-inline-size: 0;/u,
+  );
   assert.match(popover, /\.cm-popover__trigger[\s\S]*padding: var\(--cm-button-padding-md\);/u);
   assert.match(popover, /padding: var\(--cm-space-3\) var\(--cm-space-4\)/u);
   assert.match(popover, /border-radius: var\(--cm-radius-surface\)/u);
