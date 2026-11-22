@@ -1,5 +1,9 @@
 import { cmFocusableSelector } from '@codemonster-ru/ui-runtime/core';
-import { enterCmNativeModal, releaseCmOverlayFocus } from '@codemonster-ru/ui-runtime/native-modal';
+import {
+  captureCmModalFocus,
+  enterCmNativeModal,
+  releaseCmOverlayFocus,
+} from '@codemonster-ru/ui-runtime/native-modal';
 import { nextTick, onBeforeUnmount, onMounted, ref, watch, type Ref } from 'vue';
 
 function availableFocusCandidates(dialog: HTMLDialogElement, selector: string): HTMLElement[] {
@@ -28,7 +32,7 @@ export function useCmModal(
 ): CmModalBinding {
   const dialog = ref<HTMLDialogElement>();
   const localOpen = ref(open() ?? defaultOpen);
-  let returnFocus: HTMLElement | null = null;
+  let returnFocus: ReturnType<typeof captureCmModalFocus> = null;
   let releaseScroll: (() => void) | undefined;
 
   watch(open, (next) => {
@@ -73,11 +77,7 @@ export function useCmModal(
     localOpen.value = next;
     if (!element) return;
     if (next) {
-      const active = element.ownerDocument.activeElement;
-      const HTMLElementConstructor = element.ownerDocument.defaultView?.HTMLElement;
-      if (HTMLElementConstructor && active instanceof HTMLElementConstructor && !element.contains(active)) {
-        returnFocus = active;
-      }
+      returnFocus = captureCmModalFocus(element) ?? returnFocus;
       enter(element);
       void nextTick(() => {
         if (!localOpen.value) return;
@@ -91,7 +91,17 @@ export function useCmModal(
     } else {
       if (typeof element.close === 'function' && element.open) element.close();
       else element.open = false;
-      if (restoreFocus && returnFocus?.isConnected) returnFocus.focus();
+      if (restoreFocus) {
+        const focus = returnFocus;
+        if (focus?.drawer) {
+          // The confirmation and the removal of its opener can render in either order.
+          void nextTick(() => {
+            if (!localOpen.value && !element.open) focus.restore();
+          });
+        } else {
+          focus?.restore();
+        }
+      }
       releaseCmOverlayFocus(element);
       returnFocus = null;
       releaseScroll?.();

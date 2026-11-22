@@ -1,6 +1,6 @@
 import { cmFocusableSelector } from './core/disclosure.js';
 import { dispatchCmEvent } from './events.js';
-import { enterCmNativeModal, releaseCmOverlayFocus } from './native-modal.js';
+import { captureCmModalFocus, enterCmNativeModal, releaseCmOverlayFocus } from './native-modal.js';
 import type { CmController } from './runtime.js';
 
 export interface ModalOpenChangeDetail {
@@ -20,7 +20,7 @@ export class CmModalController implements CmController {
   readonly #dialog: HTMLDialogElement;
   readonly #options: ModalControllerOptions;
   #isOpen = false;
-  #returnFocus: HTMLElement | null = null;
+  #returnFocus: ReturnType<typeof captureCmModalFocus> = null;
   #releaseScroll?: () => void;
 
   constructor(root: Element, options: ModalControllerOptions) {
@@ -55,6 +55,16 @@ export class CmModalController implements CmController {
     this.#dialog.removeEventListener('close', this.#handleClose);
     this.#dialog.removeEventListener(`cm:${this.#options.eventName}-open-request`, this.#handleOpenRequest);
     this.#dialog.removeEventListener(`cm:${this.#options.eventName}-close-request`, this.#handleCloseRequest);
+    const { activeElement, body } = this.#dialog.ownerDocument;
+    const focus = this.#returnFocus;
+    if (
+      this.#isOpen &&
+      !this.#dialog.isConnected &&
+      focus?.drawer &&
+      (activeElement === body || activeElement === focus.drawer)
+    ) {
+      focus.restore();
+    }
     this.#returnFocus = null;
     this.#releaseScroll?.();
     this.#releaseScroll = undefined;
@@ -63,8 +73,7 @@ export class CmModalController implements CmController {
   setOpen(open: boolean, restoreFocus = true): void {
     if (open) {
       if (this.#dialog.open) return;
-      const active = this.#dialog.ownerDocument.activeElement;
-      this.#returnFocus = active instanceof this.#dialog.ownerDocument.defaultView!.HTMLElement ? active : null;
+      this.#returnFocus = captureCmModalFocus(this.#dialog);
       this.#releaseScroll = enterCmNativeModal(this.#dialog, this.#releaseScroll);
       this.#synchronize(true);
       this.#focusInitial();
@@ -73,7 +82,7 @@ export class CmModalController implements CmController {
       this.#isOpen = false;
       if (typeof this.#dialog.close === 'function' && this.#dialog.open) this.#dialog.close();
       this.#synchronize(false);
-      if (restoreFocus && this.#returnFocus?.isConnected) this.#returnFocus.focus();
+      if (restoreFocus) this.#returnFocus?.restore();
       releaseCmOverlayFocus(this.#dialog);
       this.#returnFocus = null;
       this.#releaseScroll?.();

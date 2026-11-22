@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { JSDOM } from 'jsdom';
-import { CmRuntime, createCmDialogController } from '@codemonster-ru/ui-runtime';
+import { CmRuntime, createCmDialogController, createCmDrawerController } from '@codemonster-ru/ui-runtime';
 
 test('nested Vanilla dialogs own Escape, cancel, close buttons and focus', (context) => {
   const dom = new JSDOM(`
@@ -47,4 +47,38 @@ test('nested Vanilla dialogs own Escape, cancel, close buttons and focus', (cont
   pressEscape(openerInner);
   assert.equal(outer.open, false);
   assert.equal(document.activeElement, opener);
+});
+
+test('restores focus when a row and its open confirmation are removed together', async (context) => {
+  const dom = new JSDOM(`
+    <dialog class="cm-drawer" data-cm-controller="drawer" open>
+      <button data-cm-drawer-close>Close drawer</button>
+      <ul>
+        <li id="draft">
+          <button id="opener">Archive draft</button>
+          <dialog data-cm-controller="dialog">
+            <button data-cm-dialog-close>Cancel</button>
+          </dialog>
+        </li>
+        <li><button id="next">Edit annual report</button></li>
+      </ul>
+    </dialog>
+  `);
+  const { document, CustomEvent } = dom.window;
+  const runtime = new CmRuntime()
+    .register('drawer', createCmDrawerController)
+    .register('dialog', createCmDialogController);
+  const stop = runtime.observe(document);
+  context.after(() => {
+    stop();
+    dom.window.close();
+  });
+
+  document.querySelector('#opener').focus();
+  const confirmation = document.querySelector('dialog dialog');
+  confirmation.dispatchEvent(new CustomEvent('cm:dialog-open-request'));
+  assert.equal(confirmation.open, true);
+  document.querySelector('#draft').remove();
+  await Promise.resolve();
+  assert.equal(document.activeElement, document.querySelector('#next'));
 });

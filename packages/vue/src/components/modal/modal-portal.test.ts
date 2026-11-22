@@ -3,8 +3,36 @@ import { renderToString } from '@vue/server-renderer';
 import { createSSRApp, h } from 'vue';
 import { expect, it, vi } from 'vitest';
 import VfCommandPalette from '../command-palette/VfCommandPalette.vue';
+import CmConfirmDialog from '../confirm-dialog/CmConfirmDialog.vue';
 import VfDialog from '../dialog/VfDialog.vue';
 import VfDrawer from '../drawer/VfDrawer.vue';
+
+it('places ConfirmDialog in authored targets or inline', async () => {
+  const host = document.createElement('div');
+  const target = document.createElement('div');
+  target.id = 'confirm-dialog-host';
+  document.body.append(host, target);
+  const wrapper = mount(CmConfirmDialog, {
+    attachTo: host,
+    props: { open: true, teleportTo: '#confirm-dialog-host' },
+  });
+  try {
+    await flushPromises();
+    expect(target.querySelector('dialog')?.open).toBe(true);
+    await wrapper.setProps({ teleportTo: target });
+    expect(target.querySelector('dialog')?.open).toBe(true);
+    for (const teleportTo of [false, null] as const) {
+      await wrapper.setProps({ teleportTo });
+      expect(host.querySelector('dialog')?.open).toBe(true);
+    }
+    await wrapper.setProps({ teleportTo: target, disableTeleport: true });
+    expect(host.querySelector('dialog')?.open).toBe(true);
+  } finally {
+    wrapper.unmount();
+    host.remove();
+    target.remove();
+  }
+});
 
 it.each([
   [VfDialog, 'dialog'],
