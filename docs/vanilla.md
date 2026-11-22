@@ -78,13 +78,11 @@ native submission or application validation behavior.
 
 Run `npm run dev:vanilla` from the repository root to edit the showcase with browser reloads.
 To inspect production output, run `npm run build:vanilla` followed by `npm run preview:vanilla`.
-Browse component variants in the Visual matrix or visit Layouts, Colors, and Icons. Component
-detail routes such as `/components/button/` provide copyable Vue and Vanilla examples. All pages
-share the theme selector.
+Browse component variants directly in Core, Layouts, Colors, and Icons. All pages share the theme selector.
 
 For assets to deploy, run `npm run build:vanilla` and serve the contents of
 `examples/vanilla/dist` over HTTP. Keep the `tokens` and `css` directories intact so
-their relative imports resolve. Open `index.html` for the Visual matrix, `accordion-example.html`
+their relative imports resolve. Open `index.html` for Core, `accordion-example.html`
 for minimal integration, `confirm-dialog-example.html` for a confirmation flow,
 `code-block-example.html` for the [code block recipe](recipes/code-block.md), or
 `playground-example.html` for the [Vanilla playground recipe](recipes/playground.md).

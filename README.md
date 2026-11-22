@@ -23,10 +23,10 @@ Vanilla examples in an application, follow the
 
 ## Preview locally
 
-![CodeMonster UI visual matrix with the Vue data table, component catalog and theme controls](./docs/assets/reference-showcase.png)
+![CodeMonster UI Core showcase with theme and typography examples](./docs/assets/reference-showcase.png)
 
-The Vue and Vanilla showcases open on the **Visual matrix**. Use **Layouts** for complete
-forms, navigation, tables and dialogs in sample interfaces.
+The Vue and Vanilla showcases open on **Core**. Use **Layouts** for complete forms, navigation,
+tables and dialogs in sample interfaces. Scroll through each showcase page to compare its examples and variants.
 
 From the repository root, run `npm ci` with the Node.js version in [`.nvmrc`](./.nvmrc).
 

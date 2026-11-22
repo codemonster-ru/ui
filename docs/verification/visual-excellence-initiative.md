@@ -118,17 +118,16 @@ relevant comparisons. Native inactive controls use the [WCAG inactive exception]
   applies the responsive title hierarchy and spacing. At 360 px, the heading grows from 20 to
   28 px. At 1,440 px, it grows to 34 px. The section headings stay at 24 px. Nine links make
   the matrix navigable by keyboard immediately below the title.
-- The [typography specimen](../../examples/shared/showcase-typography.html) includes Russian text
+- The [typography specimen](../../examples/shared/showcase-typography.mts) includes Russian text
   with its language declared. Rendered glyph inspection confirms use of the bundled Cyrillic Inter face.
 - The warehouse example at `/layouts/#demo-admin-shell` uses the public DataTable caption and
-  end-aligns quantities in the [Vue layout](../../examples/ui-showcase/src/LayoutExample.vue) and
-  [generated Vanilla layout](../../scripts/build/render-showcase-layout.mjs). Its narrow preview
+  end-aligns quantities in the [shared layout preview](../../examples/ui-showcase/src/LayoutExample.vue). Its narrow preview
   allows keyboard scrolling. The browser suite checks paging, changing page size, and resuming
   the composition at the narrow width.
 - Matrix landmarks have distinct names and overflowing table examples can receive keyboard focus.
   The shared examples compose native and library components, including tables, forms, navigation,
   surfaces and overlays. The existing route set carries the new presentation.
-- The [Vanilla demo frame](../../examples/vanilla/showcase-demo.js) defers iframe size changes to
+- The former Vanilla demo frame (`examples/vanilla/showcase-demo.js`) deferred iframe size changes to
   the next animation frame and skips duplicate values. The button and DatePicker reference pages
   reproduced an intermittent WebKit resize observer warning before this change.
 
