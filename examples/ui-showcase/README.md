@@ -16,24 +16,33 @@ for example `npm run preview -- --port 4200`.
 The Vue workspace also exposes `dev`, `build`, and `preview` in the VS Code NPM Scripts panel.
 Its `build` assumes the npm packages are already built; the root `build:showcase` handles both steps.
 
-Both showcases open on the visual matrix and use the same navigation.
+Both showcases open on **Core** and use the same navigation.
 
-- **Visual matrix** (`/` and `/core/`). Use **Find a component** to find any public component by
-  display name or Vue export name. Component links open its reference with sizes and states.
-  The matrix groups related variants together and **Contract examples** opens additional cases.
+- **Core** (`/` and `/core/`) groups related component variants together. Scroll down for interactive examples of
+  sizes, colors, and states.
 - **Layouts** (`/layouts/`), **Colors** (`/colors/`), and **Icons** (`/icons/`) are direct header
   links. The links scroll horizontally when they need more room.
 
-Open a component by its direct route, such as `/components/button/`, for live previews, additional
-states, and links to the developer guides in the [repository documentation](../../docs/index.md).
-The header switches between light and dark. Use **Theme** in Visual matrix to return to the system
-preference. From the matrix, open **Explore workspaces** and choose a preview width on **Layouts**
-to inspect narrow, tablet, and desktop compositions.
+Each page keeps its examples visible as you scroll. See the [developer guides](../../docs/index.md)
+for API details and integration instructions.
+The header switches between light and dark. Use **Theme** in Core to return to the system
+preference. Choose a preview width on **Layouts** to inspect narrow, tablet, and desktop compositions.
 
 Both production builds emit directory indexes for known routes. Serve `examples/ui-showcase/dist`
 at the origin root or `examples/vanilla/dist` at the origin root or a subdirectory. Serve the
 `index.html` for each known directory and keep automatic directory listings disabled.
 
-Component previews load the package tokens, Inter fonts, and component styles. The examples use
-the theme selected in the header. In Layouts, the width controls resize the preview document so
-the package's own responsive rules run at the selected width.
+Each component has one section. `examples/shared/showcase-cases.mts` combines paired contract cases
+with additional combinations and removes repeated configurations. Both showcases consume that
+ordered matrix. Vue mounts the published components. The Vanilla build renders their HTML at
+build time and connects the published JavaScript controllers in the browser.
+
+Add an example when it shows a distinct appearance, state, animation, or interaction. Keep API-only
+coverage in component tests and contracts. Use library components
+inside composed examples and keep styling on the showcase shell. Dialogs, drawers, and palettes
+open from their own buttons so their native backdrop, keyboard behavior, and focus can be inspected.
+The existing resizable workspace previews still provide a separate viewport for package media queries.
+
+Vue also shows Confirm Dialog in **Modals and Commands** and Theme Provider in **Theme**. A running
+Theme Provider example applies to the whole document. **Restore showcase theme** returns to the
+previous showcase mode and restores the saved preference.

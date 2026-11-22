@@ -26,39 +26,20 @@ export function matchesWarehouseFilter(cells, query) {
   return !needle || cells.some((cell) => String(cell).toLowerCase().includes(needle));
 }
 
-/** @param {HTMLElement} root @param {import('@codemonster-ru/ui-runtime').CmRuntime} runtime */
-export function mountWarehousePagination(root, runtime) {
+/** @param {HTMLElement} root */
+export function mountWarehouseFilter(root) {
   const table = root.querySelector('#showcase-warehouse');
   if (!table) return;
   const filter = root.querySelector('#warehouse-filter');
   const empty = table.querySelector('[data-warehouse-empty]');
   const rows = [...table.querySelectorAll('[data-cm-data-table-row]')];
-  let matching = rows;
-
-  function update() {
-    const page = Number(table.dataset.cmDataTablePage);
-    const size = Number(table.dataset.cmDataTablePageSize);
-    const start = (page - 1) * size;
-    const visible = new Set(matching.slice(start, start + size));
-    for (const row of rows) row.hidden = !visible.has(row);
-    empty.hidden = matching.length !== 0;
-  }
-
   filter.addEventListener('input', () => {
-    matching = rows.filter((row) =>
-      matchesWarehouseFilter(
+    for (const row of rows) {
+      row.hidden = !matchesWarehouseFilter(
         Array.from(row.cells, (cell) => cell.textContent.trim()),
         filter.value,
-      ),
-    );
-    // Refresh the table's page count and live pagination summaries from the new data.
-    runtime.stop(table);
-    table.dataset.cmDataTablePage = '1';
-    table.dataset.cmDataTableTotalRows = String(matching.length);
-    runtime.start(table);
-    update();
+      );
+    }
+    empty.hidden = rows.some((row) => !row.hidden);
   });
-  table.addEventListener('cm:data-table-page-change', update);
-  table.addEventListener('cm:data-table-page-size-change', update);
-  filter.closest('[data-warehouse-search]').hidden = false;
 }

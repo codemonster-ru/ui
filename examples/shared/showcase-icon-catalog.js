@@ -1,9 +1,14 @@
+/** @param {number} count @param {number} total */
+export function iconCountLabel(count, total) {
+  return count === total ? `${total} icons` : `${count} of ${total} icons`;
+}
+
 /** @param {Event} event */
 export function filterIcons({ target }) {
   if (!(target instanceof HTMLInputElement) || target.id !== 'icon-catalog-search') return;
   const catalog = target.closest('#icon-catalog');
   const query = target.value.trim().toLowerCase().split(/\s+/u);
-  const matches = new Set();
+  let matches = 0;
 
   for (const group of catalog.querySelectorAll('[data-icon-group]')) {
     let matched = false;
@@ -11,7 +16,7 @@ export function filterIcons({ target }) {
       const terms = entry.dataset.iconSearch.toLowerCase();
       entry.hidden = !query.every((term) => terms.includes(term));
       if (!entry.hidden) {
-        matches.add(entry.dataset.iconName);
+        matches++;
         matched = true;
       }
     }
@@ -19,14 +24,14 @@ export function filterIcons({ target }) {
   }
 
   const count = catalog.querySelector('[data-icon-count]');
-  count.textContent = `${matches.size} of ${count.dataset.total} icons`;
+  count.textContent = iconCountLabel(matches, Number(count.dataset.total));
 }
 
 /** @param {Event} event */
 export async function copyIcon({ target }) {
   const button = target instanceof Element ? target.closest('[data-copy-icon]') : null;
   if (!button) return;
-  const { iconName } = button.closest('[data-icon-name]').dataset;
+  const { iconName } = button.dataset;
   const status = button.closest('#icon-catalog').querySelector('[data-icon-copy-status]');
 
   try {

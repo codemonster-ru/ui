@@ -8,7 +8,7 @@ const run = promisify(execFile);
 const root = resolve(import.meta.dirname, '../..');
 const production = resolve(import.meta.dirname, 'dist');
 const development = resolve(import.meta.dirname, '.generated');
-const packages = ['tokens', 'icons', 'runtime', 'css'];
+const packages = ['tokens', 'icons', 'runtime', 'css', 'vue', 'layouts'];
 
 async function build(packagesToBuild) {
   for (const name of packages) {
@@ -53,6 +53,7 @@ export default defineConfig(({ isPreview }) => ({
         const watched = [
           'examples/vanilla',
           'examples/shared',
+          'examples/ui-showcase/src',
           'contracts',
           'scripts/build',
           'scripts/contracts',

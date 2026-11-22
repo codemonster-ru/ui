@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm --prefix ../.. run build -w @codemonster-ru/ui-tokens -w @codemonster-ru/ui-icons -w @codemonster-ru/ui-runtime -w @codemonster-ru/ui-css && node ../../scripts/build/build-vanilla.mjs",
+    "build": "npm --prefix ../.. run build -w @codemonster-ru/ui-tokens -w @codemonster-ru/ui-icons -w @codemonster-ru/ui-runtime -w @codemonster-ru/ui-css -w @codemonster-ru/ui-vue -w @codemonster-ru/ui-layouts && node ../../scripts/build/build-vanilla.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

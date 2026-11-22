@@ -1,30 +1,4 @@
-import {
-  cmPrimitiveColorTokens,
-  cmSemanticLightColorTokens,
-  serializeCmThemeTokensToCssVars,
-} from '@codemonster-ru/ui-tokens';
-
-export const colorsTitle = 'Color system';
-
-export const colorSections = [
-  { id: 'primitive-scales', label: 'Palette' },
-  { id: 'theme-pairings', label: 'Theme pairings' },
-  { id: 'contrast-matrix', label: 'Contrast' },
-] as const;
-
-export const releaseChecks = {
-  title: 'Release checks',
-  environment: 'Staging',
-  checks: [
-    { label: 'Unit tests', status: 'Passed', tone: 'success' },
-    { label: 'Preview build', status: 'Ready', tone: 'info' },
-    { label: 'Manual review', status: 'Pending', tone: 'warning' },
-  ],
-  blocker: {
-    title: 'Production deploy blocked',
-    body: 'The build is missing a signing certificate.',
-  },
-} as const;
+import { cmPrimitiveColorTokens, serializeCmThemeTokensToCssVars } from '@codemonster-ru/ui-tokens';
 
 export const families = new Map<string, { variable: string; step: string }[]>();
 for (const variable of Object.keys(serializeCmThemeTokensToCssVars(cmPrimitiveColorTokens))) {
@@ -36,24 +10,23 @@ for (const variable of Object.keys(serializeCmThemeTokensToCssVars(cmPrimitiveCo
   families.set(family, entries);
 }
 
-export const semanticSwatches = Object.keys(serializeCmThemeTokensToCssVars(cmSemanticLightColorTokens)).map(
-  (variable) =>
-    [
-      variable
-        .slice('--cm-color-'.length)
-        .replace(
-          /(^|-)([a-z])/gu,
-          (_, separator: string, letter: string) => (separator ? ' ' : '') + letter.toUpperCase(),
-        ),
-      variable,
-    ] as const,
-);
+export const surfaceSamples = [
+  { label: 'Surface', background: 'background-surface', foreground: 'text-primary' },
+  { label: 'Subtle', background: 'background-surface-subtle', foreground: 'text-muted' },
+  { label: 'Inverse', background: 'background-inverse', foreground: 'text-inverse' },
+] as const;
+
+export const selectedSamples = [
+  { label: 'Selected', background: 'background-surface-selected' },
+  { label: 'Hover', background: 'background-surface-selected-hover' },
+  { label: 'Active', background: 'background-surface-selected-active' },
+] as const;
 
 export const contrastRows = [
-  ['Primary text / surface', 'text-primary', 'background-surface'],
-  ['Muted text / canvas', 'text-muted', 'background-canvas'],
-  ['Interactive border / surface', 'border-interactive', 'background-surface'],
-  ['Focus ring / surface', 'focus-ring', 'background-surface'],
-  ['Primary solid / foreground', 'interactive-primary-foreground', 'interactive-primary-background'],
-  ['Selected strongest state', 'selected-foreground', 'background-surface-selected-active'],
+  ['Text / surface', 'text-primary', 'background-surface'],
+  ['Muted / canvas', 'text-muted', 'background-canvas'],
+  ['Border / surface', 'border-interactive', 'background-surface'],
+  ['Focus / surface', 'focus-ring', 'background-surface'],
+  ['Primary button', 'interactive-primary-foreground', 'interactive-primary-background'],
+  ['Selected active', 'selected-foreground', 'background-surface-selected-active'],
 ] as const;

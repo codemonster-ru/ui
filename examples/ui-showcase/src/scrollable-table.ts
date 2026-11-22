@@ -1,6 +1,9 @@
 import type { Directive } from 'vue';
 
 export const vScrollableTable: Directive<HTMLElement, string> = {
+  getSSRProps({ value }) {
+    return { 'data-showcase-scroll-label': value };
+  },
   mounted(element, { value }) {
     const viewport = element.querySelector<HTMLElement>('.cm-table__scroll, .cm-data-table__scroll');
     if (!viewport) return;

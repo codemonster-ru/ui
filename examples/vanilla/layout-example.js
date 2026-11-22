@@ -1,6 +1,7 @@
 import { followShowcaseFrameTheme } from './showcase-theme.js';
 import { createRuntime } from './runtime.js';
-import { mountWarehousePagination } from './showcase-layout-recipes.js';
+import { mountWarehouseFilter } from './showcase-layout-recipes.js';
+import { selectShowcaseNavItem } from './showcase-inline.mjs';
 
 const root = document.querySelector('[data-layout-example]');
 const slug = root.dataset.layoutExample;
@@ -9,23 +10,11 @@ const setup = root.querySelector('.cm-setup-layout');
 const form = root.querySelector('[data-layout-auth]');
 
 followShowcaseFrameTheme(() => {});
-const runtime = createRuntime();
-runtime.start(root);
-mountWarehousePagination(root, runtime);
-
-function selectNavigation(item) {
-  for (const button of item.closest('nav').querySelectorAll('[data-cm-nav-menu-value]')) {
-    const selected = item === button;
-    if (selected) button.setAttribute('aria-current', 'page');
-    else button.removeAttribute('aria-current');
-    button.classList.toggle('cm-nav-menu__item--active', selected);
-    button.closest('li').classList.toggle('cm-nav-menu__node--active', selected);
-  }
-}
+createRuntime().start(root);
+mountWarehouseFilter(root);
 
 root.addEventListener('click', ({ target }) => {
-  const item = target.closest('[data-cm-nav-menu-value]');
-  if (item && !setup) selectNavigation(item);
+  if (!setup) selectShowcaseNavItem(target.closest('[data-cm-nav-menu-value]'));
 });
 
 if (shell) {
@@ -45,7 +34,6 @@ if (shell) {
     }
   }
 
-  setLayout('content');
   root.addEventListener('cm:tabs-value-change', ({ detail: { value } }) => setLayout(value));
   root.addEventListener('change', ({ target }) => {
     const key = target.dataset.regionControl;
@@ -65,7 +53,7 @@ if (shell) {
 
 if (setup) {
   const setupPanels = [...setup.querySelectorAll('[data-preview-step]')];
-  let step = 1;
+  let step = setupPanels.findIndex((panel) => !panel.hidden);
   function advanceSetup() {
     if (step === setupPanels.length - 1) setup.querySelector('[data-setup-complete]').hidden = false;
     else setStep(step + 1);
@@ -80,7 +68,7 @@ if (setup) {
     const active = setupPanels[step];
     for (const panel of setupPanels) panel.hidden = panel !== active;
     const item = setup.querySelector(`[data-cm-nav-menu-value="${active.dataset.previewStep}"]`);
-    selectNavigation(item);
+    selectShowcaseNavItem(item);
     setup.querySelector('.cm-setup-layout__title').textContent = item.textContent.trim();
     setup.querySelector('[data-preview-back]').disabled = step === 0;
     setup.querySelector('[data-preview-next] .cm-button__label').textContent =
@@ -105,8 +93,7 @@ if (setup) {
 if (form) {
   form.addEventListener('submit', (event) => {
     event.preventDefault();
-    const output = form.querySelector('output');
-    output.textContent = 'Sign-in preview submitted.';
+    const output = form.querySelector('[data-auth-result]');
     output.hidden = false;
   });
 }

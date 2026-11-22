@@ -1,77 +1,51 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { checkCircle, copy, info, questionCircle, warning, xCircle } from '@codemonster-ru/ui-icons';
+import { checkCircle, info, questionCircle, warning, xCircle } from '@codemonster-ru/ui-icons';
 import {
   CmAlert,
   CmBadge,
   CmButton,
-  CmCheckbox,
+  CmGrid,
   CmIcon,
-  CmIconButton,
+  CmInline,
   CmInput,
-  CmLink,
   CmPanel,
+  CmStack,
   CmTable,
-  CmTag,
 } from '@codemonster-ru/ui-vue';
 import { fillContrastTable } from '../../shared/showcase-reference.js';
-import {
-  colorSections,
-  colorsTitle,
-  contrastRows,
-  families,
-  releaseChecks,
-  semanticSwatches,
-} from '../../shared/showcase-colors.mts';
+import { contrastRows, families, selectedSamples, surfaceSamples } from '../../shared/showcase-colors.mts';
 import '../../shared/showcase-colors.css';
 import { vScrollableTable } from './scrollable-table';
 
 const statusTones = [
-  { tone: 'success', label: 'success', icon: checkCircle },
-  { tone: 'info', label: 'info', icon: info },
-  { tone: 'warning', label: 'warning', icon: warning },
-  { tone: 'danger', label: 'danger', icon: xCircle },
-  { tone: 'help', label: 'help', icon: questionCircle },
+  { tone: 'success', label: 'Success', icon: checkCircle },
+  { tone: 'info', label: 'Info', icon: info },
+  { tone: 'warning', label: 'Warning', icon: warning },
+  { tone: 'danger', label: 'Danger', icon: xCircle },
+  { tone: 'help', label: 'Help', icon: questionCircle },
 ] as const;
-const actionVariants = ['primary', 'secondary', 'danger', 'ghost'] as const;
 
 const modes = ['light', 'dark'] as const;
-const table = ref<HTMLElement | null>(null);
+const table = ref<InstanceType<typeof CmPanel> | null>(null);
 onMounted(() => {
-  if (table.value) fillContrastTable(table.value);
+  const element: unknown = table.value?.$el;
+  if (element instanceof HTMLElement) fillContrastTable(element);
 });
-
-const copyStatus = ref<Record<string, string>>({});
-async function copySample(mode: string, event: MouseEvent) {
-  const sample = (event.currentTarget as HTMLElement).closest('figure')?.querySelector('code')?.textContent;
-  if (!sample) return;
-  try {
-    await navigator.clipboard.writeText(sample);
-    copyStatus.value[mode] = 'Copied';
-  } catch {
-    copyStatus.value[mode] = 'Copy unavailable';
-  }
-}
 </script>
 
 <template>
   <div class="color-system">
     <header class="showcase-intro color-system__intro">
-      <h1>{{ colorsTitle }}</h1>
-      <p>Compare palette steps, see semantic roles in both themes, and check contrast pairs.</p>
-      <nav class="color-system__navigation" aria-label="On this page">
-        <CmLink v-for="{ id, label } in colorSections" :key="id" :href="'#' + id">{{ label }}</CmLink>
-      </nav>
+      <h1>Colors</h1>
     </header>
 
-    <section class="color-system__section" aria-labelledby="primitive-scales">
-      <div class="color-system__section-heading">
-        <h2 id="primitive-scales">Primitive scales</h2>
-      </div>
+    <CmPanel class="showcase-group" aria-labelledby="primitive-scales">
+      <h2 id="primitive-scales" class="showcase-component-title">Palette</h2>
 
-      <div class="color-system__families">
-        <article v-for="[family, steps] in families" :key="family" class="color-system__family">
-          <h3>{{ family }}</h3>
+      <CmStack class="color-system__families">
+        <CmStack v-for="[family, steps] in families" :key="family" class="color-system__family">
+          <h3 class="showcase-variant-title">{{ family }}</h3>
           <div class="color-system__scale">
             <div v-for="{ variable, step } in steps" :key="step" class="color-system__primitive">
               <span
@@ -82,128 +56,70 @@ async function copySample(mode: string, event: MouseEvent) {
               <span>{{ step }}</span>
             </div>
           </div>
-        </article>
-      </div>
-    </section>
+        </CmStack>
+      </CmStack>
+    </CmPanel>
 
-    <section class="color-system__section" aria-labelledby="theme-pairings">
-      <div class="color-system__section-heading">
-        <h2 id="theme-pairings">Light and dark semantic pairings</h2>
-      </div>
+    <CmPanel class="showcase-group" aria-labelledby="theme-pairings">
+      <h2 id="theme-pairings" class="showcase-component-title">Themes</h2>
+      <CmGrid class="color-system__theme-grid">
+        <CmStack v-for="mode in modes" :key="mode" class="color-system__theme" :data-cm-theme="mode">
+          <h3 class="showcase-variant-title">{{ mode }}</h3>
 
-      <div class="color-system__theme-grid">
-        <article v-for="mode in modes" :key="mode" class="color-system__theme" :data-cm-theme="mode">
-          <header class="color-system__theme-header">
-            <h3>{{ mode }}</h3>
-            <span>scoped theme</span>
-          </header>
+          <CmGrid class="color-system__samples">
+            <CmPanel
+              v-for="{ label, background, foreground } in surfaceSamples"
+              :key="background"
+              class="color-system__sample"
+              :style="{ backgroundColor: `var(--cm-color-${background})`, color: `var(--cm-color-${foreground})` }"
+              >{{ label }}</CmPanel
+            >
+          </CmGrid>
 
-          <CmPanel class="color-system__release">
-            <header class="color-system__release-header">
-              <h4>{{ releaseChecks.title }}</h4>
-              <CmBadge tone="primary">{{ releaseChecks.environment }}</CmBadge>
-            </header>
-            <ul class="color-system__release-checks" role="list">
-              <li v-for="{ label, status, tone } in releaseChecks.checks" :key="label">
-                <span>{{ label }}</span>
-                <CmTag :tone="tone">{{ status }}</CmTag>
-              </li>
-            </ul>
-            <CmAlert tone="danger" :title="releaseChecks.blocker.title">
-              {{ releaseChecks.blocker.body }}
+          <CmInline role="group" aria-label="Selection states">
+            <CmBadge
+              v-for="{ label, background } in selectedSamples"
+              :key="background"
+              class="color-system__selected"
+              :style="{ backgroundColor: `var(--cm-color-${background})` }"
+              >{{ label }}</CmBadge
+            >
+          </CmInline>
+
+          <CmInline>
+            <CmButton>Primary</CmButton>
+            <CmButton variant="secondary">Secondary</CmButton>
+          </CmInline>
+
+          <CmGrid class="color-system__samples">
+            <CmInput model-value="Default" :aria-label="`${mode} default field`" />
+            <CmInput model-value="Invalid" invalid :aria-label="`${mode} invalid field`" />
+            <CmInput model-value="Disabled" disabled :aria-label="`${mode} disabled field`" />
+          </CmGrid>
+
+          <CmGrid class="color-system__statuses">
+            <CmAlert v-for="{ tone, label, icon } in statusTones" :key="tone" :tone="tone">
+              <template #icon><CmIcon :icon="icon" /></template>
+              {{ label }}
             </CmAlert>
+          </CmGrid>
+
+          <CmPanel class="color-system__backdrop">
+            <CmPanel class="color-system__elevated">Elevated</CmPanel>
           </CmPanel>
 
-          <div class="color-system__semantic-grid">
-            <div
-              v-for="[label, variable] in semanticSwatches"
-              :key="variable"
-              class="color-system__semantic"
-              :title="variable"
-            >
-              <span
-                class="color-system__semantic-color"
-                :style="{ background: `var(${variable})` }"
-                aria-hidden="true"
-              />
-              <span>{{ label }}</span>
-            </div>
-          </div>
+          <pre
+            class="color-system__syntax"
+            tabindex="0"
+            :aria-label="`${mode} syntax colors`"
+          ><code><span class="color-system__keyword">const</span> theme: <span class="color-system__type">string</span> = <span class="color-system__string">'{{ mode }}'</span>;
+<span class="color-system__comment">// Theme preview</span></code></pre>
+        </CmStack>
+      </CmGrid>
+    </CmPanel>
 
-          <div class="color-system__state-row" aria-label="Interactive surface states">
-            <span class="color-system__state color-system__state--default">Default</span>
-            <span class="color-system__state color-system__state--hover">Hover</span>
-            <span class="color-system__state color-system__state--active">Active</span>
-            <span class="color-system__state color-system__state--selected">Selected</span>
-            <span class="color-system__state color-system__state--selected-hover">Selected + hover</span>
-            <span class="color-system__state color-system__state--selected-active">Selected + active</span>
-          </div>
-
-          <div class="color-system__controls">
-            <CmInput model-value="Semantic boundary" aria-label="Semantic boundary example" />
-            <div class="color-system__field-states">
-              <CmInput model-value="Invalid value" invalid aria-label="Invalid color state" />
-              <CmInput model-value="Read-only value" readonly aria-label="Read-only color state" />
-              <CmInput model-value="Disabled value" disabled aria-label="Disabled color state" />
-            </div>
-            <CmCheckbox :model-value="true" label="Selected with a non-color cue" />
-            <div class="color-system__actions">
-              <CmButton v-for="variant in actionVariants" :key="variant" :variant="variant">{{ variant }}</CmButton>
-              <CmButton loading>Loading</CmButton>
-              <CmButton disabled>Disabled</CmButton>
-            </div>
-          </div>
-
-          <div class="color-system__statuses">
-            <CmAlert
-              v-for="status in statusTones"
-              :key="status.tone"
-              :tone="status.tone"
-              :title="`${status.label} status`"
-            >
-              <template #icon><CmIcon :icon="status.icon" /></template>
-              Separate background, border, icon, and foreground roles.
-            </CmAlert>
-            <div class="color-system__chips">
-              <CmBadge v-for="status in statusTones" :key="`badge-${status.tone}`" :tone="status.tone">
-                {{ status.label }}
-              </CmBadge>
-              <CmTag v-for="status in statusTones" :key="`tag-${status.tone}`" :tone="status.tone">
-                {{ status.label }}
-              </CmTag>
-            </div>
-          </div>
-
-          <figure class="color-system__code">
-            <figcaption>
-              <span>color-system.ts</span>
-              <CmIconButton label="Copy code" size="sm" variant="ghost" @click="copySample(mode, $event)"
-                ><CmIcon :icon="copy"
-              /></CmIconButton>
-            </figcaption>
-            <pre
-              tabindex="0"
-              aria-label="TypeScript color system sample"
-            ><code><span class="showcase-code-keyword">type</span> <span class="showcase-code-type">Release</span> = { version: <span class="showcase-code-type">string</span>; stable: <span class="showcase-code-type">boolean</span>; };
-<span class="showcase-code-keyword">const</span> release: <span class="showcase-code-type">Release</span> = { version: <span class="showcase-code-string">'2.0.0'</span>, stable: <span class="showcase-code-keyword">true</span> };
-<span class="showcase-code-comment">// Semantic colors stay readable in both themes.</span></code></pre>
-            <span v-if="copyStatus[mode]" class="color-system__copy-status" role="status">{{ copyStatus[mode] }}</span>
-          </figure>
-
-          <div class="color-system__overlay-sample">
-            <div class="color-system__overlay-card">
-              <strong>Elevated surface</strong>
-              <span>Backdrop, elevation, border, and text roles resolve inside the same scoped theme.</span>
-            </div>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <section ref="table" class="color-system__section" aria-labelledby="contrast-matrix">
-      <div class="color-system__section-heading">
-        <h2 id="contrast-matrix">Supported contrast matrix</h2>
-      </div>
+    <CmPanel ref="table" class="showcase-group" aria-labelledby="contrast-matrix">
+      <h2 id="contrast-matrix" class="showcase-component-title">Contrast</h2>
 
       <CmTable v-scrollable-table="'Contrast ratios'" density="compact">
         <template #header>
@@ -224,6 +140,6 @@ async function copySample(mode: string, event: MouseEvent) {
           </td>
         </tr>
       </CmTable>
-    </section>
+    </CmPanel>
   </div>
 </template>

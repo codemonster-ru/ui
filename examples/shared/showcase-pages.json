@@ -1,15 +1,10 @@
 [
-  {
-    "id": "core",
-    "label": "Visual matrix",
-    "title": "Component states"
-  },
+  { "id": "core", "label": "Core" },
   {
     "id": "layouts",
     "label": "Layouts",
     "title": "Layouts and application shells"
   },
   { "id": "colors", "label": "Colors" },
-  { "id": "icons", "label": "Icons" },
-  { "id": "components", "label": "Components", "detailOnly": true }
+  { "id": "icons", "label": "Icons" }
 ]

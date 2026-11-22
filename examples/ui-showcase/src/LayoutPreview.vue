@@ -1,55 +1,36 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue';
-import { CmRadio } from '@codemonster-ru/ui-vue';
-import { defaultPreview, previews, type LayoutExampleSlug } from '../../shared/showcase-layout-data.mts';
+import { vDevPreview } from './dev-previews';
+import { ref } from 'vue';
+import { CmFieldset, CmRadio } from '@codemonster-ru/ui-vue';
+import { layoutPreviewChoices, type LayoutExampleSlug } from '../../shared/showcase-layout-data.mts';
 
-defineProps<{ slug: LayoutExampleSlug; title: string }>();
-const viewport = ref<HTMLElement>();
-const availableWidth = ref(window.innerWidth);
-const preferred = ref<string>();
-const defaultWidth = previews.find(({ value }) => value === defaultPreview)?.width ?? Number.POSITIVE_INFINITY;
-const selection = computed(
-  () =>
-    previews.find(({ value }) => value === preferred.value) ??
-    [...previews].reverse().find(({ width }) => width <= availableWidth.value && width <= defaultWidth) ??
-    previews[0],
-);
-const observer = new ResizeObserver(([entry]) => {
-  availableWidth.value = entry.contentRect.width;
-});
-onMounted(() => {
-  if (viewport.value) observer.observe(viewport.value);
-});
-onUnmounted(() => observer.disconnect());
+const { slug, title } = defineProps<{ slug: LayoutExampleSlug; title: string }>();
+const choices = layoutPreviewChoices(slug);
+const development = import.meta.env.DEV;
+const selection = ref('fit');
 </script>
 
 <template>
-  <fieldset class="layout-preview__sizes">
-    <legend>Preview width</legend>
+  <CmFieldset :id="`${slug}-preview-width`" label="Width" class="layout-preview__sizes">
     <CmRadio
-      v-for="{ value, label } in previews"
+      v-for="{ value, label } in choices"
       :key="value"
       :name="slug + '-width'"
       :value="value"
       :label="label"
-      :model-value="preferred ?? selection.value"
+      v-model="selection"
       size="sm"
-      @update:model-value="preferred = $event"
     />
-  </fieldset>
-  <div
-    ref="viewport"
-    class="layout-preview__viewport"
-    role="region"
-    :aria-label="title + ' preview viewport'"
-    tabindex="0"
-  >
+  </CmFieldset>
+  <div class="layout-preview__viewport" role="region" :aria-label="title + ' preview viewport'" tabindex="0">
     <iframe
+      v-dev-preview="development ? '/layout-example.html?layout=' + slug : undefined"
       class="layout-preview__frame"
-      :src="'/layout-example.html?layout=' + slug"
+      :src="development ? undefined : '/layout-example.html?layout=' + slug"
       :title="title + ' preview'"
-      :width="selection.width"
-      loading="lazy"
+      :data-fit="selection === 'fit' ? '' : undefined"
+      :width="selection === 'fit' ? undefined : selection"
+      :loading="development ? undefined : 'lazy'"
     />
   </div>
 </template>
