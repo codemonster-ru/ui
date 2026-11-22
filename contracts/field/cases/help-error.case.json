@@ -10,6 +10,6 @@
     "required": true
   },
   "slots": {
-    "default": "<input id=\"profile-name\" name=\"display_name\" type=\"text\" required aria-invalid=\"true\" aria-describedby=\"profile-name-description profile-name-error\">"
+    "default": "<input id=\"profile-name\" name=\"display_name\" type=\"text\" required aria-invalid=\"true\" aria-describedby=\"profile-name-error profile-name-description\">"
   }
 }

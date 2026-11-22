@@ -8,7 +8,7 @@
       "expect": "attribute",
       "target": "control",
       "name": "aria-describedby",
-      "value": "profile-name-description profile-name-error"
+      "value": "profile-name-error profile-name-description"
     },
     { "expect": "visible", "target": "error", "value": true }
   ]
