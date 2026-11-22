@@ -33,22 +33,35 @@
 }
 
 .cm-group-box--collapsible > .cm-group-box__legend {
-  margin-inline-start: calc(var(--cm-space-3) * -1);
-  padding-inline: var(--cm-space-3);
+  /* Let the button use the fieldset padding while keeping its focus ring inside. */
+  inline-size: max-content;
+  max-inline-size: calc(100% + (var(--cm-space-4) - var(--cm-focus-ring-width)) * 2);
+  margin-inline-start: calc(var(--cm-focus-ring-width) - var(--cm-space-4));
+  padding-inline: 0;
 }
 
 .cm-group-box__trigger {
-  max-inline-size: calc(100% + var(--cm-space-3) * 2);
-  margin-block: 0;
-  margin-inline: calc(var(--cm-space-3) * -1);
+  display: inline-grid;
+  grid-template-columns: auto minmax(0, auto);
+  align-content: center;
+  align-items: start;
+  max-inline-size: 100%;
+  margin: 0;
   text-align: start;
   vertical-align: middle;
 }
 
+.cm-group-box__trigger .cm-button__leading {
+  block-size: 1lh;
+}
+
 .cm-group-box__icon {
+  transition: transform var(--cm-motion-duration-normal) var(--cm-motion-ease-standard);
+}
+
+.cm-group-box__trigger .cm-group-box__icon {
   inline-size: var(--cm-icon-size-sm);
   block-size: var(--cm-icon-size-sm);
-  transition: transform var(--cm-motion-duration-normal) var(--cm-motion-ease-standard);
 }
 
 .cm-group-box--collapsed .cm-group-box__icon {
@@ -58,10 +71,6 @@
 .cm-group-box__content {
   min-inline-size: 0;
   padding-block-start: var(--cm-space-2);
-}
-
-.cm-group-box--collapsible > .cm-group-box__content {
-  padding-block-start: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {

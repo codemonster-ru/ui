@@ -2,7 +2,8 @@
 
 Use GroupBox to label related fields and optionally make their section collapsible. The title
 appears on the fieldset border. When the group collapses, the trigger remains available and
-its fields stop participating in form validation and submission.
+its fields stop participating in form validation and submission. The fields stay in the DOM
+and retain their values when the group reopens.
 
 ## Vue
 
@@ -27,7 +28,7 @@ const invoiceCollapsed = ref(false);
 
 Set `defaultCollapsed` for an initially collapsed group without a model. Set `disabled` to
 disable the disclosure button. The `title` and `toggle-icon` slots receive the current collapse
-state. Vue mounts the default content when the group is open.
+state, as does the default slot.
 
 ## Vanilla HTML
 
@@ -45,8 +46,7 @@ runtime.start(document);
 Render the group open when its fields should be usable before JavaScript loads. For an
 initially collapsed group, add `cm-group-box--collapsed` and `disabled` to the fieldset,
 set `aria-expanded="false"` on the button and `hidden` on the content. Add `disabled` to the
-button separately when it should be unavailable. The Vanilla controller retains the controls
-and their values while the group is collapsed. Listen for `cm:group-box-collapsed-change`
+button separately when it should be unavailable. Listen for `cm:group-box-collapsed-change`
 to act on `event.detail.collapsed`.
 
 Use [Fieldset](../components/fieldset.md) when the group needs its own description or
