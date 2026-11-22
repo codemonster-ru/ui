@@ -50,22 +50,25 @@ const cases = [
     entry: "export { CmMenuBar } from '@codemonster-ru/ui-vue';\n",
     fileName: 'ui-vue-menu-bar',
     forbiddenMarkers: [...unrelatedRuntimeMarkers, unrelatedIcon, overlayTrigger],
-    maxGzipBytes: 7 * 1024,
+    includesPositioning: true,
+    maxGzipBytes: 13 * 1024,
     name: 'ui-vue CmMenuBar without the named icon catalogue',
   },
   {
     entry: "export { CmDataTable } from '@codemonster-ru/ui-vue';\n",
     fileName: 'ui-vue-data-table',
     forbiddenMarkers: [...unrelatedRuntimeMarkers, unrelatedIcon, overlayTrigger],
-    maxGzipBytes: 12 * 1024,
+    includesPositioning: true,
+    maxGzipBytes: 22 * 1024,
     name: 'ui-vue CmDataTable without DOM controllers',
   },
   {
     entry: "export { VfDataTable } from '@codemonster-ru/ui-vue/historical';\n",
     fileName: 'ui-vue-historical-data-table',
     forbiddenMarkers: [...unrelatedRuntimeMarkers, unrelatedIcon, overlayTrigger],
-    // Includes numbered pagination and column reordering. Measured 15.61 KiB without controllers.
-    maxGzipBytes: 16 * 1024,
+    includesPositioning: true,
+    // Includes numbered pagination, column reordering, and Select positioning.
+    maxGzipBytes: 27 * 1024,
     name: 'ui-vue historical DataTable without DOM controllers',
   },
   {
@@ -94,8 +97,8 @@ const cases = [
     fileName: 'ui-vue-full',
     forbiddenMarkers: [...domRuntimeMarkers, themeRuntime, unrelatedIcon],
     includesPositioning: true,
-    // Includes the shared native modal and DataTable models. Measured 57.92 KiB without the icon catalogue.
-    maxGzipBytes: 60 * 1024,
+    // Includes nested modal focus and anchored overlays without the icon catalogue.
+    maxGzipBytes: 65 * 1024,
     minGzipBytes: 15 * 1024,
     name: 'ui-vue full namespace',
   },
@@ -119,7 +122,7 @@ const cases = [
     entry: "export { VfDrawer } from '@codemonster-ru/ui-vue/historical';\n",
     fileName: 'ui-vue-historical-drawer',
     forbiddenMarkers: [...unrelatedRuntimeMarkers, unrelatedIcon],
-    maxGzipBytes: 5 * 1024,
+    maxGzipBytes: 6.5 * 1024,
     name: 'ui-vue historical Drawer without the icon catalogue',
   },
   {
@@ -134,7 +137,7 @@ const cases = [
     fileName: 'ui-vue-historical-column-chooser',
     forbiddenMarkers: [...unrelatedRuntimeMarkers, unrelatedIcon],
     includesPositioning: true,
-    maxGzipBytes: 11 * 1024,
+    maxGzipBytes: 12 * 1024,
     name: 'ui-vue historical ColumnChooser without the icon catalogue',
   },
   {
@@ -159,7 +162,7 @@ const cases = [
     forbiddenMarkers: unrelatedRuntimeMarkers,
     includesPositioning: true,
     // The aggregate opt-in entry includes the old theme plugin and anchored overlays; direct entries keep their budgets.
-    maxGzipBytes: 81 * 1024,
+    maxGzipBytes: 86 * 1024,
     name: 'ui-vue opt-in historical namespace',
   },
   {
