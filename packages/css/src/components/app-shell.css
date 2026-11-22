@@ -123,13 +123,13 @@
  * controls remain reachable.
  */
 @media (width >= 64em) {
-  .cm-app-shell__body:has(> .cm-app-shell__sidebar) {
+  .cm-app-shell__body:has(> .cm-app-shell__sidebar:not([hidden])) {
     --cm-app-shell-sidebar-track: minmax(0, var(--cm-app-shell-sidebar-width));
   }
 }
 
 @media (width >= 80em) {
-  .cm-app-shell__body:has(> .cm-app-shell__aside) {
+  .cm-app-shell__body:has(> .cm-app-shell__aside:not([hidden])) {
     --cm-app-shell-aside-track: minmax(0, 18rem);
   }
 }
