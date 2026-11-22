@@ -13,7 +13,7 @@ export interface CommandPaletteSelectDetail {
 const optionSelector = '[data-cm-command-palette-option][role="option"]';
 
 export class CmCommandPaletteController implements CmController {
-  readonly #empty: HTMLElement;
+  readonly #empty: HTMLElement | null;
   readonly #input: HTMLInputElement;
   readonly #idle: HTMLElement | null;
   readonly #modal: CmModalController;
@@ -25,8 +25,10 @@ export class CmCommandPaletteController implements CmController {
     const empty = root.querySelector<HTMLElement>('.cm-command-palette__empty');
     const idle = root.querySelector<HTMLElement>('.cm-command-palette__idle');
     const options = [...root.querySelectorAll<HTMLElement>(optionSelector)];
-    if (!input || !empty) {
-      throw new TypeError('CommandPalette controller requires an input and empty region.');
+    if (!input || (!empty && !root.querySelector('.cm-command-palette__results'))) {
+      throw new TypeError(
+        'CommandPalette controller requires an input and either an empty region or authored results.',
+      );
     }
     this.#root = root;
     this.#input = input;
@@ -45,7 +47,7 @@ export class CmCommandPaletteController implements CmController {
   connect(): void {
     this.#modal.connect();
     this.#filter(this.#input.value);
-    this.#input.setAttribute('aria-expanded', String((this.#root as HTMLDialogElement).open));
+    if (this.#empty) this.#input.setAttribute('aria-expanded', String((this.#root as HTMLDialogElement).open));
     this.#input.addEventListener('input', this.#handleInput);
     this.#input.addEventListener('keydown', this.#handleKeydown);
     this.#root.addEventListener('click', this.#handleClick);
@@ -123,11 +125,11 @@ export class CmCommandPaletteController implements CmController {
 
   readonly #handleOpenChange = (event: Event): void => {
     const open = Boolean((event as CustomEvent<{ open?: boolean }>).detail?.open);
-    this.#input.setAttribute('aria-expanded', String(open));
+    if (this.#empty) this.#input.setAttribute('aria-expanded', String(open));
   };
 
   #filter(query: string): void {
-    if (this.#root.getAttribute('data-cm-command-palette-loading') === 'true') return;
+    if (!this.#empty || this.#root.getAttribute('data-cm-command-palette-loading') === 'true') return;
     const filter = this.#root.getAttribute('data-cm-command-palette-filter') !== 'false';
     const needle = normalizeCommandQuery(query);
     let visibleCount = 0;
