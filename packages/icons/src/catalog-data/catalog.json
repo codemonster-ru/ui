@@ -329,6 +329,24 @@
     "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
+  "sortNeutral": {
+    "title": "Sort Neutral",
+    "keywords": ["sort", "arrows", "neutral"],
+    "variants": ["solid", "regular", "light", "thin"],
+    "style": "outline"
+  },
+  "sortAscending": {
+    "title": "Sort Ascending",
+    "keywords": ["sort", "ascending", "up"],
+    "variants": ["solid", "regular", "light", "thin"],
+    "style": "outline"
+  },
+  "sortDescending": {
+    "title": "Sort Descending",
+    "keywords": ["sort", "descending", "down"],
+    "variants": ["solid", "regular", "light", "thin"],
+    "style": "outline"
+  },
   "chartBar": {
     "title": "Chart Bar",
     "keywords": ["chart", "bar"],

@@ -12,8 +12,8 @@ import {
   outlineIconVariants,
 } from '@codemonster-ru/ui-icons/catalog';
 
-test('keeps the complete historical catalogue ordered, unique and paired with geometry', () => {
-  assert.equal(iconNames.length, 116);
+test('keeps the complete catalogue ordered, unique and paired with geometry', () => {
+  assert.equal(iconNames.length, 119);
   assert.equal(new Set(iconNames).size, iconNames.length);
   assert.deepEqual(new Set(iconNames), new Set(geometry.cmIconNames));
   assert.deepEqual(new Set(Object.keys(iconCatalog)), new Set(iconNames));
