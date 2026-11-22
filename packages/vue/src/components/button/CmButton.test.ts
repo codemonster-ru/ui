@@ -15,18 +15,18 @@ describe('CmButton', () => {
     expect(wrapper.find('.cm-button__label').text()).toBe('Save');
   });
 
-  it('renders variants, sizes, types, and disabled state', () => {
+  it.each(['submit', 'reset'] as const)('renders variants, sizes, type=%s, and disabled state', (type) => {
     const wrapper = mount(CmButton, {
       props: {
         variant: 'danger',
         size: 'lg',
-        type: 'submit',
+        type,
         disabled: true,
       },
     });
 
     expect(wrapper.classes()).toEqual(['cm-button', 'cm-button--danger', 'cm-button--lg']);
-    expect(wrapper.attributes()).toMatchObject({ type: 'submit', disabled: '' });
+    expect(wrapper.attributes()).toMatchObject({ type, disabled: '' });
   });
 
   it('merges classes and forwards safe root attributes', () => {
