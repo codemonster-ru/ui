@@ -31,7 +31,7 @@ function controlFor(definition, { controlId, describedBy }) {
       type: 'text',
       required: true,
       'aria-invalid': 'true',
-      'aria-describedby': 'profile-name-description profile-name-error',
+      'aria-describedby': 'profile-name-error profile-name-description',
     });
   }
 

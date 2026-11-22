@@ -39,7 +39,7 @@ describe('CmField', () => {
 
     expect(wrapper.classes()).toContain('cm-field--invalid');
     expect(wrapper.get('.cm-field__required').attributes('aria-hidden')).toBe('true');
-    expect(wrapper.get('input').attributes('aria-describedby')).toBe('name-description name-error');
+    expect(wrapper.get('input').attributes('aria-describedby')).toBe('name-error name-description');
     expect(wrapper.get('input').attributes('aria-invalid')).toBe('true');
   });
 

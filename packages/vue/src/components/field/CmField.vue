@@ -40,8 +40,8 @@ const floating = computed(() => hasLabel.value && props.labelPlacement === 'floa
 provide(cmFloatingFieldKey, floating);
 const describedBy = computed(() => {
   const ids = [
-    hasDescription.value ? descriptionId.value : undefined,
     hasError.value ? errorId.value : undefined,
+    hasDescription.value ? descriptionId.value : undefined,
   ].filter((value): value is string => Boolean(value));
   return ids.length > 0 ? ids.join(' ') : undefined;
 });
@@ -69,11 +69,11 @@ const defaultSlotProps = computed<CmFieldDefaultSlotProps>(() => ({
       ><span v-if="props.required" class="cm-field__required" aria-hidden="true">*</span>
     </label>
     <div class="cm-field__control"><slot v-bind="defaultSlotProps" /></div>
-    <p v-if="hasDescription" :id="descriptionId" class="cm-field__description">
-      <slot name="description">{{ props.description }}</slot>
-    </p>
     <p v-if="hasError" :id="errorId" class="cm-field__error">
       <slot name="error">{{ props.error }}</slot>
+    </p>
+    <p v-if="hasDescription" :id="descriptionId" class="cm-field__description">
+      <slot name="description">{{ props.description }}</slot>
     </p>
   </div>
 </template>
