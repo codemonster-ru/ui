@@ -203,8 +203,8 @@ export class CmMenuBarController implements CmController {
 
     switch (action.type) {
       case 'close-all':
-        this.#closeOthers(null);
         this.#topEntry(item)?.focus();
+        this.#closeOthers(null);
         return;
       case 'collapse':
         this.#closeOthers(this.#parentBranch(item));
@@ -212,8 +212,8 @@ export class CmMenuBarController implements CmController {
       case 'close-to-parent': {
         const parentBranch = this.#parentBranch(item);
         if (parentBranch) {
-          this.#closeOthers(this.#parentBranch(parentBranch));
           parentBranch.focus();
+          this.#closeOthers(this.#parentBranch(parentBranch));
         }
         return;
       }
