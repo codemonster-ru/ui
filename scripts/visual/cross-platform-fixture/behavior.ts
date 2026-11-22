@@ -38,6 +38,10 @@ export function behaviorTarget(slug: string, name: string): HTMLElement | null {
   if (name === 'root') return root.querySelector('.cm-' + slug);
   if (name === 'form' || name === 'outside') return document.querySelector('#behavior-' + name);
   if (name === 'install-heading') return document.getElementById('install');
+  if (name === 'page-size-option-25') {
+    const id = root.querySelector(selectors['page-size'])?.getAttribute('aria-controls');
+    return id ? (document.getElementById(id)?.querySelector('[data-cm-select-value="25"]') ?? null) : null;
+  }
   if (name === 'control') return root.querySelector('input:not([type=hidden]), textarea, input[type=hidden]');
   if (name === 'trigger' && ['date-picker', 'select'].includes(slug))
     return root.querySelector('button[role=combobox]');

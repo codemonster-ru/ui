@@ -1,4 +1,5 @@
 <script setup lang="ts" generic="Row extends object = CmDataTableRow">
+import { sortAscending, sortDescending, sortNeutral } from '@codemonster-ru/ui-icons';
 import { chevronDown } from '@codemonster-ru/ui-icons/controls';
 import {
   measureDataTableColumnContent,
@@ -8,23 +9,14 @@ import {
   resizedDataTableWidths,
   type CmDataTableResizeBoundary,
 } from '@codemonster-ru/ui-runtime/data-table-dom';
-import {
-  computed,
-  nextTick,
-  onMounted,
-  ref,
-  useAttrs,
-  watch,
-  watchEffect,
-  type CSSProperties,
-  type PropType,
-} from 'vue';
+import { computed, nextTick, onMounted, ref, useAttrs, watch, type CSSProperties, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
 import {
   ariaSortFor,
   clampPage,
+  compareDataTableSortValues,
   formatTemplate,
   nextSortState,
   resolveSelectionState,
@@ -32,9 +24,12 @@ import {
   toggleAllSelection,
 } from '@codemonster-ru/ui-runtime/core';
 import { assertCm, warnCm } from '../../internal/warn';
+import CmButton from '../button/CmButton.vue';
+import CmCheckbox from '../checkbox/CmCheckbox.vue';
 import CmIconButton from '../icon-button/CmIconButton.vue';
 import CmIcon from '../icon/CmIcon.vue';
 import CmProgressSpinner from '../progress-spinner/CmProgressSpinner.vue';
+import CmSelect from '../select/CmSelect.vue';
 import CmSkeleton from '../skeleton/CmSkeleton.vue';
 import { tableRowField } from './row-field';
 import type {
@@ -54,7 +49,6 @@ import type {
 defineOptions({ inheritAttrs: false });
 const idPattern = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/u;
 const directions: readonly CmDataTableSortDirection[] = ['ascending', 'descending'];
-const collator = new Intl.Collator('en', { numeric: true, sensitivity: 'base' });
 const props = defineProps({
   id: { type: String, required: true },
   columns: { type: Array as PropType<readonly CmDataTableColumn[]>, required: true },
@@ -225,7 +219,7 @@ function rawRowId(row: Row, sourceIndex: number, key: CmDataTableRowKeyResolver<
 const normalizedRows = computed(() => {
   const ids = new Set<string>();
   const keys = new Set(normalizedColumns.value.map(({ key }) => key));
-  const rows: (CmDataTableRow & { record: Row })[] = [];
+  const rows: (CmDataTableRow & { record: Row; sourceIndex: number })[] = [];
   const rowKey = props.rowKey;
   for (const [sourceIndex, record] of props.rows.entries()) {
     if (record === null || typeof record !== 'object') {
@@ -245,7 +239,7 @@ const normalizedRows = computed(() => {
         }),
       );
       ids.add(id);
-      rows.push({ id, cells, record });
+      rows.push({ id, cells, record, sourceIndex });
       continue;
     }
 
@@ -268,7 +262,7 @@ const normalizedRows = computed(() => {
       continue;
     }
     ids.add(row.id);
-    rows.push({ id: row.id, cells: row.cells, selectable: row.selectable, record });
+    rows.push({ id: row.id, cells: row.cells, selectable: row.selectable, record, sourceIndex });
   }
   return rows;
 });
@@ -361,6 +355,10 @@ const normalizedPageSizeOptions = computed(() => {
   }
   return options;
 });
+const pageSizeId = computed(() => `${props.id}-page-size`);
+const pageSizeChoices = computed(() =>
+  normalizedPageSizeOptions.value.map((size) => ({ value: String(size), label: String(size) })),
+);
 
 function safeCount(value: number): number {
   const usable = assertCm(
@@ -483,26 +481,18 @@ watch(resolvedPageCount, (count) => {
   localPage.value = Math.min(localPage.value, count);
 });
 
-function compareCells(left: CmDataTableCellValue | undefined, right: CmDataTableCellValue | undefined): number {
-  if (left == null || right == null) return Number(left == null) - Number(right == null);
-  return typeof left === 'number' && typeof right === 'number'
-    ? left - right
-    : collator.compare(String(left), String(right));
-}
-
+const clientSorting = computed(
+  () => props.sortingMode === 'client' && !(props.pagination && props.paginationMode === 'manual'),
+);
 const renderedRows = computed(() => {
   let rows = normalizedRows.value;
   const sorts = activeSort.value;
   // Manual paging supplies one ordered slice from the application.
-  if (sorts.length && props.sortingMode === 'client' && !(props.pagination && props.paginationMode === 'manual')) {
+  if (sorts.length && clientSorting.value) {
     rows = [...rows].sort((left, right) => {
       for (const sort of sorts) {
-        const leftValue = left.cells[sort.key];
-        const rightValue = right.cells[sort.key];
-        const comparison = compareCells(leftValue, rightValue);
-        if (comparison !== 0) {
-          return sort.direction === 'descending' && leftValue != null && rightValue != null ? -comparison : comparison;
-        }
+        const comparison = compareDataTableSortValues(left.cells[sort.key], right.cells[sort.key], sort.direction);
+        if (comparison !== 0) return comparison;
       }
       return 0;
     });
@@ -526,10 +516,6 @@ const enabledIds = computed(() => new Set(enabledRowIds.value));
 const selectionState = computed(() => resolveSelectionState(enabledRowIds.value, currentSelectedRowIds.value));
 const allSelected = computed(() => selectionState.value.all);
 const partiallySelected = computed(() => selectionState.value.partial);
-const selectAll = ref<HTMLInputElement>();
-watchEffect(() => {
-  if (selectAll.value) selectAll.value.indeterminate = partiallySelected.value;
-});
 
 const classes = computed(() =>
   mergeCmClasses(
@@ -545,6 +531,7 @@ const rootAttrs = () =>
   omitCmOwnedAttrs(attrs, [
     'id',
     'data-cm-controller',
+    'data-cm-data-table-sort-mode',
     'data-cm-data-table-sort-key',
     'data-cm-data-table-sort-direction',
     'data-cm-data-table-page',
@@ -566,6 +553,8 @@ const showPagination = computed(
     props.pagination ??
     (resolvedPageCount.value > 1 || normalizedPageSizeOptions.value.length > 0 || safeTotalRows.value !== null),
 );
+// The DOM controller can only sort rows present in the table.
+const runtimeClientSorting = computed(() => clientSorting.value && !showPagination.value && !props.multiSort);
 const pageSummary = computed(() =>
   formatTemplate(props.pageSummaryTemplate, { page: localPage.value, pageCount: resolvedPageCount.value }),
 );
@@ -583,7 +572,10 @@ function cellAttrs(column: CmDataTableColumn) {
   return {
     ...(column.align && column.align !== 'start' ? { class: `cm-data-table__cell--${column.align}` } : {}),
     ...(style ? { style } : {}),
-    'data-cm-data-table-column': props.resizableColumns || column.pinned ? column.key : undefined,
+    'data-cm-data-table-column':
+      props.resizableColumns || column.pinned || (runtimeClientSorting.value && column.sortable)
+        ? column.key
+        : undefined,
     'data-cm-data-table-pin': column.pinned,
   };
 }
@@ -822,6 +814,7 @@ useCmHydrated();
     v-bind="rootAttrs()"
     :class="classes"
     data-cm-controller="data-table"
+    :data-cm-data-table-sort-mode="runtimeClientSorting ? 'client' : undefined"
     :data-cm-data-table-sort-key="activeSort[0]?.key ?? ''"
     :data-cm-data-table-sort-direction="activeSort[0]?.direction ?? ''"
     :data-cm-data-table-page="localPage"
@@ -844,11 +837,11 @@ useCmHydrated();
         <thead class="cm-data-table__head">
           <tr>
             <th v-if="props.selectable" class="cm-data-table__selection" scope="col">
-              <input
-                ref="selectAll"
-                type="checkbox"
+              <CmCheckbox
+                size="sm"
                 :aria-label="props.selectAllLabel"
-                :checked="allSelected"
+                :model-value="allSelected"
+                :indeterminate="partiallySelected"
                 :disabled="enabledRowIds.length === 0"
                 data-cm-data-table-select-all
                 @change="changeAllSelection($event.target as HTMLInputElement)"
@@ -862,10 +855,11 @@ useCmHydrated();
               :scope="column.scope ?? 'col'"
               :aria-sort="column.sortable ? columnAriaSort(column) : undefined"
             >
-              <button
+              <CmButton
                 v-if="column.sortable"
                 class="cm-data-table__sort"
-                type="button"
+                size="sm"
+                variant="ghost"
                 :aria-label="sortLabel(column)"
                 :data-cm-data-table-sort="column.key"
                 :data-cm-data-table-sort-ascending-label-template="props.sortAscendingLabelTemplate"
@@ -875,14 +869,20 @@ useCmHydrated();
                 @click="changeSort(column)"
               >
                 <slot :name="columnSlot('header', column.key)" :column="column">{{ column.header }}</slot>
-                <span class="cm-data-table__sort-indicator" aria-hidden="true"></span>
-                <span
-                  v-if="activeSort.length > 1 && sortOrder.has(column.key)"
-                  class="cm-data-table__sort-priority"
-                  aria-hidden="true"
-                  >{{ sortOrder.get(column.key)?.priority }}</span
-                >
-              </button>
+                <template #trailing>
+                  <span class="cm-data-table__sort-indicator" aria-hidden="true">
+                    <CmIcon :icon="sortNeutral" data-cm-sort-icon="none" />
+                    <CmIcon :icon="sortAscending" data-cm-sort-icon="ascending" />
+                    <CmIcon :icon="sortDescending" data-cm-sort-icon="descending" />
+                  </span>
+                  <span
+                    v-if="activeSort.length > 1 && sortOrder.has(column.key)"
+                    class="cm-data-table__sort-priority"
+                    aria-hidden="true"
+                    >{{ sortOrder.get(column.key)?.priority }}</span
+                  >
+                </template>
+              </CmButton>
               <template v-else>
                 <slot :name="columnSlot('header', column.key)" :column="column">{{ column.header }}</slot>
               </template>
@@ -936,13 +936,14 @@ useCmHydrated();
               <tr
                 v-bind="selectedIds.has(row.id) ? { class: 'cm-data-table__row--selected' } : {}"
                 :data-cm-data-table-row="row.id"
+                :data-cm-data-table-source-index="runtimeClientSorting ? row.sourceIndex : undefined"
               >
                 <td v-if="props.selectable" class="cm-data-table__selection">
-                  <input
-                    type="checkbox"
+                  <CmCheckbox
+                    size="sm"
                     :aria-label="selectionLabel(row.id, rowIndex)"
                     :value="row.id"
-                    :checked="selectedIds.has(row.id)"
+                    :model-value="selectedIds.has(row.id)"
                     :disabled="!enabledIds.has(row.id)"
                     data-cm-data-table-select-row
                     @change="changeRowSelection(row.id, $event.target as HTMLInputElement)"
@@ -962,7 +963,14 @@ useCmHydrated();
                     <CmIcon :icon="chevronDown" />
                   </CmIconButton>
                 </td>
-                <td v-for="column in visibleColumns" :key="column.key" v-bind="cellAttrs(column)">
+                <td
+                  v-for="column in visibleColumns"
+                  :key="column.key"
+                  v-bind="cellAttrs(column)"
+                  :data-cm-data-table-sort-value="
+                    runtimeClientSorting && column.sortable ? JSON.stringify(row.cells[column.key] ?? null) : undefined
+                  "
+                >
                   <slot
                     :name="columnSlot('cell', column.key)"
                     :row="row.record"
@@ -1015,22 +1023,19 @@ useCmHydrated();
         :total-rows="safeTotalRows"
         :rendered-row-count="renderedRows.length"
       >
-        <label v-if="normalizedPageSizeOptions.length > 0" class="cm-data-table__page-size">
-          <span>{{ props.rowsPerPageLabel }}</span>
-          <select
+        <div v-if="pageSizeChoices.length > 0" class="cm-data-table__page-size">
+          <label :for="pageSizeId">{{ props.rowsPerPageLabel }}</label>
+          <CmSelect
+            :id="pageSizeId"
+            :options="pageSizeChoices"
+            :model-value="String(localPageSize)"
+            size="sm"
+            teleport-to="body"
+            tabindex="0"
             data-cm-data-table-page-size-control
-            @change="changePageSize(Number(($event.target as HTMLSelectElement).value))"
-          >
-            <option
-              v-for="option in normalizedPageSizeOptions"
-              :key="option"
-              :value="option"
-              :selected="option === localPageSize"
-            >
-              {{ option }}
-            </option>
-          </select>
-        </label>
+            @value-change="changePageSize(Number($event))"
+          />
+        </div>
         <span
           v-if="safeTotalRows !== null"
           class="cm-data-table__pagination-summary"
@@ -1040,16 +1045,36 @@ useCmHydrated();
         >
           {{ paginationSummary }}
         </span>
-        <!-- prettier-ignore -->
-        <button class="cm-data-table__page-button" type="button" :aria-label="props.previousPageLabel" data-cm-data-table-page-action="previous" :disabled="localPage <= 1" @click="changePage(localPage - 1)">{{ props.previousPageText }}</button>
+        <CmButton
+          class="cm-data-table__page-button"
+          size="sm"
+          variant="ghost"
+          :aria-label="props.previousPageLabel"
+          data-cm-data-table-page-action="previous"
+          tabindex="0"
+          :disabled="localPage <= 1"
+          @click="changePage(localPage - 1)"
+        >
+          {{ props.previousPageText }}
+        </CmButton>
         <span
           class="cm-data-table__page-summary"
           aria-live="polite"
           :data-cm-data-table-page-summary-template="props.pageSummaryTemplate"
           >{{ pageSummary }}</span
         >
-        <!-- prettier-ignore -->
-        <button class="cm-data-table__page-button" type="button" :aria-label="props.nextPageLabel" data-cm-data-table-page-action="next" :disabled="localPage >= resolvedPageCount" @click="changePage(localPage + 1)">{{ props.nextPageText }}</button>
+        <CmButton
+          class="cm-data-table__page-button"
+          size="sm"
+          variant="ghost"
+          :aria-label="props.nextPageLabel"
+          data-cm-data-table-page-action="next"
+          tabindex="0"
+          :disabled="localPage >= resolvedPageCount"
+          @click="changePage(localPage + 1)"
+        >
+          {{ props.nextPageText }}
+        </CmButton>
       </slot>
     </nav>
   </div>

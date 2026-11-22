@@ -1,5 +1,5 @@
-import { afterCmFloatingExit, attachCmAnchoredPosition } from './anchored-position.js';
-import { selectClosedKeyAction, selectOpenKeyAction } from './core/select.js';
+import { afterCmFloatingExit, attachCmAnchoredPosition, resolveCmAnchoredTarget } from './anchored-position.js';
+import { selectClosedKeyAction, selectOpenKeyAction, selectPaginationTabTarget } from './core/select.js';
 import { dispatchCmEvent } from './events.js';
 import { observeFormReset } from './form-reset.js';
 import type { CmController, CmControllerFactory } from './runtime.js';
@@ -110,6 +110,15 @@ export class CmSelectController implements CmController {
     if (target !== this.#trigger && !(target instanceof view.Node && this.#listbox.contains(target))) return;
 
     const open = !this.#listbox.hidden;
+    if (open && event.key === 'Tab') {
+      const destination = selectPaginationTabTarget(this.#trigger, event.shiftKey);
+      if (destination) event.preventDefault();
+      // Resume native tab navigation from the trigger when pagination has no explicit destination.
+      (destination ?? this.#trigger).focus({ preventScroll: !destination || destination === this.#trigger });
+      this.#setOpen(false, false);
+      return;
+    }
+
     const options = this.#enabledOptions;
 
     if (!open) {
@@ -146,7 +155,13 @@ export class CmSelectController implements CmController {
 
   readonly #handleDocumentClick = (event: Event): void => {
     const Node_ = this.#root.ownerDocument.defaultView?.Node;
-    if (!Node_ || !(event.target instanceof Node_) || this.#root.contains(event.target)) return;
+    if (
+      !Node_ ||
+      !(event.target instanceof Node_) ||
+      this.#root.contains(event.target) ||
+      this.#listbox.contains(event.target)
+    )
+      return;
     this.#setOpen(false, false);
   };
 
@@ -194,13 +209,32 @@ export class CmSelectController implements CmController {
   #holdPlacement(): void {
     if (this.#stopAutoUpdate) return;
     const placement = this.#listbox.dataset.cmPlacement === 'bottom-end' ? 'bottom-end' : 'bottom-start';
-    this.#stopAutoUpdate = attachCmAnchoredPosition(
-      this.#trigger,
-      this.#listbox,
-      placement,
-      2,
-      this.#listbox.parentElement,
-    );
+    const listbox = this.#listbox;
+    const target = resolveCmAnchoredTarget(this.#root, this.#trigger.dataset.cmSelectTeleportTo);
+    const origin = target ? listbox.ownerDocument.createComment('select') : null;
+    const { position, width, minWidth, maxWidth } = listbox.style;
+    if (target && origin) {
+      listbox.before(origin);
+      target.append(listbox);
+      Object.assign(listbox.style, {
+        position: 'fixed',
+        width: 'max-content',
+        maxWidth: '100dvw',
+        minWidth: `${this.#trigger.offsetWidth}px`,
+      });
+      listbox.addEventListener('click', this.#handleClick);
+      listbox.addEventListener('keydown', this.#handleKeydown);
+    }
+    const stop = attachCmAnchoredPosition(this.#trigger, listbox, placement, 2, target ? null : listbox.parentElement);
+    this.#stopAutoUpdate = () => {
+      stop();
+      if (!origin) return;
+      listbox.removeEventListener('click', this.#handleClick);
+      listbox.removeEventListener('keydown', this.#handleKeydown);
+      Object.assign(listbox.style, { position, width, minWidth, maxWidth });
+      if (origin.parentNode) origin.replaceWith(listbox);
+      else listbox.remove();
+    };
   }
 
   #releasePlacement(): void {

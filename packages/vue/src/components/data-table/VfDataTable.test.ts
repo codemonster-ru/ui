@@ -199,6 +199,7 @@ it('shows the exact numbered ranges and preserves a focused page across changes'
 it('clamps controlled manual pages and leaves page and page size authoritative with the host', async () => {
   const rows = [{ name: 'First server record' }, { name: 'Second server record' }];
   const table = mount(VfDataTable, {
+    global: { stubs: { teleport: true } },
     props: {
       columns: [{ key: 'name' }],
       rows,
@@ -225,13 +226,15 @@ it('clamps controlled manual pages and leaves page and page size authoritative w
     await table.setProps({ totalRows: 200 });
     expect(current()).toBe('20');
 
-    const size = table.get<HTMLSelectElement>('select');
-    await size.setValue('25');
+    const size = table.get('.cm-select[data-cm-data-table-page-size-control]');
+    await size.trigger('click');
+    await table.get('[role="option"][data-cm-select-value="25"]').trigger('click');
+    await nextTick();
     expect(table.emitted('update:pageSize')).toEqual([[25]]);
     expect(table.emitted('update:page')).toEqual([[19], [1]]);
-    expect(size.element.value).toBe('10');
+    expect(size.text()).toBe('10');
     await table.setProps({ pageSize: 25, page: 1, rows: [] });
-    expect(size.element.value).toBe('25');
+    expect(size.text()).toBe('25');
     expect(current()).toBe('1');
     expect(summary()).toBe('0-0 of 200');
   } finally {

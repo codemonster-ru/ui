@@ -395,6 +395,7 @@ describe('Vue data table components', () => {
 
   it('reports a page-size request and resets the requested page', async () => {
     const wrapper = mount(CmDataTable, {
+      global: { stubs: { teleport: true } },
       props: {
         id: 'projects',
         columns,
@@ -405,7 +406,8 @@ describe('Vue data table components', () => {
         totalRows: 25,
       },
     });
-    await wrapper.get<HTMLSelectElement>('[data-cm-data-table-page-size-control]').setValue('25');
+    await wrapper.get('button.cm-select[data-cm-data-table-page-size-control]').trigger('click');
+    await wrapper.get('[role="option"][data-cm-select-value="25"]').trigger('click');
     expect(wrapper.emitted('pageSizeChange')).toEqual([[25]]);
     expect(wrapper.emitted('pageChange')).toEqual([[1]]);
     expect(wrapper.attributes('data-cm-data-table-page-size')).toBe('25');
@@ -474,9 +476,12 @@ describe('Vue data table components', () => {
     expect(unsafeCell.findAll('tbody tr[data-cm-data-table-row]')).toHaveLength(0);
 
     const missingPageSize = expectCmWarning(/pageSizeOptions must contain pageSize/u, () =>
-      mount(CmDataTable, { props: { id: 'projects', columns, rows, pageSize: 10, pageSizeOptions: [25, 50] } }),
+      mount(CmDataTable, {
+        props: { id: 'projects', columns, rows, pageSize: 10, pageSizeOptions: [25, 50] },
+        global: { stubs: { teleport: true } },
+      }),
     );
-    expect(missingPageSize.findAll('option').map((option) => option.text())).toContain('10');
+    expect(missingPageSize.findAll('[role="option"]').map((option) => option.text())).toContain('10');
 
     const unsafeRow = expectCmWarning(/Invalid DataTable row/u, () =>
       mount(CmDataTable, {

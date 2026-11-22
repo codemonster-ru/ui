@@ -26,14 +26,14 @@ the application rather than crossing the scalar boundary through callbacks or fr
 
 The root owns `cm-data-table`, the shared controller marker, current sort/page data attributes, and
 selected-count state. It contains a responsive table scroll region and, when `pageCount > 1`, a
-pagination navigation region. An optional ordered `pageSizeOptions` collection renders a native
-page-size select and must contain the current positive `pageSize`. When non-negative `totalRows` is
+pagination navigation region with Button controls. An optional ordered `pageSizeOptions` collection
+renders a page-size Select and must contain the current positive `pageSize`. When non-negative `totalRows` is
 provided, DataTable derives `pageCount`, renders the visible row range, and keeps both summaries in
 sync with page-size requests. Caption, headers, cells, state messages, labels, templates, and
 attributes are escaped. Loading takes precedence over error; error takes precedence over empty rows.
 
 Presentation props map to the same stable table modifiers as Table. `density="compact"` is the only
-non-default density. Sorting uses `aria-sort` on the owning `<th>` and a native button. Selection uses
+non-default density. Sorting uses `aria-sort` on the owning `<th>` and a Button. Selection uses
 native checkboxes with row-specific accessible names. The select-all checkbox covers only enabled
 rendered rows and exposes native checked, indeterminate, or disabled state. Selection changes retain
 already selected disabled rows while adding or removing only eligible rows.
@@ -45,8 +45,9 @@ the localized name throughout the sort cycle.
 ## Interaction and ownership
 
 Activating a sortable header cycles unsorted → ascending → descending → unsorted, updates rendered
-sort state optimistically, and reports `sortChange`. DataTable never reorders rows itself; the
-application supplies rows in the requested order. Selection updates native controls and reports
+sort state optimistically, and reports `sortChange`. With manual sorting (the default), the
+application supplies rows in the requested order. Client sorting reorders local rows and restores
+their original order when cleared. Selection updates native controls and reports
 `selectionChange` in rendered row order. Previous and next buttons clamp to `1...pageCount`, update
 the requested page, and report `pageChange`; applications replace rows for that page. Changing the
 page-size select reports `pageSizeChange`, resets the requested page to one, and reports that page
@@ -57,6 +58,9 @@ and next text is independent from the buttons' accessible labels so both can be 
 Vue owns interaction directly. Server-rendered Vanilla HTML markup uses the shared DataTable controller.
 The initial HTML remains a readable native table without JavaScript. Controlled Vue props are
 authoritative on rerender, while Vanilla applications are authoritative when replacing server markup.
+The Vanilla controller supports single-column client sorting on a fully rendered table through
+`data-cm-data-table-sort-mode="client"`. See the [DataTable guide](../../docs/components/data-tables.md)
+for the authored row and cell attributes.
 
 Vue also supports custom contents in the pagination region. The `pagination` slot receives
 `page`, `pageCount`, `pageSize`, `pageSizeOptions`, `totalRows`, and `renderedRowCount`.

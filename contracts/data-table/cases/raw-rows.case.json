@@ -34,6 +34,15 @@
           "name": "Apollo"
         },
         "status": "Active"
+      },
+      {
+        "external": {
+          "id": 503
+        },
+        "profile": {
+          "name": "Luna"
+        },
+        "status": "Active"
       }
     ],
     "rowKey": "external.id",

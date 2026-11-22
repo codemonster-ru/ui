@@ -10,6 +10,25 @@ export interface CmDataTableSortState {
   readonly key: string;
 }
 
+let sortCollator: Intl.Collator | undefined;
+
+/** Compares raw values, keeping missing cells last in either direction. */
+export function compareDataTableSortValues(
+  left: string | number | null | undefined,
+  right: string | number | null | undefined,
+  direction: CmDataTableSortDirection,
+): number {
+  if (left == null || right == null) return Number(left == null) - Number(right == null);
+  const comparison =
+    typeof left === 'number' && typeof right === 'number'
+      ? left - right
+      : (sortCollator ??= new Intl.Collator('en', { numeric: true, sensitivity: 'base' })).compare(
+          String(left),
+          String(right),
+        );
+  return direction === 'descending' ? -comparison : comparison;
+}
+
 /** Which of the three sort labels applies, named after the state the header is currently in. */
 export type CmDataTableSortLabel = 'ascending' | 'clear' | 'descending';
 

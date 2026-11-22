@@ -4,7 +4,7 @@ import { dirname, resolve } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { JSDOM } from 'jsdom';
-import { CmRuntime, createCmDataTableController } from '../dist/index.js';
+import { CmRuntime, createCmDataTableController, createCmSelectController } from '../dist/index.js';
 
 const packageDirectory = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const contractDirectory = resolve(packageDirectory, '../../contracts/data-table');
@@ -19,8 +19,13 @@ test('pinned cells track measured header widths and release the authored table o
   const name = document.querySelector('th[data-cm-data-table-column="name"]');
   const team = document.querySelector('td[data-cm-data-table-column="team"]');
   const table = document.querySelector('table');
+  const scroll = table.parentElement;
   let scrollportWidth = 540;
-  table.parentElement.getBoundingClientRect = () => ({ width: scrollportWidth });
+  scroll.getBoundingClientRect = () => ({ width: scrollportWidth });
+  Object.defineProperties(scroll, {
+    clientWidth: { get: () => scrollportWidth },
+    scrollWidth: { value: 612 },
+  });
   for (const header of table.tHead.rows[0].cells) {
     header.getBoundingClientRect = () => ({ width: Number.parseFloat(header.style.inlineSize) });
   }
@@ -34,6 +39,17 @@ test('pinned cells track measured header widths and release the authored table o
   assert.equal(offset(), '88px');
   assert.equal(table.hasAttribute('data-cm-data-table-pins-ready'), true);
   assert.equal(table.hasAttribute('data-cm-data-table-pins-constrained'), false);
+  const shadowEdges = () =>
+    ['start', 'end'].filter((side) => table.hasAttribute(`data-cm-data-table-scrolled-${side}`));
+  assert.deepEqual(shadowEdges(), ['end']);
+  for (const [scrollLeft, edges] of [
+    [36, ['start', 'end']],
+    [72, ['start']],
+  ]) {
+    scroll.scrollLeft = scrollLeft;
+    scroll.dispatchEvent(new window.Event('scroll'));
+    assert.deepEqual(shadowEdges(), edges);
+  }
   scrollportWidth = 294;
   window.dispatchEvent(new window.Event('resize'));
   assert.equal(table.hasAttribute('data-cm-data-table-pins-constrained'), true);
@@ -47,6 +63,8 @@ test('pinned cells track measured header widths and release the authored table o
   runtime.stop();
   assert.equal(table.hasAttribute('data-cm-data-table-pins-constrained'), false);
   assert.equal(table.hasAttribute('data-cm-data-table-pins-ready'), false);
+  scroll.dispatchEvent(new window.Event('scroll'));
+  assert.deepEqual(shadowEdges(), []);
   assert.equal(offset(), '');
 });
 
@@ -92,7 +110,10 @@ for (const scenarioFile of scenarioFiles) {
     ]) {
       root.addEventListener(name, () => events.set(name, (events.get(name) ?? 0) + 1));
     }
-    new CmRuntime().register('data-table', createCmDataTableController).start(dom.window.document);
+    new CmRuntime()
+      .register('data-table', createCmDataTableController)
+      .register('select', createCmSelectController)
+      .start(dom.window.document);
 
     for (const step of scenario.steps) executeStep({ events, root, step });
   });
@@ -207,6 +228,47 @@ test('preserves localized sort labels through the sort cycle', () => {
   assert.equal(sort.getAttribute('aria-label'), 'Сбросить сортировку Имя');
 });
 
+test('client sorting uses raw values and restores the source order with each row’s details', () => {
+  const { window } = new JSDOM(`
+    <div data-cm-controller="data-table" data-cm-data-table-sort-mode="client"
+      data-cm-data-table-sort-key="price" data-cm-data-table-sort-direction="ascending">
+      <table class="cm-data-table__table">
+        <thead><tr><th><button data-cm-data-table-sort="price">Price</button></th></tr></thead>
+        <tbody>
+          <tr data-cm-data-table-row="low" data-cm-data-table-source-index="2"><td
+            data-cm-data-table-column="price" data-cm-data-table-sort-value="2">$2</td></tr>
+          <tr data-cm-data-table-row="high" data-cm-data-table-source-index="0"><td
+            data-cm-data-table-column="price" data-cm-data-table-sort-value="10">
+            <input type="checkbox" data-cm-data-table-select-row checked>$10</td></tr>
+          <tr class="cm-data-table__expanded-row" id="details"><td>Details</td></tr>
+          <tr data-cm-data-table-row="tie" data-cm-data-table-source-index="3"><td
+            data-cm-data-table-column="price" data-cm-data-table-sort-value="10">$10.00</td></tr>
+          <tr data-cm-data-table-row="unknown" data-cm-data-table-source-index="1"><td
+            data-cm-data-table-column="price" data-cm-data-table-sort-value="null">—</td></tr>
+          <tr id="summary"><td>Summary</td></tr>
+        </tbody>
+      </table>
+    </div>`);
+  const root = window.document.querySelector('[data-cm-controller]');
+  const button = root.querySelector('[data-cm-data-table-sort]');
+  const selection = root.querySelector('input');
+  const events = [];
+  root.addEventListener('cm:data-table-sort-change', ({ detail }) => events.push(detail.sort?.direction ?? null));
+  const order = () => Array.from(root.querySelector('tbody').rows, (row) => row.dataset.cmDataTableRow ?? row.id);
+  new CmRuntime().register('data-table', createCmDataTableController).start(root);
+
+  assert.deepEqual(order(), ['low', 'high', 'details', 'tie', 'unknown', 'summary']);
+  button.click();
+  assert.deepEqual(order(), ['high', 'details', 'tie', 'low', 'unknown', 'summary']);
+  button.click();
+  assert.deepEqual(order(), ['high', 'details', 'unknown', 'low', 'tie', 'summary']);
+  button.click();
+  assert.deepEqual(order(), ['low', 'high', 'details', 'tie', 'unknown', 'summary']);
+  assert.equal(root.querySelector('input'), selection);
+  assert.equal(selection.checked, true);
+  assert.deepEqual(events, ['descending', null, 'ascending']);
+});
+
 function executeStep({ events, root, step }) {
   const target = resolveTarget(root, step.target);
   if (step.action === 'setValue') {
@@ -224,6 +286,12 @@ function executeStep({ events, root, step }) {
 
 function resolveTarget(root, name) {
   if (name === 'root') return root;
+  if (name === 'page-size-option-25') {
+    const listboxId = root.querySelector('[data-cm-data-table-page-size-control]').getAttribute('aria-controls');
+    const option = root.ownerDocument.getElementById(listboxId)?.querySelector('[data-cm-select-value="25"]');
+    assert.ok(option, 'Missing page-size option 25.');
+    return option;
+  }
   const selectors = {
     'expand-first': '[data-cm-data-table-row="atlas"] [data-cm-data-table-expand]',
     'detail-first': '#expanded-accounts-expanded-atlas',
@@ -248,3 +316,23 @@ function dataTableHtml() {
     <tbody><tr data-cm-data-table-row="first"><td><input type="checkbox" value="first" data-cm-data-table-select-row></td></tr><tr data-cm-data-table-row="second"><td><input type="checkbox" value="second" data-cm-data-table-select-row></td></tr></tbody></table>
   </div>`;
 }
+
+test('still handles a page-size select in existing authored DataTable markup', () => {
+  const { window } = new JSDOM(dataTableHtml());
+  const root = window.document.querySelector('.cm-data-table');
+  root.dataset.cmDataTablePage = '2';
+  root.dataset.cmDataTablePageSize = '10';
+  root.dataset.cmDataTableTotalRows = '25';
+  root.insertAdjacentHTML(
+    'beforeend',
+    '<select data-cm-data-table-page-size-control><option value="10">10</option><option value="25">25</option></select>',
+  );
+  new CmRuntime().register('data-table', createCmDataTableController).start(root);
+  const control = root.querySelector('select');
+  control.value = '25';
+  control.dispatchEvent(new window.Event('change', { bubbles: true }));
+  assert.equal(root.dataset.cmDataTablePage, '1');
+  assert.equal(root.dataset.cmDataTablePageSize, '25');
+  assert.equal(root.dataset.cmDataTablePageCount, '1');
+  window.close();
+});

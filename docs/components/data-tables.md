@@ -237,7 +237,8 @@ document.querySelector('#accounts')?.addEventListener('cm:data-table-sort-change
 });
 ```
 
-Pass `page-size` and an ordered `page-size-options` array to render a native page-size selector.
+Pass `page-size` and an ordered `page-size-options` array to render a page-size Select alongside the
+pagination Buttons. When registering Vanilla controllers individually, register `select` for this control.
 Changing it reports `pageSizeChange` in Vue or `cm:data-table-page-size-change` through the shared
 runtime and requests page one when the current page is not already the first. The application still
 owns row fetching and the rows supplied for the requested page. Pass `total-rows` to derive the page
@@ -249,9 +250,20 @@ Vanilla templates render visible columns in the same order in the header and eac
 [ColumnChooser](#choosing-columns) to report an ordered list of visible column keys. The
 application owns the required-column policy, persistence and table rendering.
 
-The controller cycles one sortable column through ascending, descending, and unsorted states. It
-synchronizes native row checkboxes and clamps previous/next page requests. It does not reorder,
-hide, or replace rows. Without JavaScript, users retain a readable semantic table.
+The controller cycles one sortable column through ascending, descending, and unsorted states.
+Manual sorting is the default. The controller updates the header and emits `cm:data-table-sort-change`
+so the application can supply the ordered rows. It also synchronizes native row checkboxes and
+clamps previous/next page requests.
+
+For a fully rendered table, set `data-cm-data-table-sort-mode="client"` on the controller root.
+Give each data row a `data-cm-data-table-row` ID. On each sortable cell, set
+`data-cm-data-table-column` to the key used by its header's sort button and
+`data-cm-data-table-sort-value` to the JSON-encoded raw value (string, finite number, or `null`).
+For example, `<td data-cm-data-table-column="price" data-cm-data-table-sort-value="12.5">$12.50</td>`
+sorts the formatted price numerically. An optional zero-based `data-cm-data-table-source-index`
+on each row preserves the original order when the server renders the table already sorted.
+Clearing the sort restores that order. Null values sort last in either direction.
+Keep server-paged tables in manual mode. Without JavaScript, the authored row order remains readable.
 
 ## Scope, accessibility, and security
 
