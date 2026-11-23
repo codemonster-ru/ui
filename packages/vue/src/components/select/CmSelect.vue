@@ -47,6 +47,7 @@ const listboxRef = ref<HTMLElement | null>(null);
 const currentValue = ref(props.modelValue);
 const initialValue = props.modelValue;
 const isOpen = ref(false);
+const showOpenRing = ref(false);
 const painted = useCmFloatingPaint(isOpen, listboxRef);
 const portalWidth = ref<number>();
 const positionStyle = shallowRef<CmAnchoredStyle>();
@@ -112,6 +113,7 @@ const triggerAttrs = () =>
     'aria-haspopup': 'listbox',
     'aria-controls': listboxId.value,
     'aria-expanded': isOpen.value,
+    'data-cm-open-ring': showOpenRing.value ? '' : undefined,
     'aria-invalid': props.invalid || undefined,
     'aria-required': props.required || undefined,
     disabled: props.disabled || undefined,
@@ -129,6 +131,7 @@ function enabledOptions(): HTMLButtonElement[] {
 
 function setOpen(open: boolean, restoreFocus = false): void {
   if (props.disabled) open = false;
+  if (isOpen.value !== open) showOpenRing.value = open;
   isOpen.value = open;
   if (restoreFocus) void nextTick(() => triggerRef.value?.focus());
 }
@@ -336,6 +339,7 @@ useCmHydrated();
         role="listbox"
         :aria-labelledby="props.id"
         :hidden="!isOpen"
+        @pointerdown.capture="showOpenRing = false"
         @keydown="onListboxKeydown"
       >
         <button

@@ -120,6 +120,7 @@ const authoredDates = currentDates.value.slice();
 const firstDate = computed(() => currentDates.value[0] ?? '');
 const formValues = computed(() => (selectionMode.value === 'single' ? [firstDate.value] : currentDates.value));
 const isOpen = ref(false);
+const showOpenRing = ref(false);
 const painted = useCmFloatingPaint(isOpen, calendarRef);
 const calendarPosition = ref<CmAnchoredStyle>();
 const placement = computed(() => (props.placement === 'bottom-end' ? 'bottom-end' : 'bottom-start'));
@@ -251,6 +252,7 @@ const triggerAttrs = () =>
     'aria-haspopup': 'dialog',
     'aria-controls': calendarId.value,
     'aria-expanded': isOpen.value,
+    'data-cm-open-ring': showOpenRing.value ? '' : undefined,
     'aria-invalid': props.invalid || undefined,
     'aria-required': props.required || undefined,
     'aria-readonly': props.readonly || undefined,
@@ -278,6 +280,7 @@ function setOpen(open: boolean, restoreFocus = false): void {
     return;
   }
   isOpen.value = open;
+  showOpenRing.value = open;
   if (open) {
     const focus = initialPickerDate();
     yearStart.value = calendarYearRangeStart(focus);
@@ -560,6 +563,7 @@ useCmHydrated();
         :hidden="!isOpen"
         :data-cm-date-picker-portaled="teleportTarget ? '' : undefined"
         v-bind="calendarPosition ? { style: calendarPosition } : {}"
+        @pointerdown.capture="showOpenRing = false"
         @keydown="onCalendarKeydown"
       >
         <header class="cm-date-picker__header">

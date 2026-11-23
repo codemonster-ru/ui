@@ -9,6 +9,7 @@ export interface SelectValueChangeDetail {
 }
 
 const triggerSelector = '.cm-select';
+const openRingAttribute = 'data-cm-open-ring';
 const listboxSelector = '.cm-select__listbox[role="listbox"]';
 const clearSelector = '[data-cm-select-clear]';
 const optionSelector = '.cm-select__option[role="option"]';
@@ -41,6 +42,7 @@ export class CmSelectController implements CmController {
     this.#root.addEventListener('click', this.#handleClick);
     this.#root.addEventListener('keydown', this.#handleKeydown);
     this.#root.addEventListener('mousedown', this.#handleMouseDown);
+    this.#listbox.addEventListener('pointerdown', this.#clearOpenRing, true);
     this.#root.ownerDocument.addEventListener('click', this.#handleDocumentClick);
     const input = this.#input;
     if (input) {
@@ -58,6 +60,8 @@ export class CmSelectController implements CmController {
     this.#root.removeEventListener('click', this.#handleClick);
     this.#root.removeEventListener('keydown', this.#handleKeydown);
     this.#root.removeEventListener('mousedown', this.#handleMouseDown);
+    this.#listbox.removeEventListener('pointerdown', this.#clearOpenRing, true);
+    this.#clearOpenRing();
     this.#root.ownerDocument.removeEventListener('click', this.#handleDocumentClick);
     this.#stopReset?.();
     this.#stopReset = undefined;
@@ -71,6 +75,10 @@ export class CmSelectController implements CmController {
   get #enabledOptions(): HTMLButtonElement[] {
     return [...this.#listbox.querySelectorAll<HTMLButtonElement>(enabledOptionSelector)];
   }
+
+  readonly #clearOpenRing = (): void => {
+    this.#trigger.removeAttribute(openRingAttribute);
+  };
 
   readonly #handleMouseDown = (event: Event): void => {
     const target = event.target;
@@ -201,6 +209,7 @@ export class CmSelectController implements CmController {
   #synchronize(open: boolean): void {
     const closing = !open && !this.#listbox.hidden;
     this.#trigger.setAttribute('aria-expanded', String(open));
+    this.#trigger.toggleAttribute(openRingAttribute, open);
     this.#listbox.hidden = !open;
     if (open) this.#holdPlacement();
     else if (closing) afterCmFloatingExit(this.#listbox, () => this.#releasePlacement());

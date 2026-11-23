@@ -118,6 +118,17 @@ if (platform === 'vue') {
   );
   const props = reactive(resolveVueProps());
   if (behavior) {
+    if (caseId === 'field-floating-date-picker') {
+      const id = String(props.controlId);
+      slots.default = () =>
+        h(UiVue.CmDatePicker, {
+          id,
+          teleportTo: 'body',
+          placeholder: 'Choose a date',
+          name: 'release_date',
+          ariaDescribedby: `${id}-description`,
+        });
+    }
     const prefix = ['accordion', 'theme-switch', 'setup-layout'].includes(componentSlug) ? '' : componentSlug + '-';
     const names =
       componentSlug === 'setup-layout'

@@ -116,14 +116,12 @@
   grid-area: 1 / 1 / 2 / 2;
 }
 
-/* Native text controls use :placeholder-shown. DatePicker stays raised while its calendar is open,
- * including when focus moves to a portal outside the Field. */
+/* Picker labels stay raised while their popups are open, including when focus moves outside the Field. */
 .cm-field--floating:has(> .cm-field__control :is(.cm-input, .cm-textarea, .cm-select, .cm-date-picker)):where(
     :focus-within,
     :has(
       > .cm-field__control :is(.cm-input, .cm-textarea):not(:placeholder-shown),
-      > .cm-field__control :is(.cm-select, .cm-date-picker)[data-cm-filled='true'],
-      > .cm-field__control .cm-date-picker[aria-expanded='true']
+      > .cm-field__control :is(.cm-select, .cm-date-picker):is([data-cm-filled='true'], [aria-expanded='true'])
     )
   )
   > .cm-field__label {
@@ -146,11 +144,13 @@
   color: var(--cm-color-status-danger-subtle-foreground);
 }
 
-.cm-field--floating:focus-within:not(.cm-field--invalid):has(
-    > .cm-field__control :is(.cm-input, .cm-textarea, .cm-select, .cm-date-picker)
+.cm-field--floating:not(.cm-field--invalid):is(
+    :focus-within:has(> .cm-field__control :is(.cm-input, .cm-textarea)),
+    :has(> .cm-field__control :is(.cm-select, .cm-date-picker):enabled:is(:focus-visible, [data-cm-open-ring]))
   )
   > .cm-field__label {
-  color: var(--cm-color-interactive-primary-subtle-foreground);
+  background-color: var(--cm-color-background-surface);
+  color: var(--cm-color-focus-ring);
 }
 
 .cm-field--floating:not(:focus-within) > .cm-field__control :is(.cm-input, .cm-textarea)::placeholder,
