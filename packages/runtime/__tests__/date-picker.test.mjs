@@ -265,26 +265,43 @@ test('Vanilla time controls submit ISO wall time and keep time bounds after a da
   runtime.start(document);
   const trigger = document.getElementById('release-time');
   trigger.click();
-  const hour = document.querySelector('[data-cm-date-picker-hour]');
-  const minute = document.querySelector('[data-cm-date-picker-minute]');
-  assert.equal(hour.value, '9');
-  assert.equal(minute.value, '30');
-  assert.equal(hour.querySelector('option[value="8"]').disabled, true);
-  assert.equal(minute.querySelector('option[value="0"]').disabled, true);
+  const calendar = document.querySelector('.cm-date-picker__calendar');
+  const hour = calendar.querySelector('[data-cm-date-picker-hour]');
+  const minute = calendar.querySelector('[data-cm-date-picker-minute]');
+  const option = (select, value) => select.querySelector(`[role="option"][data-cm-select-value="${value}"]`);
+  const display = (select) => select.querySelector('.cm-select__value').textContent;
+  assert.equal(calendar.querySelector('select'), null);
+  assert.equal(display(hour), '09');
+  assert.equal(display(minute), '30');
+  assert.equal(option(hour, '8').getAttribute('aria-disabled'), 'true');
+  assert.equal(option(minute, '0').getAttribute('aria-disabled'), 'true');
 
   const change = (select, value) => {
-    select.value = value;
-    select.dispatchEvent(new window.Event('change', { bubbles: true }));
+    select.querySelector('.cm-select').click();
+    option(select, value).click();
   };
-  const tenOClock = hour.querySelector('option[value="10"]');
+  const tenOClock = option(hour, '10');
   change(hour, '10');
-  assert.equal(hour.querySelector('option[value="10"]'), tenOClock);
+  assert.equal(option(hour, '10'), tenOClock);
   change(minute, '45');
   const submitted = () => new window.FormData(document.querySelector('form')).get('release_time');
   assert.equal(submitted(), '2026-08-13T10:45');
   document.querySelector('[data-cm-date-picker-value="2026-08-14"]').click();
-  assert.equal(minute.value, '30');
+  assert.equal(display(minute), '30');
   assert.equal(submitted(), '2026-08-14T10:30');
   assert.equal(trigger.getAttribute('aria-expanded'), 'true');
   assert.equal(trigger.textContent.trim(), '14.08.2026 10:30');
+
+  const minuteTrigger = minute.querySelector('.cm-select');
+  minuteTrigger.click();
+  const escape = () =>
+    minuteTrigger.dispatchEvent(
+      new window.KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }),
+    );
+  escape();
+  assert.equal(minuteTrigger.getAttribute('aria-expanded'), 'false');
+  assert.equal(calendar.hidden, false);
+  escape();
+  assert.equal(calendar.hidden, true);
+  assert.equal(document.activeElement, trigger);
 });

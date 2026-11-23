@@ -142,6 +142,26 @@ test(`DatePicker reflows at 320px with 200% text in ${browserName}`, async (cont
             const last = await assertFocusedDateVisible(calendar, 6);
             assert.equal(await last.getAttribute('data-cm-date-picker-value'), '2026-08-15');
           }
+          if (fixture === 'time') {
+            const hour = calendar.getByRole('combobox', { name: 'Hour' });
+            const minute = calendar.getByRole('combobox', { name: 'Minute' });
+            const listbox = calendar.getByRole('listbox');
+            assert.equal(await calendar.locator('select').count(), 0);
+            await hour.click();
+            await listbox.getByRole('option', { name: '10' }).click();
+            await minute.press('ArrowDown');
+            await listbox.locator('[role="option"]:focus').waitFor();
+            await page.keyboard.press('ArrowDown');
+            await page.keyboard.press('Enter');
+            assert.equal(await page.locator('input[name="release_time"]').inputValue(), '2026-08-13T10:45');
+            await minute.press('ArrowDown');
+            await listbox.waitFor();
+            await page.keyboard.press('Escape');
+            await listbox.waitFor({ state: 'hidden' });
+            assert(await calendar.isVisible(), 'Escape closes the time list before the calendar');
+            await page.keyboard.press('Escape');
+            await calendar.waitFor({ state: 'hidden' });
+          }
         }
 
         for (const locale of ['es-ES', 'ru-RU', 'ar-EG']) {
@@ -216,6 +236,19 @@ test(`DatePicker reflows at 320px with 200% text in ${browserName}`, async (cont
         const layout = await measure(ordinary);
         assertLayout(layout, 'default text size');
         assert.equal(layout.gridContent, layout.gridWidth, 'all columns fit at the default text size');
+
+        const time = await openCalendar(page, platform, theme, 'time', '100%');
+        await time.getByRole('combobox', { name: 'Hour' }).click();
+        await page.waitForFunction(
+          () => {
+            const listbox = document.querySelector('[data-cm-date-picker-hour] [role="listbox"]:not([hidden])');
+            if (!listbox) return false;
+            const { left, top, width, height } = listbox.getBoundingClientRect();
+            return listbox.contains(document.elementFromPoint(left + width / 2, top + height / 2));
+          },
+          null,
+          { timeout: 3000 },
+        );
       });
     }
   }

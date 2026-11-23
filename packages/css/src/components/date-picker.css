@@ -1,5 +1,6 @@
 @import '../primitives/floating-reveal.css';
 @import '../primitives/form-validation.css';
+@import './select.css';
 
 /* stylelint-disable no-descending-specificity -- DatePicker states intentionally share one interaction matrix. */
 
@@ -435,17 +436,11 @@
 }
 
 .cm-date-picker__time-select {
-  min-block-size: var(--cm-control-height-md);
-  min-inline-size: 0;
   flex: 1 1 0;
-  padding-inline: var(--cm-space-2);
-  border: var(--cm-border-width) solid var(--cm-color-border-interactive);
-  border-radius: var(--cm-radius-control);
-  background: var(--cm-color-background-surface);
-  color: var(--cm-color-text-primary);
-  font: inherit;
+  min-inline-size: 0;
 }
 
-.cm-date-picker__time-select:disabled {
-  color: var(--cm-color-text-disabled);
+.cm-date-picker__time-select .cm-select__listbox {
+  position: fixed;
+  inline-size: var(--cm-floating-anchor-width, max-content);
 }

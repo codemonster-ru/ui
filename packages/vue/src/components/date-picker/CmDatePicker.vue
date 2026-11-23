@@ -11,6 +11,7 @@ import { useCmFormReset } from '../../internal/form-reset';
 import { mergeCmClasses, mergeCmPickerTriggerAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
 import { assertCm, warnCm } from '../../internal/warn';
+import CmSelect from '../select/CmSelect.vue';
 import type {
   CmDatePickerLabels,
   CmDatePickerPlacement,
@@ -202,9 +203,14 @@ const minutes = computed(
   () =>
     new Set(timesForDraft.value.filter((value) => Math.floor(value / 60) === hour.value).map((value) => value % 60)),
 );
-const minuteChoices = computed(() =>
-  Array.from({ length: Math.ceil(60 / minuteStep.value) }, (_, index) => index * minuteStep.value),
-);
+function timeOptions(limit: number, step: number, enabled: ReadonlySet<number>) {
+  return Array.from({ length: Math.ceil(limit / step) }, (_, index) => {
+    const value = index * step;
+    return { value: String(value), label: String(value).padStart(2, '0'), disabled: !enabled.has(value) };
+  });
+}
+const hourOptions = computed(() => timeOptions(24, 1, hours.value));
+const minuteOptions = computed(() => timeOptions(60, minuteStep.value, minutes.value));
 const firstDayOfWeek = computed(() =>
   Number.isInteger(props.firstDayOfWeek) && props.firstDayOfWeek >= 0 && props.firstDayOfWeek <= 6
     ? props.firstDayOfWeek
@@ -659,41 +665,37 @@ useCmHydrated();
         <div v-if="hasTime" class="cm-date-picker__time" data-cm-date-picker-time>
           <span :id="timeLabelId" class="cm-date-picker__time-label">{{ props.labels.time ?? 'Time' }}</span>
           <div class="cm-date-picker__time-controls" role="group" :aria-labelledby="timeLabelId">
-            <select
+            <div
               class="cm-date-picker__time-select"
-              :aria-label="props.labels.hour ?? 'Hour'"
-              :disabled="isOpen && draftTime === null ? true : undefined"
-              :value="hour"
+              :data-cm-label="props.labels.hour ?? 'Hour'"
               data-cm-date-picker-hour
-              @change="updateHour(Number(($event.target as HTMLSelectElement).value))"
             >
-              <option
-                v-for="number in isOpen ? 24 : 0"
-                :key="number"
-                :value="number - 1"
-                :disabled="!hours.has(number - 1)"
-              >
-                {{ String(number - 1).padStart(2, '0') }}
-              </option>
-            </select>
+              <CmSelect
+                v-if="isOpen"
+                :id="`${timeLabelId}-hour`"
+                :aria-label="props.labels.hour ?? 'Hour'"
+                :disabled="draftTime === null"
+                :options="hourOptions"
+                :model-value="hour === undefined ? '' : String(hour)"
+                @value-change="updateHour(Number($event))"
+              />
+            </div>
             <span aria-hidden="true">:</span>
-            <select
+            <div
               class="cm-date-picker__time-select"
-              :aria-label="props.labels.minute ?? 'Minute'"
-              :disabled="isOpen && draftTime === null ? true : undefined"
-              :value="minute"
+              :data-cm-label="props.labels.minute ?? 'Minute'"
               data-cm-date-picker-minute
-              @change="hour !== undefined && updateTime(hour * 60 + Number(($event.target as HTMLSelectElement).value))"
             >
-              <option
-                v-for="choice in isOpen ? minuteChoices : []"
-                :key="choice"
-                :value="choice"
-                :disabled="!minutes.has(choice)"
-              >
-                {{ String(choice).padStart(2, '0') }}
-              </option>
-            </select>
+              <CmSelect
+                v-if="isOpen"
+                :id="`${timeLabelId}-minute`"
+                :aria-label="props.labels.minute ?? 'Minute'"
+                :disabled="draftTime === null"
+                :options="minuteOptions"
+                :model-value="minute === undefined ? '' : String(minute)"
+                @value-change="hour !== undefined && updateTime(hour * 60 + Number($event))"
+              />
+            </div>
           </div>
         </div>
       </div>

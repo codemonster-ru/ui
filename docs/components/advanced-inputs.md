@@ -160,11 +160,11 @@ options. `minuteStep` controls the available minutes in each hour and defaults t
 The picker stays open while the user chooses a day or adjusts the time. Use `HH`,
 `H`, `mm`, and `m` with the date format tokens to customize the display.
 
-For Vanilla use `data-cm-date-picker-show-time="true"` and
-`data-cm-date-picker-minute-step` on the trigger. Reuse the labelled native selects
-in the [time example](../../contracts/date-picker/cases/time.html). Month and year modes
-take precedence over time. The native hour and minute controls use the shared CSS
-and keep the browser's keyboard and assistive technology behavior.
+Hours and minutes use the library's Select component. For Vanilla use
+`data-cm-date-picker-show-time="true"` and `data-cm-date-picker-minute-step` on the
+trigger and include the two time control containers from the
+[time example](../../contracts/date-picker/cases/time.html). Month and year modes
+take precedence over time.
 
 An uncanceled reset of the associated form restores the initial selection. Vue requests
 the initial selection through its model event when the caller supplies another value.
