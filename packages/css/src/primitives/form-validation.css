@@ -13,6 +13,7 @@
 }
 
 :is(.cm-input, .cm-textarea, .cm-select, .cm-date-picker):enabled:focus-visible,
+:is(.cm-select, .cm-date-picker)[data-cm-open-ring]:enabled,
 .cm-checkbox > .cm-checkbox__input:enabled:focus-visible + .cm-checkbox__control,
 .cm-radio > .cm-radio__input:enabled:focus-visible + .cm-radio__control,
 .cm-switch > .cm-switch__input:enabled:focus-visible + .cm-switch__control {

@@ -40,6 +40,7 @@ export interface DatePickerSelectionChangeDetail {
 }
 
 const triggerSelector = '.cm-date-picker';
+const openRingAttribute = 'data-cm-open-ring';
 const calendarSelector = '.cm-date-picker__calendar[role="dialog"]';
 const clearSelector = '[data-cm-date-picker-clear]';
 const daysSelector = '[data-cm-date-picker-days]';
@@ -119,6 +120,7 @@ export class CmDatePickerController implements CmController {
       element?.addEventListener('keydown', this.#handleKeydown);
     }
     this.#clear?.addEventListener('mousedown', this.#handleMouseDown);
+    this.#calendar.addEventListener('pointerdown', this.#clearOpenRing, true);
     this.#calendar.addEventListener('focusin', this.#handleDayFocus);
     if (this.#hasTime) this.#calendar.addEventListener('change', this.#handleTimeChange);
     this.#root.ownerDocument.addEventListener('click', this.#dismissOutside, true);
@@ -153,6 +155,8 @@ export class CmDatePickerController implements CmController {
       element?.removeEventListener('keydown', this.#handleKeydown);
     }
     this.#clear?.removeEventListener('mousedown', this.#handleMouseDown);
+    this.#calendar.removeEventListener('pointerdown', this.#clearOpenRing, true);
+    this.#clearOpenRing();
     this.#calendar.removeEventListener('focusin', this.#handleDayFocus);
     this.#calendar.removeEventListener('change', this.#handleTimeChange);
     this.#root.ownerDocument.removeEventListener('click', this.#dismissOutside, true);
@@ -255,6 +259,10 @@ export class CmDatePickerController implements CmController {
 
   readonly #handleMouseDown = (event: Event): void => {
     if ((event.target as Element | null)?.closest(clearSelector)) event.preventDefault();
+  };
+
+  readonly #clearOpenRing = (): void => {
+    this.#trigger.removeAttribute(openRingAttribute);
   };
 
   readonly #dismissOutside = (event: Event): void => {
@@ -569,6 +577,7 @@ export class CmDatePickerController implements CmController {
   #synchronize(open: boolean): void {
     const closing = !open && !this.#calendar.hidden;
     this.#trigger.setAttribute('aria-expanded', String(open));
+    this.#trigger.toggleAttribute(openRingAttribute, open);
     this.#calendar.hidden = !open;
     if (open) {
       this.#calendar.tabIndex = -1;
