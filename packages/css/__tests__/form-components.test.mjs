@@ -9,7 +9,7 @@ for (const slug of ['checkbox', 'radio', 'switch', 'textarea']) {
 
     assert.match(css, new RegExp(`\\.cm-${slug}`, 'u'));
     assert.match(css, /var\(--cm-/u);
-    assert.match(css, /focus-visible/u);
+    assert.match(css, /@import '\.\.\/primitives\/form-validation\.css';/u);
     assert.doesNotMatch(css, /(?:--vf-|\.vf-|vue|react|angular)/iu);
   });
 }
@@ -23,12 +23,8 @@ for (const slug of ['checkbox', 'radio', 'switch']) {
     assert.ok(inputRule);
     assert.match(inputRule, /opacity: 0;/u);
     assert.doesNotMatch(inputRule, /display: none;/u);
-    const focus = css.match(
-      new RegExp(`\\.cm-${slug}__input:focus-visible \\+ \\.cm-${slug}__control \\{([^}]*)\\}`, 'u'),
-    )?.[1];
-    assert.ok(focus);
-    assert.match(focus, /--cm-forced-focus-outline-color/u);
-    assert.doesNotMatch(focus, /box-shadow:/u);
+    const validation = await readFile(new URL('../src/primitives/form-validation.css', import.meta.url), 'utf8');
+    assert.ok(validation.includes(`.cm-${slug}__input:enabled:focus-visible + .cm-${slug}__control`));
   });
 }
 

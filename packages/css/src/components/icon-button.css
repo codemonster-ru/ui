@@ -111,29 +111,29 @@
   background: var(--cm-color-interactive-primary-active-background);
 }
 
-.cm-icon-button--secondary:hover:not(:disabled),
-.cm-icon-button--ghost:hover:not(:disabled) {
+.cm-icon-button--secondary:hover:where(:enabled),
+.cm-icon-button--ghost:hover:where(:enabled) {
   background: var(--cm-color-background-surface-hover);
 }
 
-.cm-icon-button--secondary:hover:not(:disabled) {
+.cm-icon-button--secondary:hover:where(:enabled) {
   border-color: var(--cm-color-border-interactive);
 }
 
-.cm-icon-button--ghost:hover:not(:disabled) {
+.cm-icon-button--ghost:hover:where(:enabled) {
   border-color: transparent;
 }
 
-.cm-icon-button--secondary:active:not(:disabled),
-.cm-icon-button--ghost:active:not(:disabled) {
+.cm-icon-button--secondary:active:where(:enabled),
+.cm-icon-button--ghost:active:where(:enabled) {
   background: var(--cm-color-background-surface-active);
 }
 
-.cm-icon-button--secondary:active:not(:disabled) {
+.cm-icon-button--secondary:active:where(:enabled) {
   border-color: var(--cm-color-border-strong);
 }
 
-.cm-icon-button--ghost:active:not(:disabled) {
+.cm-icon-button--ghost:active:where(:enabled) {
   border-color: transparent;
 }
 
@@ -166,7 +166,7 @@
 }
 
 .cm-icon-button:focus-visible {
-  border-color: var(--cm-color-border-focus);
+  border-color: var(--cm-color-focus-ring);
   outline: var(--cm-focus-ring-width) solid var(--cm-forced-focus-outline-color, transparent);
   box-shadow: 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
 }

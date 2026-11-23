@@ -91,15 +91,17 @@
   cursor: not-allowed;
 }
 
-.cm-tabs__tab:hover:not(:disabled, [aria-selected='true']),
-.cm-tabs__tab:active:not(:disabled, [aria-selected='true']) {
-  background: transparent;
+.cm-tabs__tab:hover:not(:disabled, [aria-selected='true']) {
   color: var(--cm-color-text-primary);
 }
 
 .cm-tabs__tab[aria-selected='true']:not(:disabled) {
   background: transparent;
   color: var(--cm-color-selected-foreground);
+}
+
+.cm-tabs__tab:active:enabled {
+  background: var(--cm-color-background-surface-active);
 }
 
 .cm-tabs__tab[aria-selected='true']::after {

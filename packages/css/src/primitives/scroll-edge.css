@@ -17,6 +17,14 @@
   display: none;
 }
 
+:is(.cm-tabs__scroll, .cm-scroll-edge):hover:enabled {
+  background: var(--cm-color-background-surface-hover);
+}
+
+:is(.cm-tabs__scroll, .cm-scroll-edge):active:enabled {
+  background: var(--cm-color-background-surface-active);
+}
+
 :is(.cm-tabs__scroll, .cm-scroll-edge):focus-visible {
   outline-offset: calc(-1 * var(--cm-focus-ring-width));
 }

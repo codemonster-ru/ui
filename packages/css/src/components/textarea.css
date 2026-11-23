@@ -1,3 +1,5 @@
+@import '../primitives/form-validation.css';
+
 /* stylelint-disable no-descending-specificity -- State rules mirror the frozen interaction matrix. */
 
 .cm-textarea {
@@ -61,26 +63,6 @@
   color: var(--cm-color-text-secondary);
 }
 
-.cm-textarea:is(.cm-textarea--invalid, [aria-invalid='true']):where(:not(:disabled)) {
-  border-color: var(--cm-color-status-danger-border);
-}
-
-.cm-textarea:hover:where(:not(:disabled, :read-only, :focus)) {
+.cm-textarea:hover:where(:not(:disabled, :read-only)) {
   border-color: var(--cm-color-interactive-primary-border);
-}
-
-.cm-textarea:focus {
-  border-color: var(--cm-color-border-focus);
-}
-
-.cm-textarea:focus-visible {
-  border-radius: var(--cm-radius-control);
-  outline: var(--cm-border-width-thick) solid var(--cm-forced-focus-outline-color, transparent);
-}
-
-@media (forced-colors: active) {
-  .cm-textarea--invalid,
-  .cm-textarea[aria-invalid='true'] {
-    border-color: Mark;
-  }
 }

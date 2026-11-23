@@ -59,11 +59,6 @@
   transition: transform var(--cm-motion-duration-normal) var(--cm-motion-ease-standard);
 }
 
-.cm-accordion__trigger:hover:not(:disabled, [aria-expanded='true']) {
-  background: transparent;
-  color: var(--cm-color-text-primary);
-}
-
 .cm-accordion__trigger:focus-visible {
   z-index: 2;
   border-color: var(--cm-color-border-focus);
@@ -85,6 +80,14 @@
 
 .cm-accordion__trigger[aria-expanded='true']::after {
   transform: rotate(180deg);
+}
+
+.cm-accordion__trigger:hover:enabled {
+  background: var(--cm-color-background-surface-hover);
+}
+
+.cm-accordion__trigger:active:enabled {
+  background: var(--cm-color-background-surface-active);
 }
 
 .cm-accordion__trigger:disabled {

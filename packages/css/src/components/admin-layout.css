@@ -133,6 +133,14 @@
   cursor: pointer;
 }
 
+.cm-admin-layout__mobile-toggle-button:hover {
+  background: var(--cm-color-background-surface-hover);
+}
+
+.cm-admin-layout__mobile-toggle-button:active {
+  background: var(--cm-color-background-surface-active);
+}
+
 .cm-admin-layout__mobile-toggle-icon,
 .cm-admin-layout__mobile-toggle-icon::before,
 .cm-admin-layout__mobile-toggle-icon::after {

@@ -98,9 +98,18 @@
   font: inherit;
 }
 
-:is(.cm-dialog__close, .cm-drawer__close):hover {
+:is(.cm-dialog__close, .cm-drawer__close):disabled {
+  color: var(--cm-color-text-disabled);
+  cursor: not-allowed;
+}
+
+:is(.cm-dialog__close, .cm-drawer__close):hover:enabled {
   background: var(--cm-color-background-surface-hover);
   color: var(--cm-color-text-primary);
+}
+
+:is(.cm-dialog__close, .cm-drawer__close):active:enabled {
+  background: var(--cm-color-background-surface-active);
 }
 
 :is(.cm-dialog__close, .cm-drawer__close):focus-visible {

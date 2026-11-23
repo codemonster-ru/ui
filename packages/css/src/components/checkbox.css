@@ -1,3 +1,5 @@
+@import '../primitives/form-validation.css';
+
 /* stylelint-disable no-descending-specificity -- State rules mirror the frozen interaction matrix. */
 
 .cm-checkbox {
@@ -121,25 +123,14 @@
   background: var(--cm-color-background-surface-active);
 }
 
-.cm-checkbox__input:checked + .cm-checkbox__control,
-.cm-checkbox__input:indeterminate + .cm-checkbox__control {
-  background: var(--cm-color-interactive-primary-background);
-}
-
-.cm-checkbox__input:checked + .cm-checkbox__control {
-  border-color: light-dark(
-    color-mix(in oklch, var(--cm-palette-neutral-900), var(--cm-palette-neutral-950)),
-    var(--cm-palette-neutral-200)
-  );
-}
-
-.cm-checkbox__input:indeterminate + .cm-checkbox__control {
-  border-color: var(--cm-color-interactive-primary-background);
+.cm-checkbox__input:is(:checked, :indeterminate) + .cm-checkbox__control {
+  border-color: transparent;
+  background: var(--cm-form-validation-fill, var(--cm-color-interactive-primary-background));
 }
 
 .cm-checkbox__input:checked + .cm-checkbox__control .cm-checkbox__mark {
-  border-inline-end-color: var(--cm-color-interactive-primary-foreground);
-  border-block-end-color: var(--cm-color-interactive-primary-foreground);
+  border-inline-end-color: var(--cm-form-validation-ink, var(--cm-color-interactive-primary-foreground));
+  border-block-end-color: var(--cm-form-validation-ink, var(--cm-color-interactive-primary-foreground));
   opacity: 1;
   transform: translateY(-0.0625rem) rotate(45deg) scale(1);
 }
@@ -153,103 +144,32 @@
   block-size: var(--cm-border-width-thick);
   border: 0;
   border-radius: var(--cm-radius-control-tight);
-  background: var(--cm-color-interactive-primary-foreground);
+  background: var(--cm-form-validation-ink, var(--cm-color-interactive-primary-foreground));
   opacity: 1;
   transform: translate(-50%, -50%);
 }
 
-.cm-checkbox:hover:where(:has(.cm-checkbox__input:indeterminate:not(:disabled))) .cm-checkbox__control {
-  border-color: var(--cm-color-interactive-primary-hover-background);
-  background: var(--cm-color-interactive-primary-hover-background);
-}
-
-.cm-checkbox__input:focus-visible + .cm-checkbox__control {
-  outline: var(--cm-focus-ring-width) solid var(--cm-forced-focus-outline-color, transparent);
-}
-
-.cm-checkbox:where(.cm-checkbox--invalid, :has(.cm-checkbox__input[aria-invalid='true']))
-  .cm-checkbox__input:enabled
-  + .cm-checkbox__control {
-  border-color: var(--cm-color-status-danger-border);
-}
-
-.cm-checkbox:where(.cm-checkbox--invalid, :has(.cm-checkbox__input[aria-invalid='true']))
-  .cm-checkbox__input:enabled:checked
-  + .cm-checkbox__control {
-  border-color: light-dark(
-    color-mix(in oklch, var(--cm-palette-neutral-1000) 85%, var(--cm-color-status-danger-border)),
-    var(--cm-palette-danger-100)
-  );
-}
-
-.cm-checkbox:where(.cm-checkbox--invalid, :has(.cm-checkbox__input[aria-invalid='true'])):hover
-  .cm-checkbox__input:enabled
-  + .cm-checkbox__control {
-  border-color: var(--cm-color-interactive-primary-border);
-}
-
-.cm-checkbox .cm-checkbox__input:enabled:focus:where(:not(:checked)) + .cm-checkbox__control {
-  border-color: var(--cm-color-border-focus);
-}
-
-.cm-checkbox .cm-checkbox__input:enabled:checked:focus-visible + .cm-checkbox__control,
-.cm-checkbox .cm-checkbox__input:enabled:indeterminate:focus + .cm-checkbox__control,
-.cm-checkbox:where(.cm-checkbox--invalid, :has(.cm-checkbox__input[aria-invalid='true']))
-  .cm-checkbox__input:enabled:checked:focus
-  + .cm-checkbox__control {
-  border-color: light-dark(var(--cm-palette-neutral-1000), var(--cm-palette-neutral-0));
-}
-
-.cm-checkbox:where(:not(:active))
-  .cm-checkbox__input:enabled:is(:checked, :indeterminate):focus-visible
-  + .cm-checkbox__control {
-  background-color: light-dark(var(--cm-palette-primary-400), var(--cm-color-interactive-primary-background));
-}
-
-.cm-checkbox:hover:where(:not(:active)) .cm-checkbox__input:enabled:checked + .cm-checkbox__control {
-  border-color: light-dark(var(--cm-palette-neutral-950), var(--cm-palette-primary-200));
-  background-color: light-dark(
-    color-mix(
-      in oklch,
-      var(--cm-color-interactive-primary-background) 80%,
-      var(--cm-color-interactive-primary-hover-background)
-    ),
-    var(--cm-color-interactive-primary-hover-background)
-  );
-}
-
-.cm-checkbox:where(.cm-checkbox--invalid, :has(.cm-checkbox__input[aria-invalid='true'])):hover:where(:not(:active))
-  .cm-checkbox__input:enabled:is(:checked, :indeterminate)
-  + .cm-checkbox__control,
 .cm-checkbox:hover:where(:not(:active))
-  .cm-checkbox__input:enabled:is(:checked, :indeterminate):focus:where(:focus-visible, :indeterminate)
+  .cm-checkbox__input:where(:enabled:is(:checked, :indeterminate))
   + .cm-checkbox__control {
-  border-color: light-dark(var(--cm-palette-neutral-1000), var(--cm-palette-neutral-0));
-  background-color: light-dark(
+  background-color: var(
+    --cm-form-validation-hover-fill,
     color-mix(
       in oklch,
-      var(--cm-color-interactive-primary-background) 60%,
+      var(--cm-color-interactive-primary-background) 75%,
       var(--cm-color-interactive-primary-hover-background)
-    ),
-    var(--cm-color-interactive-primary-hover-background)
+    )
   );
 }
 
-.cm-checkbox:hover:where(:not(:active))
-  .cm-checkbox__input:enabled:is(:checked, :indeterminate):focus-visible
-  + .cm-checkbox__control {
-  background-color: light-dark(var(--cm-palette-primary-500), var(--cm-color-interactive-primary-hover-background));
-}
-
-.cm-checkbox:active .cm-checkbox__input:enabled:is(:checked, :indeterminate) + .cm-checkbox__control {
-  border-color: light-dark(var(--cm-palette-neutral-1000), var(--cm-palette-neutral-0));
-  background-color: light-dark(
+.cm-checkbox:active .cm-checkbox__input:where(:enabled:is(:checked, :indeterminate)) + .cm-checkbox__control {
+  background-color: var(
+    --cm-form-validation-active-fill,
     color-mix(
       in oklch,
-      var(--cm-color-interactive-primary-background) 80%,
+      var(--cm-color-interactive-primary-background) 75%,
       var(--cm-color-interactive-primary-active-background)
-    ),
-    var(--cm-color-interactive-primary-active-background)
+    )
   );
 }
 

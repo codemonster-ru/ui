@@ -126,7 +126,7 @@
   font-weight: var(--cm-text-label-font-weight);
 }
 
-.cm-menu-bar--pills .cm-menu-bar__item:hover:not(:disabled, [aria-disabled='true']) {
+.cm-menu-bar--pills .cm-menu-bar__item:hover:where(:not(:disabled, [aria-disabled='true'])) {
   background: var(--cm-color-background-surface-hover);
 }
 
@@ -148,6 +148,11 @@
   background: var(--cm-color-background-surface-selected-hover);
 }
 
+.cm-menu-bar__item:active:not(:disabled, [aria-disabled='true']) {
+  background: var(--cm-color-background-surface-active);
+}
+
+.cm-menu-bar--pills .cm-menu-bar__item--open:active:not(:disabled, [aria-disabled='true']),
 .cm-menu-bar--pills .cm-menu-bar__item--active:active:not(:disabled, [aria-disabled='true']) {
   background: var(--cm-color-background-surface-selected-active);
 }

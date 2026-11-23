@@ -135,6 +135,14 @@
   color: var(--cm-color-text-disabled);
 }
 
+.cm-stepper__trigger:hover:enabled .cm-stepper__label {
+  color: var(--cm-color-text-link-hover);
+}
+
+.cm-stepper__trigger:active:enabled .cm-stepper__label {
+  color: var(--cm-color-text-link-active);
+}
+
 .cm-stepper__trigger:focus-visible {
   outline: none;
 }

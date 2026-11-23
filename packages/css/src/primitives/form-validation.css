@@ -1,0 +1,63 @@
+.cm-checkbox__control,
+.cm-switch__control {
+  --cm-form-validation-hover-fill: color-mix(
+    in oklch,
+    var(--cm-form-validation-fill) 92%,
+    var(--cm-form-validation-color)
+  );
+  --cm-form-validation-active-fill: color-mix(
+    in oklch,
+    var(--cm-form-validation-fill) 84%,
+    var(--cm-form-validation-color)
+  );
+}
+
+:is(.cm-input, .cm-textarea, .cm-select, .cm-date-picker):enabled:focus-visible,
+.cm-checkbox > .cm-checkbox__input:enabled:focus-visible + .cm-checkbox__control,
+.cm-radio > .cm-radio__input:enabled:focus-visible + .cm-radio__control,
+.cm-switch > .cm-switch__input:enabled:focus-visible + .cm-switch__control {
+  --cm-form-focus-color: var(
+    --cm-forced-focus-outline-color,
+    var(--cm-form-validation-color, var(--cm-color-focus-ring))
+  );
+
+  border-color: var(--cm-form-focus-color);
+  outline: var(--cm-focus-ring-width) solid var(--cm-form-focus-color);
+  outline-offset: 0;
+  transition-property: background-color, box-shadow, color, transform;
+}
+
+:is(.cm-input, .cm-textarea, .cm-select, .cm-date-picker)[data-cm-valid='true']:enabled,
+.cm-checkbox:has(> .cm-checkbox__input[data-cm-valid='true']) > .cm-checkbox__input:enabled + .cm-checkbox__control,
+.cm-radio:has(> .cm-radio__input[data-cm-valid='true']) > .cm-radio__input:enabled + .cm-radio__control,
+.cm-switch:has(> .cm-switch__input[data-cm-valid='true']) > .cm-switch__input:enabled + .cm-switch__control {
+  --cm-form-validation-color: var(--cm-color-status-success-border);
+  --cm-form-validation-fill: var(--cm-color-status-success-subtle-background);
+  --cm-form-validation-ink: var(--cm-color-status-success-subtle-foreground);
+
+  border-color: var(--cm-form-focus-color, var(--cm-form-validation-color));
+}
+
+.cm-input:is(.cm-input--invalid, [aria-invalid='true']):enabled,
+.cm-textarea:is(.cm-textarea--invalid, [aria-invalid='true']):enabled,
+.cm-select:is(.cm-select--invalid, [aria-invalid='true']):enabled,
+.cm-date-picker:is(.cm-date-picker--invalid, [aria-invalid='true']):enabled,
+.cm-checkbox:is(.cm-checkbox--invalid, :has(> .cm-checkbox__input[aria-invalid='true']))
+  > .cm-checkbox__input:enabled
+  + .cm-checkbox__control,
+.cm-radio:is(.cm-radio--invalid, :has(> .cm-radio__input[aria-invalid='true']))
+  > .cm-radio__input:enabled
+  + .cm-radio__control,
+.cm-switch:is(.cm-switch--invalid, :has(> .cm-switch__input[aria-invalid='true']))
+  > .cm-switch__input:enabled
+  + .cm-switch__control {
+  --cm-form-validation-color: var(--cm-color-status-danger-border);
+  --cm-form-validation-fill: var(--cm-color-status-danger-subtle-background);
+  --cm-form-validation-ink: var(--cm-color-status-danger-subtle-foreground);
+
+  border-color: var(--cm-form-focus-color, var(--cm-form-validation-color));
+
+  @media (forced-colors: active) {
+    border-color: var(--cm-form-focus-color, Mark);
+  }
+}

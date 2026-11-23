@@ -1,3 +1,5 @@
+@import '../primitives/form-validation.css';
+
 /* stylelint-disable no-descending-specificity -- State rules mirror the frozen interaction matrix. */
 
 .cm-switch {
@@ -128,14 +130,14 @@
 }
 
 .cm-switch__input:checked + .cm-switch__control {
-  border-color: var(--cm-color-interactive-primary-background);
-  background: var(--cm-color-interactive-primary-background);
+  border-color: transparent;
+  background: var(--cm-form-validation-fill, var(--cm-color-interactive-primary-background));
 }
 
 .cm-switch__input:checked + .cm-switch__control .cm-switch__thumb {
-  border-color: var(--cm-color-interactive-primary-foreground);
-  background: var(--cm-color-interactive-primary-foreground);
-  color: var(--cm-color-interactive-primary-background);
+  border-color: var(--cm-form-validation-ink, var(--cm-color-interactive-primary-foreground));
+  background: var(--cm-form-validation-ink, var(--cm-color-interactive-primary-foreground));
+  color: var(--cm-form-validation-fill, var(--cm-color-interactive-primary-background));
   transform: translateX(var(--cm-switch-thumb-travel));
 }
 
@@ -143,14 +145,20 @@
   transform: translateX(calc(var(--cm-switch-thumb-travel) * -1));
 }
 
-.cm-switch:hover:where(:has(.cm-switch__input:not(:disabled))) .cm-switch__control {
+.cm-switch:hover:where(:has(.cm-switch__input:not(:checked, :disabled))) .cm-switch__control {
   border-color: var(--cm-color-interactive-primary-border);
   background: var(--cm-color-background-surface-hover);
 }
 
 .cm-switch:hover:where(:has(.cm-switch__input:checked:not(:disabled))) .cm-switch__control {
-  border-color: var(--cm-color-interactive-primary-hover-background);
-  background: var(--cm-color-interactive-primary-hover-background);
+  background: var(
+    --cm-form-validation-hover-fill,
+    color-mix(
+      in oklch,
+      var(--cm-color-interactive-primary-background) 75%,
+      var(--cm-color-interactive-primary-hover-background)
+    )
+  );
 }
 
 .cm-switch:active:where(:has(.cm-switch__input:not(:checked, :disabled))) .cm-switch__control {
@@ -158,64 +166,16 @@
   background: var(--cm-color-background-surface-active);
 }
 
-.cm-switch__input:focus-visible + .cm-switch__control {
-  outline: var(--cm-focus-ring-width) solid var(--cm-forced-focus-outline-color, transparent);
-}
-
-.cm-switch:where(.cm-switch--invalid, :has(.cm-switch__input[aria-invalid='true']))
-  .cm-switch__input:enabled
-  + .cm-switch__control {
-  border-color: var(--cm-color-status-danger-border);
-}
-
-.cm-switch:where(.cm-switch--invalid, :has(.cm-switch__input[aria-invalid='true'])):hover
-  .cm-switch__input:enabled
-  + .cm-switch__control {
-  border-color: var(--cm-color-interactive-primary-border);
-}
-
-.cm-switch .cm-switch__input:enabled:focus + .cm-switch__control {
-  border-color: var(--cm-color-border-focus);
-}
-
-.cm-switch .cm-switch__input:enabled:checked:focus + .cm-switch__control {
-  border-color: light-dark(var(--cm-palette-neutral-1000), var(--cm-palette-neutral-0));
-}
-
-.cm-switch:where(:not(:active, .cm-switch--static))
-  .cm-switch__input:enabled:checked:focus-visible
-  + .cm-switch__control {
-  background-color: light-dark(var(--cm-palette-primary-400), var(--cm-color-interactive-primary-background));
-}
-
-.cm-switch:hover:where(:not(:active)) .cm-switch__input:enabled:checked:focus + .cm-switch__control {
-  background-color: light-dark(
-    color-mix(
-      in oklch,
-      var(--cm-color-interactive-primary-background) 60%,
-      var(--cm-color-interactive-primary-hover-background)
-    ),
-    var(--cm-color-interactive-primary-hover-background)
-  );
-}
-
-.cm-switch:hover:where(:not(:active, .cm-switch--static))
-  .cm-switch__input:enabled:checked:focus-visible
-  + .cm-switch__control {
-  background-color: light-dark(var(--cm-palette-primary-500), var(--cm-color-interactive-primary-hover-background));
-}
-
 .cm-switch:active:where(:not(.cm-switch--static), .cm-switch--invalid, :has(.cm-switch__input[aria-invalid='true']))
-  .cm-switch__input:enabled:checked
+  .cm-switch__input:where(:checked:enabled)
   + .cm-switch__control {
-  border-color: light-dark(var(--cm-palette-neutral-1000), var(--cm-palette-neutral-0));
-  background-color: light-dark(
+  background-color: var(
+    --cm-form-validation-active-fill,
     color-mix(
       in oklch,
-      var(--cm-color-interactive-primary-background) 80%,
+      var(--cm-color-interactive-primary-background) 75%,
       var(--cm-color-interactive-primary-active-background)
-    ),
-    var(--cm-color-interactive-primary-active-background)
+    )
   );
 }
 
@@ -239,7 +199,7 @@
 }
 
 .cm-switch--static:where(:not(.cm-switch--invalid))
-  .cm-switch__input:not(:disabled, :focus-visible, [aria-invalid='true'])
+  .cm-switch__input:not(:disabled, [aria-invalid='true'])
   + .cm-switch__control {
   border-color: var(--cm-color-border-interactive);
   background: var(--cm-color-background-surface);
