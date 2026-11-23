@@ -29,6 +29,7 @@ import {
 import { dispatchCmEvent } from './events.js';
 import { observeFormReset } from './form-reset.js';
 import type { CmController, CmControllerFactory } from './runtime.js';
+import { CmSelectController, type SelectValueChangeDetail } from './select.js';
 
 export interface DatePickerValueChangeDetail {
   value: string;
@@ -55,6 +56,58 @@ const minuteSelector = '[data-cm-date-picker-minute]';
 
 const authoredDefaults = new WeakMap<Element, { dates: readonly string[]; formId: string | null }>();
 
+// Older authored DatePickers use native selects as the time-control containers.
+function timeHost(element: HTMLElement): HTMLElement {
+  if (element.localName !== 'select') return element;
+  const host = element.ownerDocument.createElement('div');
+  for (const { name, value } of element.attributes) host.setAttribute(name, value);
+  element.replaceWith(host);
+  return host;
+}
+
+function mountTimeSelect(host: HTMLElement, id: string, label: string) {
+  const document = host.ownerDocument;
+  const root = host.appendChild(document.createElement('div'));
+  root.className = 'cm-select-wrap';
+  const trigger = root.appendChild(document.createElement('button'));
+  trigger.id = id;
+  trigger.type = 'button';
+  trigger.className = 'cm-select cm-select--md';
+  trigger.setAttribute('role', 'combobox');
+  trigger.setAttribute('aria-label', host.dataset.cmLabel ?? host.getAttribute('aria-label') ?? label);
+  trigger.setAttribute('aria-haspopup', 'listbox');
+  trigger.setAttribute('aria-controls', `${id}-listbox`);
+  const labelledBy = host.getAttribute('aria-labelledby');
+  if (labelledBy) trigger.setAttribute('aria-labelledby', labelledBy);
+  const value = trigger.appendChild(document.createElement('span'));
+  value.className = 'cm-select__value';
+  const icon = trigger.appendChild(document.createElement('span'));
+  icon.className = 'cm-select__icon cm-select__icon--chevron';
+  icon.setAttribute('aria-hidden', 'true');
+  const svg = icon.appendChild(document.createElementNS('http://www.w3.org/2000/svg', 'svg'));
+  svg.setAttribute('class', 'cm-select__chevron');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('fill', 'none');
+  svg.setAttribute('focusable', 'false');
+  const chevron = svg.appendChild(document.createElementNS(svg.namespaceURI, 'polyline'));
+  chevron.setAttribute('points', '5.75 8.75 12 15 18.25 8.75');
+  chevron.setAttribute('stroke', 'currentColor');
+  chevron.setAttribute('stroke-width', '2');
+  chevron.setAttribute('stroke-linecap', 'round');
+  chevron.setAttribute('stroke-linejoin', 'round');
+  const listbox = root.appendChild(document.createElement('div'));
+  listbox.id = `${id}-listbox`;
+  listbox.className = 'cm-select__listbox';
+  listbox.hidden = true;
+  listbox.setAttribute('role', 'listbox');
+  listbox.setAttribute('aria-labelledby', id);
+  const controller = new CmSelectController(root);
+  controller.connect();
+  return { root, trigger, value, listbox, controller };
+}
+
+type TimeSelect = ReturnType<typeof mountTimeSelect>;
+
 export class CmDatePickerController implements CmController {
   readonly #root: Element;
   readonly #trigger: HTMLButtonElement;
@@ -64,8 +117,8 @@ export class CmDatePickerController implements CmController {
   readonly #mode: CmCalendarSelectionMode;
   readonly #precision: CmCalendarPrecision;
   readonly #hasTime: boolean;
-  readonly #hourSelect: HTMLSelectElement | null;
-  readonly #minuteSelect: HTMLSelectElement | null;
+  readonly #hourHost: HTMLElement | null;
+  readonly #minuteHost: HTMLElement | null;
   readonly #fieldName: string;
   readonly #defaults: { dates: readonly string[]; formId: string | null };
   #selectedDates: string[];
@@ -74,6 +127,8 @@ export class CmDatePickerController implements CmController {
   #yearStart: number;
   #draftDay = '';
   #draftTime: number | null = null;
+  #hourSelect: TimeSelect | null = null;
+  #minuteSelect: TimeSelect | null = null;
   #stopAutoUpdate: (() => void) | null = null;
   #stopFormReset: (() => void) | null = null;
 
@@ -91,11 +146,13 @@ export class CmDatePickerController implements CmController {
     const precision = trigger.dataset.cmDatePickerPrecision;
     this.#precision = precision === 'month' || precision === 'year' ? precision : 'day';
     this.#hasTime = this.#precision === 'day' && trigger.dataset.cmDatePickerShowTime === 'true';
-    this.#hourSelect = calendar.querySelector<HTMLSelectElement>(hourSelector);
-    this.#minuteSelect = calendar.querySelector<HTMLSelectElement>(minuteSelector);
-    if (this.#hasTime && (!this.#hourSelect || !this.#minuteSelect)) {
+    const hour = calendar.querySelector<HTMLElement>(hourSelector);
+    const minute = calendar.querySelector<HTMLElement>(minuteSelector);
+    if (this.#hasTime && (!hour || !minute)) {
       throw new TypeError('DatePicker time selection requires hour and minute controls.');
     }
+    this.#hourHost = hour && timeHost(hour);
+    this.#minuteHost = minute && timeHost(minute);
     this.#fieldName = trigger.dataset.cmDatePickerName ?? this.#input?.name ?? '';
     const initial =
       this.#mode === 'single'
@@ -122,7 +179,7 @@ export class CmDatePickerController implements CmController {
     this.#clear?.addEventListener('mousedown', this.#handleMouseDown);
     this.#calendar.addEventListener('pointerdown', this.#clearOpenRing, true);
     this.#calendar.addEventListener('focusin', this.#handleDayFocus);
-    if (this.#hasTime) this.#calendar.addEventListener('change', this.#handleTimeChange);
+    if (this.#hasTime) this.#calendar.addEventListener('cm:select-value-change', this.#handleTimeChange);
     this.#root.ownerDocument.addEventListener('click', this.#dismissOutside, true);
     this.#root.ownerDocument.addEventListener('focusin', this.#dismissOutside);
     if (this.#mode === 'single') {
@@ -158,7 +215,8 @@ export class CmDatePickerController implements CmController {
     this.#calendar.removeEventListener('pointerdown', this.#clearOpenRing, true);
     this.#clearOpenRing();
     this.#calendar.removeEventListener('focusin', this.#handleDayFocus);
-    this.#calendar.removeEventListener('change', this.#handleTimeChange);
+    this.#calendar.removeEventListener('cm:select-value-change', this.#handleTimeChange);
+    this.#unmountTimeControls();
     this.#root.ownerDocument.removeEventListener('click', this.#dismissOutside, true);
     this.#root.ownerDocument.removeEventListener('focusin', this.#dismissOutside);
     this.#releasePlacement();
@@ -325,6 +383,7 @@ export class CmDatePickerController implements CmController {
   };
 
   readonly #handleKeydown = (event: Event): void => {
+    if (event.defaultPrevented) return;
     const key = (event as KeyboardEvent).key;
     if (key === 'Escape' && !this.#calendar.hidden) {
       event.preventDefault();
@@ -356,6 +415,9 @@ export class CmDatePickerController implements CmController {
   };
 
   readonly #handleTimeChange = (event: Event): void => {
+    const hourChange = event.target === this.#hourSelect?.root;
+    if (!hourChange && event.target !== this.#minuteSelect?.root) return;
+    event.stopPropagation();
     if (
       this.#calendar.hidden ||
       this.#draftTime === null ||
@@ -365,16 +427,13 @@ export class CmDatePickerController implements CmController {
       return;
     }
     const times = calendarTimesForDay(this.#draftDay, this.#timeSettings());
-    let time: number | null = null;
-    if (event.target === this.#hourSelect && this.#hourSelect) {
-      const hour = Number(this.#hourSelect.value);
-      time = nearestCalendarTime(
-        times.filter((value) => Math.floor(value / 60) === hour),
-        hour * 60 + (this.#draftTime % 60),
-      );
-    } else if (event.target === this.#minuteSelect && this.#minuteSelect) {
-      time = Math.floor(this.#draftTime / 60) * 60 + Number(this.#minuteSelect.value);
-    }
+    const choice = Number((event as CustomEvent<SelectValueChangeDetail>).detail.value);
+    const time = hourChange
+      ? nearestCalendarTime(
+          times.filter((value) => Math.floor(value / 60) === choice),
+          choice * 60 + (this.#draftTime % 60),
+        )
+      : Math.floor(this.#draftTime / 60) * 60 + choice;
     if (time === null || !times.includes(time)) return;
     this.#draftTime = time;
     this.#renderTime(times);
@@ -403,26 +462,39 @@ export class CmDatePickerController implements CmController {
     this.#timeOptions(this.#minuteSelect, 60, this.#timeSettings().minuteStep, minutes, minute);
   }
 
-  #timeOptions(
-    select: HTMLSelectElement,
-    limit: number,
-    step: number,
-    allowed: ReadonlySet<number>,
-    selected: number,
-  ): void {
+  #timeOptions(select: TimeSelect, limit: number, step: number, allowed: ReadonlySet<number>, selected: number): void {
     const count = Math.ceil(limit / step);
     for (let index = 0; index < count; index += 1) {
       const value = index * step;
-      const existing = select.options[index];
-      const option = existing ?? select.ownerDocument.createElement('option');
-      option.value = String(value);
+      let option = select.listbox.children[index] as HTMLButtonElement | undefined;
+      if (!option) {
+        option = select.listbox.ownerDocument.createElement('button');
+        option.type = 'button';
+        option.tabIndex = -1;
+        option.className = 'cm-select__option';
+        option.setAttribute('role', 'option');
+        select.listbox.append(option);
+      }
+      option.dataset.cmSelectValue = String(value);
       option.textContent = String(value).padStart(2, '0');
-      option.disabled = !allowed.has(value);
-      if (!existing) select.append(option);
+      if (allowed.has(value)) option.removeAttribute('aria-disabled');
+      else option.setAttribute('aria-disabled', 'true');
+      option.setAttribute('aria-selected', String(value === selected));
+      option.classList.toggle('cm-select__option--selected', value === selected);
     }
-    while (select.options.length > count) select.remove(select.options.length - 1);
-    select.value = String(selected);
-    select.disabled = selected < 0;
+    while (select.listbox.children.length > count) select.listbox.lastElementChild?.remove();
+    select.trigger.disabled = selected < 0;
+    if (selected < 0) delete select.trigger.dataset.cmFilled;
+    else select.trigger.dataset.cmFilled = 'true';
+    select.value.textContent = selected < 0 ? '' : String(selected).padStart(2, '0');
+  }
+
+  #unmountTimeControls(): void {
+    for (const select of [this.#hourSelect, this.#minuteSelect]) {
+      select?.controller.disconnect();
+      select?.root.remove();
+    }
+    this.#hourSelect = this.#minuteSelect = null;
   }
 
   #changePeriod(delta: number): void {
@@ -581,7 +653,10 @@ export class CmDatePickerController implements CmController {
     this.#calendar.hidden = !open;
     if (open) {
       this.#calendar.tabIndex = -1;
-      if (this.#hasTime) {
+      if (this.#hasTime && this.#hourHost && this.#minuteHost) {
+        const id = `${this.#calendar.id}-time`;
+        this.#hourSelect = mountTimeSelect(this.#hourHost, `${id}-hour`, 'Hour');
+        this.#minuteSelect = mountTimeSelect(this.#minuteHost, `${id}-minute`, 'Minute');
         const now = new Date();
         this.#prepareTime(
           this.#focusedDate,
@@ -591,6 +666,7 @@ export class CmDatePickerController implements CmController {
       this.#renderGrid();
       this.#holdPlacement();
     } else {
+      this.#unmountTimeControls();
       this.#calendar.removeAttribute('tabindex');
       if (closing) afterCmFloatingExit(this.#calendar, () => this.#releasePlacement());
     }
