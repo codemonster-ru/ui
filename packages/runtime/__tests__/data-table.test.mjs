@@ -212,20 +212,20 @@ test('reports selected ids in rendered order and keeps select-all state synchron
   assert.equal(selectAll.checked, true);
 });
 
-test('preserves localized sort labels through the sort cycle', () => {
+test('preserves custom sort labels through the sort cycle', () => {
   const dom =
     new JSDOM(`<div class="cm-data-table" data-cm-controller="data-table" data-cm-data-table-sort-key="" data-cm-data-table-sort-direction="">
-    <table class="cm-data-table__table"><thead><tr><th aria-sort="none"><button type="button" data-cm-data-table-sort="name" data-cm-data-table-sort-ascending-label-template="Сортировать {column} по возрастанию" data-cm-data-table-sort-descending-label-template="Сортировать {column} по убыванию" data-cm-data-table-clear-sort-label-template="Сбросить сортировку {column}">Имя<span class="cm-data-table__sort-indicator" aria-hidden="true"></span></button></th></tr></thead><tbody></tbody></table>
+    <table class="cm-data-table__table"><thead><tr><th aria-sort="none"><button type="button" data-cm-data-table-sort="name" data-cm-data-table-sort-ascending-label-template="Sort by {column} in ascending order" data-cm-data-table-sort-descending-label-template="Sort by {column} in descending order" data-cm-data-table-clear-sort-label-template="Reset sort order for {column}">Name<span class="cm-data-table__sort-indicator" aria-hidden="true"></span></button></th></tr></thead><tbody></tbody></table>
   </div>`);
   const root = dom.window.document.querySelector('.cm-data-table');
   const sort = root.querySelector('[data-cm-data-table-sort]');
   new CmRuntime().register('data-table', createCmDataTableController).start(root);
 
-  assert.equal(sort.getAttribute('aria-label'), 'Сортировать Имя по возрастанию');
+  assert.equal(sort.getAttribute('aria-label'), 'Sort by Name in ascending order');
   sort.click();
-  assert.equal(sort.getAttribute('aria-label'), 'Сортировать Имя по убыванию');
+  assert.equal(sort.getAttribute('aria-label'), 'Sort by Name in descending order');
   sort.click();
-  assert.equal(sort.getAttribute('aria-label'), 'Сбросить сортировку Имя');
+  assert.equal(sort.getAttribute('aria-label'), 'Reset sort order for Name');
 });
 
 test('client sorting uses raw values and restores the source order with each row’s details', () => {

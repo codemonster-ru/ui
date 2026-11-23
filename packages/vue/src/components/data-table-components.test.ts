@@ -416,7 +416,7 @@ describe('Vue data table components', () => {
     expect(wrapper.get('.cm-data-table__page-summary').text()).toBe('Page 1 of 1');
   });
 
-  it('renders localized pagination summaries and visible button text', () => {
+  it('renders custom pagination summaries and visible button text', () => {
     const wrapper = mount(CmDataTable, {
       props: {
         id: 'projects',
@@ -425,41 +425,41 @@ describe('Vue data table components', () => {
         page: 2,
         pageSize: 10,
         totalRows: 25,
-        pageSummaryTemplate: 'Страница {page} из {pageCount}',
-        paginationSummaryTemplate: '{firstRow}–{lastRow} из {totalRows}',
-        previousPageText: 'Назад',
-        nextPageText: 'Вперёд',
+        pageSummaryTemplate: 'Viewing page {page} of {pageCount}',
+        paginationSummaryTemplate: 'Rows {firstRow}–{lastRow} of {totalRows}',
+        previousPageText: 'Go back',
+        nextPageText: 'Go forward',
       },
     });
-    expect(wrapper.get('.cm-data-table__pagination-summary').text()).toBe('11–20 из 25');
-    expect(wrapper.get('.cm-data-table__page-summary').text()).toBe('Страница 2 из 3');
-    expect(wrapper.get('[data-cm-data-table-page-action="previous"]').text()).toBe('Назад');
-    expect(wrapper.get('[data-cm-data-table-page-action="next"]').text()).toBe('Вперёд');
+    expect(wrapper.get('.cm-data-table__pagination-summary').text()).toBe('Rows 11–20 of 25');
+    expect(wrapper.get('.cm-data-table__page-summary').text()).toBe('Viewing page 2 of 3');
+    expect(wrapper.get('[data-cm-data-table-page-action="previous"]').text()).toBe('Go back');
+    expect(wrapper.get('[data-cm-data-table-page-action="next"]').text()).toBe('Go forward');
   });
 
-  it('preserves localized sort and row-selection labels through interaction', async () => {
+  it('preserves custom sort and row-selection labels through interaction', async () => {
     const wrapper = mount(CmDataTable, {
       props: {
         id: 'projects',
         columns,
         rows,
         selectable: true,
-        selectAllLabel: 'Выбрать все строки',
-        selectRowLabelTemplate: 'Выбрать строку {row}',
-        sortAscendingLabelTemplate: 'Сортировать {column} по возрастанию',
-        sortDescendingLabelTemplate: 'Сортировать {column} по убыванию',
-        clearSortLabelTemplate: 'Сбросить сортировку {column}',
+        selectAllLabel: 'Select every row',
+        selectRowLabelTemplate: 'Select the row for {row}',
+        sortAscendingLabelTemplate: 'Sort by {column} in ascending order',
+        sortDescendingLabelTemplate: 'Sort by {column} in descending order',
+        clearSortLabelTemplate: 'Reset sort order for {column}',
       },
     });
     const sort = wrapper.get('[data-cm-data-table-sort]');
-    expect(sort.attributes('aria-label')).toBe('Сортировать Name по возрастанию');
+    expect(sort.attributes('aria-label')).toBe('Sort by Name in ascending order');
     expect(wrapper.findAll('[data-cm-data-table-select-row]')[0].attributes('aria-label')).toBe(
-      'Выбрать строку Apollo',
+      'Select the row for Apollo',
     );
     await sort.trigger('click');
-    expect(sort.attributes('aria-label')).toBe('Сортировать Name по убыванию');
+    expect(sort.attributes('aria-label')).toBe('Sort by Name in descending order');
     await sort.trigger('click');
-    expect(sort.attributes('aria-label')).toBe('Сбросить сортировку Name');
+    expect(sort.attributes('aria-label')).toBe('Reset sort order for Name');
   });
 
   it('warns about invalid table input and renders what is left', () => {
@@ -496,7 +496,7 @@ describe('Vue data table components', () => {
     expect(missingColumn.findAll('thead th')).toHaveLength(0);
 
     const missingPlaceholder = expectCmWarning(/selectRowLabelTemplate must contain \{row\}/u, () =>
-      mount(CmDataTable, { props: { id: 'projects', columns, rows, selectRowLabelTemplate: 'Выбрать строку' } }),
+      mount(CmDataTable, { props: { id: 'projects', columns, rows, selectRowLabelTemplate: 'Select a row' } }),
     );
     expect(missingPlaceholder.find('table').exists()).toBe(true);
   });
