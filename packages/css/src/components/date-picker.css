@@ -363,33 +363,22 @@
   border-radius: var(--cm-radius-control-tight);
 }
 
-.cm-date-picker__day--in-range::before,
-.cm-date-picker__day--in-range::after,
-.cm-date-picker__day--range-start::after,
-.cm-date-picker__day--range-end::before {
+:is(.cm-date-picker__day--range-start, .cm-date-picker__day--in-range)
+  + :is(.cm-date-picker__day--in-range, .cm-date-picker__day--range-end)::before {
   position: absolute;
   inset-block: calc(-1 * var(--cm-border-width));
-  inline-size: var(--cm-date-picker-column-gap);
+  inset-inline-end: 100%;
+  inline-size: calc(var(--cm-date-picker-column-gap) + 2 * var(--cm-border-width));
+  border-block: var(--cm-border-width) solid var(--cm-color-interactive-primary-border);
   background: var(--cm-color-background-surface-hover);
   content: '';
   pointer-events: none;
 }
 
-.cm-date-picker__day--in-range::before,
-.cm-date-picker__day--range-end::before {
-  inset-inline-end: 100%;
-}
-
-.cm-date-picker__day--in-range::after,
-.cm-date-picker__day--range-start::after {
-  inset-inline-start: 100%;
-}
-
-.cm-date-picker__week > :first-child::before,
-.cm-date-picker__week > :last-child::after,
-.cm-date-picker__day--range-start.cm-date-picker__day--range-end::before,
-.cm-date-picker__day--range-start.cm-date-picker__day--range-end::after {
-  display: none;
+/* Leave room for the focused day's ring on the joined edge. */
+:is(.cm-date-picker__day--in-range, .cm-date-picker__day--range-end):focus-visible::before {
+  inset-inline-end: calc(100% + var(--cm-border-width) + var(--cm-focus-ring-width));
+  inline-size: max(0px, var(--cm-date-picker-column-gap) - var(--cm-focus-ring-width));
 }
 
 .cm-date-picker__day--selected {
