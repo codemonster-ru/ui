@@ -2,7 +2,7 @@ import { cmTypographyTokens } from '@codemonster-ru/ui-tokens';
 import { CmDivider, CmGrid, CmLink, CmPanel, CmStack } from '@codemonster-ru/ui-vue';
 import { h, type CSSProperties, type VNode } from 'vue';
 
-const text = 'Aa Бб 012345';
+const text = 'Aa Zz 012345';
 const sizeScale = ['3xl', '2xl', 'xl', 'lg', 'md', 'sm', 'xs'];
 const families = ['base', 'heading', 'mono'];
 const weights = [
@@ -90,7 +90,7 @@ function renderSamples(path: string) {
         h('code', 'inline code'),
         '.',
       ]),
-      h('p', { lang: 'ru' }, 'Обновление доступно. Откройте журнал изменений.'),
+      h('p', 'An update is available. Open the changelog.'),
       h('ul', [h('li', 'Unordered item')]),
       h('ol', [h('li', 'Ordered item')]),
       h('blockquote', 'Blockquote'),

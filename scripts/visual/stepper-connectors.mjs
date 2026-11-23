@@ -53,7 +53,7 @@ export async function checkStepperConnectors({ send, evaluate, id, theme, platfo
         if (step === 'uneven-vertical') {
           await evaluate(`(() => {
             document.querySelector('.cm-stepper').classList.add('cm-stepper--vertical');
-            document.querySelector('.cm-stepper__label').textContent = 'Подготовка международного проекта и команды';
+            document.querySelector('.cm-stepper__label').textContent = 'Prepare the international project and assemble the team';
           })()`);
         }
         const { vertical, markers, textFits, progressColor } = await evaluate(`(() => {

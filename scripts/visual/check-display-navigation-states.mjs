@@ -30,7 +30,7 @@ test(`packaged display and navigation states in ${browserName}`, async (t) => {
         });
         caseTest.after(() => page.close());
 
-        const longTitle = 'Недоступен реестр РазрешенияДляРабочегоПространстваМеждународнойКоманды2026';
+        const longTitle = 'Registry unavailable: InternationalTeamWorkspaceAccessPermissionsDirectory2026';
         for (const component of ['alert', 'dialog']) {
           await openCase(page, platform, theme, component === 'alert' ? 'alert-danger-icon' : 'dialog-open');
           const measured = await page.locator(`.cm-${component}__title`).evaluate((title, text) => {

@@ -84,7 +84,7 @@ All 62 manifest-backed slugs appear below. Counts are canonical cases and execut
 
 The former stored PNG gate used `contracts/cross-platform-visual-baselines.json` to select 12 case IDs, 2 themes and 2 viewports (48 images for each adapter). The broader 362-capture comparison covers 181 canonical cases at both themes, one default viewport, and compares Vue-mounted to enhanced Vanilla, with separate behavior after input. Existing `packages/vue/__tests__/*-ssr.test.mjs` compare Vue SSR with canonical HTML via the significant-DOM comparator. Hydration and native fallback have targeted tests, for example `packages/vue/src/components/tabs/CmTabs.hydration.test.ts`, `packages/runtime/__tests__/hydrated-elements.test.mjs`, and `packages/runtime/__tests__/native-modal.test.mjs`. These verify distinct lifecycle states and do not make every paired visual case a hydrated SSR test.
 
-Canonical content is predominantly English. The typography specimen samples Latin and Cyrillic.
+The typography specimen uses English, as does most canonical content.
 Localizing entire examples would exercise additional wrapping, number formatting and truncation
 combinations. The optional Inter CSS contains Latin, Latin Extended, Cyrillic and Cyrillic
 Extended subsets.
@@ -118,8 +118,9 @@ relevant comparisons. Native inactive controls use the [WCAG inactive exception]
   applies the responsive title hierarchy and spacing. At 360 px, the heading grows from 20 to
   28 px. At 1,440 px, it grows to 34 px. The section headings stay at 24 px. Nine links make
   the matrix navigable by keyboard immediately below the title.
-- The [typography specimen](../../examples/shared/showcase-typography.mts) includes Russian text
-  with its language declared. Rendered glyph inspection confirms use of the bundled Cyrillic Inter face.
+- The [typography specimen](../../examples/shared/showcase-typography.mts) used Russian text
+  with its language declared during this review. Rendered glyph inspection confirmed use of the
+  bundled Cyrillic Inter face. The specimen now uses English.
 - The warehouse example at `/layouts/#demo-admin-shell` uses the public DataTable caption and
   end-aligns quantities in the [shared layout preview](../../examples/ui-showcase/src/LayoutExample.vue). Its narrow preview
   allows keyboard scrolling. The browser suite checks paging, changing page size, and resuming

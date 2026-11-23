@@ -1,228 +1,228 @@
-# CodeMonster UI — независимая дизайнерская приёмка
+# CodeMonster UI independent design review
 
-## Итоговое утверждение showcase
+## Final showcase approval
 
-Статус — **DESIGN APPROVED / RELEASE PENDING**.
+Status is **DESIGN APPROVED / RELEASE PENDING**.
 
-17 ноября 2026 года дизайн утверждён на коммите
-`a9ab85e50a09ebf051f5749c9c394cf463f6de1c` ветки `codex/showcase-art-direction`.
-Приёмка охватывает композицию Core, Layouts с Warehouse и другими интерфейсными примерами,
-Colors и Icons в светлой и тёмной темах на desktop и mobile. Пакет финального ревью
-`codemonster-ui-final-showcase-polish.zip` содержит 112 пар кадров Vue и Vanilla.
+The design was approved on November 17, 2026 at commit
+`a9ab85e50a09ebf051f5749c9c394cf463f6de1c` on the `codex/showcase-art-direction` branch.
+The approval covers the Core composition, Layouts with Warehouse and other interface examples,
+Colors, and Icons in light and dark themes on desktop and mobile. The final review bundle
+`codemonster-ui-final-showcase-polish.zip` contains 112 pairs of Vue and Vanilla captures.
 
-Hosted CI на утверждённом SHA прошёл все восемь заданий с первой попытки.
-Chrome for Testing `151.0.7922.138` на `macos-26` подтвердил 48/48 кадров для Vue,
-48/48 для Vanilla, 362/362 сравнений паритета и 144/144 сценариев поведения.
-Для интеграции используется уже утверждённый комплект эталонов из `cf6c4ab7`.
+All eight hosted CI jobs passed on the first attempt for the approved commit.
+Chrome for Testing `151.0.7922.138` on `macos-26` verified 48/48 captures for Vue,
+48/48 for Vanilla, 362/362 parity comparisons, and 144/144 behavior scenarios.
+Integration uses the previously approved baselines from `cf6c4ab7`.
 [Hosted CI](https://github.com/codemonster-ru/ui/actions/runs/44063914889)
 
-Локальная сверка с hosted PNG на macOS 27.2.1 дала 44 отличия из 48 на адаптер.
-Контрольный коммит `cf6c4ab7` дал тот же результат. Все 96 локальных кадров кандидата
-побайтно совпали с локальными кадрами контроля.
-[Локальная сверка и нестабильность Avatar](stored-visual-renderer.md#showcase-art-direction-and-avatar-parity)
+A local comparison against the hosted PNGs on macOS 27.2.1 found 44 differences out of 48 per adapter.
+The control commit `cf6c4ab7` produced the same result. All 96 local candidate captures matched
+their local control captures byte for byte.
+[Local comparison and Avatar instability](stored-visual-renderer.md#showcase-art-direction-and-avatar-parity)
 
-| Релизная проверка | Статус |
+| Release check | Status |
 | --- | --- |
-| VoiceOver | **PENDING.** Нужна ручная проверка Vue и Vanilla в Safari на macOS с записью объявлений и фокуса. |
-| NVDA | **BLOCKED.** Проверка обязательна по действующей матрице. Доступная сессия Windows с NVDA для приёмки отсутствует. |
+| VoiceOver | **PENDING.** Manually test Vue and Vanilla in Safari on macOS and record announcements and focus behavior. |
+| NVDA | **BLOCKED.** The current matrix requires this check. A Windows session with NVDA is unavailable for acceptance testing. |
 
-[Процедура проверки скринридеров](codemonster-ui-2.0-rc.2.md#manual-assistive-technology-acceptance)
-и [порядок выпуска пакетов](../release-checklist.md) действуют для релизной приёмки.
+The [screen reader verification procedure](codemonster-ui-2.0-rc.2.md#manual-assistive-technology-acceptance)
+and the [package release checklist](../release-checklist.md) apply to release acceptance.
 
-## Вердикт по первому проходу
+## First-pass assessment
 
-Первый проход устранил подтверждённые дефекты состояний и сделал каталог удобнее. До уровня
-образцовой дизайн-системы оставались как минимум иерархия заголовков внутри компонентов,
-сопоставимость вариантов в showcase, читаемость плотных таблиц и видимые состояния при
-взаимодействии. Например, прежний [отчёт](visual-excellence-initiative.md) относит все обычные
-изменения в 12 исторических кадрах к обводкам трёх полей. На этих кадрах сохранились их размер,
-контент, шрифт и радиус. Совпадение двух адаптеров подтверждало переносимость этих изменений.
+The first pass fixed confirmed state defects and made the catalog easier to use. The showcase still
+needed clearer heading hierarchy within components, comparable variants across adapters, readable
+dense tables, and visible interaction states. For example, the previous
+[report](visual-excellence-initiative.md) attributes every ordinary-state change in 12 historical
+captures to the borders of three fields. Their dimensions, content, font, and corner radii stayed
+the same. Matching results in the two adapters confirmed that the changes carried over.
 
-Сравнение исходников использует две сохранённые копии рабочей папки. Первая снята перед
-первоначальным проходом, вторая перед этим ревью. Обе включают имевшуюся в работе реорганизацию
-showcase. Это даёт возможность отделить её от правок, сделанных в рамках инициативы. Чистый
-`857c0e396077a7703a6b0b28c7c731fdb7f7befb` — опубликованный исходный коммит, а не точное
-содержимое любой из этих рабочих копий.
+The source comparison uses two saved working-tree snapshots, one taken before the initial pass and
+one before this review. Both include the showcase reorganization that was already in progress,
+which makes it possible to isolate the edits from this initiative. The clean
+`857c0e396077a7703a6b0b28c7c731fdb7f7befb` is the published starting commit. The two working-tree
+snapshots contain additional changes.
 
-| Область                          | Что действительно сделал первый проход                                                                                                                                                                                | Почему результат был недостаточным                                                                                                                                                                                 |
-| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Палитра                          | Переназначил три семантические роли `border-interactive`, `border-strong` и `text-muted` в [semantic-colors.ts](../../packages/tokens/src/semantic-colors.ts). Примитивные OKLCH-шкалы и статусные цвета сохранились. | Улучшение контраста реально. На поднятой тёмной поверхности интерактивная обводка выросла с 2.51:1 до 3.14:1. Расстановка уровней текста и поверхностей внутри конкретных компонентов требовала дальнейшей работы. |
-| Типографика                      | Поднял H1 матрицы с 20 px до 28/34 px и добавил кириллический образец.                                                                                                                                                | Вес заголовка Card и Panel оставался 400 при размере 16 px, как у основного текста. Заголовки Dialog и Drawer также выглядели как обычный текст. Шкала пакета и его гарнитуры не менялись.                         |
-| Геометрия и состояния            | Вернул видимость фокуса и выбранных значений в forced colors. Восстановил точку выбранного Radio на hover и press.                                                                                                    | Размеры компонентов и их внутренние отступы почти не изменились. В компактном Input две встроенные кнопки оказались в одной позиции. В DataTable минимум 576 px обрезал даже простые таблицы при доступных 270 px. |
-| Spacing, radii, borders, shadows | В матрице изменились заголовок, отступы навигации и секционные ссылки. В пакете изменился цвет некоторых обводок и появилась резервная обводка фокуса.                                                                | Шкалы отступов, радиусов, толщин и теней остались прежними. Начальная работа не давала основания считать ритм каждой композиции измеренным.                                                                        |
-| Showcase                         | Добавил девять секционных ссылок, устойчивые ориентиры для клавиатуры и оформил warehouse-таблицу.                                                                                                                    | Матрица всё ещё начиналась с трёх карточек про тему, а на Layouts рабочий интерфейс находился после абстрактных примитивов. На широком экране одиночный Button терялся в сцене шириной 1248 px.                    |
+| Area | What the first pass changed | Remaining issues |
+| --- | --- | --- |
+| Palette | Remapped three semantic roles, `border-interactive`, `border-strong`, and `text-muted` in [semantic-colors.ts](../../packages/tokens/src/semantic-colors.ts). The primitive OKLCH scales and status colors stayed the same. | Contrast on an elevated dark surface rose from 2.51:1 to 3.14:1 for interactive borders. The hierarchy of text and surface levels within individual components still needed work. |
+| Typography | Raised the matrix H1 from 20 px to 28/34 px and added a Cyrillic specimen. | Card and Panel headings still used weight 400 at 16 px, just like body text. Dialog and Drawer headings also looked like body text. The package type scale and font families stayed the same. |
+| Geometry and states | Restored visible focus and selected values in forced colors. Restored the selected Radio dot on hover and press. | Component sizes and padding changed little. Two inline buttons in compact Input occupied the same position. DataTable's 576 px minimum clipped even simple tables with 270 px available. |
+| Spacing, radii, borders, shadows | Changed the matrix heading and navigation spacing and added section links. Some package border colors changed and a fallback focus outline was added. | The spacing, radius, border width, and shadow scales stayed the same. The first pass did not measure the spacing rhythm of every composition. |
+| Showcase | Added nine section links, reliable keyboard landmarks, and styled the warehouse table. | The matrix still started with three theme cards, and Layouts presented abstract primitives before the working interface. On a wide screen, a single Button was hard to pick out in a 1248 px stage. |
 
-Получили прямые правки отдельные формы, состояния навигации и меню, фокус ссылок и кнопок.
-Card, Panel, Table, DataTable, компоненты обратной связи и большинство layout-компонентов
-сохранили свою CSS-геометрию и визуальную иерархию. Глобальная семантическая палитра могла
-косвенно изменить их приглушённый текст или обводку. Первый проход был сосредоточен на
-конкретных дефектах доступности и showcase, поэтому его покрытие не равнозначно дизайнерской
-приёмке каждого компонента.
+The first pass directly changed individual forms, navigation and menu states, and focus on links and
+buttons. Card, Panel, Table, DataTable, feedback components, and most layout components retained
+their CSS geometry and visual hierarchy. The global semantic palette could have changed their
+muted text or borders indirectly. The first pass focused on specific accessibility and showcase
+defects. Component-by-component design acceptance required a broader review.
 
-## Метод и критерии этого ревью
+## Review method and criteria
 
-Исходные и новые кадры получены из раздельно собранных каталогов. Для основных страниц
-сопоставляются Vue и Vanilla, обе темы и ширины 360/1440 px. Для отдельных компонентов
-сравниваются опубликованные reference-превью и контрактные варианты. Для интерактивных
-недостатков используются живые измерения DOM и отдельные кадры hover, press, focus и open.
-Оценка опирается на видимую иерархию, читаемость, геометрию, выравнивание, интервалы и
-различимость состояний в двух темах. Проверки контракта и axe вынесены в раздел верификации.
+The original and updated captures came from separately built catalogs. The main pages compare
+Vue and Vanilla in both themes at 360 and 1440 px. For individual components, the review compares
+published reference previews and contract variants. Interaction defects use live DOM measurements
+and separate hover, press, focus, and open captures. The review assesses visible hierarchy,
+readability, geometry, alignment, spacing, and the distinction between states in both themes.
+Contract and axe checks appear in the verification section.
 
-Для каждой группы приоритет отдан дефектам с воспроизводимым влиянием на чтение или действие.
-Веса и поверхности взяты из текущих ролей, чтобы сохранить характер системы и исключить новую
-палитру или отдельные правила адаптера. Статусы итоговой приёмки разделены на локальную
-верификацию, открытые дизайнерские наблюдения и два релизных шлюза.
+Each group prioritizes reproducible defects that affect reading or interaction. Font weights and
+surfaces use existing roles to preserve the system's visual character and keep the adapters aligned.
+The review records local verification, open design observations, and two release gates.
 
-## Покомпонентное ревью
+## Component review
 
-Архив `artifacts/codemonster-ui-visual-excellence-design-review.zip` содержит 13 заключений
-по действиям и формам в `controls/audit.md` и 24 заключения по 81 варианту обратной связи,
-навигации и оверлеев в `family-review/README.md`. Ниже описаны остальные 25 компонентов с
-контрактными кадрами. Имена в последней колонке соответствуют снимкам атласа.
+The archive `artifacts/codemonster-ui-visual-excellence-design-review.zip` contains 13 findings
+on actions and forms in `controls/audit.md` and 24 findings covering 81 feedback, navigation, and
+overlay variants in `family-review/README.md`. The table covers the remaining 25 components with
+contract captures. The names in the last column correspond to atlas captures.
 
-| Компонент      | Наблюдение и решение                                                                                                                                                                                                                                                            | Доказательство                                                        |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| Link           | В базовом примере ссылка без подчёркивания выделяется только акцентом. Для ссылки в сплошном тексте важен предусмотренный вариант с постоянным подчёркиванием. Геометрия читается, прежние уровни и варианты сохранены.                                                         | `link-default`, `link.css`                                            |
-| Card           | Заголовок 16 px / 400 выглядел как первая строка основного текста. Вес 600 даёт отчётливое начало карточки с той же высотой строки. Длинные слова переносятся.                                                                                                                  | `card-title`, `table/*/chromium/`                                     |
-| Panel          | В Activity заголовок и содержимое имели равный визуальный вес. Вес 600 применён по тому же правилу, включая subtle-поверхность.                                                                                                                                                 | `panel-default`, `panel-subtle`                                       |
-| GroupBox       | Легенда пересекает границу намеренно. Отступы заголовка, пиктограммы и начала содержимого читаются как одна конструкция. Нативный input здесь оптически отличается от библиотечных полей. Нужен длинный заголовок для отдельной проверки обрезки легенды.                       | `group-box-default`                                                   |
-| Table          | Простая таблица прятала столбец Status на узком экране. Авторазмер даёт место обеим колонкам. Заголовки 14 px / 600 на отдельной поверхности лучше отделяются от строк 16 px.                                                                                                   | `table-default`, `table-presentation`                                 |
-| DataTable      | В Accounts за правым краем оказывались сумма и имя. Авторасчёт ширины освобождает простые данные от минимума 576 px. Выбранная строка видна по подложке и checkbox, активная сортировка выделяется цветом, ширина маркера стабильна. Фиксированные колонки сохраняют прокрутку. | `data-table-interactive`, `data-table-pinned`, `data-table-resizable` |
-| ColumnChooser  | Контур кнопки различим в обеих темах. В открытом состоянии список выровнен по началу, с отдельным разделителем для Select all. Размер панели наследуется от Popover.                                                                                                            | `column-chooser-default`                                              |
-| PageHeader     | Заголовок 26 px / 600, описание 16 px и отдельная строка действия на узкой ширине уже дают ясную иерархию. Оставлен как образец пропорций.                                                                                                                                      | `page-header-default`                                                 |
-| Container      | Ровное смещение контента от края. Default и fluid выглядят одинаково на узком кадре. Разница назначения видна в Layouts с управлением шириной.                                                                                                                                  | `container-default`, `container-fluid`                                |
-| Grid           | На узком контрактном кадре колонки переходят в одну без горизонтальной обрезки. Сопоставление широкой сетки берётся из Layouts.                                                                                                                                                 | `grid-default`, Layouts                                               |
-| Inline         | Save и Cancel сидят на общей оптической оси. Контрактный кадр намеренно включает нативную кнопку.                                                                                                                                                                               | `inline-default`                                                      |
-| Stack          | Интервал между First и Second отделяет строки. Более содержательная проверка плотности есть в многострочном примере формы.                                                                                                                                                      | `stack-default`, Forms                                                |
-| Section        | Вариант surface сохраняет внутренний отступ и низкий контур. Нативный заголовок Report и строка Ready разделены минимально. Для оценки ритма длинного содержимого нужен содержательный образец.                                                                                 | `section-surface`                                                     |
-| AppShell       | Product, Filters, Navigation и Content сохраняют порядок, границы и начало строки на узком экране. Закрываемый вариант показывает нативную кнопку. Живая область Aside проверяется на Layouts.                                                                                  | `app-shell-default`, `app-shell-collapsible`                          |
-| DocumentLayout | Guide, Version 2 и Chapters разделены полосами и правилом. Пустое пространство вокруг Body требует проверки на длинной статье со sticky-областями.                                                                                                                              | `document-layout-default`, Layouts                                    |
-| AdminLayout    | На узком кадре меню, Projects и Dashboard выделены в три зоны. Плотность Dashboard остаётся свойством слота приложения.                                                                                                                                                         | `admin-layout-default`, `admin-layout-collapsed`                      |
-| AdminShell     | Контрастная верхняя полоса и вложенная карточка задают характер. При прокрутке на 175 px панель пропускала фон страницы и инверсный заголовок терялся. Теперь панель держит свою инверсную поверхность.                                                                         | `before/*-admin-sticky.png`, `after/*-admin-sticky.png`               |
-| AuthLayout     | Узкая центральная панель и заголовок Sign in дают оптический центр в обеих темах. Ошибки авторской формы требуют отдельной композиции.                                                                                                                                          | `auth-layout-default`, Auth preview                                   |
-| SetupLayout    | Заголовок и короткое пояснение сидят над отделённым действием. Многошаговая композиция на Layouts дополняет короткий контракт.                                                                                                                                                  | `setup-layout-default`, Setup preview                                 |
-| ErrorLayout    | Код, заголовок и действие образуют центрированную вертикальную ось. Для пары действий и длинного описания нужны дополнительные примеры.                                                                                                                                         | `error-layout-default`, Error preview                                 |
-| HeaderArea     | Нижняя граница читается как конструктивная линия. Отступ Workspace совпадает с соседними регионами в композиции.                                                                                                                                                                | `header-area-default`                                                 |
-| SidebarArea    | Внутренний отступ и линия на логическом конце видны в обеих темах. Меню и плотность определяет содержимое слота.                                                                                                                                                                | `sidebar-area-default`                                                |
-| ContentArea    | Текст начинается на общей сетке, граница отсутствует. В одиночном кадре видна только роль поверхности.                                                                                                                                                                          | `content-area-default`                                                |
-| AsideArea      | Линия стоит на логическом начале, зеркально к SidebarArea. Длинное содержимое проверяется в живых shell-примерах.                                                                                                                                                               | `aside-area-default`                                                  |
-| FooterArea     | Верхняя линия и отдельный уровень поверхности тихо завершают композицию. Текст Support использует общий ритм.                                                                                                                                                                   | `footer-area-default`                                                 |
+| Component | Observation and decision | Evidence |
+| --- | --- | --- |
+| Link | In the default example, accent color alone distinguishes the link when it has no underline. Use the available always-underlined variant for links in running text. The geometry is clear and existing levels and variants were retained. | `link-default`, `link.css` |
+| Card | At 16 px and weight 400, the heading looked like the first line of body text. Weight 600 distinguishes the heading at the same line height. Long words wrap. | `card-title`, `table/*/chromium/` |
+| Panel | In Activity, the heading and content carried equal visual weight. Weight 600 follows the same rule as Card, including on the subtle surface. | `panel-default`, `panel-subtle` |
+| GroupBox | The legend intentionally crosses the border. Heading, icon, and content insets read as a single composition. The native input looks different from library fields. A long heading is needed to check legend clipping. | `group-box-default` |
+| Table | The simple table hid the Status column on narrow screens. Automatic sizing makes room for both columns. Headers at 14 px and weight 600 stand apart from the 16 px rows on a separate surface. | `table-default`, `table-presentation` |
+| DataTable | The amount and name in Accounts extended past the right edge. Automatic sizing removes the 576 px minimum for simple data. Selected rows have a distinct background and a checkbox. Active sorting uses a different color and the indicator keeps a consistent width. Pinned columns retain scrolling. | `data-table-interactive`, `data-table-pinned`, `data-table-resizable` |
+| ColumnChooser | The button outline is visible in both themes. The open list is aligned at the start and separates Select all with a divider. The panel inherits its size from Popover. | `column-chooser-default` |
+| PageHeader | The 26 px heading at weight 600, the 16 px description, and the separate action row at narrow widths establish a clear hierarchy. It serves as a reference for proportions. | `page-header-default` |
+| Container | Content has a consistent inset. Default and fluid look the same in the narrow capture. Their different uses are visible in Layouts, where width can be adjusted. | `container-default`, `container-fluid` |
+| Grid | Columns collapse to one in the narrow contract capture without horizontal clipping. Layouts provides the comparison for a wide grid. | `grid-default`, Layouts |
+| Inline | Save and Cancel share a visual axis. The contract capture intentionally includes a native button. | `inline-default` |
+| Stack | The gap between First and Second separates the lines. The multiline form example gives a better view of content density. | `stack-default`, Forms |
+| Section | The surface variant retains its padding and subtle border. The native Report heading sits close to the Ready line. A longer example is needed to assess vertical spacing with more content. | `section-surface` |
+| AppShell | Product, Filters, Navigation, and Content keep their order, boundaries, and alignment on a narrow screen. The collapsible variant shows a native button. Layouts exercises the live Aside region. | `app-shell-default`, `app-shell-collapsible` |
+| DocumentLayout | Guide, Version 2, and Chapters are separated by bands and a rule. The space around Body needs to be checked with a long article and sticky regions. | `document-layout-default`, Layouts |
+| AdminLayout | The menu, Projects, and Dashboard occupy three distinct regions in the narrow capture. The application slot controls Dashboard density. | `admin-layout-default`, `admin-layout-collapsed` |
+| AdminShell | A contrasting top bar and inset card define the composition. After scrolling 175 px, the page background showed through the bar and the inverse heading became hard to read. The bar now retains its inverse surface. | `before/*-admin-sticky.png`, `after/*-admin-sticky.png` |
+| AuthLayout | The narrow central panel and Sign in heading establish a visual center in both themes. Custom form errors need a separate composition. | `auth-layout-default`, Auth preview |
+| SetupLayout | The heading and short description sit above a separate action. The multi-step composition in Layouts complements the short contract example. | `setup-layout-default`, Setup preview |
+| ErrorLayout | The code, heading, and action form a centered vertical axis. A pair of actions and a long description need additional examples. | `error-layout-default`, Error preview |
+| HeaderArea | The bottom border marks the edge of the region. The Workspace inset matches adjacent regions in the composition. | `header-area-default` |
+| SidebarArea | Padding and the border on the logical end are visible in both themes. Slot content determines the menu and density. | `sidebar-area-default` |
+| ContentArea | Text starts on the shared grid. The region has no border, so the standalone capture mainly shows its surface role. | `content-area-default` |
+| AsideArea | The border sits at the logical start, mirroring SidebarArea. Long content is checked in live shell examples. | `aside-area-default` |
+| FooterArea | A top border and distinct surface mark the end of the composition. The Support text follows the shared spacing rhythm. | `footer-area-default` |
 
-Из двух публичных композиций вне манифестов **ConfirmDialog** проверяется как Dialog с
-действиями и наследует новую иерархию заголовка. **ThemeProvider** оценивается на смене темы
-и наследовании токенов в обеих сборках. Его вклад виден в Theme на матрице.
+Of the two public compositions outside the manifests, **ConfirmDialog** is tested as a Dialog with
+actions and inherits the new heading hierarchy. **ThemeProvider** is evaluated through theme
+switching and token inheritance in both builds. Its effect is visible in the Theme section of the
+matrix.
 
-## Подтверждённые изменения
+## Confirmed changes
 
-- **Геометрия и состояния форм.** Две кнопки компактного Input имели одинаковые координаты.
-  Теперь это две площадки 24×24 px с зазором 4 px, и обе работают от указателя. Select оставляет
-  стрелку при наличии clear, а длинный пункт перестал расширять страницу с 390 до 698 px.
-  Новый предел высоты вмещает трёхстрочный пункт и соседнюю строку. Hover DatePicker теперь
-  различим, а readonly получает отдельное состояние. У ThemeSwitch реакция на hover и press
-  остаётся спокойной, обводка фокуса укладывается в 4 px между сегментами.
-- **Типографическая иерархия.** Card и Panel используют 16 px / 600 для заголовка без увеличения
-  занятой строки. Dialog и Drawer используют 18 px / 600, Alert отделяет заголовок весом 600.
-  В Alert и модальном заголовке длинный кириллический фрагмент в 554,5 px теперь переносится
-  внутри контейнера. ProgressBar вынес процент из 8 px шкалы в отдельный 13 px слот с табличными
-  цифрами. В исходном 1% виден обрывок знака процента. Новая подпись читается от 0 до 100%,
-  в том числе в RTL.
-- **Поверхности и данные.** В контейнере 270 px обычные Table и DataTable теперь занимают
-  270 px вместо 576 px. Зафиксированные примеры по-прежнему занимают 576–612 px и прокручиваются.
-  Роль подложки заголовка, табличные цифры и отдельная подсветка выбранных строк делают
-  чтение по горизонтали проще. У AdminShell во время прокрутки текст отделён от рабочего
-  содержимого непрозрачным фоном. Это видно в обоих адаптерах и обеих темах.
-- **Цвет и ритм.** Наведение больше не стирает текущий пункт NavMenu, а выключенные
-  Accordion и Menu отличаются по весу и тону. Для новых состояний использованы имеющиеся
-  семантические поверхности, цвета текста и размеры. Новые примитивные цвета, гарнитуры,
-  глобальные шкалы отступов, радиусов или теней не понадобились. Изменения относятся к
-  конкретным случаям, где предыдущие роли давали слабую иерархию или неверную геометрию.
+- **Form geometry and states.** The two buttons in compact Input shared the same coordinates.
+  They now have separate 24×24 px targets with a 4 px gap, and both work with a pointer. Select
+  keeps its arrow when the clear control is visible, and a long option no longer expands the
+  page from 390 to 698 px. The new height limit accommodates a three-line option and an
+  adjacent row. DatePicker now has a distinct hover state and a separate readonly state.
+  ThemeSwitch retains subtle hover and press feedback, and the focus outline fits within the
+  4 px gap between segments.
+- **Typography hierarchy.** Card and Panel use 16 px headings at weight 600 without taking up
+  more vertical space. Dialog and Drawer use 18 px at weight 600. Alert distinguishes its
+  heading with weight 600. In the review, a Cyrillic fragment measuring 554.5 px wrapped inside
+  Alert and modal headings. ProgressBar moved its percentage out of the 8 px track into a
+  separate 13 px slot with tabular numerals. The original 1% display showed only part of the
+  percent sign. The updated label is readable from 0 to 100%, including in RTL.
+- **Surfaces and data.** In a 270 px container, ordinary Table and DataTable examples now
+  occupy 270 px instead of 576 px. Pinned examples still occupy 576–612 px and scroll.
+  The heading surface role, tabular numerals, and distinct selected-row highlight make the
+  rows easier to scan. An opaque AdminShell background separates the text from the working
+  content during scrolling. The effect is visible in both adapters and both themes.
+- **Color and spacing.** Hover now preserves the current NavMenu item. Disabled Accordion
+  and Menu items are distinguished by weight and tone. The updated states use existing semantic
+  surfaces, text colors, and sizes. They required no new primitive colors, font families, or
+  global spacing, radius, or shadow scales. The changes address cases where the previous roles
+  produced a weak hierarchy or incorrect geometry.
 
-## Приёмка showcase
+## Showcase review
 
-На Layouts реальный складской интерфейс вышел на первый экран. Его таблица использует
-семантический caption, правое выравнивание чисел, цветовые статусы с текстом и работающую
-пагинацию. Рядом находится навигация к примерам построения оболочек. В Theme вместо трёх
-разрозненных панелей две согласованные области. Начало Typography на репрезентативном
-снимке сместилось вверх с y=545 до y=497 на десктопе и с y=849 до y=595 на планшете.
+Layouts brings the working warehouse interface into the first viewport. The table uses a semantic
+caption, right-aligned numbers, text alongside status colors, and working pagination. Navigation to
+shell examples sits alongside it. Theme now uses two coordinated areas in place of three separate
+panels. On representative captures, Typography starts at y=497 instead of y=545 on desktop and
+at y=595 instead of y=849 on tablet.
 
-В reference-страницах читаемая сценическая колонка на 1440 px сузилась с 1248 до 1000 px.
-Навигация по странице вынесена в отдельную колонку, простой Button получил одинаковую
-высоту сцены 80 px в двух сборках вместо 112 px в Vue. Автоподгонка обычных превью
-использует одну логику, а вложенные модальные и layout-превью сохраняют заданные минимумы.
-Пустые SVG образцов IconButton заменены штатными пиктограммами. В Vanilla без JS обе
-демонстрационные нативные селекции Plan снова показывают системную стрелку. Клавиатура
-достигает секционных ссылок и warehouse-пагинации.
+At a 1440 px viewport, the reference pages narrowed the preview column from 1248 to 1000 px.
+Page navigation moved into its own column, and the simple Button now has an 80 px stage in both
+builds, down from 112 px in Vue. Standard previews share the same autosizing logic. Embedded modal
+and layout previews retain their specified minimums. The IconButton examples use library icons in
+place of empty SVGs. With JavaScript disabled, both native Plan selects in Vanilla again show the
+system arrow. Keyboard users can reach section links and warehouse pagination.
 
-Страницы матрицы стали организованнее, а warehouse-композиция даёт конкретную причину изучать
-API. Слабое место — вертикальная форма шириной 384 px внутри 1248 px пространства. Vue
-показывает компонент Select, Vanilla показывает нативный выбор. Последний теперь узнаваем,
-однако примеры остаются оптически разными. Для дизайнерского эталона нужны одинаковые
-контекст и задумка сценария в обеих реализациях. Также по прямой ссылке на Forms в Vanilla
-без JS видны одновременно рамки секции и заголовка.
+The matrix pages are easier to navigate, and the warehouse composition gives users a concrete
+reason to explore the API. The 384 px-wide vertical form in a 1248 px space remains a weak spot.
+Vue shows the Select component and Vanilla shows a recognizable native select, leaving a visual
+difference between the examples. A design reference needs the same context and intended interaction
+in both implementations. Following a direct link to Forms in Vanilla with JavaScript disabled
+also shows outlines around both the section and its heading.
 
-В архиве ревью `showcase/measurements-after.jsonl` содержит парные замеры, а `index.html`
-открывает офлайн-атлас исходных и финальных состояний. Эти файлы можно рассмотреть независимо
-от результатов тестов.
+In the review archive, `showcase/measurements-after.jsonl` contains paired measurements and
+`index.html` opens the offline atlas of original and final states. Both can be inspected
+independently of the test results.
 
-## Проверки и релизные шлюзы
+## Verification and release gates
 
-- В двух темах сняты все 181 контрактный вариант до и после, по 362 кадра на фазу.
-  Совпали 273; изменились 89, из них у 18 различаются размеры кадра.
-  Различия относятся к оформлению форм, таблиц, заголовков, состояния навигации, процента
-  выполнения и пиктограммам. Списки и размеры записаны в `atlas/component-before-after.json`.
-- Сняты 248 reference-превью на фазу для обеих тем и адаптеров. До и после также сохранены
-  кадры основных страниц и отдельно 28 пар композиционных скриншотов.
-- В первичном замере двух светлых reference-превью измерялась ещё меняющаяся высота
-  iframe. После стабилизации Accordion совпал по геометрии и пикселям при 998×99 px,
-  Textarea совпал при 998×120 px. Повтор охватил обе темы. Доказательства находятся в
+- All 181 contract variants were captured before and after in both themes, for 362 captures per
+  phase. Of those, 273 matched and 89 changed, including 18 with different capture dimensions.
+  Differences covered forms, tables, headings, navigation state, progress percentages, and icons.
+  The lists and dimensions are recorded in `atlas/component-before-after.json`.
+- The review captured 248 reference previews per phase across both themes and adapters. It
+  also retained before-and-after captures of the main pages and 28 separate pairs of composition
+  screenshots.
+- The first measurements of two light reference previews were taken while the iframe height was
+  still changing. After it stabilized, Accordion matched in geometry and pixels at 998×99 px and
+  Textarea matched at 998×120 px. The rerun covered both themes. Evidence is in
   `showcase/reference-recheck`.
-- В пакетном Chrome 151 совпали **362 пары Vue/Vanilla**. Прошли **144 поведенческих**
-  прогона с одинаковыми сигнатурами движения. Для тёмного внешнего результата
-  CommandPalette до/после отмечено 11 пикселей только на закруглениях контура фокуса.
-- Финальные production-сборки прошли **300 комбинаций** showcase в Chromium 157,
-  Firefox 148 и WebKit 26.4, 24 axe-проверки страниц и 12 контрастных проверок открытого
-  календаря. Более ранние полные проходы Chromium 149 и локального 151 прерывались на
-  инициализации страницы или переходе по хлебным крошкам. В Chromium 151 девять из девяти
-  изолированных переходов прошли в ширинах 320, 360 и 1440 px. Логи обоих типов сохранены.
-- Измерения таблиц, типографики и нелинейных состояний дали 18 совпадающих пар Vue/Vanilla
-  в каждом из трёх браузеров. Шесть разных вариантов включают простую таблицу, сортировку,
-  выделение, фиксированные и изменяемые колонки. Кадры закреплённой панели сопоставлены
-  в четырёх комбинациях адаптера и темы.
-- `npm test`, production-сборки, исходные контракты, SSR, типы, проверка размера пакетов
-  и 181 контрактная проверка доступности прошли локально. Формы дали 9 тестов в каждом
-  из Chromium, Firefox и WebKit. Контрольные состояния Display/Navigation дали 12 пар
-  адаптера и темы в трёх движках. Для нативных связей проверялись отдельные сценарии без JS.
-- Для 48 исторических кадров на адаптер локальный Chrome for Testing 151.0.7922.138 показал
-  20 новых различий до/после на пороге 0. Изменились Alert, Card, Input, Select и DatePicker.
-  Строгая проверка утверждённых PNG на прежнем пороге 4 даёт 44 расхождения на адаптере.
-  Это локальный рендер: прежний остаток растеризации шрифта и намеренные дизайн-изменения.
-  Исходные PNG и значения порогов сохранены.
+- In the packaged Chrome 151, **362 Vue/Vanilla pairs** matched. All **144 behavior runs** passed
+  with matching motion signatures. The before-and-after dark CommandPalette capture for the outer
+  result differed by 11 pixels around the rounded corners of the focus outline.
+- The final production builds passed **300 showcase combinations** in Chromium 157, Firefox 148,
+  and WebKit 26.4, plus 24 axe page checks and 12 open-calendar contrast checks. Earlier full
+  runs with Chromium 149 and local Chrome 151 stopped during page initialization or breadcrumb
+  navigation. In Chromium 151, all nine isolated navigation checks passed across 320, 360, and
+  1440 px. Logs from both types of run were retained.
+- Measurements of tables, typography, and non-linear states yielded 18 matching Vue/Vanilla pairs
+  in each of the three browsers. Six variants covered simple tables, sorting, selection, and pinned
+  and resizable columns. Sticky bar captures were compared across four adapter and theme
+  combinations.
+- `npm test`, production builds, source contracts, SSR, type checks, package size checks, and
+  181 contract accessibility checks passed locally. Forms passed nine tests in each of Chromium,
+  Firefox, and WebKit. The Display/Navigation checks covered 12 adapter and theme pairs across
+  three engines. Native links had separate checks with JavaScript disabled.
+- For 48 historical captures per adapter, local Chrome for Testing 151.0.7922.138 showed 20 new
+  before-and-after differences at threshold 0. Alert, Card, Input, Select, and DatePicker changed.
+  The strict comparison against the approved PNGs at the existing threshold of 4 shows
+  44 differences per adapter. The local differences include the existing font rasterization
+  residual and intentional design changes. The original PNGs and thresholds were retained.
 
-| Релизный шлюз               | Статус      | Проверенное основание                                                                                                                                                                                                                                                                                                                                                              |
-| --------------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Pinned hosted renderer      | **BLOCKED** | GitHub Actions доступен. Последний успешный visual job относится к опубликованному `857c0e39` и не содержит локальный кандидат. Настроены `macos-26` и Chrome for Testing `151.0.7922.138`. Точный кандидат должен получить проверочный SHA и запуск с этими настройками. [Visual job](https://github.com/codemonster-ru/ui/actions/runs/43869846096/job/133307803414)             |
-| Native assistive technology | **BLOCKED** | VoiceOver установлен. Попытка запуска через нативный мост завершилась `timeoutReached`, приложение оставалось неактивным. Единственная обнаруженная локальная Windows VM приостановлена и относится к другой задаче, активная сессия NVDA не обнаружена. Условия ручной проверки перечислены в [чеклисте RC.2](codemonster-ui-2.0-rc.2.md#manual-assistive-technology-acceptance). |
+| Release gate | Status | Evidence at the time of this review |
+| --- | --- | --- |
+| Pinned hosted renderer | **BLOCKED** | GitHub Actions was available. The latest successful visual job covered the published `857c0e39` and predated the local candidate. The job was configured for `macos-26` and Chrome for Testing `151.0.7922.138`. The candidate needed a commit SHA and a run with those settings. [Visual job](https://github.com/codemonster-ru/ui/actions/runs/43869846096/job/133307803414) |
+| Native assistive technology | **BLOCKED** | VoiceOver was installed. Launching it through the native bridge returned `timeoutReached`, and the app remained inactive. The only local Windows VM found was suspended and belonged to another task. No active NVDA session was found. The [RC.2 checklist](codemonster-ui-2.0-rc.2.md#manual-assistive-technology-acceptance) gives the manual verification criteria. |
 
-## Что остаётся открытым
+## Open items from the review
 
-1. **DatePicker при 320 px и 200% текста.** Шесть соседних пар дат пересекаются,
-   ширина содержимого доходит до 335 px. Проверенная CSS-проба убрала наложение, но рвала
-   подписи дней и сближала двузначные даты. Требуется общая локализованная компактная
-   раскладка со сквозной проверкой диапазонов, времени и навигации. Исходный и финальный
-   кадры находятся в `controls/{before,after}`, замеры в `supplemental-measurements.json`.
-2. **Непортальный Tooltip у края.** На ширине 390 px всплывающая подпись начинается
-   в x=−4,25 px при триггере x=24 px. Текст читается, левая граница обрезается. Портальный
-   режим умеет учитывать viewport. Для обычного режима нужна проверенная стратегия
-   позиционирования на поддерживаемых версиях браузеров.
-3. **Последние композиционные детали.** Спроектировать равноправную форму для двух showcase,
-   проверить глубокую ссылку с одной понятной индикацией фокуса и показать полные циклы
-   пустых, выполняющихся, ошибочных и успешных состояний в реальных композициях.
-4. **Покрытие первичного задания.** Инвентарь, обе темы, сопоставление обычных состояний,
-   архитектура и целевые изменения проверены. Исчерпывающее сочетание всех публичных
-   вариантов, пользовательских слотов, RTL, локалей, 200% текста и реальных тач-устройств
-   остаётся открытым. В частности, измерения интерфейсных состояний в эмуляции не заменяют
-   прохождение сценариев с нативной речью.
+1. **DatePicker at 320 px and 200% text size.** Six neighboring date pairs overlap and
+   content reaches 335 px wide. A CSS experiment eliminated the overlap at the cost of breaking
+   weekday labels and bunching two-digit dates. A shared localized compact layout needs end-to-end
+   checks for ranges, time, and navigation. The original and final captures are in
+   `controls/{before,after}`, and the measurements are in `supplemental-measurements.json`.
+2. **Non-portaled Tooltip at the edge.** At a 390 px viewport, the tooltip starts at x=−4.25 px
+   with its trigger at x=24 px. The text remains readable and the left border is clipped.
+   Portaled tooltips account for the viewport. The default mode needs a positioning strategy
+   verified in supported browser versions.
+3. **Remaining composition details.** Design equivalent form examples for both showcases,
+   verify that a deep link produces one clear focus indicator, and demonstrate complete empty,
+   in-progress, error, and success states in realistic compositions.
+4. **Coverage of the original assignment.** The review verified the inventory, both themes,
+   comparisons of ordinary states, architecture, and targeted changes. Comprehensive coverage
+   across public variants, custom slots, RTL, locales, 200% text size, and real touch devices
+   remains open. The emulated interface measurements still need to be complemented by testing
+   with native speech output.
 
-**Дизайнерская приёмка остаётся открытой.** Локальный результат демонстрирует конкретные
-улучшения и пригоден для ревью. Закрытие DatePicker и проверка принятого набора эталонов
-на штатной инфраструктуре остаются обязательными для окончательной приёмки.
+**Design acceptance remained open at this stage of the review.** The local result was ready for
+review. Resolving the DatePicker issue and verifying the approved baselines on the standard
+infrastructure remained prerequisites for final acceptance.
