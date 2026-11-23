@@ -8,7 +8,7 @@ test('preserves the frozen VueForge control geometry under the cm namespace', ()
   assert.equal(Object.isFrozen(cmControlTokens), true);
   assert.equal(Object.isFrozen(cmControlTokenNames), true);
   assert.deepEqual(cmControlTokens, {
-    focusRingWidth: '3px',
+    focusRingWidth: '2px',
     controlFontSizeSm: 'var(--cm-text-label-font-size)',
     controlFontSizeMd: 'var(--cm-text-body-font-size)',
     controlFontSizeLg: 'var(--cm-font-size-2xl)',

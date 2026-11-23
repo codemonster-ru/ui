@@ -5,7 +5,7 @@ import { URL } from 'node:url';
 
 const datePicker = await readFile(new URL('../src/components/date-picker.css', import.meta.url), 'utf8');
 
-test('styles the DatePicker clear action and wrapper focus state', () => {
-  assert.match(datePicker, /\.cm-date-picker-wrap:focus-within/u);
+test('styles the DatePicker clear action and trigger focus state', () => {
+  assert.match(datePicker, /@import '\.\.\/primitives\/form-validation\.css';/u);
   assert.match(datePicker, /\.cm-date-picker__clear\[hidden\]/u);
 });

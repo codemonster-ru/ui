@@ -35,6 +35,10 @@
   font-weight: var(--cm-font-weight-medium);
 }
 
+.cm-table-of-contents__link:active {
+  color: var(--cm-color-text-link-active);
+}
+
 .cm-table-of-contents--pills .cm-table-of-contents__link--active {
   background: var(--cm-color-interactive-primary-subtle-background);
 }

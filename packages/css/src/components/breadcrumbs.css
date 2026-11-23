@@ -39,8 +39,11 @@
   color: var(--cm-color-text-link-hover);
 }
 
+.cm-breadcrumbs__link:active {
+  color: var(--cm-color-text-link-active);
+}
+
 .cm-breadcrumbs__link:focus-visible {
-  color: var(--cm-color-text-link);
   outline: var(--cm-focus-ring-width) solid var(--cm-color-focus-ring);
   outline-offset: var(--cm-focus-ring-width);
 }

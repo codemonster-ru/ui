@@ -57,7 +57,7 @@ test('uses portable CodeMonster custom property names', () => {
   assert.match(css, /--cm-palette-neutral-0: oklch\(/);
   assert.match(css, /--cm-color-background-canvas: var\(--cm-palette-/);
   assert.match(css, /--cm-font-size-2xl: /);
-  assert.match(css, /--cm-focus-ring-width: 3px;/);
+  assert.match(css, /--cm-focus-ring-width: 2px;/);
   assert.match(css, /--cm-radius-control: calc\(var\(--cm-radius\) - 0\.125rem\);/);
   assert.match(css, /--cm-radius-surface: var\(--cm-radius\);/);
   assert.match(

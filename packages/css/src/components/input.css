@@ -1,3 +1,5 @@
+@import '../primitives/form-validation.css';
+
 .cm-input {
   display: block;
   box-sizing: border-box;
@@ -57,21 +59,8 @@
   color: var(--cm-color-text-secondary);
 }
 
-.cm-input:is(.cm-input--invalid, [aria-invalid='true']):where(:not(:disabled)) {
-  border-color: var(--cm-color-status-danger-border);
-}
-
-.cm-input:hover:where(:not(:disabled, :read-only, :focus)) {
+.cm-input:hover:where(:not(:disabled, :read-only)) {
   border-color: var(--cm-color-interactive-primary-border);
-}
-
-.cm-input:focus {
-  border-color: var(--cm-color-border-focus);
-}
-
-.cm-input:focus-visible {
-  border-radius: var(--cm-radius-control);
-  outline: var(--cm-border-width-thick) solid var(--cm-forced-focus-outline-color, transparent);
 }
 
 .cm-input-wrap {
@@ -196,8 +185,8 @@
 }
 
 .cm-input__action:focus-visible {
-  outline: var(--cm-border-width-thick) solid var(--cm-forced-focus-outline-color, transparent);
-  box-shadow: 0 0 0 var(--cm-border-width-thick) var(--cm-color-focus-ring);
+  outline: var(--cm-focus-ring-width) solid var(--cm-forced-focus-outline-color, transparent);
+  box-shadow: 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
 }
 
 .cm-input__action:has(+ .cm-input__action:not([hidden])) {
@@ -264,11 +253,6 @@
 }
 
 @media (forced-colors: active) {
-  .cm-input--invalid,
-  .cm-input[aria-invalid='true'] {
-    border-color: Mark;
-  }
-
   .cm-input-wrap:where(:has(.cm-input--invalid, .cm-input[aria-invalid='true'])) {
     border-color: Mark;
   }

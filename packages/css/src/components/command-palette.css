@@ -88,6 +88,10 @@
   background: var(--cm-color-background-surface-hover);
 }
 
+.cm-command-palette__close:active {
+  background: var(--cm-color-background-surface-active);
+}
+
 .cm-command-palette__input {
   box-sizing: border-box;
   grid-column: 1;
@@ -172,6 +176,10 @@
 .cm-command-palette__option--active:hover:not([aria-disabled='true']) {
   background: var(--cm-color-background-surface-selected-hover);
   color: var(--cm-color-selected-foreground);
+}
+
+.cm-command-palette__option:active:not([aria-disabled='true']) {
+  background: var(--cm-color-background-surface-active);
 }
 
 .cm-command-palette__option--active:active:not([aria-disabled='true']) {

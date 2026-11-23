@@ -59,7 +59,6 @@
   border-color: var(--cm-color-border-focus);
   outline: var(--cm-focus-ring-width) solid var(--cm-forced-focus-outline-color, transparent);
   box-shadow: 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
-  color: var(--cm-color-selected-foreground);
 }
 
 .cm-menu__item:hover:not(.cm-menu__item--active, :disabled, [aria-disabled='true']) {
@@ -78,10 +77,13 @@
   color: var(--cm-color-status-danger-subtle-foreground);
 }
 
-.cm-menu__item--danger:hover:not(:disabled, [aria-disabled='true']),
-.cm-menu__item--danger:focus-visible:not(:disabled, [aria-disabled='true']) {
+.cm-menu__item--danger:hover:not(:disabled, [aria-disabled='true']) {
   background: var(--cm-color-status-danger-subtle-background);
   color: var(--cm-color-status-danger-subtle-foreground);
+}
+
+.cm-menu__item:active:not(:disabled, [aria-disabled='true']) {
+  background: var(--cm-color-background-surface-active);
 }
 
 @media (forced-colors: active) {

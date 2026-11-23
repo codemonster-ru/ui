@@ -29,7 +29,7 @@ test('preserves the reference IconButton geometry and shared variant states', ()
   assert.match(css, /flex-shrink: 0;/);
   assert.match(css, /color: var\(--cm-color-icon-primary\);/);
   assert.match(css, /\.cm-icon-button:disabled[\s\S]*color: var\(--cm-color-icon-disabled\);/);
-  assert.match(css, /border-color: var\(--cm-color-border-focus\);/);
+  assert.match(css, /\.cm-icon-button:focus-visible \{[^}]*border-color: var\(--cm-color-focus-ring\);/u);
   assert.match(css, /box-shadow: 0 0 0 var\(--cm-focus-ring-width\) var\(--cm-color-focus-ring\);/);
   assert.match(css, /\.cm-icon-button--secondary:active[\s\S]*border-color: var\(--cm-color-border-strong\);/);
 });

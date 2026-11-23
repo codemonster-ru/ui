@@ -15,6 +15,104 @@ async function openCase(page, platform, theme, caseId) {
   await page.evaluate(() => document.fonts.ready);
 }
 
+const pointerCases = [
+  ['accordion-default', '.cm-accordion__trigger', 'backgroundColor', 'backgroundColor'],
+  ['admin-layout-default', '.cm-admin-layout__mobile-toggle-button', 'backgroundColor', 'backgroundColor'],
+  ['breadcrumbs-default', '.cm-breadcrumbs__link', 'color', 'color'],
+  ['date-picker-default', '.cm-date-picker', 'borderColor', 'backgroundColor'],
+  ['dialog-open', '.cm-dialog__close', 'backgroundColor', 'backgroundColor'],
+  ['menu-default', '.cm-menu__item:enabled:not(.cm-menu__item--active)', 'backgroundColor', 'backgroundColor'],
+  [
+    'nav-menu-default',
+    '.cm-nav-menu__item:not(.cm-nav-menu__item--active, [aria-disabled])',
+    'backgroundColor',
+    'backgroundColor',
+  ],
+  ['select-default', '.cm-select', 'borderColor', 'backgroundColor'],
+  ['stepper-default', '.cm-stepper__trigger:enabled', 'color', 'color', '.cm-stepper__label'],
+  [
+    'table-of-contents-default',
+    '.cm-table-of-contents__link:not(.cm-table-of-contents__link--active)',
+    'color',
+    'color',
+  ],
+  ['tabs-default', '.cm-tabs__tab:enabled[aria-selected="false"]', 'color', 'backgroundColor'],
+];
+
+async function checkPointerStates(page, platform, theme) {
+  for (const [caseId, selector, hoverProperty, pressedProperty, paintSelector] of pointerCases) {
+    await openCase(page, platform, theme, caseId);
+    await page.mouse.move(0, 0);
+    const target = page.locator(selector).first();
+    const paint = paintSelector ? target.locator(paintSelector) : target;
+    const read = () =>
+      paint.evaluate(
+        (element, [hover, pressed]) => {
+          const style = getComputedStyle(element);
+          return [style[hover], style[pressed]];
+        },
+        [hoverProperty, pressedProperty],
+      );
+    const rest = await read();
+    await target.hover();
+    const hovered = await read();
+    assert.notEqual(hovered[0], rest[0], `${caseId} reacts to pointer hover`);
+    await page.mouse.down();
+    try {
+      assert.notEqual((await read())[1], hovered[1], `${caseId} distinguishes a held press from hover`);
+    } finally {
+      await page.mouse.move(0, 0);
+      await page.mouse.up();
+    }
+  }
+}
+
+async function checkFocusAndDisabledStates(page, platform, theme) {
+  for (const [caseId, selector] of [
+    ['button-variant-secondary', '.cm-button'],
+    ['button-variant-ghost', '.cm-button'],
+    ['icon-button-default', '.cm-icon-button'],
+    ['dropdown-default', '.cm-dropdown__trigger'],
+    ['popover-default', '.cm-popover__trigger'],
+  ]) {
+    await openCase(page, platform, theme, caseId);
+    await page.mouse.move(0, 0);
+    await page.keyboard.press('Tab');
+    const target = page.locator(selector).first();
+    await target.focus();
+    assert(await target.evaluate((element) => element.matches(':focus-visible')), `${caseId} has keyboard focus`);
+    const read = () =>
+      target.evaluate((element) => {
+        const style = getComputedStyle(element);
+        return [style.borderTopColor, style.boxShadow];
+      });
+    const focused = await read();
+    assert(focused[1].includes(focused[0]), `${caseId} focus border matches the ring`);
+    await target.hover();
+    assert.deepEqual(await read(), focused, `${caseId} retains its ring and border colors during hover`);
+  }
+
+  for (const [caseId, selector] of [
+    ['nav-menu-default', '.cm-nav-menu__item--disabled'],
+    ['drawer-composed', '.cm-drawer__close:disabled'],
+  ]) {
+    await openCase(page, platform, theme, caseId);
+    if (caseId === 'drawer-composed') {
+      await page.locator('dialog.cm-drawer').evaluate((dialog) => dialog.showModal());
+    }
+    await page.mouse.move(0, 0);
+    const target = page.locator(selector).first();
+    const read = () =>
+      target.evaluate((element) => {
+        const style = getComputedStyle(element);
+        return [style.backgroundColor, style.color];
+      });
+    const disabled = await read();
+    await target.hover({ force: true });
+    assert.deepEqual(await read(), disabled, `${caseId} retains its disabled appearance on hover`);
+  }
+}
+
 test(`packaged display and navigation states in ${browserName}`, async (t) => {
   const browser = await playwright[browserName].launch();
   t.after(() => browser.close());
@@ -100,6 +198,9 @@ test(`packaged display and navigation states in ${browserName}`, async (t) => {
         const image = page.getByRole('img', { name: 'Ada King' });
         await image.evaluate((picture) => picture.decode());
         assert.equal(await image.evaluate((picture) => picture.naturalWidth), 96, 'fixture loads the actual image');
+
+        await checkPointerStates(page, platform, theme);
+        await checkFocusAndDisabledStates(page, platform, theme);
       });
     }
   }

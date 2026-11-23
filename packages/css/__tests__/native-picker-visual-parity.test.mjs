@@ -27,13 +27,8 @@ test('preserves reference native-control interaction states', async () => {
     ['date-picker', datePicker],
   ]) {
     assert.match(css, /border: var\(--cm-border-width\) solid var\(--cm-color-border-interactive\);/u);
-    assert.match(
-      css,
-      new RegExp(`\\.cm-${component}:focus \\{\\s*border-color: var\\(--cm-color-border-focus\\);`, 'u'),
-    );
-    assert.match(css, /border-color: var\(--cm-color-border-focus\);/u);
     assert.match(css, new RegExp(`\\.cm-${component}__clear:focus-visible \\{[^}]*box-shadow:`, 'u'));
-    assert.match(css, /border-color: var\(--cm-color-status-danger-border\);/u);
+    assert.match(css, /@import '\.\.\/primitives\/form-validation\.css';/u);
     assert.match(css, /background: var\(--cm-color-background-surface-disabled\);/u);
   }
 });

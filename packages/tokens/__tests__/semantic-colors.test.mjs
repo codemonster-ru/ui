@@ -47,3 +47,9 @@ test('keeps light and dark values mode-specific without changing the role contra
   assert.equal(cmSemanticLightColorTokens.colorInteractivePrimaryForeground, 'var(--cm-palette-neutral-0)');
   assert.equal(cmSemanticDarkColorTokens.colorInteractivePrimaryForeground, 'var(--cm-palette-neutral-0)');
 });
+
+test('matches dark focus accents to the interactive border color', () => {
+  const { colorBorderFocus, colorFocusRing, colorInteractivePrimaryBorder } = cmSemanticDarkColorTokens;
+  assert.equal(colorBorderFocus, colorInteractivePrimaryBorder);
+  assert.equal(colorFocusRing, colorInteractivePrimaryBorder);
+});

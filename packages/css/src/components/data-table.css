@@ -544,7 +544,7 @@
 .cm-data-table__selection > input:focus-visible,
 .cm-data-table__page-size select:focus-visible,
 .cm-data-table__page-button:focus-visible:not(.cm-button) {
-  outline: var(--cm-focus-ring-width) solid var(--cm-color-interactive-primary-border);
+  outline: var(--cm-focus-ring-width) solid var(--cm-color-focus-ring);
   outline-offset: var(--cm-focus-ring-width);
 }
 

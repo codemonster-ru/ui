@@ -53,7 +53,7 @@
 
   .cm-popover__panel:focus-visible {
     border-color: Highlight;
-    outline: var(--cm-border-width-thick) solid CanvasText;
+    outline: var(--cm-focus-ring-width) solid CanvasText;
     outline-offset: var(--cm-border-width-thick);
     box-shadow: none;
   }

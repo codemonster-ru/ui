@@ -9,6 +9,14 @@ Load the token and complete component stylesheets described in the [Button guide
 Each component style is also available from the `field.css`, `input.css`, `textarea.css`,
 `checkbox.css`, `radio.css`, and `switch.css` npm subpath exports.
 
+## Validation and focus
+
+Set `data-cm-valid="true"` on a control after successful application validation, and clear it when
+that result expires. In Vue, bind the attribute on the component. In Vanilla, put it on the input,
+textarea, or the Select or DatePicker trigger. Invalid state declared by the Vue `invalid` prop or
+the Vanilla `aria-invalid="true"` attribute takes precedence. The focus outline meets the control
+border and uses the validation color when either state applies.
+
 ## Field API
 
 | Prop              | Values             | Default          | Behavior                                                                         |

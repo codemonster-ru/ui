@@ -26,12 +26,6 @@
   line-height: var(--cm-control-line-height);
 }
 
-:is(.cm-dropdown__trigger, .cm-popover__trigger):focus-visible {
-  border-color: var(--cm-color-border-focus);
-  outline: var(--cm-focus-ring-width) solid var(--cm-forced-focus-outline-color, transparent);
-  box-shadow: 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
-}
-
 :is(.cm-dropdown__trigger, .cm-popover__trigger):disabled {
   border-color: var(--cm-color-border-disabled);
   background: var(--cm-color-background-surface-disabled);
@@ -39,12 +33,17 @@
   cursor: not-allowed;
 }
 
-:is(.cm-dropdown__trigger, .cm-popover__trigger):hover:not(:disabled) {
-  border-color: var(--cm-color-border-interactive);
+:is(.cm-dropdown__trigger, .cm-popover__trigger):hover:where(:not(:disabled)) {
   background: var(--cm-color-background-surface-hover);
 }
 
-:is(.cm-dropdown__trigger, .cm-popover__trigger):active:not(:disabled) {
+:is(.cm-dropdown__trigger, .cm-popover__trigger):active:where(:not(:disabled)) {
   border-color: var(--cm-color-border-strong);
   background: var(--cm-color-background-surface-active);
+}
+
+:is(.cm-dropdown__trigger, .cm-popover__trigger):focus-visible {
+  border-color: var(--cm-color-focus-ring);
+  outline: var(--cm-focus-ring-width) solid var(--cm-forced-focus-outline-color, transparent);
+  box-shadow: 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
 }

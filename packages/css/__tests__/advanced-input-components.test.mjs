@@ -18,8 +18,7 @@ test('preserves native control and command interaction hooks', async () => {
       readFile(new URL(`../src/components/${slug}.css`, import.meta.url), 'utf8'),
     ),
   );
-  assert.match(select, /\.cm-select:focus-visible/u);
-  assert.match(select, /\.cm-select-wrap:focus-within/u);
+  assert.match(select, /@import '\.\.\/primitives\/form-validation\.css';/u);
   assert.match(select, /\.cm-select__clear\[hidden\]/u);
   assert.match(datePicker, /\.cm-date-picker\[aria-readonly='true'\]:where\(:not\(:disabled\)\)/u);
   assert.match(palette, /\.cm-command-palette::backdrop/u);
