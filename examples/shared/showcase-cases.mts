@@ -1036,6 +1036,10 @@ export function showcaseComponentCases(
     return [
       {
         ...fixture,
+        props:
+          fixture.id === 'stepper-default--contentPosition-inline' && Array.isArray(fixture.props.items)
+            ? { ...fixture.props, items: fixture.props.items.map((item) => ({ ...item, description: undefined })) }
+            : fixture.props,
         slug,
         slots,
         buttonStyle,
