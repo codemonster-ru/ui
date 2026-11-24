@@ -86,6 +86,14 @@
   border-inline-end-color: var(--cm-color-border-focus);
 }
 
+.cm-data-table__column-resizer:focus-visible {
+  outline: none;
+}
+
+.cm-data-table__column-resizer:focus-visible::after {
+  border-inline-end-color: var(--cm-forced-focus-outline-color, var(--cm-color-focus-ring));
+}
+
 .cm-data-table__head th[data-cm-data-table-reorder-column][tabindex] {
   cursor: grab;
   touch-action: pan-y;
