@@ -68,7 +68,7 @@ export const columns = [
   { key: 'available', header: 'Available', align: 'end' as const },
   { key: 'status', header: 'Status' },
 ];
-export const rows = [
+const warehouseItems = [
   { id: '1', product: 'Wireless keyboard', sku: 'KB-1042', warehouse: 'North', available: 24, status: 'Available' },
   { id: '2', product: 'USB-C dock', sku: 'DK-2208', warehouse: 'Central', available: 0, status: 'Out of stock' },
   { id: '3', product: 'Studio monitor', sku: 'MN-3410', warehouse: 'North', available: 7, status: 'Low stock' },
@@ -76,7 +76,24 @@ export const rows = [
   { id: '5', product: 'Web camera', sku: 'CM-4421', warehouse: 'Central', available: 16, status: 'Available' },
   { id: '6', product: 'Mechanical mouse', sku: 'MS-3097', warehouse: 'West', available: 4, status: 'Low stock' },
   { id: '7', product: 'Desk microphone', sku: 'MC-8073', warehouse: 'North', available: 12, status: 'Available' },
-].map(({ id, ...cells }) => ({ id: `product-${id}`, cells }));
+];
+
+function toWarehouseRows(items: typeof warehouseItems) {
+  return items.map(({ id, ...cells }) => ({ id: `product-${id}`, cells }));
+}
+
+export const rows = toWarehouseRows(warehouseItems);
+export const adminShellRows = toWarehouseRows([
+  ...warehouseItems,
+  { id: '8', product: 'LED desk lamp', sku: 'LT-5802', warehouse: 'Central', available: 18, status: 'Available' },
+  { id: '9', product: 'Laptop sleeve', sku: 'SL-1327', warehouse: 'West', available: 22, status: 'Available' },
+  { id: '10', product: 'HDMI adapter', sku: 'AD-5059', warehouse: 'North', available: 9, status: 'Low stock' },
+  { id: '11', product: 'Ethernet switch', sku: 'SW-2414', warehouse: 'Central', available: 14, status: 'Available' },
+  { id: '12', product: 'Cable organizer', sku: 'OR-0936', warehouse: 'West', available: 36, status: 'Available' },
+  { id: '13', product: 'Card reader', sku: 'RD-6205', warehouse: 'North', available: 5, status: 'Low stock' },
+  { id: '14', product: 'Power strip', sku: 'PS-7527', warehouse: 'Central', available: 27, status: 'Available' },
+  { id: '15', product: 'USB-C cable', sku: 'CB-1648', warehouse: 'West', available: 48, status: 'Available' },
+]);
 export const steps = [
   { value: 'license', label: 'License', leadingIcon: fileText },
   { value: 'database', label: 'Database', leadingIcon: database },

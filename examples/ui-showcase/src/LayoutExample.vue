@@ -4,13 +4,13 @@ import { bars } from '@codemonster-ru/ui-icons';
 import { cmBreakpoints } from '@codemonster-ru/ui-tokens';
 import annabelLogoAsset from '../../shared/annabel-logo-icon.svg';
 import {
+  adminShellRows,
   columns,
   dashboardActivity,
   dashboardStats,
   type LayoutExampleSlug,
   regionControls,
   shellTabs,
-  rows,
   steps,
   warehouseNavigation,
   warehouseTableCaption,
@@ -100,7 +100,7 @@ onMounted(() => {
 });
 onBeforeUnmount(() => warehouseMobileQuery?.removeEventListener('change', syncWarehouseNavigation));
 
-const warehouseRows = rows.map(({ id, cells }) => ({ id, ...cells }));
+const warehouseRows = adminShellRows.map(({ id, cells }) => ({ id, ...cells }));
 const step = ref(initialSetupStep);
 const stepIndex = computed(() => steps.findIndex(({ value }) => value === step.value));
 const acceptedLicense = ref(false);
@@ -283,8 +283,8 @@ function setMode(value: string) {
           sorting-mode="manual"
           pagination
           :pagination-mode="staticPreview ? 'manual' : 'client'"
-          :default-page-size="5"
-          :page-size-options="[5, 10]"
+          :default-page-size="10"
+          :page-size-options="[10, 20]"
         />
       </CmStack>
     </CmAdminShell>
