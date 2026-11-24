@@ -1,3 +1,4 @@
+import { hasOverlayScrollLock, lockOverlayScroll } from './overlay-scroll.js';
 import { findShellControl } from './shell-ownership.js';
 
 const outerShell = '.cm-admin-shell, .cm-admin-layout';
@@ -7,6 +8,7 @@ const openAttribute = 'data-cm-mobile-sidebar-open';
 const drawerStart = '--cm-admin-layout-drawer-start';
 const drawerSize = '--cm-admin-layout-drawer-size';
 const stickyStart = '--cm-admin-layout-sticky-start';
+const scrollableOverflow = /^(auto|scroll|overlay)$/u;
 
 export function observeAdminLayoutGeometry(root: Element): () => void {
   const view = root.ownerDocument.defaultView;
@@ -31,7 +33,25 @@ export function observeAdminLayoutGeometry(root: Element): () => void {
   let overlayOpen = false;
   let ownsInert = false;
   let ownsDrawerTabIndex = false;
+  let scrollLocks: (() => void)[] = [];
+  const containWheel = (event: WheelEvent) => {
+    if (event.ctrlKey || !event.deltaY || !(event.target instanceof view.Element)) return;
+    for (
+      let element: Element | null = event.target;
+      element && drawer.contains(element);
+      element = element.parentElement
+    ) {
+      const remaining = element.scrollHeight - element.clientHeight - element.scrollTop;
+      const canScroll = event.deltaY < 0 ? element.scrollTop > 0 : remaining > 1;
+      if (canScroll && scrollableOverflow.test(view.getComputedStyle(element).overflowY)) return;
+    }
+    // A wheel gesture can escape a locked iframe when there is no menu content left to scroll.
+    event.preventDefault();
+  };
   const releaseOverlay = () => {
+    root.removeEventListener('wheel', containWheel, true);
+    for (const release of scrollLocks) release();
+    scrollLocks = [];
     if (ownsInert) main.removeAttribute('inert');
     if (ownsDrawerTabIndex) drawer.removeAttribute('tabindex');
     ownsInert = false;
@@ -54,6 +74,18 @@ export function observeAdminLayoutGeometry(root: Element): () => void {
       }
       return;
     }
+    const { body, documentElement, scrollingElement } = ownerDocument;
+    const viewportUsesBodyOverflow = view.getComputedStyle(documentElement).overflowY === 'visible';
+    const scrollports = ancestors.filter(
+      (element) =>
+        element !== main &&
+        element !== documentElement &&
+        element !== scrollingElement &&
+        (element !== body || !viewportUsesBodyOverflow) &&
+        (hasOverlayScrollLock(element) || scrollableOverflow.test(view.getComputedStyle(element).overflowY)),
+    );
+    scrollLocks = [...scrollports, documentElement].map((element) => lockOverlayScroll(element, view));
+    root.addEventListener('wheel', containWheel, { capture: true, passive: false });
     if (main.contains(active) || active === ownerDocument.body) {
       if (!drawer.hasAttribute('tabindex')) {
         drawer.tabIndex = -1;

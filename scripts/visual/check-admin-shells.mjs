@@ -450,7 +450,19 @@ async function checkLayout(page, row, output) {
     row.safeArea ? 30 : 0,
   );
   row.backdropPoint = backdropPoint;
+  const checkWheel = row.width === 320 && row.header === 64 && row.zoom === 1 && row.theme === 'light';
   if (backdropPoint) {
+    if (checkWheel) {
+      await page.mouse.move(backdropPoint.x, backdropPoint.y);
+      await page.mouse.wheel(0, 180);
+      await settle(page);
+      const wheel = await measure();
+      verify(
+        row,
+        'wheel over the backdrop keeps the background still',
+        wheel.scrollTop === row.pointerOpened.scrollTop,
+      );
+    }
     await page.evaluate(() => {
       window.fixtureBackdropClick = null;
       document.addEventListener(
@@ -482,6 +494,20 @@ async function checkLayout(page, row, output) {
       row.backdropClosed.open === 'false' &&
       row.backdropClosed.focus.toggle,
   );
+  if (backdropPoint && checkWheel) {
+    await page.mouse.wheel(0, 180);
+    const scrolled = await page
+      .waitForFunction(
+        (before) => (document.querySelector('.fixture-scroll') ?? document.scrollingElement).scrollTop > before,
+        row.backdropClosed.scrollTop,
+        { timeout: 1000 },
+      )
+      .then(
+        () => true,
+        () => false,
+      );
+    verify(row, 'wheel scrolls the background again after closing', scrolled);
+  }
 }
 
 async function runMatrix() {

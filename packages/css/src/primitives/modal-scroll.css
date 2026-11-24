@@ -1,7 +1,8 @@
-:root[data-cm-modal-scroll] {
-  overflow: hidden;
+[data-cm-modal-scroll] {
+  overflow: hidden !important;
+  overscroll-behavior: contain;
 }
 
-:root[data-cm-modal-scroll='gutter'] {
-  scrollbar-gutter: stable;
+[data-cm-modal-scroll='gutter'] {
+  scrollbar-gutter: stable !important;
 }
