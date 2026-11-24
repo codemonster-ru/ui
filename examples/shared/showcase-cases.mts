@@ -245,7 +245,18 @@ function adaptContracts(source: ShowcaseCase[]) {
       case 'textarea-invalid':
         return { ...fixture, props: { ...fixture.props, value: 'First line\nSecond line' } };
       case 'select-selected':
-        return { ...fixture, props: { ...fixture.props, size: 'md' } };
+        return {
+          ...fixture,
+          props: {
+            ...fixture.props,
+            size: 'md',
+            options: [
+              { value: 'draft', label: 'Draft' },
+              { value: 'published', label: 'Published' },
+              { value: 'archived', label: 'Archived', disabled: true },
+            ],
+          },
+        };
       case 'switch-default':
       case 'switch-disabled':
       case 'switch-checked':

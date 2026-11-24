@@ -36,6 +36,7 @@ import {
 import { drawerExampleGroups, type DemoContent, type DemoNode, type ShowcaseExample } from './showcase-cases.mts';
 import {
   handleShowcaseDemoClick,
+  isShowcaseValueValid,
   modalExamples,
   scopeShowcaseAttribute,
   showcaseDemoClass,
@@ -237,22 +238,47 @@ const Example = defineComponent({
         ...example.props,
         ...example.attributes,
         ...(fieldError ? { id: controlId, 'aria-describedby': `${controlId}-error` } : {}),
+        ...(fieldError && ['select', 'date-picker'].includes(example.slug)
+          ? { name: example.attributes?.name ?? example.props.name ?? 'value' }
+          : {}),
       },
       slots: example.slots,
     };
     const contactMethod = example.id === 'fieldset-help-error' ? ref<string>() : undefined;
     const { props, render } = prepareComponent(node, prefix, options, contactMethod);
+    const fieldSlot = example.id === 'field-help-error' ? example.slots.default : undefined;
+    const fieldInput =
+      typeof fieldSlot === 'object' && !Array.isArray(fieldSlot)
+        ? prepareComponent(fieldSlot, prefix, options)
+        : undefined;
+    const validationProps = fieldInput?.props ?? props;
+    const validationSlug = fieldInput ? 'input' : example.slug;
+    const validationError = fieldInput ? String(props.error) : fieldError;
     const mixedCheckbox = example.id === 'checkbox-default--invalid-indeterminate';
-    if (mixedCheckbox) {
-      props['onUpdate:modelValue'] = (checked: boolean) => {
-        props.modelValue = checked;
-        props.indeterminate = false;
+    const initialValue = validationProps.modelValue;
+    const errorReference = validationProps['aria-describedby'];
+    const updateValidation = (invalid: boolean) => {
+      validationProps.invalid = invalid;
+      validationProps['aria-describedby'] = invalid
+        ? errorReference
+        : fieldInput
+          ? `${props.controlId}-description`
+          : undefined;
+      if (fieldInput) props.error = invalid ? validationError : null;
+    };
+    if (validationError) {
+      validationProps['onUpdate:modelValue'] = (value: unknown) => {
+        validationProps.modelValue = value;
+        updateValidation(!isShowcaseValueValid(validationSlug, value));
+        if (mixedCheckbox) props.indeterminate = false;
       };
     }
-    const resetMixedCheckbox = ({ currentTarget }: MouseEvent) => {
-      props.modelValue = false;
-      props.indeterminate = true;
-      if (currentTarget instanceof HTMLElement) currentTarget.ownerDocument.getElementById(String(props.id))?.focus();
+    const resetField = ({ currentTarget }: Event) => {
+      validationProps.modelValue = initialValue;
+      updateValidation(true);
+      if (mixedCheckbox) props.indeterminate = true;
+      if (currentTarget instanceof HTMLFormElement)
+        currentTarget.ownerDocument.getElementById(String(validationProps.id))?.focus();
     };
     const skeletonGate = example.slug === 'skeleton-gate';
     if (skeletonGate) props.id = `${prefix}-gate`;
@@ -268,63 +294,84 @@ const Example = defineComponent({
       props.invalid = invalid;
       props.error = invalid ? example.props.error : null;
     };
-    const renderContent = contactMethod
-      ? () =>
-          h(
+    const renderContent =
+      contactMethod || example.id === 'fieldset-invalid'
+        ? () =>
+            h(
+              components.CmStack,
+              {
+                as: 'form',
+                onReset: ({ currentTarget }: Event) => {
+                  if (contactMethod) contactMethod.value = undefined;
+                  setFieldsetInvalid(true);
+                  if (currentTarget instanceof HTMLFormElement)
+                    currentTarget.querySelector<HTMLInputElement>('input')?.focus();
+                },
+              },
+              () => [
+                render(),
+                h(components.CmInline, () =>
+                  h(components.CmButton, { type: 'reset', variant: 'secondary', size: 'sm' }, () => 'Reset'),
+                ),
+              ],
+            )
+        : chooserWithTable
+          ? () =>
+              h(components.CmStack, () => [
+                h(components.CmInline, () => render()),
+                h(components.CmDataTable, {
+                  id: `${prefix}-projects`,
+                  caption: 'Projects',
+                  columns: props.columns as components.CmDataTableColumn[],
+                  visibleColumnKeys: props.visibleColumnKeys as string[] | undefined,
+                  rows: [
+                    { id: 'atlas', cells: { name: 'Atlas', owner: 'Ada', size: '4 MB' } },
+                    { id: 'beacon', cells: { name: 'Beacon', owner: 'Grace', size: '2 MB' } },
+                  ],
+                }),
+              ])
+          : skeletonGate
+            ? () =>
+                h(components.CmStack, () => [
+                  h(components.CmInline, () =>
+                    h(
+                      components.CmButton,
+                      {
+                        variant: 'secondary',
+                        'aria-controls': props.id,
+                        ...(options.staticPreview ? { 'data-showcase-skeleton-load': '' } : { onClick: loadSkeleton }),
+                      },
+                      () => 'Load invoice',
+                    ),
+                  ),
+                  h(components.CmCard, { element: 'article', compact: true, style: { maxInlineSize: '22rem' } }, () =>
+                    render(),
+                  ),
+                ])
+            : render;
+    const renderExample = () =>
+      validationError
+        ? h(
             components.CmStack,
             {
               as: 'form',
-              onReset: ({ currentTarget }: Event) => {
-                contactMethod.value = undefined;
-                setFieldsetInvalid(true);
-                if (currentTarget instanceof HTMLFormElement)
-                  currentTarget.querySelector<HTMLInputElement>('input[type="radio"][value="email"]')?.focus();
-              },
+              'data-showcase-validation': validationSlug,
+              onReset: resetField,
+              onSubmit: (event: Event) => event.preventDefault(),
             },
             () => [
-              render(),
+              fieldInput
+                ? h(components.CmField, props, fieldInput.render)
+                : h(
+                    components.CmField,
+                    { controlId: String(props.id), error: props.invalid ? fieldError : undefined },
+                    renderContent,
+                  ),
               h(components.CmInline, () =>
                 h(components.CmButton, { type: 'reset', variant: 'secondary', size: 'sm' }, () => 'Reset'),
               ),
             ],
           )
-      : chooserWithTable
-        ? () =>
-            h(components.CmStack, () => [
-              h(components.CmInline, () => render()),
-              h(components.CmDataTable, {
-                id: `${prefix}-projects`,
-                caption: 'Projects',
-                columns: props.columns as components.CmDataTableColumn[],
-                visibleColumnKeys: props.visibleColumnKeys as string[] | undefined,
-                rows: [
-                  { id: 'atlas', cells: { name: 'Atlas', owner: 'Ada', size: '4 MB' } },
-                  { id: 'beacon', cells: { name: 'Beacon', owner: 'Grace', size: '2 MB' } },
-                ],
-              }),
-            ])
-        : skeletonGate
-          ? () =>
-              h(components.CmStack, () => [
-                h(components.CmInline, () =>
-                  h(
-                    components.CmButton,
-                    {
-                      variant: 'secondary',
-                      'aria-controls': props.id,
-                      ...(options.staticPreview ? { 'data-showcase-skeleton-load': '' } : { onClick: loadSkeleton }),
-                    },
-                    () => 'Load invoice',
-                  ),
-                ),
-                h(components.CmCard, { element: 'article', compact: true, style: { maxInlineSize: '22rem' } }, () =>
-                  render(),
-                ),
-              ])
-          : render;
-    const renderExample = () =>
-      fieldError
-        ? h(components.CmField, { controlId: String(props.id), error: fieldError }, renderContent)
         : renderContent();
     const modal = modalExamples.has(example.slug);
     const title = showcaseComponentTitle(example.slug);
@@ -361,25 +408,7 @@ const Example = defineComponent({
                 () => example.label,
               )
             : null,
-          mixedCheckbox
-            ? h(components.CmStack, () => [
-                renderExample(),
-                h(components.CmInline, () =>
-                  h(
-                    components.CmButton,
-                    {
-                      type: 'button',
-                      variant: 'secondary',
-                      size: 'sm',
-                      ...(options.staticPreview
-                        ? { 'data-showcase-checkbox-reset': '' }
-                        : { onClick: resetMixedCheckbox }),
-                    },
-                    () => 'Reset',
-                  ),
-                ),
-              ])
-            : renderExample(),
+          renderExample(),
         ],
       );
     return () => (example.buttonStyle || modal ? demo() : renderVariant(example.label, demo, { id }, heading));

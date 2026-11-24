@@ -48,15 +48,22 @@ export function scopeShowcaseAttribute(name, value, prefix) {
   return value.replace(/url\(#([^)]+)\)/gu, (_, id) => `url(#${prefix}-${id})`);
 }
 
+export function isShowcaseValueValid(slug, value) {
+  if (slug === 'checkbox' || slug === 'switch') return value === true;
+  if (typeof value !== 'string' || !value.trim()) return false;
+  if (slug === 'textarea')
+    return (
+      value
+        .trim()
+        .split(/\r?\n/u)
+        .filter((line) => line.trim()).length >= 3
+    );
+  if (slug === 'select') return value !== 'draft';
+  return true;
+}
+
 export function handleShowcaseDemoClick(demo, event) {
   if (!(event.target instanceof Element)) return;
-  if (event.target.closest('[data-showcase-checkbox-reset]')) {
-    const input = demo.querySelector('.cm-checkbox__input');
-    input.checked = input.defaultChecked;
-    input.indeterminate = true;
-    input.focus();
-    return;
-  }
   if (event.target.closest('[data-showcase-skeleton-load]')) {
     const gate = demo.querySelector('.cm-skeleton-gate');
     if (gate.hasAttribute('aria-busy')) return;

@@ -4,7 +4,7 @@ import { createRuntime } from './runtime.js';
 import { fillContrastTable } from './showcase-reference.js';
 import { copyIcon, filterIcons } from './showcase-icon-catalog.js';
 import { revealShowcaseLink } from './showcase-navigation.js';
-import { handleShowcaseDemoClick, selectShowcaseNavItem } from './showcase-inline.mjs';
+import { handleShowcaseDemoClick, isShowcaseValueValid, selectShowcaseNavItem } from './showcase-inline.mjs';
 
 document.getElementById('showcase-navigation')?.addEventListener('focusin', revealShowcaseLink);
 
@@ -40,6 +40,45 @@ if (columnChooserExample) {
   });
 }
 
+for (const form of catalog.querySelectorAll('form[data-showcase-validation]')) {
+  const field = form.querySelector('.cm-field');
+  const control = field.querySelector('[aria-invalid="true"]');
+  const error = field.querySelector('.cm-field__error');
+  const submittedValue = field.querySelector('input[type="hidden"]');
+  const choice = control.matches('input[type="checkbox"], input[type="radio"]');
+  const mixed = control.indeterminate;
+  const describedBy = control.getAttribute('aria-describedby')?.split(/\s+/u) ?? [];
+  const root = control.closest('.cm-checkbox, .cm-radio, .cm-switch') ?? control;
+  const invalidClass = `cm-${form.dataset.showcaseValidation}--invalid`;
+
+  const setInvalid = (invalid) => {
+    field.classList.toggle('cm-field--invalid', invalid);
+    error.hidden = !invalid;
+    root.classList.toggle(invalidClass, invalid);
+    if (invalid) control.setAttribute('aria-invalid', 'true');
+    else control.removeAttribute('aria-invalid');
+    const references = describedBy.filter((id) => invalid || id !== error.id);
+    if (references.length) control.setAttribute('aria-describedby', references.join(' '));
+    else control.removeAttribute('aria-describedby');
+  };
+  const validate = ({ target }) => {
+    if (target !== control) return;
+    const value = choice && control.type === 'checkbox' ? control.checked : (submittedValue ?? control).value;
+    setInvalid(!isShowcaseValueValid(form.dataset.showcaseValidation, value));
+  };
+  form.addEventListener('input', validate);
+  form.addEventListener('change', validate);
+  form.addEventListener('submit', (event) => event.preventDefault());
+  form.addEventListener('reset', () => {
+    setInvalid(true);
+    if (mixed)
+      queueMicrotask(() => {
+        control.indeterminate = true;
+      });
+    control.focus();
+  });
+}
+
 for (const invalidFieldset of catalog.querySelectorAll(
   ':is([data-showcase-example="fieldset-invalid"], [data-showcase-example="fieldset-help-error"]) .cm-fieldset',
 )) {
@@ -57,7 +96,7 @@ for (const invalidFieldset of catalog.querySelectorAll(
   invalidFieldset.addEventListener('change', ({ target }) => setInvalid(!target.checked));
   invalidFieldset.closest('form')?.addEventListener('reset', () => {
     setInvalid(true);
-    invalidFieldset.querySelector('input[type="radio"][value="email"]')?.focus();
+    invalidFieldset.querySelector('input')?.focus();
   });
 }
 
