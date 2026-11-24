@@ -90,6 +90,85 @@
   grid-template-columns: minmax(0, 1fr) minmax(6rem, 8rem);
 }
 
+.layout-example__warehouse .cm-admin-shell__header-actions {
+  margin-inline-start: auto;
+}
+
+.layout-example__warehouse,
+.layout-example__warehouse .cm-admin-shell__topbar {
+  background: light-dark(
+    var(--cm-color-background-inverse),
+    color-mix(in srgb, var(--cm-color-background-canvas) 75%, black)
+  );
+}
+
+.layout-example__warehouse .cm-admin-shell__topbar {
+  min-block-size: var(--cm-layout-header-height);
+  padding-inline: var(--cm-space-4);
+  color: light-dark(var(--cm-color-text-inverse), var(--cm-color-text-primary));
+}
+
+.layout-example__warehouse,
+#warehouse-drawer {
+  font-family: system-ui, sans-serif;
+}
+
+.layout-example__warehouse .cm-admin-shell__body::before {
+  position: absolute;
+  z-index: 1;
+  inset-block-start: 0;
+  inset-inline: 0;
+  block-size: var(--cm-radius-surface);
+  border: var(--cm-border-width) solid var(--cm-color-border-default);
+  border-block-end: 0;
+  border-start-start-radius: var(--cm-radius-surface);
+  border-start-end-radius: var(--cm-radius-surface);
+  pointer-events: none;
+  content: '';
+}
+
+.layout-example__warehouse .cm-admin-shell__workspace {
+  margin-block: var(--cm-space-4);
+  margin-inline-end: var(--cm-space-4);
+}
+
+.layout-example__warehouse .cm-admin-shell__content {
+  padding: var(--cm-space-4);
+}
+
+.layout-example__warehouse [data-warehouse-navigation-toggle] {
+  color: inherit;
+}
+
+.layout-example__warehouse [data-warehouse-navigation-toggle]:is(:hover, :active) {
+  background: color-mix(in srgb, currentcolor 14%, transparent);
+}
+
+.layout-example__warehouse:not([data-warehouse-mobile]) [data-warehouse-navigation-toggle],
+.layout-example__warehouse[data-warehouse-mobile] .cm-admin-shell__sidebar {
+  display: none;
+}
+
+.layout-example__warehouse[data-warehouse-mobile] .cm-admin-shell__workspace {
+  margin-inline-start: 0;
+}
+
+@media (width < 30rem) {
+  .layout-example__warehouse[data-warehouse-mobile] .cm-admin-shell__workspace {
+    margin-inline-start: var(--cm-space-4);
+  }
+}
+
+#warehouse-drawer {
+  border-inline-end-color: light-dark(var(--cm-palette-neutral-400), var(--cm-palette-neutral-500));
+}
+
+#warehouse-drawer .cm-drawer__title {
+  font-size: var(--cm-font-size-xl);
+  font-weight: var(--cm-font-weight-regular);
+  line-height: var(--cm-line-height-normal);
+}
+
 .layout-example__region p {
   margin: 0;
   color: var(--cm-color-text-secondary);

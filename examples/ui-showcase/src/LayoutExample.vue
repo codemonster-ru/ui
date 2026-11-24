@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { bars } from '@codemonster-ru/ui-icons';
+import { cmBreakpoints } from '@codemonster-ru/ui-tokens';
 import annabelLogoAsset from '../../shared/annabel-logo-icon.svg';
 import {
   columns,
@@ -31,6 +32,7 @@ import {
   CmAvatar,
   CmCheckbox,
   CmContainer,
+  CmDrawer,
   CmField,
   CmIcon,
   CmIconButton,
@@ -64,6 +66,44 @@ const flags = ref({ 'app-shell': makeRegionFlags(), 'document-layout': makeRegio
 const adminNav = ref('dashboard');
 const warehouseBranches = ref<readonly string[]>(['commerce']);
 const shellNav = ref('warehouse-availability');
+const warehouseMobile = ref(false);
+const warehouseDrawerOpen = ref(false);
+let warehouseMobileQuery: MediaQueryList | undefined;
+
+function syncWarehouseNavigation({ matches }: { matches: boolean }) {
+  if (matches === warehouseMobile.value) return;
+  const trigger = document.getElementById('warehouse-navigation-toggle');
+  const navigation = document.getElementById('warehouse-navigation');
+  const focused = document.activeElement;
+  const restoreFocus =
+    document.hasFocus() && (warehouseDrawerOpen.value || focused === trigger || navigation?.contains(focused));
+  warehouseMobile.value = matches;
+  if (!matches) warehouseDrawerOpen.value = false;
+  if (restoreFocus) {
+    void nextTick(() => {
+      const current = navigation?.querySelector<HTMLElement>('[aria-current="page"]');
+      const desktopTarget =
+        current?.getClientRects().length && getComputedStyle(current).visibility === 'visible'
+          ? current
+          : navigation?.querySelector('button');
+      (matches ? trigger : desktopTarget)?.focus({ preventScroll: true });
+    });
+  }
+}
+
+function openWarehouseNavigation(event: MouseEvent) {
+  (event.currentTarget as HTMLButtonElement).focus({ preventScroll: true });
+  warehouseDrawerOpen.value = true;
+}
+
+onMounted(() => {
+  if (slug !== 'admin-shell') return;
+  warehouseMobileQuery = window.matchMedia(`(width < ${cmBreakpoints.lg}px)`);
+  syncWarehouseNavigation(warehouseMobileQuery);
+  warehouseMobileQuery.addEventListener('change', syncWarehouseNavigation);
+});
+onBeforeUnmount(() => warehouseMobileQuery?.removeEventListener('change', syncWarehouseNavigation));
+
 const warehouseQuery = ref('');
 const matchingProducts = computed(() =>
   rows.filter(({ cells }) => matchesWarehouseFilter(Object.values(cells), warehouseQuery.value)),
@@ -198,39 +238,76 @@ function setMode(value: string) {
     </CmStack>
     <template #footer>Inventory workspace</template>
   </CmAdminLayout>
-  <CmAdminShell v-else-if="slug === 'admin-shell'" :fill-viewport="false">
-    <template #brand>
-      <CmInline :wrap="false"
-        ><img :src="annabelLogo" alt="" width="24" height="24" /><strong>Annabel</strong></CmInline
-      ></template
+  <template v-else-if="slug === 'admin-shell'">
+    <CmAdminShell
+      class="layout-example__warehouse"
+      :data-warehouse-mobile="warehouseMobile ? '' : undefined"
+      :fill-viewport="false"
     >
-    <template #headerActions><CmAvatar label="AK" shape="circle" aria-label="User profile" /></template>
-    <template #sidebar
-      ><CmNavMenu
-        v-model:value="shellNav"
-        v-model:expanded-values="warehouseBranches"
-        :items="warehouseNavigation"
-        aria-label="Admin shell navigation"
-    /></template>
-    <CmStack>
-      <CmField v-slot="{ controlId }" control-id="warehouse-filter" :label="warehouseFilterLabel">
-        <CmInput :id="controlId" v-model="warehouseQuery" type="search" aria-controls="showcase-warehouse" />
-      </CmField>
-      <CmDataTable
-        id="showcase-warehouse"
-        v-scrollable-table="warehouseTableCaption"
-        :caption="warehouseTableCaption"
-        :columns="columns"
-        :rows="matchingProducts"
-        column-dividers
-        :empty-text="warehouseEmptyText"
-      >
-        <template #cellStatus="{ value }">
-          <CmTag :tone="warehouseStockTones[value as keyof typeof warehouseStockTones]">{{ value }}</CmTag>
-        </template>
-      </CmDataTable>
-    </CmStack>
-  </CmAdminShell>
+      <template #brand>
+        <CmInline :wrap="false">
+          <CmIconButton
+            id="warehouse-navigation-toggle"
+            :data-warehouse-navigation-toggle="cmBreakpoints.lg"
+            variant="ghost"
+            label="Open navigation"
+            aria-haspopup="dialog"
+            aria-controls="warehouse-drawer"
+            :aria-expanded="warehouseDrawerOpen"
+            @click="openWarehouseNavigation"
+          >
+            <CmIcon :icon="bars" />
+          </CmIconButton>
+          <CmInline :wrap="false">
+            <img :src="annabelLogo" alt="" width="24" height="24" />
+            <strong>Annabel</strong>
+          </CmInline>
+        </CmInline>
+      </template>
+      <template #headerActions><CmAvatar label="AK" shape="circle" aria-label="User profile" /></template>
+      <template #sidebar>
+        <Teleport to="#warehouse-drawer-navigation" :disabled="!warehouseMobile" defer>
+          <CmNavMenu
+            id="warehouse-navigation"
+            v-model:value="shellNav"
+            v-model:expanded-values="warehouseBranches"
+            :items="warehouseNavigation"
+            aria-label="Admin shell navigation"
+            @select="warehouseDrawerOpen = false"
+          />
+        </Teleport>
+      </template>
+      <CmStack>
+        <CmField v-slot="{ controlId }" control-id="warehouse-filter" :label="warehouseFilterLabel">
+          <CmInput :id="controlId" v-model="warehouseQuery" type="search" aria-controls="showcase-warehouse" />
+        </CmField>
+        <CmDataTable
+          id="showcase-warehouse"
+          v-scrollable-table="warehouseTableCaption"
+          :caption="warehouseTableCaption"
+          :columns="columns"
+          :rows="matchingProducts"
+          column-dividers
+          :empty-text="warehouseEmptyText"
+        >
+          <template #cellStatus="{ value }">
+            <CmTag :tone="warehouseStockTones[value as keyof typeof warehouseStockTones]">{{ value }}</CmTag>
+          </template>
+        </CmDataTable>
+      </CmStack>
+    </CmAdminShell>
+    <CmDrawer
+      id="warehouse"
+      v-model:open="warehouseDrawerOpen"
+      title="Navigation"
+      side="left"
+      size="sm"
+      dividers
+      close-on-overlay-click
+    >
+      <div id="warehouse-drawer-navigation"></div>
+    </CmDrawer>
+  </template>
   <CmSetupLayout
     v-else-if="slug === 'setup-layout'"
     class="layout-example__setup"

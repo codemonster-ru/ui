@@ -1214,6 +1214,33 @@ async function checkWarehouse(page, base, adapter) {
   await example.getByRole('radio', { name: 'min · 320 px' }).press('Space');
   await expectPreviewWidth(preview, 320);
   assert.equal(await available.count(), 7, `${adapter}: warehouse data survives reflow`);
+  const sidebar = frame.locator('.cm-admin-shell__sidebar');
+  await sidebar.waitFor({ state: 'hidden' });
+  const toggle = frame.getByRole('button', { name: 'Open navigation' });
+  const drawer = frame.getByRole('dialog', { name: 'Navigation', exact: true });
+  await toggle.press('Enter');
+  await drawer.locator(':scope:modal').waitFor();
+  await drawer.getByRole('button', { name: 'Close', exact: true }).press('Escape');
+  await drawer.waitFor({ state: 'hidden' });
+  assert(await toggle.evaluate((element) => document.activeElement === element));
+  await toggle.click();
+  await drawer.getByRole('button', { name: 'Inventory management' }).click();
+  await drawer.waitFor({ state: 'hidden' });
+  await example.getByRole('radio', { name: 'md · 768 px', exact: true }).press('Space');
+  await expectPreviewWidth(preview, 768);
+  await toggle.click();
+  await drawer.getByRole('button', { name: 'Inventory management' }).waitFor();
+  await example.getByRole('radio', { name: 'lg · 1024 px', exact: true }).press('Space');
+  await expectPreviewWidth(preview, 1024);
+  await drawer.waitFor({ state: 'hidden' });
+  await sidebar.waitFor();
+  assert.equal(
+    await navigation.getByRole('button', { name: 'Inventory management' }).getAttribute('aria-current'),
+    'page',
+  );
+  assert.equal(await toggle.count(), 0, `${adapter}: the navigation trigger hides on desktop`);
+  await example.getByRole('radio', { name: 'min · 320 px' }).press('Space');
+  await expectPreviewWidth(preview, 320);
   assert(
     await scrollArea.evaluate((area) => area.scrollWidth > area.clientWidth),
     `${adapter}: the five-column warehouse table scrolls at 320 px`,
