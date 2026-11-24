@@ -1,5 +1,6 @@
 import { createApp, type Component } from 'vue';
 import { layoutExamples } from '../../shared/showcase-layout-data.mts';
+import { fitWarehousePreview } from '../../shared/showcase-layout-recipes.js';
 import { followShowcaseFrameTheme } from '../../shared/showcase-theme.js';
 import '@codemonster-ru/ui-tokens/tokens.css';
 import '@codemonster-ru/ui-css/fonts.css';
@@ -14,3 +15,4 @@ if (!example) throw new Error('Unknown showcase layout.');
 document.title = example.title;
 followShowcaseFrameTheme(() => {});
 createApp(LayoutExample as Component, { slug: example.slug }).mount('#app');
+if (example.slug === 'admin-shell') fitWarehousePreview(document);

@@ -1,6 +1,6 @@
 import { followShowcaseFrameTheme } from './showcase-theme.js';
 import { createRuntime } from './runtime.js';
-import { mountWarehouseFilter } from './showcase-layout-recipes.js';
+import { fitWarehousePreview, mountWarehousePagination } from './showcase-layout-recipes.js';
 import { selectShowcaseNavItem } from './showcase-inline.mjs';
 
 const root = document.querySelector('[data-layout-example]');
@@ -11,7 +11,7 @@ const form = root.querySelector('[data-layout-auth]');
 
 followShowcaseFrameTheme(() => {});
 createRuntime().start(root);
-mountWarehouseFilter(root);
+mountWarehousePagination(root);
 
 root.addEventListener('click', ({ target }) => {
   if (!setup) selectShowcaseNavItem(target.closest('[data-cm-nav-menu-value]'));
@@ -56,6 +56,7 @@ if (slug === 'admin-shell') {
   });
   syncWarehouseNavigation(mobile);
   mobile.addEventListener('change', syncWarehouseNavigation);
+  fitWarehousePreview(root);
 }
 
 if (shell) {

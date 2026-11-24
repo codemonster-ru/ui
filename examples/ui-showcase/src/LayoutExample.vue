@@ -12,10 +12,7 @@ import {
   shellTabs,
   rows,
   steps,
-  warehouseEmptyText,
-  warehouseFilterLabel,
   warehouseNavigation,
-  warehouseStockTones,
   warehouseTableCaption,
   initialSetupStep,
 } from '../../shared/showcase-layout-data.mts';
@@ -40,7 +37,6 @@ import {
   CmSwitch,
   CmButton,
   CmCard,
-  CmDataTable,
   CmInput,
   CmInline,
   CmLink,
@@ -49,9 +45,9 @@ import {
   CmTabs,
   CmTag,
 } from '@codemonster-ru/ui-vue';
+import { VfDataTable } from '@codemonster-ru/ui-vue/historical';
 import logoAsset from '../../shared/vueforge-logo-icon.svg';
 import { vScrollableTable } from './scrollable-table';
-import { matchesWarehouseFilter } from '../../shared/showcase-layout-recipes.js';
 
 const { slug, staticPreview } = defineProps<{ slug: LayoutExampleSlug; staticPreview?: boolean }>();
 const annabelLogo = staticPreview ? './annabel-logo-icon.svg' : annabelLogoAsset;
@@ -104,10 +100,7 @@ onMounted(() => {
 });
 onBeforeUnmount(() => warehouseMobileQuery?.removeEventListener('change', syncWarehouseNavigation));
 
-const warehouseQuery = ref('');
-const matchingProducts = computed(() =>
-  rows.filter(({ cells }) => matchesWarehouseFilter(Object.values(cells), warehouseQuery.value)),
-);
+const warehouseRows = rows.map(({ id, cells }) => ({ id, ...cells }));
 const step = ref(initialSetupStep);
 const stepIndex = computed(() => steps.findIndex(({ value }) => value === step.value));
 const acceptedLicense = ref(false);
@@ -278,22 +271,21 @@ function setMode(value: string) {
         </Teleport>
       </template>
       <CmStack>
-        <CmField v-slot="{ controlId }" control-id="warehouse-filter" :label="warehouseFilterLabel">
-          <CmInput :id="controlId" v-model="warehouseQuery" type="search" aria-controls="showcase-warehouse" />
-        </CmField>
-        <CmDataTable
+        <h3 class="layout-example__warehouse-title">{{ warehouseTableCaption }}</h3>
+        <VfDataTable
           id="showcase-warehouse"
           v-scrollable-table="warehouseTableCaption"
           :caption="warehouseTableCaption"
           :columns="columns"
-          :rows="matchingProducts"
+          :rows="warehouseRows"
+          row-key="id"
           column-dividers
-          :empty-text="warehouseEmptyText"
-        >
-          <template #cellStatus="{ value }">
-            <CmTag :tone="warehouseStockTones[value as keyof typeof warehouseStockTones]">{{ value }}</CmTag>
-          </template>
-        </CmDataTable>
+          sorting-mode="manual"
+          pagination
+          :pagination-mode="staticPreview ? 'manual' : 'client'"
+          :default-page-size="5"
+          :page-size-options="[5, 10]"
+        />
       </CmStack>
     </CmAdminShell>
     <CmDrawer

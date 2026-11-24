@@ -20,26 +20,72 @@ export function mountLayoutRecipes(root) {
   return () => window.removeEventListener('resize', resize);
 }
 
-/** @param {readonly (string | number)[]} cells @param {string} query */
-export function matchesWarehouseFilter(cells, query) {
-  const needle = query.trim().toLowerCase();
-  return !needle || cells.some((cell) => String(cell).toLowerCase().includes(needle));
+/** @param {HTMLElement | Document} root */
+export function fitWarehousePreview(root) {
+  const shell = root.querySelector('.layout-example__warehouse');
+  const frame = window.frameElement;
+  if (!shell || !frame?.matches('iframe.layout-preview__frame')) return;
+
+  const observer = new ResizeObserver(() => {
+    const height = Math.ceil(shell.getBoundingClientRect().height);
+    if (height > 0 && frame.style.blockSize !== `${height}px`) {
+      frame.style.blockSize = `${height}px`;
+    }
+  });
+  observer.observe(shell, { box: 'border-box' });
 }
 
 /** @param {HTMLElement} root */
-export function mountWarehouseFilter(root) {
+export function mountWarehousePagination(root) {
   const table = root.querySelector('#showcase-warehouse');
   if (!table) return;
-  const filter = root.querySelector('#warehouse-filter');
-  const empty = table.querySelector('[data-warehouse-empty]');
-  const rows = [...table.querySelectorAll('[data-cm-data-table-row]')];
-  filter.addEventListener('input', () => {
-    for (const row of rows) {
-      row.hidden = !matchesWarehouseFilter(
-        Array.from(row.cells, (cell) => cell.textContent.trim()),
-        filter.value,
-      );
+  const body = table.querySelector('tbody');
+  const rows = [...body.rows];
+  const pages = [...table.querySelectorAll('.cm-data-table__pagination-page')];
+  const previous = table.querySelector('[data-cm-data-table-page-action="previous"]');
+  const next = table.querySelector('[data-cm-data-table-page-action="next"]');
+  let focusedArrow;
+
+  function updatePage() {
+    const page = Number(table.dataset.cmDataTablePage);
+    const pageCount = Number(table.dataset.cmDataTablePageCount);
+    const size = Number(table.dataset.cmDataTablePageSize);
+    const start = (page - 1) * size;
+    const pageRows = rows.slice(start, start + size);
+    // The table adds a divider after a preceding row even when that row is hidden.
+    for (const row of pageRows) row.hidden = false;
+    body.replaceChildren(...pageRows);
+    pages.forEach((button, index) => {
+      const number = index + 1;
+      button.hidden = number > pageCount;
+      if (number === page) button.setAttribute('aria-current', 'page');
+      else button.removeAttribute('aria-current');
+      button.setAttribute('aria-label', number === page ? `Page ${page} of ${pageCount}` : `Go to page ${number}`);
+    });
+    if (
+      focusedArrow?.disabled &&
+      (document.activeElement === focusedArrow || document.activeElement === document.body)
+    ) {
+      pages[page - 1]?.focus();
     }
-    empty.hidden = rows.some((row) => !row.hidden);
-  });
+    focusedArrow = undefined;
+  }
+
+  table.addEventListener('cm:data-table-page-change', updatePage);
+  table.addEventListener('cm:data-table-page-size-change', updatePage);
+  table.addEventListener(
+    'click',
+    ({ target }) => {
+      const arrow = target.closest('[data-cm-data-table-page-action]');
+      focusedArrow = arrow === document.activeElement ? arrow : undefined;
+
+      const number = pages.indexOf(target.closest('.cm-data-table__pagination-page')) + 1;
+      if (!number) return;
+      const page = Number(table.dataset.cmDataTablePage);
+      // The warehouse demo has at most two pages. Use the table's adjacent page actions.
+      if (number === page + 1) next.click();
+      if (number === page - 1) previous.click();
+    },
+    true,
+  );
 }

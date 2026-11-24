@@ -1185,47 +1185,93 @@ async function checkWarehouse(page, base, adapter) {
   const available = table.locator('tbody tr:visible td:nth-child(4)');
   await table.waitFor();
   assert.equal(await table.locator('[data-cm-data-table-sort], [aria-sort]').count(), 0);
-  assert.equal(await frame.locator('.cm-data-table__pagination').count(), 0);
   assert.equal(await scrollArea.getAttribute('tabindex'), '0', `${adapter}: the table viewport is keyboard focusable`);
   assert.equal(await header.evaluate((cell) => getComputedStyle(cell).textAlign), 'end');
-  assert.deepEqual(await available.allTextContents(), ['24', '0', '7', '31', '16', '4', '12']);
+  const firstPage = ['24', '0', '7', '31', '16'];
+  const secondPage = ['4', '12'];
+  assert.deepEqual(await available.allTextContents(), firstPage);
   assert.equal(await available.first().evaluate((cell) => getComputedStyle(cell).textAlign), 'end');
-  assert.deepEqual(await table.locator('tbody .cm-tag--danger:visible').allTextContents(), ['Out of stock']);
-  assert.deepEqual(await table.locator('tbody .cm-tag--warning:visible').allTextContents(), ['Low stock', 'Low stock']);
-
-  const filter = frame.getByRole('searchbox', { name: 'Filter inventory' });
-  await filter.fill('NORTH');
-  assert.deepEqual(
-    await available.allTextContents(),
-    ['24', '7', '12'],
-    `${adapter}: filtering searches the inventory`,
+  const pagination = frame.getByRole('navigation', { name: 'Table pagination' });
+  const currentPage = pagination.locator('[aria-current="page"]');
+  const firstPageHeight = await preview.evaluate((element) => element.contentWindow.innerHeight);
+  assert.equal(await currentPage.getAttribute('aria-label'), 'Page 1 of 2');
+  await pagination.getByRole('button', { name: 'Go to page 2' }).press('Enter');
+  await pagination.getByText('6-7 of 7', { exact: true }).waitFor();
+  assert.deepEqual(await available.allTextContents(), secondPage);
+  assert.equal(await available.first().evaluate((cell) => getComputedStyle(cell).borderBlockStartWidth), '0px');
+  await page.waitForFunction(
+    ({ firstPageHeight }) => {
+      const frame = document.querySelector('#demo-admin-shell iframe');
+      const shell = frame.contentDocument.querySelector('.layout-example__warehouse');
+      const height = frame.contentWindow.innerHeight;
+      return height < firstPageHeight && height === Math.ceil(shell.getBoundingClientRect().height);
+    },
+    { firstPageHeight },
   );
-  assert(await filter.evaluate((control) => control === document.activeElement), `${adapter}: filter focus is stable`);
+  assert.equal(await currentPage.getAttribute('aria-label'), 'Page 2 of 2');
+  await pagination.getByRole('button', { name: 'Previous page' }).press('Enter');
+  await pagination.getByText('1-5 of 7', { exact: true }).waitFor();
+  assert.deepEqual(await available.allTextContents(), firstPage);
+  assert(await currentPage.evaluate((element) => document.activeElement === element));
 
-  await filter.fill('no matching warehouse');
-  await table
-    .getByRole('status')
-    .filter({ hasText: /^No products match your search\.$/u })
-    .waitFor();
-  assert.equal(await available.count(), 0);
-  await filter.fill('');
-  assert.equal(await available.count(), 7, `${adapter}: clearing the filter restores all rows`);
-
-  await example.getByRole('radio', { name: 'min · 320 px' }).press('Space');
-  await expectPreviewWidth(preview, 320);
-  assert.equal(await available.count(), 7, `${adapter}: warehouse data survives reflow`);
   const sidebar = frame.locator('.cm-admin-shell__sidebar');
+  const pageNumbers = async () =>
+    (await pagination.locator('.cm-data-table__pagination-page:visible').allTextContents()).map((text) => text.trim());
+  const pageSize = pagination.getByRole('combobox', { name: 'Rows per page' });
+  const sizeMenu = frame.locator(`[id="${await pageSize.getAttribute('aria-controls')}"]`);
+  for (const [size, expected, numbers] of [
+    ['10', [...firstPage, ...secondPage], ['1']],
+    ['5', firstPage, ['1', '2']],
+  ]) {
+    await pageSize.click();
+    await sizeMenu.getByRole('option', { name: size, exact: true }).click();
+    await pagination.getByText(`1-${expected.length} of 7`, { exact: true }).waitFor();
+    assert.deepEqual(await available.allTextContents(), expected);
+    assert.deepEqual(await pageNumbers(), numbers);
+  }
+
+  await example.getByRole('radio', { name: 'min · 320 px', exact: true }).press('Space');
+  await expectPreviewWidth(preview, 320);
   await sidebar.waitFor({ state: 'hidden' });
   const toggle = frame.getByRole('button', { name: 'Open navigation' });
   const drawer = frame.getByRole('dialog', { name: 'Navigation', exact: true });
   await toggle.press('Enter');
   await drawer.locator(':scope:modal').waitFor();
+  const drawerBounds = await drawer.evaluate(async (element) => {
+    const shell = document.querySelector('.layout-example__warehouse');
+    const shellHeight = () => Math.ceil(shell.getBoundingClientRect().height);
+    for (let attempt = 0; attempt < 20 && innerHeight !== shellHeight(); attempt++) {
+      await new Promise(requestAnimationFrame);
+    }
+    return {
+      drawer: element.getBoundingClientRect().height,
+      frame: innerHeight,
+      shellHeight: shellHeight(),
+      shellWidth: shell.getBoundingClientRect().width,
+    };
+  });
+  assert.equal(drawerBounds.frame, drawerBounds.shellHeight, `${adapter}: the viewport follows the warehouse height`);
+  assert.equal(drawerBounds.drawer, drawerBounds.frame, `${adapter}: the drawer fills the preview`);
+  assert.equal(drawerBounds.shellWidth, 320, `${adapter}: the shell fills the selected width`);
   await drawer.getByRole('button', { name: 'Close', exact: true }).press('Escape');
   await drawer.waitFor({ state: 'hidden' });
   assert(await toggle.evaluate((element) => document.activeElement === element));
   await toggle.click();
   await drawer.getByRole('button', { name: 'Inventory management' }).click();
   await drawer.waitFor({ state: 'hidden' });
+  await example.getByRole('radio', { name: 'sm · 640 px', exact: true }).press('Space');
+  await expectPreviewWidth(preview, 640);
+  const status = table.locator('tbody tr:visible td:last-child');
+  assert(
+    await status.evaluateAll((cells) =>
+      cells.every((cell) => {
+        const range = document.createRange();
+        range.selectNodeContents(cell);
+        return range.getClientRects().length === 1;
+      }),
+    ),
+    `${adapter}: warehouse statuses fit on one line at 640 px`,
+  );
   await example.getByRole('radio', { name: 'md · 768 px', exact: true }).press('Space');
   await expectPreviewWidth(preview, 768);
   await toggle.click();
