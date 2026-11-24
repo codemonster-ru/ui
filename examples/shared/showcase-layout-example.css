@@ -94,17 +94,19 @@
   margin-inline-start: auto;
 }
 
-.layout-example__warehouse,
-.layout-example__warehouse .cm-admin-shell__topbar {
-  background: light-dark(
+.layout-example__warehouse {
+  --warehouse-topbar-background: light-dark(
     var(--cm-color-background-inverse),
     color-mix(in srgb, var(--cm-color-background-canvas) 75%, black)
   );
+
+  background: var(--warehouse-topbar-background);
 }
 
 .layout-example__warehouse .cm-admin-shell__topbar {
   min-block-size: var(--cm-layout-header-height);
   padding-inline: var(--cm-space-4);
+  background: var(--warehouse-topbar-background);
   color: light-dark(var(--cm-color-text-inverse), var(--cm-color-text-primary));
 }
 
@@ -113,16 +115,18 @@
   font-family: system-ui, sans-serif;
 }
 
-.layout-example__warehouse .cm-admin-shell__body::before {
+/* The clipped shadow masks scrolling content outside the rounded corners. */
+.layout-example__warehouse .cm-admin-shell__topbar::after {
   position: absolute;
-  z-index: 1;
-  inset-block-start: 0;
+  inset-block-start: 100%;
   inset-inline: 0;
   block-size: var(--cm-radius-surface);
   border: var(--cm-border-width) solid var(--cm-color-border-default);
   border-block-end: 0;
   border-start-start-radius: var(--cm-radius-surface);
   border-start-end-radius: var(--cm-radius-surface);
+  box-shadow: 0 0 0 var(--cm-radius-surface) var(--warehouse-topbar-background);
+  clip-path: inset(0);
   pointer-events: none;
   content: '';
 }
