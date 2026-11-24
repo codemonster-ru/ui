@@ -1215,8 +1215,33 @@ async function checkWarehouse(page, base, adapter) {
   assert(await currentPage.evaluate((element) => document.activeElement === element));
 
   const sidebar = frame.locator('.cm-admin-shell__sidebar');
+  const workspace = frame.locator('.cm-admin-shell__workspace');
   const pageNumbers = async () =>
     (await pagination.locator('.cm-data-table__pagination-page:visible').allTextContents()).map((text) => text.trim());
+  for (const [name, width, inset] of [
+    ['xs · 480 px', 480, 8],
+    ['min · 320 px', 320, 16],
+  ]) {
+    await example.getByRole('radio', { name, exact: true }).press('Space');
+    await expectPreviewWidth(preview, width);
+    await sidebar.waitFor({ state: 'hidden' });
+    const insets = await workspace.evaluate((element) => {
+      const card = element.getBoundingClientRect();
+      const body = element.parentElement.getBoundingClientRect();
+      return [card.left - body.left, body.right - card.right];
+    });
+    assert.deepEqual(insets, [inset, inset], `${adapter}: warehouse card is centered at ${width} px`);
+    assert.equal(await table.evaluate((element) => element.offsetWidth), 576);
+    assert.deepEqual(await available.allTextContents(), firstPage, `${adapter}: the warehouse page survives reflow`);
+    assert.deepEqual(await pageNumbers(), ['1', '2'], `${adapter}: both page numbers are visible at ${width} px`);
+    await pagination.getByRole('button', { name: 'Go to page 2' }).press('Enter');
+    await pagination.getByText('6-7 of 7', { exact: true }).waitFor();
+    assert.deepEqual(await available.allTextContents(), secondPage);
+    assert.deepEqual(await pageNumbers(), ['1', '2']);
+    await pagination.getByRole('button', { name: 'Go to page 1' }).press('Enter');
+    await pagination.getByText('1-5 of 7', { exact: true }).waitFor();
+  }
+
   const pageSize = pagination.getByRole('combobox', { name: 'Rows per page' });
   const sizeMenu = frame.locator(`[id="${await pageSize.getAttribute('aria-controls')}"]`);
   for (const [size, expected, numbers] of [
@@ -1230,9 +1255,6 @@ async function checkWarehouse(page, base, adapter) {
     assert.deepEqual(await pageNumbers(), numbers);
   }
 
-  await example.getByRole('radio', { name: 'min · 320 px', exact: true }).press('Space');
-  await expectPreviewWidth(preview, 320);
-  await sidebar.waitFor({ state: 'hidden' });
   const toggle = frame.getByRole('button', { name: 'Open navigation' });
   const drawer = frame.getByRole('dialog', { name: 'Navigation', exact: true });
   await toggle.press('Enter');

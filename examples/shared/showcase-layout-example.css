@@ -202,6 +202,20 @@
   }
 }
 
+@container (inline-size < 480px) {
+  .layout-example__warehouse .cm-data-table__pagination-page:not([hidden]) {
+    display: inline-flex;
+  }
+
+  .layout-example__warehouse [data-cm-data-table-page-action='previous'] {
+    margin-inline-end: auto;
+  }
+
+  .layout-example__warehouse [data-cm-data-table-page-action='next'] {
+    margin-inline-start: auto;
+  }
+}
+
 .layout-example__warehouse [data-warehouse-navigation-toggle] {
   color: inherit;
 }
@@ -216,12 +230,12 @@
 }
 
 .layout-example__warehouse[data-warehouse-mobile] .cm-admin-shell__workspace {
-  margin-inline-start: 0;
+  margin-inline: var(--cm-space-2);
 }
 
 @media (width < 30rem) {
   .layout-example__warehouse[data-warehouse-mobile] .cm-admin-shell__workspace {
-    margin-inline-start: var(--cm-space-4);
+    margin-inline: var(--cm-space-4);
   }
 }
 
