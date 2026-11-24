@@ -240,14 +240,13 @@ async function writeShowcase(contractsDirectory, output, renderView) {
           const regions = slugs.filter((slug) => slug.endsWith('-area'));
           const shellPreviews = await Promise.all(
             layoutExamples.map(async ({ slug, title }) => {
-              const choices = layoutPreviewChoices(slug);
               const content = await renderLayoutExample(slug, renderView);
               const frame = page(title, `<div data-layout-example="${slug}">${content}</div>`, 'layout-example.js', {
                 styles: [packageStylesheet, './showcase-layout-example.css'],
               });
               return renderExamples(slug, 'h3', () => [
                 h(CmFieldset, { id: `${slug}-preview-width`, label: 'Width', class: 'layout-preview__sizes' }, () =>
-                  choices.map(({ value, label }) =>
+                  layoutPreviewChoices.map(({ value, label }) =>
                     h(CmRadio, {
                       name: `${slug}-width`,
                       value,

@@ -142,7 +142,7 @@ async function checkDevelopmentPreviews(base) {
     const preview = shell.locator('iframe.layout-preview__frame');
     await preview.scrollIntoViewIfNeeded();
     await preview.contentFrame().getByRole('tab', { name: 'With aside' }).waitFor();
-    await shell.getByRole('radio', { name: '320 px' }).press('Space');
+    await shell.getByRole('radio', { name: 'min · 320 px' }).press('Space');
     await expectPreviewWidth(preview, 320);
     await checkLayoutReload(page, base);
     assert.deepEqual(errors, [], 'Vue dev preview network/runtime errors');
@@ -1042,6 +1042,40 @@ async function checkModalExamples(page, adapter) {
 
 async function checkLayoutViewport(page, base, adapter) {
   await page.goto(url(base, 'layouts/'));
+  const labels = [
+    'Fit',
+    'min · 320 px',
+    'xs · 480 px',
+    'sm · 640 px',
+    'md · 768 px',
+    'lg · 1024 px',
+    'xl · 1280 px',
+    '2xl · 1536 px',
+  ];
+  for (const { slug } of layoutExamples) {
+    const example = page.locator(`#demo-${slug}`);
+    const sizes = example.locator('.layout-preview__sizes');
+    await sizes.waitFor();
+    assert.equal(
+      await sizes.getByRole('radio').count(),
+      labels.length,
+      `${adapter}: ${slug} offers every preview width`,
+    );
+    for (const name of labels) assert.equal(await sizes.getByRole('radio', { name, exact: true }).count(), 1);
+    assert(await sizes.getByRole('radio', { name: 'Fit', exact: true }).isChecked());
+    const viewport = example.locator('.layout-preview__viewport');
+    const geometry = await viewport.evaluate((element) => {
+      const style = getComputedStyle(element);
+      return {
+        width: element.offsetWidth,
+        availableWidth: element.parentElement.clientWidth,
+        borderWidth: parseFloat(style.borderInlineStartWidth),
+        radius: parseFloat(style.borderStartStartRadius),
+      };
+    });
+    assert.equal(geometry.width, geometry.availableWidth, `${adapter}: ${slug} preview fills its section`);
+    assert(geometry.borderWidth > 0 && geometry.radius > 0, `${adapter}: ${slug} has a visible rounded preview border`);
+  }
   for (const slug of ['app-shell', 'document-layout']) {
     const example = page.locator(`#demo-${slug}`);
     const frame = example.locator('iframe.layout-preview__frame');
@@ -1064,18 +1098,23 @@ async function checkLayoutViewport(page, base, adapter) {
     const aside = preview.locator(`.cm-${slug}__aside:not([hidden])`);
     await aside.waitFor({ state: 'attached' });
 
-    await example.getByRole('radio', { name: '320 px' }).press('Space');
+    await example.getByRole('radio', { name: 'min · 320 px' }).press('Space');
     await expectPreviewWidth(frame, 320);
+    const centerOffset = await frame.evaluate((element) => {
+      const preview = element.getBoundingClientRect();
+      const viewport = element.parentElement.getBoundingClientRect();
+      return Math.abs(preview.left + preview.width / 2 - (viewport.left + viewport.width / 2));
+    });
+    assert(centerOffset <= 1, `${adapter}: ${slug} centers a narrow layout in the preview`);
     await aside.waitFor({ state: 'hidden' });
     assert((await sidebar.boundingBox()).y < (await main.boundingBox()).y, `${slug}: sidebar stacks above content`);
-
-    await example.getByRole('radio', { name: '1024 px' }).press('Space');
+    await example.getByRole('radio', { name: 'lg · 1024 px' }).press('Space');
     await expectPreviewWidth(frame, 1024);
     await sidebar.waitFor({ state: 'visible' });
     await aside.waitFor({ state: 'hidden' });
     assert((await sidebar.boundingBox()).x < (await main.boundingBox()).x, `${slug}: sidebar becomes a column`);
 
-    await example.getByRole('radio', { name: '1280 px' }).press('Space');
+    await example.getByRole('radio', { name: 'xl · 1280 px', exact: true }).press('Space');
     await expectPreviewWidth(frame, 1280);
     await aside.waitFor({ state: 'visible' });
     assert.equal(await tab.getAttribute('aria-selected'), 'true', `${adapter}: resizing preserves layout selection`);
@@ -1133,7 +1172,7 @@ async function checkWarehouse(page, base, adapter) {
   await filter.fill('');
   assert.equal(await available.count(), 7, `${adapter}: clearing the filter restores all rows`);
 
-  await example.getByRole('radio', { name: '320 px' }).press('Space');
+  await example.getByRole('radio', { name: 'min · 320 px' }).press('Space');
   await expectPreviewWidth(preview, 320);
   assert.equal(await available.count(), 7, `${adapter}: warehouse data survives reflow`);
   assert(
@@ -1182,11 +1221,11 @@ async function checkSetupLayout(page, base) {
   const frame = preview.contentFrame();
   const panel = frame.locator('.cm-setup-layout__panel');
   await panel.waitFor();
-  for (const [width, display] of [
-    [320, 'flex'],
-    [1024, 'grid'],
+  for (const [name, width, display] of [
+    ['min · 320 px', 320, 'flex'],
+    ['lg · 1024 px', 1024, 'grid'],
   ]) {
-    await example.getByRole('radio', { name: `${width} px` }).press('Space');
+    await example.getByRole('radio', { name }).press('Space');
     await expectPreviewWidth(preview, width);
     assert.equal(await panel.evaluate((element) => getComputedStyle(element).display), display);
   }
