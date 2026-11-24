@@ -4,7 +4,7 @@ import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import showcaseGroups from '../../examples/shared/showcase-groups.json' with { type: 'json' };
-import { showcaseComponentCases } from '../../examples/shared/showcase-cases.mts';
+import { showcaseComponentCases, showcasePanelExamples } from '../../examples/shared/showcase-cases.mts';
 import { showcaseExamplePrefix } from '../../examples/shared/showcase-inline.mjs';
 import { layoutExamples } from '../../examples/shared/showcase-layout-data.mts';
 import { normalizeSignificantDom } from '../contracts/significant-dom.mjs';
@@ -1640,6 +1640,10 @@ function checkMatrixCombinations() {
 async function checkInlineExamples(page, base, adapter) {
   const layoutSlugs = showcaseGroups.find(({ id }) => id === 'layouts').components;
   const shellSlugs = layoutExamples.map(({ slug }) => slug);
+  const untitledIds = [...prepared.values()]
+    .flat()
+    .filter(({ label }) => label === '')
+    .map(({ id }) => `preview-${id}`);
   const groups = {
     'core/': showcaseGroups
       .filter(({ id }) => id !== 'layouts' && id !== 'icons')
@@ -1663,33 +1667,36 @@ async function checkInlineExamples(page, base, adapter) {
       );
     assert.deepEqual(ungrouped, [], `${adapter}: component examples belong to a group surface on ${route}`);
 
-    const wrapped = await page
-      .locator('.showcase-group .showcase-variants > *')
-      .evaluateAll((variants) =>
+    const wrapped = await page.locator('.showcase-group .showcase-variants > *').evaluateAll(
+      (variants, untitled) =>
         variants
-          .filter(
-            (entry) =>
+          .filter((entry) => {
+            const title = entry.querySelector(':scope > .showcase-variant-title');
+            return (
               !entry.matches('.cm-stack.showcase-variant') ||
-              !entry.querySelector(':scope .showcase-variant-title')?.textContent?.trim(),
-          )
+              (untitled.includes(entry.id) ? title !== null : !title?.textContent?.trim())
+            );
+          })
           .map(({ id }) => id),
-      );
-    assert.deepEqual(wrapped, [], `${adapter}: inline variants use only spacing and a title on ${route}`);
+      untitledIds,
+    );
+    assert.deepEqual(wrapped, [], `${adapter}: inline variants use stacks and respect configured titles on ${route}`);
 
     const wide =
-      route === 'layouts/'
-        ? layoutSlugs.filter((slug) => slug !== 'inline')
-        : ['table', 'data-table', 'form-layout', 'page-header', 'tabs'];
+      route === 'layouts/' ? layoutSlugs.filter((slug) => slug !== 'inline') : ['form-layout', 'page-header', 'tabs'];
     const narrowCards = await sections.evaluateAll(
       (panels, names) =>
-        panels
-          .filter((panel) => names.includes(panel.dataset.showcaseComponent))
-          .flatMap((panel) => {
-            const grid = panel.querySelector('.showcase-variants');
-            return [...(grid?.children ?? [])]
-              .filter((card) => Math.abs(card.getBoundingClientRect().width - grid.getBoundingClientRect().width) > 1)
-              .map(({ id }) => id);
-          }),
+        panels.flatMap((panel) => {
+          const grid = panel.querySelector('.showcase-variants');
+          const fullWidthSection = names.includes(panel.dataset.showcaseComponent);
+          return [...(grid?.children ?? [])]
+            .filter(
+              (card) =>
+                (fullWidthSection || card.matches('#preview-data-table-pinned, #preview-data-table-resizable')) &&
+                Math.abs(card.getBoundingClientRect().width - grid.getBoundingClientRect().width) > 1,
+            )
+            .map(({ id }) => id);
+        }),
       wide,
     );
     assert.deepEqual(narrowCards, [], `${adapter}: wide examples take a full row on ${route}`);
@@ -1726,7 +1733,7 @@ async function checkInlineExamples(page, base, adapter) {
         );
       assert.deepEqual(
         previews.map(([id]) => id),
-        prepared.get(slug).map(({ id }) => id),
+        showcasePanelExamples(slug, (component) => prepared.get(component)).map(({ id }) => id),
         `${adapter}: ordered examples for ${slug}`,
       );
       const distinct = new Map();
