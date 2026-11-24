@@ -100,6 +100,26 @@
   line-height: var(--cm-text-caption-line-height);
 }
 
+.cm-stepper--content-inline:where(:not(.cm-stepper--vertical)) {
+  .cm-stepper__item {
+    display: flex;
+  }
+
+  .cm-stepper__rail {
+    display: contents;
+  }
+
+  .cm-stepper__connector--after {
+    order: 1;
+    min-inline-size: var(--cm-space-2);
+  }
+
+  .cm-stepper__connector--before,
+  :where(.cm-stepper__item:last-child) .cm-stepper__connector--after {
+    display: none;
+  }
+}
+
 .cm-stepper__item--complete .cm-stepper__marker {
   border-color: var(--cm-color-interactive-primary-background);
   background: var(--cm-color-interactive-primary-background);
