@@ -44,7 +44,7 @@ test('keeps anchored panels outside the scroll clip of native modals', async () 
     assert.match(css, /\.cm-drawer__body\) \{[^}]*overflow: auto;/u);
     assert.match(
       css,
-      /:is\(\.cm-dialog, \.cm-drawer\):modal\s+:is\(\.cm-tooltip__content, \.cm-dropdown__menu, \.cm-popover__panel, \.cm-select__listbox, \.cm-date-picker__calendar\) \{\s+position: fixed;/u,
+      /:is\(\.cm-dialog, \.cm-drawer\):modal\s+:is\(\.cm-tooltip__content, \.cm-dropdown__menu, \.cm-popover__panel, \.cm-select__listbox, \.cm-date-picker__calendar\) \{\s*position: fixed;/u,
     );
   }
 });
@@ -93,19 +93,19 @@ test('keeps native modal motion and exit safety in each standalone stylesheet', 
     assert.match(css, /--cm-modal-shift: 0 var\(--cm-space-3\)/u);
     assert.match(
       css,
-      /:has\(\s*\.cm-date-picker-wrap,\s*\.cm-dropdown,\s*\.cm-menu-bar,\s*\.cm-popover,\s*\.cm-select-wrap,\s*\.cm-tooltip\s*\) \{\s+--cm-modal-shift: none;/u,
+      /:has\(\s*\.cm-date-picker-wrap,\s*\.cm-dropdown,\s*\.cm-menu-bar,\s*\.cm-popover,\s*\.cm-select-wrap,\s*\.cm-tooltip\s*\) \{\s*--cm-modal-shift: none;/u,
     );
     const exit = css.slice(css.indexOf('@supports (overlay: auto) and (interactivity: inert)'));
     assert.match(exit, /^@supports \(overlay: auto\) and \(interactivity: inert\)/u);
     assert.match(
       exit,
-      /transition-behavior: allow-discrete;\s+transition-property: opacity, translate, display, overlay;/u,
+      /transition-behavior: allow-discrete;\s*transition-property: opacity, translate, display, overlay;/u,
     );
-    assert.match(exit, /:not\(\[open\]\) \{\s+interactivity: inert;/u);
-    assert.match(exit, /:not\(\[open\]\)::backdrop \{\s+pointer-events: none;/u);
+    assert.match(exit, /:not\(\[open\]\) \{\s*interactivity: inert;/u);
+    assert.match(exit, /:not\(\[open\]\)::backdrop \{\s*pointer-events: none;/u);
   }
   assert.match(palette, /--cm-modal-shift: 0 calc\(0px - var\(--cm-space-2\)\)/u);
-  assert.match(drawer, /\.cm-drawer--start:dir\(ltr\), \.cm-drawer--end:dir\(rtl\)\) \{\s+--cm-drawer-enter: -100%/u);
+  assert.match(drawer, /\.cm-drawer--start:dir\(ltr\), \.cm-drawer--end:dir\(rtl\)\) \{\s*--cm-drawer-enter: -100%/u);
 });
 
 test('makes reveal and safe exit motion available in each standalone anchored overlay stylesheet', async () => {
@@ -162,6 +162,6 @@ test('preserves the fd793696 overlay geometry through CodeMonster tokens', async
   assert.match(tooltip, /padding-block: var\(--cm-space-2\)/u);
   assert.match(tooltip, /padding-inline: var\(--cm-space-3\)/u);
   assert.match(tooltip, /border: var\(--cm-border-width\) solid var\(--cm-color-border-inverse\)/u);
-  assert.match(tooltip, /outline: var\(--cm-focus-ring-width\) solid var\(--cm-color-focus-ring\);/u);
+  assert.match(tooltip, focusOutline);
   assert.match(`${dialog}${drawer}${popover}${tooltip}`, /font-size: var\(--cm-font-size-xl\)/u);
 });
