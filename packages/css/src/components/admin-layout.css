@@ -1,3 +1,5 @@
+@import '../primitives/modal-scroll.css';
+
 /*
  * The layout reads its own state from attributes on the root rather than from classes a framework
  * toggles. That is what lets one stylesheet serve both adapters and a server-rendered page that has
@@ -200,6 +202,10 @@
     translate: 100% 0;
   }
 
+  .cm-admin-layout__aside-content {
+    overscroll-behavior-y: contain;
+  }
+
   .cm-admin-layout[data-cm-admin-layout-measured] > .cm-admin-layout__aside {
     padding-block-start: env(safe-area-inset-top, 0);
   }
@@ -267,6 +273,7 @@
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
+    touch-action: pinch-zoom;
     transition:
       opacity var(--cm-motion-duration-normal) var(--cm-motion-ease-standard),
       visibility 0s var(--cm-motion-duration-normal);

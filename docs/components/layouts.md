@@ -18,7 +18,8 @@ their own controls.
 optional footer. When the layout container is narrower than 64rem, the sidebar becomes a drawer.
 Once enhanced, the drawer opens from the visible top edge of the layout over the header. The
 backdrop covers the main column, and its controls leave the keyboard navigation order while the
-drawer is open. Press Escape or click the backdrop to close it and return focus to the toggle.
+drawer is open. The background stays at its scroll position while the drawer can scroll. Press
+Escape or click the backdrop to close it and return focus to the toggle.
 The desktop collapsed preference is preserved.
 
 Use `defaultSidebarCollapsed` or `defaultMobileSidebarOpen` for an initial uncontrolled state.

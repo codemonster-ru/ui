@@ -12,6 +12,7 @@ import {
   createCmSetupLayoutController,
   createCmStepperController,
 } from '../dist/index.js';
+import { enterCmNativeModal } from '../dist/native-modal.js';
 
 // The canonical fixtures are what the Razor adapter renders, so enhancing those is the thing worth
 // proving: the controller has to work against markup it did not create.
@@ -98,6 +99,26 @@ test('admin layout focuses the open drawer and restores the toggle on Escape', a
   assert.equal(main.hasAttribute('inert'), false);
   assert.equal(drawer.hasAttribute('tabindex'), false);
   assert.equal(document.activeElement, toggle);
+});
+
+test('closing the admin drawer leaves the document locked while a native modal is open', async () => {
+  const document = mount('admin-layout', 'admin-layout', createCmAdminLayoutController);
+  const root = document.querySelector('.cm-admin-layout');
+  const dialog = document.body.appendChild(document.createElement('dialog'));
+  dialog.showModal = () => (dialog.open = true);
+
+  document.querySelector('[data-cm-mobile-sidebar-toggle]').click();
+  await Promise.resolve();
+  assert.ok(document.documentElement.hasAttribute('data-cm-modal-scroll'));
+  const releaseModal = enterCmNativeModal(dialog);
+
+  document.querySelector('[data-cm-mobile-sidebar-close]').click();
+  await Promise.resolve();
+  assert.equal(root.dataset.cmMobileSidebarOpen, 'false');
+  assert.ok(document.documentElement.hasAttribute('data-cm-modal-scroll'));
+
+  releaseModal();
+  assert.equal(document.documentElement.hasAttribute('data-cm-modal-scroll'), false);
 });
 
 test('setup layout advances on enter but not from a textarea', () => {
