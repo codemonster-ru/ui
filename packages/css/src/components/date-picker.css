@@ -324,17 +324,17 @@
 }
 
 .cm-date-picker__day--today {
-  border-color: var(--cm-color-text-muted);
-}
-
-.cm-date-picker__day--today:is(.cm-date-picker__day--selected, .cm-date-picker__day--in-range, :focus-visible) {
-  text-decoration: underline;
-}
-
-@media (forced-colors: active) {
-  .cm-date-picker__day--today {
+  &:is(.cm-date-picker__day--selected, .cm-date-picker__day--in-range, :focus-visible):not(
+      .cm-date-picker__grid--period *
+    ) {
     text-decoration: underline;
   }
+
+  @media (forced-colors: active) {
+    text-decoration: underline;
+  }
+
+  border-color: var(--cm-color-text-muted);
 }
 
 .cm-date-picker__day--in-range,

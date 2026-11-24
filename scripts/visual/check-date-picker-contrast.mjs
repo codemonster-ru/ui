@@ -112,6 +112,11 @@ test(`packaged DatePicker contrast in ${browserName}`, async (t) => {
         caseTest.after(() => page.close());
         await page.clock.setFixedTime(new Date('2026-08-12T12:00:00Z'));
 
+        const years = await openCalendar(page, platform, theme, 'year');
+        const currentYear = years.locator('.cm-date-picker__day--today.cm-date-picker__day--selected');
+        await currentYear.waitFor();
+        assert.equal(await currentYear.evaluate((year) => getComputedStyle(year).textDecorationLine), 'none');
+
         const calendar = await openCalendar(page, platform, theme, 'clearable');
         const focusColor = await calendar.evaluate((element) => {
           const sample = document.createElement('span');
