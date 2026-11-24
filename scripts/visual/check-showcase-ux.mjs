@@ -1141,6 +1141,44 @@ async function checkWarehouse(page, base, adapter) {
   const preview = example.locator('iframe.layout-preview__frame');
   await preview.scrollIntoViewIfNeeded();
   const frame = preview.contentFrame();
+  const navigation = frame.getByRole('navigation', { name: 'Admin shell navigation' });
+  await navigation.waitFor();
+  assert.equal(await navigation.locator('.cm-nav-menu__leading-icon').count(), 3);
+  const sidebarWidth = await frame.locator('.cm-admin-shell__sidebar').evaluate((element) => element.offsetWidth);
+  assert.equal(sidebarWidth, 288, `${adapter}: warehouse sidebar uses the historical desktop width`);
+  const nestedRows = await navigation
+    .locator('.cm-nav-menu__list--nested .cm-nav-menu__item')
+    .evaluateAll((items) => items.map((item) => item.getBoundingClientRect().top));
+  assert.deepEqual(
+    nestedRows.slice(1).map((top, index) => top - nestedRows[index]),
+    [40, 40],
+    `${adapter}: nested warehouse rows have a 40 px pitch`,
+  );
+  const active = navigation.locator('[aria-current="page"]');
+  const appearance = await active.evaluate((element) => {
+    const style = getComputedStyle(element);
+    const node = element.parentElement;
+    const rail = getComputedStyle(node.previousElementSibling, '::before');
+    const connector = getComputedStyle(node, '::after');
+    const tail = getComputedStyle(node.closest('.cm-nav-menu__collapse'), '::before');
+    const nav = element.closest('.cm-nav-menu');
+    return {
+      background: style.backgroundColor,
+      radius: style.borderRadius,
+      weight: style.fontWeight,
+      inset: element.getBoundingClientRect().left - nav.getBoundingClientRect().left,
+      rail: rail.borderInlineStartColor,
+      connector: connector.borderBlockEndColor,
+      tail: tail.borderInlineStartColor,
+      tailWidth: tail.borderInlineStartWidth,
+    };
+  });
+  assert.equal(appearance.background, 'rgba(0, 0, 0, 0)');
+  assert.equal(appearance.radius, '10px');
+  assert.equal(appearance.weight, '500');
+  assert.equal(appearance.inset, 31);
+  assert.equal(appearance.rail, appearance.connector, `${adapter}: active path uses one color`);
+  assert(appearance.tailWidth === '1px' && appearance.tail !== appearance.rail, `${adapter}: neutral rail continues`);
   const table = frame.getByRole('table', { name: 'Warehouse availability', exact: true });
   const scrollArea = table.locator('..');
   const header = table.getByRole('columnheader', { name: 'Available', exact: true });

@@ -1,4 +1,4 @@
-import { checkCircle, database, fileText, user } from '@codemonster-ru/ui-icons';
+import { checkCircle, database, file, fileText, gear, grid, user } from '@codemonster-ru/ui-icons';
 import { cmBreakpoints } from '@codemonster-ru/ui-tokens';
 
 export const regionControls = [
@@ -93,15 +93,16 @@ export const steps = [
 export const initialSetupStep = 'database';
 
 export const warehouseNavigation = [
-  { value: 'dashboard', label: 'Dashboard' },
+  { value: 'dashboard', label: 'Dashboard', leadingIcon: grid },
   {
     value: 'commerce',
     label: 'Commerce',
+    leadingIcon: file,
     children: [
       { value: 'product-catalog', label: 'Product catalog' },
       { value: 'inventory-management', label: 'Inventory management' },
       { value: 'warehouse-availability', label: 'Warehouse availability' },
     ],
   },
-  { value: 'settings', label: 'Settings' },
+  { value: 'settings', label: 'Settings', leadingIcon: gear },
 ];

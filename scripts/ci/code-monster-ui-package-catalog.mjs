@@ -53,8 +53,8 @@ export const codeMonsterUiPackageSizeBudgets = Object.freeze({
   // resize brought it to 72.64 KiB. The bundled pure core still has its own 7 KiB limit.
   // Native modal scroll, row expansion and tab scrolling/indicator ship independently (78.09 KiB measured).
   '@codemonster-ru/ui-runtime': { cssGzip: 0, cssRaw: 0, jsGzip: 80 * 1024 },
-  // Stepper marker and progress styling now ships in both the component entry and main CSS (48.47 KiB).
-  '@codemonster-ru/ui-css': { cssGzip: 50 * 1024, cssRaw: 320 * 1024, jsGzip: 8 * 1024 },
+  // Sidebar spacing, typography, and branch guides bring the distributed CSS to 50.50 KiB gzip.
+  '@codemonster-ru/ui-css': { cssGzip: 51 * 1024, cssRaw: 320 * 1024, jsGzip: 8 * 1024 },
   '@codemonster-ru/ui-utilities': { cssGzip: 32 * 1024, cssRaw: 256 * 1024, jsGzip: 8 * 1024 },
   '@codemonster-ru/ui-vue': { cssGzip: 8 * 1024, cssRaw: 32 * 1024, jsGzip: 128 * 1024 },
   '@codemonster-ru/ui-layouts': { cssGzip: 8 * 1024, cssRaw: 32 * 1024, jsGzip: 64 * 1024 },

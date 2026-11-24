@@ -60,7 +60,7 @@
 }
 
 .cm-admin-shell__sidebar {
-  inline-size: 16rem;
+  inline-size: 18rem;
 }
 
 .cm-admin-shell__sidebar-content {
@@ -68,7 +68,7 @@
   inset-block-start: var(--cm-admin-shell-topbar-size);
   max-block-size: max(0px, calc(var(--cm-admin-shell-scrollport-size) - var(--cm-admin-shell-topbar-size)));
   overflow-y: auto;
-  padding: var(--cm-space-3);
+  padding: var(--cm-space-4);
 }
 
 .cm-admin-shell__workspace {
