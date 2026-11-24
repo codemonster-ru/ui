@@ -31,6 +31,7 @@ import {
   CmContainer,
   CmDrawer,
   CmField,
+  CmGrid,
   CmIcon,
   CmIconButton,
   CmProgressBar,
@@ -59,7 +60,8 @@ type ShellLayout = (typeof shellTabs)[number]['value'];
 const mode = ref<ShellLayout>('sidebar-content-aside');
 const makeRegionFlags = () => Object.fromEntries(regionControls.map(({ key }) => [key, false]));
 const flags = ref({ 'app-shell': makeRegionFlags(), 'document-layout': makeRegionFlags() });
-const adminNav = ref('dashboard');
+const adminNav = ref('warehouse-availability');
+const currentYear = new Date().getUTCFullYear();
 const warehouseBranches = ref<readonly string[]>(['commerce']);
 const shellNav = ref('warehouse-availability');
 const warehouseMobile = ref(false);
@@ -192,44 +194,51 @@ function setMode(value: string) {
     </template>
     <template #footer><strong>Footer</strong></template>
   </component>
-  <CmAdminLayout v-else-if="slug === 'admin-layout'" id="showcase-admin-layout">
-    <template #brand
-      ><CmInline :wrap="false"
-        ><img :src="annabelLogo" alt="" width="24" height="24" /><strong>Annabel</strong></CmInline
-      ></template
-    >
-    <template #mobileBrand
-      ><CmInline :wrap="false"
-        ><img :src="annabelLogo" alt="" width="24" height="24" /><strong>Annabel</strong></CmInline
-      ></template
-    >
-    <template #aside><CmNavMenu v-model:value="adminNav" :items="warehouseNavigation" /></template>
-    <template #header
-      ><CmIconButton variant="ghost" label="Toggle sidebar" data-cm-sidebar-toggle><CmIcon :icon="bars" /></CmIconButton
-    ></template>
+  <CmAdminLayout v-else-if="slug === 'admin-layout'" id="showcase-admin-layout" class="layout-example__admin">
+    <template #brand>
+      <CmInline class="layout-example__admin-brand" :wrap="false">
+        <img :src="annabelLogo" alt="" width="24" height="24" /><strong>Annabel</strong>
+      </CmInline>
+    </template>
+    <template #mobileBrand>
+      <CmInline class="layout-example__admin-brand" :wrap="false">
+        <img :src="annabelLogo" alt="" width="24" height="24" /><strong>Annabel</strong>
+      </CmInline>
+    </template>
+    <template #aside>
+      <CmNavMenu v-model:value="adminNav" :items="warehouseNavigation" aria-label="Admin navigation" />
+    </template>
+    <template #header="{ isSidebarCollapsed }">
+      <CmIconButton
+        :label="isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+        aria-controls="showcase-admin-layout"
+        :aria-expanded="!isSidebarCollapsed"
+        data-cm-sidebar-toggle
+      >
+        <CmIcon :icon="bars" />
+      </CmIconButton>
+    </template>
     <CmStack>
-      <div class="layout-example__dashboard-heading">
+      <CmInline class="layout-example__dashboard-heading">
         <h1>Dashboard</h1>
         <CmButton size="sm">Create post</CmButton>
-      </div>
-      <dl class="layout-example__metrics">
-        <div v-for="{ label, value } in dashboardStats" :key="label">
-          <dt>{{ label }}</dt>
-          <dd>{{ value }}</dd>
-        </div>
-      </dl>
-      <div class="layout-example__activity">
-        <CmCard v-for="{ title, items } in dashboardActivity" :key="title">
-          <template #header
-            ><h2 class="layout-example__activity-heading">{{ title }}</h2></template
-          >
-          <ul class="layout-example__activity-list" role="list">
-            <li v-for="item in items" :key="item">{{ item }}</li>
-          </ul>
-        </CmCard>
-      </div>
+      </CmInline>
+      <CmGrid>
+        <CmCard v-for="{ label, value } in dashboardStats" :key="label" element="div">{{ label }}: {{ value }}</CmCard>
+      </CmGrid>
+      <CmCard v-for="{ title, action, items } in dashboardActivity" :key="title">
+        <template #header>
+          <CmInline class="layout-example__dashboard-heading">
+            <h2>{{ title }}</h2>
+            <CmButton size="sm" variant="secondary">{{ action }}</CmButton>
+          </CmInline>
+        </template>
+        <CmStack element="ul" class="layout-example__activity-list" role="list">
+          <li v-for="item in items" :key="item">{{ item }}</li>
+        </CmStack>
+      </CmCard>
     </CmStack>
-    <template #footer>Inventory workspace</template>
+    <template #footer>© {{ currentYear }} VueForge. All rights reserved.</template>
   </CmAdminLayout>
   <template v-else-if="slug === 'admin-shell'">
     <CmAdminShell

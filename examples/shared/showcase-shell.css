@@ -584,7 +584,7 @@
 
 @media (width >= 64rem) {
   #demo-admin-layout .layout-preview__frame {
-    block-size: 32rem;
+    block-size: 45.5rem;
   }
 
   #demo-auth-layout .layout-preview__frame {

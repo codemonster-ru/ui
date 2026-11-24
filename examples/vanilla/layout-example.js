@@ -17,6 +17,14 @@ root.addEventListener('click', ({ target }) => {
   if (!setup) selectShowcaseNavItem(target.closest('[data-cm-nav-menu-value]'));
 });
 
+if (slug === 'admin-layout') {
+  const trigger = root.querySelector('[data-cm-sidebar-toggle]');
+  root.addEventListener('cm:admin-layout-state-change', ({ detail: { sidebarCollapsed } }) => {
+    trigger.setAttribute('aria-expanded', String(!sidebarCollapsed));
+    trigger.setAttribute('aria-label', sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar');
+  });
+}
+
 if (slug === 'admin-shell') {
   const warehouse = root.querySelector('.layout-example__warehouse');
   const trigger = root.querySelector('[data-warehouse-navigation-toggle]');

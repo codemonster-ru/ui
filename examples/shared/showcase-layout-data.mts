@@ -43,6 +43,7 @@ export const dashboardStats = [
 export const dashboardActivity = [
   {
     title: 'Recent inventory changes',
+    action: 'View history',
     items: [
       'Warehouse A · 24 items received',
       'Warehouse B · 8 items reserved',
@@ -52,11 +53,12 @@ export const dashboardActivity = [
   },
   {
     title: 'Stock alerts',
+    action: 'Review alerts',
     items: [
       'Wireless keyboard · 2 items remaining',
       'USB-C dock · out of stock',
-      'Studio monitor · reorder needed',
-      'Laptop stand · due tomorrow',
+      'Studio monitor · reorder threshold reached',
+      'Laptop stand · delivery expected tomorrow',
     ],
   },
 ];
