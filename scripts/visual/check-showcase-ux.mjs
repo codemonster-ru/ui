@@ -1145,6 +1145,11 @@ async function checkLayoutViewport(page, base, adapter) {
   );
   assert.equal(panels.length, 2);
   assert(panels[1].top > panels[0].bottom && panels[1].width === panels[0].width, `${adapter}: stacked admin panels`);
+  const footerGap = await preview.locator('.cm-admin-layout__footer').evaluate(async (footer) => {
+    await document.fonts.ready;
+    return innerHeight - footer.getBoundingClientRect().bottom;
+  });
+  assert(Math.abs(footerGap) <= 1, `${adapter}: desktop admin footer meets the preview bottom (${footerGap}px gap)`);
   await preview.getByRole('button', { name: 'Collapse sidebar' }).click();
   await preview.getByRole('button', { name: 'Expand sidebar' }).waitFor();
 
