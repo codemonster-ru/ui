@@ -574,15 +574,15 @@
   inline-size: 100%;
 }
 
+#demo-admin-shell .layout-preview__frame {
+  max-block-size: 36rem;
+}
+
 #demo-error-layout .layout-preview__frame {
   block-size: 24rem;
 }
 
 @media (width >= 64rem) {
-  #demo-admin-shell .layout-preview__frame {
-    block-size: 28rem;
-  }
-
   #demo-admin-layout .layout-preview__frame {
     block-size: 32rem;
   }
