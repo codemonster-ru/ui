@@ -56,9 +56,15 @@
 }
 
 .cm-menu__item:focus-visible:not(:disabled, [aria-disabled='true']) {
-  border-color: var(--cm-color-border-focus);
-  outline: var(--cm-focus-ring-width) solid var(--cm-forced-focus-outline-color, transparent);
-  box-shadow: 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
+  --cm-menu-item-focus-color: color-mix(
+    in oklab,
+    var(--cm-menu-item-status-color),
+    var(--cm-status-focus-tint, transparent 0%)
+  );
+
+  outline: var(--cm-focus-ring-width) solid
+    var(--cm-forced-focus-outline-color, var(--cm-menu-item-focus-color, var(--cm-color-focus-ring)));
+  outline-offset: var(--cm-border-width-thick);
 }
 
 .cm-menu__item:hover:not(.cm-menu__item--active, :disabled, [aria-disabled='true']) {
@@ -74,6 +80,8 @@
 }
 
 .cm-menu__item--danger {
+  --cm-menu-item-status-color: var(--cm-color-status-danger-border);
+
   color: var(--cm-color-status-danger-subtle-foreground);
 }
 
@@ -89,6 +97,10 @@
 @media (forced-colors: active) {
   .cm-menu {
     border-color: CanvasText;
+  }
+
+  .cm-menu__item {
+    border-color: Canvas;
   }
 
   .cm-menu__item:disabled,

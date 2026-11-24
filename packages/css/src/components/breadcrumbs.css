@@ -45,7 +45,7 @@
 
 .cm-breadcrumbs__link:focus-visible {
   outline: var(--cm-focus-ring-width) solid var(--cm-color-focus-ring);
-  outline-offset: var(--cm-focus-ring-width);
+  outline-offset: var(--cm-border-width-thick);
 }
 
 .cm-breadcrumbs__current {

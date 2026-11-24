@@ -46,17 +46,14 @@ presets contain the complete token schema.
 ### Override tokens
 
 Load application overrides after `tokens.css`. Override a primitive at the theme boundary
-where the consuming semantic roles are declared. Override a semantic role directly for a
-local exception, such as a focus ring inside an embedded app.
+where the consuming semantic roles are declared. Set `--cm-color-focus-ring` to customize the
+neutral keyboard focus color across components. The default outline is 1px thick with a 2px
+gap. Scrollable controls can draw it inside their edge. Check the color against the surface
+alongside the outline in each theme.
 
 ```css
 :root {
   --cm-palette-primary-500: oklch(58% 0.16 247);
-  --cm-color-focus-ring: var(--cm-palette-primary-400);
-}
-
-[data-cm-theme='dark'] {
-  --cm-color-focus-ring: var(--cm-palette-primary-300);
 }
 ```
 

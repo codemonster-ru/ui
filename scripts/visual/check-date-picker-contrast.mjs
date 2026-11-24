@@ -65,8 +65,12 @@ async function readColors(locator) {
     const background = fill[3] ? style.backgroundColor : surface;
     const backgroundPixel = over(fill, surfacePixel);
     const border = style.borderBlockStartColor;
-    const shadow = style.boxShadow;
-    const ring = shadow.match(/(?:oklch|rgba?|color)\([^)]*\)/u)?.[0];
+    const outline = {
+      color: style.outlineColor,
+      style: style.outlineStyle,
+      width: style.outlineWidth,
+      offset: style.outlineOffset,
+    };
     return {
       foreground,
       background,
@@ -79,8 +83,9 @@ async function readColors(locator) {
           : 0,
       focusVisible: element.matches(':focus-visible'),
       textDecoration: style.textDecorationLine,
-      shadow,
-      ringContrast: ring ? contrast(ring, surfacePixel) : 0,
+      shadow: style.boxShadow,
+      outline,
+      ringContrast: outline.style === 'solid' ? contrast(outline.color, backgroundPixel) : 0,
     };
   });
 }
@@ -108,6 +113,14 @@ test(`packaged DatePicker contrast in ${browserName}`, async (t) => {
         await page.clock.setFixedTime(new Date('2026-08-12T12:00:00Z'));
 
         const calendar = await openCalendar(page, platform, theme, 'clearable');
+        const focusColor = await calendar.evaluate((element) => {
+          const sample = document.createElement('span');
+          sample.style.color = 'var(--cm-color-focus-ring)';
+          element.append(sample);
+          const { color } = getComputedStyle(sample);
+          sample.remove();
+          return color;
+        });
         const heading = calendar.getByRole('columnheader').first();
         const outsideDay = calendar.locator('.cm-date-picker__day--outside:enabled').first();
         const weekday = await readColors(heading);
@@ -126,16 +139,28 @@ test(`packaged DatePicker contrast in ${browserName}`, async (t) => {
         const selected = calendar.getByRole('gridcell', { selected: true });
         const focusedSelection = await readColors(selected);
         assert(focusedSelection.focusVisible, 'keyboard opening focuses the selected date visibly');
+        assert.deepEqual(
+          focusedSelection.outline,
+          { color: focusColor, style: 'solid', width: '1px', offset: '-1px' },
+          'the selected date draws the shared focus outline inside its edge',
+        );
         assertContrast(focusedSelection, 'text', 4.5, 'focused selected date text');
         assertContrast(focusedSelection, 'ringContrast', 3, 'keyboard focus ring');
 
         await page.keyboard.press('ArrowLeft');
         const focusedDay = await readColors(calendar.locator('.cm-date-picker__day:focus-visible'));
+        assert.deepEqual(focusedDay.outline, focusedSelection.outline, 'unselected dates use the same focus outline');
+        assert.equal(focusedDay.border, currentDate.border, 'focusing today preserves its border');
+        assert.equal(focusedDay.background, currentDate.background, 'focusing today preserves its fill');
+        assert.equal(focusedDay.shadow, currentDate.shadow, 'focusing today adds only the outline');
         assertContrast(focusedDay, 'text', 4.5, 'focused unselected date text');
         assertContrast(focusedDay, 'ringContrast', 3, 'unselected date focus ring');
         assert.equal(focusedDay.textDecoration, 'underline', 'current date remains marked while focused');
         const selection = await readColors(selected);
         assert(!selection.focusVisible, 'selection cue persists independently of keyboard focus');
+        assert.equal(focusedSelection.border, selection.border, 'focusing a selected date preserves its border');
+        assert.equal(focusedSelection.background, selection.background, 'focusing a selected date preserves its fill');
+        assert.equal(focusedSelection.shadow, selection.shadow, 'focusing a selected date adds only the outline');
         assertContrast(selection, 'text', 4.5, 'selected date text');
         assertContrast(selection, 'borderContrast', 3, 'selected date boundary');
 

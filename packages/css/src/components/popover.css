@@ -20,11 +20,12 @@
 }
 
 .cm-popover__panel:focus-visible {
-  border-color: var(--cm-color-border-focus);
-  outline: none;
-  box-shadow:
-    var(--cm-shadow-overlay),
-    0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
+  outline: var(--cm-focus-ring-width) solid var(--cm-forced-focus-outline-color, var(--cm-color-focus-ring));
+  outline-offset: var(--cm-border-width-thick);
+}
+
+.cm-popover__panel[data-cm-floating-arrow]:focus-visible {
+  outline-offset: calc(-1 * var(--cm-focus-ring-width));
 }
 
 .cm-popover--bottom-end .cm-popover__panel {
@@ -52,9 +53,6 @@
   }
 
   .cm-popover__panel:focus-visible {
-    border-color: Highlight;
-    outline: var(--cm-focus-ring-width) solid CanvasText;
-    outline-offset: var(--cm-border-width-thick);
-    box-shadow: none;
+    outline-color: CanvasText;
   }
 }

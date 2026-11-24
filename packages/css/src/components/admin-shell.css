@@ -6,6 +6,7 @@
 .cm-admin-shell {
   --cm-admin-shell-topbar-size: 0px;
   --cm-admin-shell-scrollport-size: 100dvb;
+  --cm-admin-shell-focus-ring: var(--cm-color-focus-ring);
 
   display: flex;
   flex-direction: column;
@@ -18,6 +19,9 @@
 }
 
 .cm-admin-shell__topbar {
+  --cm-color-focus-ring: color-mix(in oklch, var(--cm-admin-shell-focus-ring) 65%, var(--cm-color-text-inverse));
+  --cm-status-focus-tint: var(--cm-color-text-inverse) 35%;
+
   position: sticky;
   inset-block-start: 0;
   z-index: var(--cm-z-index-sticky, 10);
@@ -88,6 +92,13 @@
   margin-block-start: auto;
   padding: var(--cm-space-2) var(--cm-space-3);
   border-block-start: var(--cm-border-width) solid var(--cm-color-border-default);
+}
+
+@media (forced-colors: active) {
+  .cm-admin-shell__topbar {
+    background-color: Canvas;
+    color: CanvasText;
+  }
 }
 
 @media (width < 48rem) {

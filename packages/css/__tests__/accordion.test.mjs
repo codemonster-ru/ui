@@ -43,7 +43,7 @@ test('maps frozen expanded, focus, icon, and panel visuals onto canonical region
     css,
     /\.cm-accordion__trigger\[aria-expanded='true'\][^}]*color: var\(--cm-color-selected-foreground\);/s,
   );
-  assert.match(css, /\.cm-accordion__trigger:focus-visible[^}]*box-shadow: 0 0 0 var\(--cm-focus-ring-width\)/s);
+  assert.match(css, /\.cm-accordion__trigger:focus-visible[^}]*outline-offset: var\(--cm-border-width-thick\);/u);
   assert.match(css, /\.cm-accordion__trigger::after[^}]*mask: url\("data:image\/svg\+xml,/s);
   assert.match(css, /\.cm-accordion__trigger\[aria-expanded='true'\]::after[^}]*rotate\(180deg\)/s);
   assert.match(css, /\.cm-accordion__panel\s*\{[^}]*padding: var\(--cm-space-3\) var\(--cm-space-4\);/s);

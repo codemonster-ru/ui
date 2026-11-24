@@ -37,12 +37,12 @@ test('preserves the reference Breadcrumbs and Link geometry', async () => {
   assert.match(breadcrumbs, /font-size: var\(--cm-font-size-xl\);/u);
   assert.match(breadcrumbs, /inline-size: var\(--cm-icon-size-sm\);/u);
   assert.match(breadcrumbs, /outline: var\(--cm-focus-ring-width\) solid var\(--cm-color-focus-ring\);/u);
-  assert.match(breadcrumbs, /outline-offset: var\(--cm-focus-ring-width\);/u);
+  assert.match(breadcrumbs, /outline-offset: var\(--cm-border-width-thick\);/u);
   assert.match(link, /display: inline-flex;/u);
   assert.match(link, /border: var\(--cm-border-width\) solid transparent;/u);
   assert.match(link, /text-decoration-thickness: 1px;/u);
   assert.match(link, /text-underline-offset: 0\.2em;/u);
-  assert.match(link, /box-shadow: 0 0 0 var\(--cm-focus-ring-width\) var\(--cm-color-focus-ring\);/u);
+  assert.match(link, /\.cm-link:focus-visible \{[^}]*outline-offset: var\(--cm-border-width-thick\);/u);
 });
 
 test('preserves the reference Tabs geometry on the canonical DOM', async () => {
@@ -57,7 +57,10 @@ test('preserves the reference Tabs geometry on the canonical DOM', async () => {
   assert.match(tabs, /\.cm-tabs__tab::after[\s\S]*block-size: 3px;/u);
   assert.match(tabs, /\.cm-tabs__tab\[aria-selected='true'\]::after/u);
   assert.match(tabs, /padding: var\(--cm-space-3\) 0 0;/u);
-  assert.match(tabs, /box-shadow: inset 0 0 0 var\(--cm-focus-ring-width\)/u);
+  assert.match(
+    tabs,
+    /\.cm-tabs__tab:focus-visible \{[^}]*outline-offset: calc\(-1 \* var\(--cm-focus-ring-width\)\);/u,
+  );
 });
 
 test('preserves the reference Menu surface and item geometry', async () => {
@@ -70,5 +73,9 @@ test('preserves the reference Menu surface and item geometry', async () => {
   assert.match(menu, /padding: var\(--cm-space-1\) var\(--cm-space-2\);/u);
   assert.match(menu, /\.cm-menu__item-icon/u);
   assert.match(menu, /\.cm-menu__item--active,[\s\S]*background: transparent;/u);
-  assert.match(menu, /box-shadow: 0 0 0 var\(--cm-focus-ring-width\) var\(--cm-color-focus-ring\);/u);
+  assert.match(menu, /\.cm-menu__item:focus-visible[^}]*outline-offset: var\(--cm-border-width-thick\);/u);
+  assert.match(
+    menu,
+    /\.cm-menu__item--danger \{[^}]*--cm-menu-item-status-color: var\(--cm-color-status-danger-border\);/u,
+  );
 });

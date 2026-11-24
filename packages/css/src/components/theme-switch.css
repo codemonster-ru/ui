@@ -68,7 +68,7 @@
 
 .cm-theme-switch__input:focus-visible + .cm-theme-switch__label {
   outline: var(--cm-focus-ring-width) solid var(--cm-forced-focus-outline-color, var(--cm-color-focus-ring));
-  outline-offset: var(--cm-border-width);
+  outline-offset: var(--cm-border-width-thick);
 }
 
 .cm-theme-switch__input:disabled + .cm-theme-switch__label {

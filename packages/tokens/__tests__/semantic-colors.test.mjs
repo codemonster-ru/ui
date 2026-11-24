@@ -48,8 +48,7 @@ test('keeps light and dark values mode-specific without changing the role contra
   assert.equal(cmSemanticDarkColorTokens.colorInteractivePrimaryForeground, 'var(--cm-palette-neutral-0)');
 });
 
-test('matches dark focus accents to the interactive border color', () => {
-  const { colorBorderFocus, colorFocusRing, colorInteractivePrimaryBorder } = cmSemanticDarkColorTokens;
-  assert.equal(colorBorderFocus, colorInteractivePrimaryBorder);
-  assert.equal(colorFocusRing, colorInteractivePrimaryBorder);
+test('defines the keyboard focus tone for each theme', () => {
+  assert.equal(cmSemanticLightColorTokens.colorFocusRing, 'var(--cm-palette-primary-500)');
+  assert.equal(cmSemanticDarkColorTokens.colorFocusRing, 'var(--cm-palette-primary-300)');
 });

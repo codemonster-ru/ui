@@ -3,12 +3,12 @@ import test from 'node:test';
 
 import { cmControlTokenNames, cmControlTokens } from '../dist/index.js';
 
-test('preserves the frozen VueForge control geometry under the cm namespace', () => {
+test('defines the shared control geometry under the cm namespace', () => {
   assert.deepEqual(Object.keys(cmControlTokens), [...cmControlTokenNames]);
   assert.equal(Object.isFrozen(cmControlTokens), true);
   assert.equal(Object.isFrozen(cmControlTokenNames), true);
   assert.deepEqual(cmControlTokens, {
-    focusRingWidth: '2px',
+    focusRingWidth: '1px',
     controlFontSizeSm: 'var(--cm-text-label-font-size)',
     controlFontSizeMd: 'var(--cm-text-body-font-size)',
     controlFontSizeLg: 'var(--cm-font-size-2xl)',

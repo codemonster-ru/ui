@@ -115,6 +115,10 @@
   overflow: hidden;
 }
 
+:where(.cm-nav-menu__collapse) .cm-nav-menu__item:focus-visible {
+  outline-offset: calc(-1 * var(--cm-focus-ring-width));
+}
+
 .cm-nav-menu--pills .cm-nav-menu__list {
   gap: var(--cm-space-1);
 }

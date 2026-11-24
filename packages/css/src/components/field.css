@@ -144,13 +144,24 @@
   color: var(--cm-color-status-danger-subtle-foreground);
 }
 
+.cm-field--floating:has(> .cm-field__control [data-cm-valid='true']) {
+  --cm-field-focus-label-color: var(--cm-color-status-success-subtle-foreground);
+}
+
+.cm-field--floating:has(
+  > .cm-field__control
+    :is([aria-invalid='true'], .cm-input--invalid, .cm-textarea--invalid, .cm-select--invalid, .cm-date-picker--invalid)
+) {
+  --cm-field-focus-label-color: var(--cm-color-status-danger-subtle-foreground);
+}
+
 .cm-field--floating:not(.cm-field--invalid):is(
     :focus-within:has(> .cm-field__control :is(.cm-input, .cm-textarea)),
     :has(> .cm-field__control :is(.cm-select, .cm-date-picker):enabled:is(:focus-visible, [data-cm-open-ring]))
   )
   > .cm-field__label {
   background-color: var(--cm-color-background-surface);
-  color: var(--cm-color-focus-ring);
+  color: var(--cm-field-focus-label-color, var(--cm-color-focus-ring));
 }
 
 .cm-field--floating:not(:focus-within) > .cm-field__control :is(.cm-input, .cm-textarea)::placeholder,

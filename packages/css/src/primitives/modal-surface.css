@@ -113,8 +113,8 @@
 }
 
 :is(.cm-dialog__close, .cm-drawer__close):focus-visible {
-  outline: var(--cm-focus-ring-width) solid var(--cm-color-focus-ring);
-  outline-offset: var(--cm-focus-ring-width);
+  outline: var(--cm-focus-ring-width) solid var(--cm-forced-focus-outline-color, var(--cm-color-focus-ring));
+  outline-offset: var(--cm-border-width-thick);
 }
 
 :is(.cm-dialog--dividers .cm-dialog__header, .cm-drawer--dividers .cm-drawer__header)::after {

@@ -61,6 +61,7 @@
 }
 
 .cm-button--success {
+  --cm-button-status-color: var(--cm-color-status-success-border);
   --cm-button-hover-background: var(--cm-color-status-success-hover-background);
   --cm-button-active-background: var(--cm-color-status-success-active-background);
 
@@ -69,6 +70,7 @@
 }
 
 .cm-button--info {
+  --cm-button-status-color: var(--cm-color-status-info-border);
   --cm-button-hover-background: var(--cm-color-status-info-hover-background);
   --cm-button-active-background: var(--cm-color-status-info-active-background);
 
@@ -77,6 +79,7 @@
 }
 
 .cm-button--warn {
+  --cm-button-status-color: var(--cm-color-status-warning-border);
   --cm-button-hover-background: var(--cm-color-status-warning-hover-background);
   --cm-button-active-background: var(--cm-color-status-warning-active-background);
 
@@ -85,6 +88,7 @@
 }
 
 .cm-button--help {
+  --cm-button-status-color: var(--cm-color-status-help-border);
   --cm-button-hover-background: var(--cm-color-status-help-hover-background);
   --cm-button-active-background: var(--cm-color-status-help-active-background);
 
@@ -93,6 +97,8 @@
 }
 
 .cm-button--danger {
+  --cm-button-status-color: var(--cm-color-status-danger-border);
+
   background: var(--cm-color-status-danger-solid-background);
   color: var(--cm-color-status-danger-solid-foreground);
 }
@@ -176,9 +182,14 @@
 }
 
 .cm-button:focus-visible {
-  border-color: var(--cm-color-focus-ring);
-  outline: var(--cm-focus-ring-width) solid var(--cm-forced-focus-outline-color, transparent);
-  box-shadow: 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
+  --cm-button-focus-color: color-mix(
+    in oklab,
+    var(--cm-button-status-color),
+    var(--cm-status-focus-tint, transparent 0%)
+  );
+
+  outline: var(--cm-focus-ring-width) solid var(--cm-button-focus-color, var(--cm-color-focus-ring));
+  outline-offset: var(--cm-border-width-thick);
 }
 
 .cm-button__leading,

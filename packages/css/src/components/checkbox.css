@@ -173,6 +173,19 @@
   );
 }
 
+@media (forced-colors: none) {
+  .cm-checkbox:is(.cm-checkbox--invalid, :has(> .cm-checkbox__input[aria-invalid='true']))
+    > .cm-checkbox__input:enabled:is(:checked, :indeterminate)
+    + .cm-checkbox__control {
+    --cm-form-validation-fill: var(--cm-color-status-danger-solid-background);
+    --cm-form-validation-ink: var(--cm-color-status-danger-solid-foreground);
+    --cm-form-validation-hover-fill: var(--cm-color-status-danger-hover-background);
+    --cm-form-validation-active-fill: var(--cm-color-status-danger-active-background);
+
+    border-color: transparent;
+  }
+}
+
 .cm-checkbox__input:disabled + .cm-checkbox__control {
   border-color: var(--cm-color-border-disabled);
   background: var(--cm-color-background-surface-disabled);
