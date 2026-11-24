@@ -5,28 +5,13 @@ import { showcaseComponentCases, showcasePanelExamples } from '../../examples/sh
 import { renderShowcasePanel } from '../../examples/shared/showcase-render.mts';
 import { renderToString } from 'vue/server-renderer';
 import { createSSRApp, createStaticVNode, h } from 'vue';
-import {
-  CmBadge,
-  CmDataTable,
-  CmFieldset,
-  CmGrid,
-  CmIcon,
-  CmIconButton,
-  CmLink,
-  CmPanel,
-  CmRadio,
-} from '@codemonster-ru/ui-vue';
+import { CmBadge, CmFieldset, CmGrid, CmIcon, CmIconButton, CmLink, CmPanel, CmRadio } from '@codemonster-ru/ui-vue';
 import { moon, sun } from '@codemonster-ru/ui-icons';
 import { createServer } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import { renderShowcaseTypography } from '../../examples/shared/showcase-typography.mts';
 import { parseFragment, serialize } from 'parse5';
-import {
-  columns,
-  layoutExamples,
-  layoutPreviewChoices,
-  warehouseEmptyText,
-} from '../../examples/shared/showcase-layout-data.mts';
+import { layoutExamples, layoutPreviewChoices } from '../../examples/shared/showcase-layout-data.mts';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { collectComponentCases } from '../contracts/component-cases.mjs';
@@ -95,6 +80,16 @@ const attr = (node, name) => node.attrs?.find((attribute) => attribute.name === 
 const hasClass = (node, name) => attr(node, 'class')?.value.split(' ').includes(name);
 const hide = (node) => node.attrs.push({ name: 'hidden', value: '' });
 
+function hideOverflowTableRows(table) {
+  const body = findElement(table, (node) => node.tagName === 'tbody');
+  const pageSize = Number(attr(table, 'data-cm-data-table-page-size').value);
+  body.childNodes
+    .filter((node) => attr(node, 'data-cm-data-table-row'))
+    .slice(pageSize)
+    .forEach(hide);
+  return pageSize;
+}
+
 function labelTableViewports(node) {
   const label = attr(node, 'data-showcase-scroll-label');
   if (label) {
@@ -123,17 +118,10 @@ async function renderLayoutExample(slug, renderView) {
 
   if (slug === 'admin-shell') {
     const table = findElement(fragment, (node) => attr(node, 'id')?.value === 'showcase-warehouse');
-    const body = findElement(table, (node) => node.tagName === 'tbody');
-    const emptyTable = parseFragment(
-      await renderMarkup(() =>
-        h(CmDataTable, { id: 'warehouse-empty', columns, rows: [], emptyText: warehouseEmptyText }),
-      ),
-    );
-    const emptyRow = findElement(emptyTable, (node) => hasClass(node, 'cm-data-table__state')).parentNode;
-    emptyRow.attrs.push({ name: 'data-warehouse-empty', value: '' });
-    hide(emptyRow);
-    emptyRow.parentNode = body;
-    body.childNodes.push(emptyRow);
+    const pageSize = hideOverflowTableRows(table);
+    const totalRows = Number(attr(table, 'data-cm-data-table-total-rows').value);
+    const summary = findElement(table, (node) => hasClass(node, 'cm-data-table__pagination-summary'));
+    summary.childNodes[0].value = `1-${Math.min(pageSize, totalRows)} of ${totalRows}`;
   }
   return serialize(fragment);
 }
@@ -204,12 +192,7 @@ async function writeShowcase(contractsDirectory, output, renderView) {
     if (slug !== 'data-table') return html;
     const fragment = parseFragment(html);
     const table = findElement(fragment, (node) => attr(node, 'data-showcase-client-pagination'));
-    const body = findElement(table, (node) => node.tagName === 'tbody');
-    const pageSize = Number(attr(table, 'data-cm-data-table-page-size').value);
-    body.childNodes
-      .filter((node) => attr(node, 'data-cm-data-table-row'))
-      .slice(pageSize)
-      .forEach(hide);
+    hideOverflowTableRows(table);
     const expansion = findElement(
       fragment,
       (node) => attr(node, 'data-showcase-example')?.value === 'data-table-expansion',
