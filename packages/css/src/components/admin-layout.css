@@ -80,6 +80,7 @@
   grid-row: 1;
   flex-direction: column;
   min-inline-size: 0;
+  min-block-size: inherit;
 }
 
 .cm-admin-layout:has(> .cm-admin-layout__aside) > .cm-admin-layout__main {
