@@ -1160,8 +1160,10 @@ async function checkLayoutViewport(page, base, adapter) {
   assert.equal(await preview.locator('.cm-admin-layout__header').getByRole('button').count(), 1);
   await mobileToggle.click();
   await navigation.waitFor();
-  await preview.getByRole('button', { name: 'Close navigation' }).press('Escape');
+  assert(await navigation.evaluate((menu) => menu.closest('aside').contains(document.activeElement)));
+  await page.keyboard.press('Escape');
   await mobileToggle.waitFor();
+  assert(await mobileToggle.evaluate((toggle) => document.activeElement === toggle));
   await checkViewport(page, `${adapter} layouts`);
 }
 

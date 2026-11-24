@@ -77,24 +77,27 @@ test('admin layout toggles the drawer and updates the toggle label', () => {
   assert.equal(toggle.getAttribute('aria-label'), 'Close navigation');
 });
 
-test('admin layout closes the drawer on escape and restores the covered content', async () => {
+test('admin layout focuses the open drawer and restores the toggle on Escape', async () => {
   const document = mount('admin-layout', 'admin-layout', createCmAdminLayoutController);
   const root = document.querySelector('.cm-admin-layout');
   root.setAttribute('data-cm-sidebar-collapsed', 'true');
-  const content = document.querySelector('.cm-admin-layout__content');
+  const main = document.querySelector('.cm-admin-layout__main');
+  const drawer = document.querySelector('.cm-admin-layout__aside');
   const toggle = document.querySelector('[data-cm-mobile-sidebar-toggle]');
   toggle.click();
   await Promise.resolve();
-  assert.equal(content.hasAttribute('inert'), true);
-  assert.equal(toggle.closest('[inert]'), null);
+  assert.equal(toggle.closest('[inert]'), main);
+  assert.equal(document.activeElement, drawer);
 
   const escape = new document.defaultView.KeyboardEvent('keydown', { bubbles: true, key: 'Escape' });
-  root.dispatchEvent(escape);
+  drawer.dispatchEvent(escape);
   await Promise.resolve();
 
   assert.equal(root.getAttribute('data-cm-mobile-sidebar-open'), 'false');
   assert.equal(root.getAttribute('data-cm-sidebar-collapsed'), 'true');
-  assert.equal(content.hasAttribute('inert'), false);
+  assert.equal(main.hasAttribute('inert'), false);
+  assert.equal(drawer.hasAttribute('tabindex'), false);
+  assert.equal(document.activeElement, toggle);
 });
 
 test('setup layout advances on enter but not from a textarea', () => {

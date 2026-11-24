@@ -16,10 +16,10 @@ their own controls.
 
 `CmAdminLayout` is an application shell: a collapsible sidebar, a header, page content, and an
 optional footer. When the layout container is narrower than 64rem, the sidebar becomes a drawer.
-Once enhanced, its backdrop covers the content and footer and removes their controls from keyboard
-navigation while the drawer is open. The header and navigation toggle remain usable. Escape closes
-the drawer and returns focus to the toggle when focus was inside the drawer. The desktop collapsed
-preference is preserved.
+Once enhanced, the drawer opens from the visible top edge of the layout over the header. The
+backdrop covers the main column, and its controls leave the keyboard navigation order while the
+drawer is open. Press Escape or click the backdrop to close it and return focus to the toggle.
+The desktop collapsed preference is preserved.
 
 Use `defaultSidebarCollapsed` or `defaultMobileSidebarOpen` for an initial uncontrolled state.
 Use `v-model:sidebar-collapsed` and `v-model:mobile-sidebar-open` when the parent owns state.

@@ -135,6 +135,7 @@ function boxes() {
       ringTop: y - ring,
       ringBottom: y + height + ring,
       center: hits[1] === element || element.contains(hits[1]),
+      coveredByDrawer: hits[1] === backdrop || aside?.contains(hits[1]),
       headerCoversRing: [header, outer].some((bar) => bar?.contains(hits[0])),
       blockedBy: hits[1]?.id || hits[1]?.className || hits[1]?.localName,
     };
@@ -147,6 +148,7 @@ function boxes() {
     outerHeader: rect(outer),
     drawer: rect(aside),
     scroll: rect(scroll),
+    scrollportTop: scroll === document.scrollingElement ? 0 : scroll.getBoundingClientRect().top + scroll.clientTop,
     scrollTop: scroll.scrollTop,
     root: body,
     scrollWidth: document.documentElement.scrollWidth,
@@ -157,6 +159,7 @@ function boxes() {
     focus: {
       id: active.id,
       toggle: active === mobile,
+      inDrawer: aside?.contains(active),
       visibleStyle: active.matches(':focus-visible'),
       ...rect(active),
       ...hit(active, true),
@@ -319,6 +322,15 @@ async function checkLayout(page, row, output) {
   await button.press('Enter');
   await settle(page);
   row.opened = await measure();
+  const overlaysHeader = ({ root, outerHeader, scrollportTop, header, drawer, backdrop, toggle }) => {
+    const top = Math.max(root.y, outerHeader?.bottom ?? 0, scrollportTop);
+    return (
+      Math.abs(drawer.y - top) <= 0.5 &&
+      Math.abs(backdrop.y - top) <= 0.5 &&
+      drawer.y < header.bottom &&
+      toggle.coveredByDrawer
+    );
+  };
   if (row.safeArea) {
     const { header, toggle, drawer, first, viewport } = row.opened;
     verify(
@@ -328,6 +340,7 @@ async function checkLayout(page, row, output) {
         header.paddingLeft >= 30 &&
         header.paddingRight >= 30 &&
         toggle.x >= 30 &&
+        drawer.paddingTop >= 36 &&
         drawer.paddingBottom >= 24 &&
         first.x >= 30 &&
         first.right <= viewport[0] - 30,
@@ -335,25 +348,16 @@ async function checkLayout(page, row, output) {
   }
   verify(
     row,
-    'Enter opens a visible drawer and keeps its close control exposed',
+    'Enter opens a visible drawer and moves focus inside it',
     row.opened.open === 'true' &&
       row.opened.drawer.visibility === 'visible' &&
-      row.opened.toggle.center &&
+      row.opened.focus.inDrawer &&
       (await button.getAttribute('aria-expanded')) === 'true',
   );
-  verify(
-    row,
-    'open drawer starts at or below the actual header edge',
-    row.opened.drawer.y >= row.opened.header.bottom - 0.5,
-  );
+  verify(row, 'drawer and backdrop start at the visible top and cover the header', overlaysHeader(row.opened));
   verify(row, 'first item receives a native pointer hit', row.opened.first.center);
-  const content = page.locator('[data-fixture-subject] > .cm-admin-layout__main > main');
-  verify(row, 'content behind the backdrop is inert', (await content.getAttribute('inert')) !== null);
-  verify(
-    row,
-    'the visible navigation toggle is outside the inert region',
-    (await button.evaluate((el) => el.closest('[inert]'))) === null,
-  );
+  const main = page.locator('[data-fixture-subject] > .cm-admin-layout__main');
+  verify(row, 'the header and content behind the backdrop are inert', (await main.getAttribute('inert')) !== null);
   await shot(page, row, 'opened', output);
   if (row.safe) {
     await page.evaluate(() => {
@@ -367,12 +371,11 @@ async function checkLayout(page, row, output) {
     row.dynamic = await measure();
     verify(
       row,
-      'open drawer tracks a taller header and a moved scrollport',
+      'open drawer covers the header after a resize and scroll',
       row.dynamic.header.height > row.opened.header.height &&
         row.dynamic.scrollTop > row.opened.scrollTop &&
-        row.dynamic.drawer.y >= row.dynamic.header.bottom - 0.5 &&
-        row.dynamic.first.center &&
-        row.dynamic.toggle.center,
+        overlaysHeader(row.dynamic) &&
+        row.dynamic.first.center,
     );
     await shot(page, row, 'resized-and-scrolled', output);
     await page.evaluate((oldScroll) => {
@@ -410,7 +413,7 @@ async function checkLayout(page, row, output) {
       row.escaped.focus.toggle &&
       (await button.getAttribute('aria-expanded')) === 'false',
   );
-  verify(row, 'content is interactive again after Escape', (await content.getAttribute('inert')) === null);
+  verify(row, 'the main column is interactive again after Escape', (await main.getAttribute('inert')) === null);
   const { x, y, width, height } = row.escaped.toggle;
   await page.mouse.click(x + width / 2, y + height / 2);
   await settle(page);
@@ -472,11 +475,12 @@ async function checkLayout(page, row, output) {
   row.backdropClosed = await measure();
   verify(
     row,
-    'the backdrop receives a native pointer hit and closes the drawer',
+    'the backdrop receives a native pointer hit, closes the drawer and restores focus',
     backdropPoint &&
       row.backdropClick?.trusted &&
       row.backdropClick.target === 'cm-admin-layout__mobile-backdrop' &&
-      row.backdropClosed.open === 'false',
+      row.backdropClosed.open === 'false' &&
+      row.backdropClosed.focus.toggle,
   );
 }
 
