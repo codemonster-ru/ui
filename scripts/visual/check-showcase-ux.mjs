@@ -549,12 +549,12 @@ async function checkFeedbackExamples(page, adapter) {
   assert.equal(await animation(shimmer, '::after'), 'none');
   const demo = exampleDemo(page, 'skeleton-gate-ready');
   assert.equal(await page.locator('#demo-skeleton-gate .showcase-demo').count(), 1);
-  const gate = demo.locator('.cm-skeleton-gate');
+  const card = demo.locator('.cm-card');
+  assert.equal(await card.count(), 1);
+  const gate = card.locator('.cm-skeleton-gate');
   const overlay = gate.locator('.cm-skeleton-gate__overlay');
   const content = gate.locator('.cm-skeleton-gate__content');
   const load = demo.getByRole('button', { name: 'Load invoice', exact: true });
-  const card = demo.locator('.cm-card').filter({ has: gate });
-  assert.equal(await demo.locator('.cm-card').count(), 1);
   const height = () => card.evaluate((element) => element.getBoundingClientRect().height);
   await overlay.waitFor({ state: 'hidden' });
   await card.getByRole('heading', { name: 'Invoice INV-1042', exact: true }).waitFor();
