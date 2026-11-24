@@ -1,3 +1,5 @@
+import { findShellControl } from './shell-ownership.js';
+
 const outerShell = '.cm-admin-shell, .cm-admin-layout';
 const headerSelector = ':scope > .cm-admin-layout__main > .cm-admin-layout__header';
 const measuredAttribute = 'data-cm-admin-layout-measured';
@@ -9,42 +11,59 @@ const stickyStart = '--cm-admin-layout-sticky-start';
 export function observeAdminLayoutGeometry(root: Element): () => void {
   const view = root.ownerDocument.defaultView;
   const header = root.querySelector<HTMLElement>(headerSelector);
-  const drawer = root.querySelector(':scope > .cm-admin-layout__aside');
-  if (!view || !(root instanceof view.HTMLElement) || !header || !drawer) return () => {};
+  const main = header?.parentElement;
+  const drawer = root.querySelector<HTMLElement>(':scope > .cm-admin-layout__aside');
+  if (!view || !(root instanceof view.HTMLElement) || !header || !main || !drawer) return () => {};
 
   const ancestors: HTMLElement[] = [];
   const outerHeaders: HTMLElement[] = [];
-  for (let node = header.parentElement; node; node = node.parentElement) {
+  for (let node: HTMLElement | null = main; node; node = node.parentElement) {
     ancestors.push(node);
     if (node === root || !node.matches(outerShell)) continue;
     const topbar = node.querySelector<HTMLElement>(`:scope > .cm-admin-shell__topbar, ${headerSelector}`);
     if (topbar) outerHeaders.push(topbar);
   }
 
-  const main = root.querySelector(':scope > .cm-admin-layout__main');
   const backdrop = root.querySelector(':scope > .cm-admin-layout__mobile-backdrop');
-  const ownedInert = new Set<HTMLElement>();
+  const { ownerDocument } = root;
   const visualViewport = view.visualViewport;
   let tracksScroll = false;
-  const releaseCoveredRegions = () => {
-    for (const region of ownedInert) region.removeAttribute('inert');
-    ownedInert.clear();
+  let overlayOpen = false;
+  let ownsInert = false;
+  let ownsDrawerTabIndex = false;
+  const releaseOverlay = () => {
+    if (ownsInert) main.removeAttribute('inert');
+    if (ownsDrawerTabIndex) drawer.removeAttribute('tabindex');
+    ownsInert = false;
+    ownsDrawerTabIndex = false;
   };
-  const updateCoveredRegions = () => {
-    if (!tracksScroll || !backdrop || root.getAttribute(openAttribute) !== 'true') {
-      releaseCoveredRegions();
+  const updateOverlay = () => {
+    const open = tracksScroll && backdrop !== null && root.getAttribute(openAttribute) === 'true';
+    if (overlayOpen === open) return;
+    overlayOpen = open;
+    const active = ownerDocument.activeElement;
+    if (!open) {
+      releaseOverlay();
+      if (tracksScroll && (drawer.contains(active) || active === ownerDocument.body)) {
+        const toggle =
+          findShellControl(root, '[data-cm-mobile-sidebar-toggle]:not(:disabled, [aria-disabled="true"])') ??
+          header.querySelector<HTMLElement>(
+            '.cm-admin-layout__mobile-toggle :is(button, [tabindex="0"]):not(:disabled, [aria-disabled="true"])',
+          );
+        toggle?.focus({ preventScroll: true });
+      }
       return;
     }
-    const coveredRegions = main?.querySelectorAll<HTMLElement>(
-      ':scope > :is(.cm-admin-layout__content, .cm-admin-layout__footer)',
-    );
-    for (const region of coveredRegions ?? []) {
-      if (region.hasAttribute('inert')) continue;
-      if (region.contains(root.ownerDocument.activeElement)) {
-        header.querySelector<HTMLElement>('[data-cm-mobile-sidebar-toggle]')?.focus({ preventScroll: true });
+    if (main.contains(active) || active === ownerDocument.body) {
+      if (!drawer.hasAttribute('tabindex')) {
+        drawer.tabIndex = -1;
+        ownsDrawerTabIndex = true;
       }
-      region.setAttribute('inert', '');
-      ownedInert.add(region);
+      drawer.focus({ preventScroll: true });
+    }
+    if (!main.hasAttribute('inert')) {
+      main.setAttribute('inert', '');
+      ownsInert = true;
     }
   };
   const setPixels = (name: string, value: number) => {
@@ -64,7 +83,7 @@ export function observeAdminLayoutGeometry(root: Element): () => void {
         visualViewport?.removeEventListener('scroll', schedule);
       }
     }
-    updateCoveredRegions();
+    updateOverlay();
     if (!mobile) return;
 
     const bounds = root.getBoundingClientRect();
@@ -92,7 +111,7 @@ export function observeAdminLayoutGeometry(root: Element): () => void {
         : edge;
     }, scrollportTop ?? 0);
     setPixels(stickyStart, (stickyBottom - (scrollportTop ?? 0)) / scale);
-    const start = Math.max(top, header.getBoundingClientRect().bottom);
+    const start = Math.max(top, bounds.top, stickyBottom);
     setPixels(drawerStart, (start - bounds.top) / scale - root.clientTop + root.scrollTop);
     setPixels(drawerSize, Math.max(0, (bottom - start) / scale));
     if (!root.hasAttribute(measuredAttribute)) root.setAttribute(measuredAttribute, '');
@@ -110,9 +129,8 @@ export function observeAdminLayoutGeometry(root: Element): () => void {
       update();
     });
   };
-  const states = typeof view.MutationObserver === 'function' ? new view.MutationObserver(updateCoveredRegions) : null;
+  const states = typeof view.MutationObserver === 'function' ? new view.MutationObserver(updateOverlay) : null;
   states?.observe(root, { attributes: true, attributeFilter: [openAttribute] });
-  if (main) states?.observe(main, { childList: true });
   const resize = typeof view.ResizeObserver === 'function' ? new view.ResizeObserver(schedule) : null;
   for (const element of [root, header, ...ancestors, ...outerHeaders]) resize?.observe(element);
   view.addEventListener('resize', schedule);
@@ -120,7 +138,7 @@ export function observeAdminLayoutGeometry(root: Element): () => void {
   update();
   return () => {
     states?.disconnect();
-    releaseCoveredRegions();
+    releaseOverlay();
     resize?.disconnect();
     if (frame) view.cancelAnimationFrame(frame);
     view.removeEventListener('scroll', schedule, true);

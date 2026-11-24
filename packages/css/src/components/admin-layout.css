@@ -200,6 +200,10 @@
     translate: 100% 0;
   }
 
+  .cm-admin-layout[data-cm-admin-layout-measured] > .cm-admin-layout__aside {
+    padding-block-start: env(safe-area-inset-top, 0);
+  }
+
   .cm-admin-layout__aside > :is(.cm-admin-layout__brand, .cm-admin-layout__aside-content) {
     padding-left: max(var(--cm-space-3), env(safe-area-inset-left, 0px));
     padding-right: max(var(--cm-space-3), env(safe-area-inset-right, 0px));
@@ -224,7 +228,6 @@
 
   .cm-admin-layout__header {
     inset-block-start: var(--cm-admin-layout-sticky-start, 0);
-    z-index: calc(var(--cm-z-index-sticky, 10) + 3);
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     padding-block-start: max(var(--cm-space-2), env(safe-area-inset-top, 0px));
