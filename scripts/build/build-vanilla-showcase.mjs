@@ -38,11 +38,12 @@ function escapeHtml(text) {
 
 const packageStylesheet = './css/preview.css';
 
-function page(title, content, script, { base = '', styles = ['./css/showcase.css'] } = {}) {
+function page(title, content, script, { base = '', styles = ['./css/showcase.css'], restoreScroll = true } = {}) {
   return `<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
+  ${restoreScroll ? '' : "<script>history.scrollRestoration = 'manual';</script>"}
   ${base ? `<base href="${base}" />` : ''}
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>${escapeHtml(title)}</title>
@@ -340,7 +341,10 @@ async function writeShowcase(contractsDirectory, output, renderView) {
       ],
       'showcase-page',
     );
-    return page(`${label} · CodeMonster UI Vanilla`, content, 'showcase.js', { base });
+    return page(`${label} · CodeMonster UI Vanilla`, content, 'showcase.js', {
+      base,
+      restoreScroll: current !== 'layouts',
+    });
   }
 
   await Promise.all([

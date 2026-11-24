@@ -144,6 +144,7 @@ async function checkDevelopmentPreviews(base) {
     await preview.contentFrame().getByRole('tab', { name: 'With aside' }).waitFor();
     await shell.getByRole('radio', { name: '320 px' }).press('Space');
     await expectPreviewWidth(preview, 320);
+    await checkLayoutReload(page, base);
     assert.deepEqual(errors, [], 'Vue dev preview network/runtime errors');
     console.log('Vue dev: initial inline examples, scrolling, and resizable layout preview passed');
   } finally {
@@ -1152,6 +1153,27 @@ async function expectPreviewWidth(frame, width) {
   assert.equal(await frame.evaluate((iframe) => iframe.contentWindow.innerWidth), width);
 }
 
+async function checkLayoutReload(page, base) {
+  await page.goto(url(base, 'layouts/'));
+  const preview = page.locator('#demo-setup-layout iframe');
+  const user = preview.contentFrame().getByRole('textbox', { name: 'Database user' });
+
+  for (const returnToTop of [false, true]) {
+    await preview.scrollIntoViewIfNeeded();
+    await user.click();
+    assert(await page.evaluate(() => scrollY > 0), 'Setup preview is below the fold');
+    if (returnToTop) {
+      await page.evaluate(() => window.scrollTo(0, 0));
+      await page.mouse.click(1, 1);
+    }
+    await page.reload();
+    await page.locator('#demo-setup-layout').waitFor();
+    assert.equal(await page.evaluate(() => history.scrollRestoration), 'manual');
+    assert.equal(await page.evaluate(() => scrollY), 0, 'Reload starts at the top of Layouts');
+    assert.equal(await preview.evaluate((frame) => frame === document.activeElement), false);
+  }
+}
+
 async function checkSetupLayout(page, base) {
   await page.goto(url(base, 'layouts/'));
   const example = page.locator('#demo-setup-layout');
@@ -1837,6 +1859,7 @@ async function checkAdapter([adapter, base]) {
           await checkWarehouse(page, base, adapter);
           await checkAuthForm(page, base, adapter);
           await checkSetupLayout(page, base);
+          await checkLayoutReload(page, base);
           await checkIconSearch(page, base);
           await checkThemePreference(page, base);
         }

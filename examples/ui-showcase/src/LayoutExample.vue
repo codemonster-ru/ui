@@ -279,10 +279,17 @@ function setMode(value: string) {
       </CmField>
       <div class="layout-example__field-row">
         <CmField v-slot="{ controlId }" control-id="setup-preview-user" label="Database user">
-          <CmInput :id="controlId" v-model="database.user" placeholder="annabel_user" />
+          <CmInput :id="controlId" v-model="database.user" autocomplete="off" placeholder="annabel_user" />
         </CmField>
         <CmField v-slot="{ controlId }" control-id="setup-preview-password" label="Database password">
-          <CmInput :id="controlId" v-model="database.password" type="password" placeholder="Password" password-reveal />
+          <CmInput
+            :id="controlId"
+            v-model="database.password"
+            type="password"
+            autocomplete="new-password"
+            placeholder="Password"
+            password-reveal
+          />
         </CmField>
       </div>
     </CmStack>
