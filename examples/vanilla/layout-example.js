@@ -17,6 +17,47 @@ root.addEventListener('click', ({ target }) => {
   if (!setup) selectShowcaseNavItem(target.closest('[data-cm-nav-menu-value]'));
 });
 
+if (slug === 'admin-shell') {
+  const warehouse = root.querySelector('.layout-example__warehouse');
+  const trigger = root.querySelector('[data-warehouse-navigation-toggle]');
+  const drawer = root.querySelector('#warehouse-drawer');
+  const drawerSlot = root.querySelector('#warehouse-drawer-navigation');
+  const navigation = root.querySelector('#warehouse-navigation');
+  const sidebarSlot = navigation.parentElement;
+  const mobile = window.matchMedia(`(width < ${trigger.dataset.warehouseNavigationToggle}px)`);
+  const requestClose = () => drawer.dispatchEvent(new CustomEvent('cm:drawer-close-request'));
+
+  function syncWarehouseNavigation({ matches }) {
+    if (matches === warehouse.hasAttribute('data-warehouse-mobile')) return;
+    const focused = document.activeElement;
+    const restoreFocus = document.hasFocus() && (drawer.open || focused === trigger || navigation.contains(focused));
+    warehouse.toggleAttribute('data-warehouse-mobile', matches);
+    if (!matches) requestClose();
+    (matches ? drawerSlot : sidebarSlot).append(navigation);
+    if (restoreFocus) {
+      const current = navigation.querySelector('[aria-current="page"]');
+      const desktopTarget =
+        current?.getClientRects().length && getComputedStyle(current).visibility === 'visible'
+          ? current
+          : navigation.querySelector('button');
+      (matches ? trigger : desktopTarget)?.focus({ preventScroll: true });
+    }
+  }
+
+  trigger.addEventListener('click', () => {
+    trigger.focus({ preventScroll: true });
+    drawer.dispatchEvent(new CustomEvent('cm:drawer-open-request'));
+  });
+  drawer.addEventListener('cm:drawer-open-change', ({ detail: { open } }) => {
+    trigger.setAttribute('aria-expanded', String(open));
+  });
+  drawer.addEventListener('click', ({ target }) => {
+    if (target.closest('[data-cm-nav-menu-value]:not(:disabled, [aria-disabled="true"])')) requestClose();
+  });
+  syncWarehouseNavigation(mobile);
+  mobile.addEventListener('change', syncWarehouseNavigation);
+}
+
 if (shell) {
   const prefix = 'cm-' + slug;
   const modes = ['content', 'sidebar-content', 'sidebar-content-aside'];
