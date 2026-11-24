@@ -23,7 +23,6 @@ const visualOptions: Record<string, Record<string, string[]>> = {
   'link/default': { tone: ['muted'], underline: ['hover', 'always'] },
   'avatar/image': { shape: ['circle'] },
   'container/default': { size: ['md', 'lg'] },
-  'setup-layout/default': { asidePosition: ['right'] },
   'form-layout/default': { mode: ['stacked', 'horizontal'] },
   'sidebar-area/default': { appearance: ['plain'] },
   'aside-area/default': { appearance: ['plain'] },

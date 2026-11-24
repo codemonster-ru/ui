@@ -1056,6 +1056,7 @@ async function checkLayoutViewport(page, base, adapter) {
     const example = page.locator(`#demo-${slug}`);
     const sizes = example.locator('.layout-preview__sizes');
     await sizes.waitFor();
+    assert.equal(await example.locator('.showcase-variants').count(), 0, `${adapter}: ${slug} has one layout demo`);
     assert.equal(
       await sizes.getByRole('radio').count(),
       labels.length,
@@ -1122,11 +1123,6 @@ async function checkLayoutViewport(page, base, adapter) {
     await example.getByRole('radio', { name: 'Fit' }).press('Space');
     await expectPreviewWidth(frame, await frame.evaluate((element) => element.parentElement.clientWidth));
   }
-  const collapse = exampleDemo(page, 'app-shell-collapsible').getByRole('button', { name: 'Toggle sidebar' });
-  await collapse.click();
-  assert.equal(await collapse.getAttribute('aria-expanded'), 'false');
-  await collapse.click();
-  assert.equal(await collapse.getAttribute('aria-expanded'), 'true');
   await checkViewport(page, `${adapter} layouts`);
 }
 

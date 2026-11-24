@@ -39,7 +39,6 @@ import {
   isShowcaseValueValid,
   modalExamples,
   scopeShowcaseAttribute,
-  showcaseDemoClass,
   showcaseExamplePrefix,
   skeletonLoadDelay,
 } from './showcase-inline.mjs';
@@ -381,7 +380,7 @@ const Example = defineComponent({
         'div',
         {
           id: example.buttonStyle || modal ? id : undefined,
-          class: showcaseDemoClass(example.slug),
+          class: 'showcase-demo',
           'data-showcase-example': example.id,
           onClick: (event: MouseEvent) => handleShowcaseDemoClick(event.currentTarget as HTMLElement, event),
           onChange:
