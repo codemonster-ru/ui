@@ -1,9 +1,5 @@
 import showcasePages from '../../examples/shared/showcase-pages.json' with { type: 'json' };
-import {
-  coreShowcaseGroups,
-  renderLayoutSectionNavigation,
-  renderShowcaseNavigation,
-} from '../../examples/shared/showcase-navigation.mts';
+import { coreShowcaseGroups, renderShowcaseNavigation } from '../../examples/shared/showcase-navigation.mts';
 import { scopeShowcaseAttribute } from '../../examples/shared/showcase-inline.mjs';
 import { showcaseComponentCases, showcasePanelExamples } from '../../examples/shared/showcase-cases.mts';
 import { renderShowcasePanel } from '../../examples/shared/showcase-render.mts';
@@ -310,7 +306,7 @@ async function writeShowcase(contractsDirectory, output, renderView) {
     icons: sections.get('icons'),
   };
   async function renderPage(current, base, path) {
-    const { label, title } = showcasePages.find(({ id }) => id === current);
+    const { label } = showcasePages.find(({ id }) => id === current);
     const content = await renderMarkup(
       () => [
         h(CmLink, { class: 'showcase-skip', href: `${path}#showcase-main` }, () => 'Skip to content'),
@@ -336,14 +332,7 @@ async function writeShowcase(contractsDirectory, output, renderView) {
           ]),
         ]),
         h('main', { id: 'showcase-main', class: 'showcase-content', tabindex: -1 }, [
-          current === 'core'
-            ? h('h1', { class: 'showcase-page-heading' }, label)
-            : title
-              ? h('header', { class: 'showcase-intro' }, [
-                  h('h1', title),
-                  current === 'layouts' ? renderLayoutSectionNavigation(path) : null,
-                ])
-              : null,
+          current === 'core' || current === 'layouts' ? h('h1', { class: 'showcase-page-heading' }, label) : null,
           h('div', { class: ['showcase-catalog', current === 'core' && 'showcase-core'] }, [
             createStaticVNode(pages[current], 1),
           ]),

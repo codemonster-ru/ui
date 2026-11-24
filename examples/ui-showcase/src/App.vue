@@ -8,11 +8,7 @@ import { defineAsyncComponent, type Component } from 'vue';
 import { moon, sun } from '@codemonster-ru/ui-icons';
 import LayoutShowcase from './LayoutShowcase.vue';
 import { CmBadge, CmGrid, CmIcon, CmIconButton, CmLink, CmPanel, useCmTheme } from '@codemonster-ru/ui-vue';
-import {
-  coreShowcaseGroups,
-  renderLayoutSectionNavigation,
-  renderShowcaseNavigation,
-} from '../../shared/showcase-navigation.mts';
+import { coreShowcaseGroups, renderShowcaseNavigation } from '../../shared/showcase-navigation.mts';
 import { revealShowcaseLink } from '../../shared/showcase-navigation.js';
 
 const IconsShowcase = defineAsyncComponent(async () => (await import('./IconsShowcase.vue')) as { default: Component });
@@ -21,7 +17,6 @@ const page = showcasePages.find(({ id }) => id === pageId) ?? showcasePages[0];
 const currentPage = page.id;
 document.title = `${page.label} · CodeMonster UI Vue`;
 const Navigation = () => renderShowcaseNavigation(currentPage, location.pathname, '');
-const LayoutNavigation = () => renderLayoutSectionNavigation('');
 const Typography = () => renderShowcaseTypography();
 
 const { resolvedTheme, toggleTheme } = useCmTheme();
@@ -50,12 +45,8 @@ const { resolvedTheme, toggleTheme } = useCmTheme();
     :class="{ 'showcase-layouts': currentPage === 'layouts' }"
     tabindex="-1"
   >
-    <header v-if="page.title" class="showcase-intro">
-      <h1>{{ page.title }}</h1>
-      <LayoutNavigation v-if="currentPage === 'layouts'" />
-    </header>
+    <h1 v-if="currentPage === 'core' || currentPage === 'layouts'" class="showcase-page-heading">{{ page.label }}</h1>
     <template v-if="currentPage === 'core'">
-      <h1 class="showcase-page-heading">{{ page.label }}</h1>
       <template v-for="{ id, title, components } in coreShowcaseGroups" :key="id">
         <Typography v-if="id === 'actions'" />
         <CmPanel :id="id" class="showcase-group" :aria-labelledby="`group-${id}`" tabindex="-1">
