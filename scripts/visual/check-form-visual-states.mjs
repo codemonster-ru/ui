@@ -74,10 +74,18 @@ async function checkFloatingLabels(page, platform, theme) {
     const input = page.locator(control);
     assert(await input.evaluate((element) => element.matches(':focus-visible')), `${caseId} receives keyboard focus`);
     const fieldSurface = await input.evaluate((element) => getComputedStyle(element).backgroundColor);
-    const checkFocusedLabel = async () => {
-      const outline = await input.evaluate((element) => getComputedStyle(element).outlineColor);
+    const checkFocusedLabel = async (status) => {
+      const expectedColor = await input.evaluate((element, status) => {
+        if (!status) return getComputedStyle(element).outlineColor;
+        const sample = document.createElement('span');
+        sample.style.color = `var(--cm-color-status-${status}-subtle-foreground)`;
+        element.parentElement.append(sample);
+        const { color } = getComputedStyle(sample);
+        sample.remove();
+        return color;
+      }, status);
       const { color, backgroundColor } = await readLabel();
-      assert.equal(color, outline, `${caseId} label matches the focus outline`);
+      assert.equal(color, expectedColor, `${caseId} label uses the ${status ?? 'neutral focus'} color`);
       assert.equal(backgroundColor, fieldSurface, `${caseId} label uses the field surface`);
       const [contrast] = await readContrasts(page, [[label, 'color', label, 'backgroundColor']]);
       assert(contrast >= 4.5, `${caseId} focused label contrast is ${contrast.toFixed(2)}:1`);
@@ -85,7 +93,21 @@ async function checkFloatingLabels(page, platform, theme) {
     await checkFocusedLabel();
 
     if (caseId === 'field-floating-in') {
-      await input.evaluate((element) => element.setAttribute('readonly', ''));
+      const floatingLabel = page.locator(label);
+      const neutralBox = await floatingLabel.boundingBox();
+      await input.evaluate((element) => element.setAttribute('data-cm-valid', 'true'));
+      await checkFocusedLabel('success');
+      assert.deepEqual(await floatingLabel.boundingBox(), neutralBox, 'a valid label keeps its geometry');
+
+      await input.evaluate((element) => element.setAttribute('aria-invalid', 'true'));
+      await checkFocusedLabel('danger');
+      assert.deepEqual(await floatingLabel.boundingBox(), neutralBox, 'an invalid label keeps its geometry');
+
+      await input.evaluate((element) => {
+        element.removeAttribute('data-cm-valid');
+        element.removeAttribute('aria-invalid');
+        element.setAttribute('readonly', '');
+      });
       await checkFocusedLabel();
     }
 
@@ -154,8 +176,6 @@ const formFocusCases = [
 
 async function checkFormFocus(page, platform, theme, caseTest) {
   for (const [caseId, name] of formFocusCases) {
-    await openCase(page, platform, theme, caseId);
-    await page.mouse.move(0, 0);
     const compact = ['checkbox', 'radio', 'switch'].includes(name);
     const focusSelector = compact ? `.cm-${name}__input` : `.cm-${name}`;
     const paintSelector = compact ? `.cm-${name}__control` : focusSelector;
@@ -164,126 +184,134 @@ async function checkFormFocus(page, platform, theme, caseTest) {
     const filledChoice = ['checkbox-checked', 'checkbox-indeterminate', 'switch-checked'].includes(caseId);
     const markSelector = name === 'switch' ? '.cm-switch__thumb' : '.cm-checkbox__mark';
     const markColor = caseId === 'checkbox-checked' ? 'borderBlockEndColor' : 'backgroundColor';
-    const [validColor, invalidColor, neutralColor] = await focus.evaluate((element, name) => {
-      element.removeAttribute('aria-invalid');
-      element.closest(`.cm-${name}`).classList.remove(`cm-${name}--invalid`);
-      element.setAttribute('data-cm-valid', 'true');
-      const sample = document.createElement('span');
-      element.parentElement.append(sample);
-      const colors = ['status-success-border', 'status-danger-border', 'focus-ring'].map((token) => {
-        sample.style.color = `var(--cm-color-${token})`;
-        return getComputedStyle(sample).color;
-      });
-      sample.remove();
-      return colors;
-    }, name);
-    const readBorder = () => paint.evaluate((element) => getComputedStyle(element).borderBlockStartColor);
-    assert.equal(await readBorder(), validColor, `${caseId} shows the success border at rest`);
-    assert.equal(await paint.evaluate((element) => getComputedStyle(element).outlineStyle), 'none');
-
-    await page.keyboard.press(tabKey);
-    assert(
-      await focus.evaluate((element) => element.matches(':focus-visible')),
-      `${caseId} receives focus by ${tabKey}`,
-    );
-    for (const [state, color] of [
-      ['valid', validColor],
-      ['invalid', invalidColor],
-      ['neutral', neutralColor],
-    ]) {
-      if (state === 'invalid') await focus.evaluate((element) => element.setAttribute('aria-invalid', 'true'));
-      if (state === 'neutral') {
-        await focus.evaluate((element) => {
-          element.removeAttribute('data-cm-valid');
-          element.removeAttribute('aria-invalid');
-        });
-        await page.mouse.move(0, 0);
-        assert.equal(await readBorder(), neutralColor, `${caseId} uses the shared focus color before hover`);
-      }
-
-      await paint.hover();
-      const outline = await paint.evaluate((element) => {
-        const style = getComputedStyle(element);
-        return {
-          style: style.outlineStyle,
-          width: style.outlineWidth,
-          offset: style.outlineOffset,
-          color: style.outlineColor,
-        };
-      });
-      const label = `${caseId} ${state}`;
-      assert.equal(outline.style, 'solid', `${label} focus outline`);
-      assert.equal(outline.width, '2px', `${label} focus width`);
-      assert.equal(outline.offset, '0px', `${label} no gap between focus outline and control`);
-      assert.equal(outline.color, await readBorder(), `${label} outline matches the border while focused`);
-      assert.equal(outline.color, color, `${label} uses the expected color on focus and hover`);
-      const [surfaceContrast, fillContrast] = await readContrasts(page, [
-        [paintSelector, 'outlineColor', '#visual-root', 'backgroundColor'],
-        [paintSelector, 'outlineColor', paintSelector, 'backgroundColor'],
-      ]);
-      assert(surfaceContrast >= 3, `${label} focus contrast against the surface is ${surfaceContrast.toFixed(2)}:1`);
-      if (filledChoice) {
-        if (state !== 'neutral') {
-          assert(fillContrast >= 3, `${label} focus contrast against the fill is ${fillContrast.toFixed(2)}:1`);
-        }
-        const [markContrast] = await readContrasts(page, [[markSelector, markColor, paintSelector, 'backgroundColor']]);
-        assert(markContrast >= 3, `${label} selection mark contrast is ${markContrast.toFixed(2)}:1`);
-        caseTest.diagnostic(`${label} focus and hover contrast against the fill: ${fillContrast.toFixed(2)}:1`);
-      }
-    }
-
-    if (filledChoice) {
-      const readChoiceColors = () =>
-        paint.evaluate(
-          (element, { markSelector, markColor }) => {
+    const readPaint = () =>
+      paint.evaluate(
+        (element, { filledChoice, markSelector, markColor }) => {
+          const style = getComputedStyle(element);
+          const colors = { fill: style.backgroundColor, ink: style.color };
+          if (filledChoice) {
             const mark = getComputedStyle(element.querySelector(markSelector));
-            return { fill: getComputedStyle(element).backgroundColor, mark: mark[markColor], icon: mark.color };
-          },
-          { markSelector, markColor },
-        );
-      const focusedHover = await readChoiceColors();
-      await page.mouse.move(0, 0);
-      const focusedRest = await readChoiceColors();
-      await focus.blur();
-      const checkChoiceEdge = async (state) => {
-        assert.equal(await readBorder(), 'rgba(0, 0, 0, 0)', `${caseId} ${state} shows a single colored fill`);
-        const [contrast] = await readContrasts(page, [
-          [paintSelector, 'backgroundColor', '#visual-root', 'backgroundColor'],
-        ]);
-        assert(contrast >= 3, `${caseId} ${state} contrasts with the surrounding surface by ${contrast.toFixed(2)}:1`);
-      };
-      await checkChoiceEdge('at rest');
-      assert.deepEqual(await readChoiceColors(), focusedRest, `${caseId} keeps its fill and mark on focus`);
-      await paint.hover();
-      await checkChoiceEdge('on hover');
-      assert.deepEqual(await readChoiceColors(), focusedHover, `${caseId} keeps its hover fill and mark on focus`);
-      await page.mouse.down();
-      await checkChoiceEdge('when pressed');
-      await page.mouse.move(0, 0);
-      await page.mouse.up();
+            colors.mark = mark[markColor];
+            colors.icon = mark.color;
+          }
+          return {
+            colors,
+            border: style.borderBlockStartColor,
+            borderWidth: style.borderBlockStartWidth,
+            shadow: style.boxShadow,
+            outline: {
+              style: style.outlineStyle,
+              width: style.outlineWidth,
+              offset: style.outlineOffset,
+              color: style.outlineColor,
+            },
+          };
+        },
+        { filledChoice, markSelector, markColor },
+      );
 
-      for (const [state, color] of [
-        ['valid', validColor],
-        ['invalid', invalidColor],
-      ]) {
-        await page.mouse.move(1, 1);
-        await focus.evaluate((element, state) => {
-          element.setAttribute('data-cm-valid', 'true');
+    for (const state of ['neutral', 'valid', 'invalid']) {
+      await openCase(page, platform, theme, caseId);
+      await page.mouse.move(0, 0);
+      const [validColor, invalidColor, focusColor] = await focus.evaluate(
+        (element, { name, state }) => {
+          element.closest(`.cm-${name}`).classList.remove(`cm-${name}--invalid`);
+          element.removeAttribute('aria-invalid');
+          element.removeAttribute('data-cm-valid');
+          if (state !== 'neutral') element.setAttribute('data-cm-valid', 'true');
           if (state === 'invalid') element.setAttribute('aria-invalid', 'true');
-        }, state);
-        const rest = await readChoiceColors();
-        await paint.hover();
-        const hovered = await readChoiceColors();
-        assert.notEqual(hovered.fill, rest.fill, `${caseId} ${state} reacts to hover`);
-        assert.equal(await readBorder(), color, `${caseId} ${state} keeps its validation border on hover`);
+
+          const sample = document.createElement('span');
+          element.parentElement.append(sample);
+          const status = { valid: 'success', invalid: 'danger' }[state];
+          const outline = status
+            ? `color-mix(in oklab, var(--cm-color-status-${status}-border), transparent 0%)`
+            : 'var(--cm-color-focus-ring)';
+          const colors = ['var(--cm-color-status-success-border)', 'var(--cm-color-status-danger-border)', outline].map(
+            (value) => {
+              sample.style.color = value;
+              return getComputedStyle(sample).color;
+            },
+          );
+          sample.remove();
+          return colors;
+        },
+        { name, state },
+      );
+      const label = `${caseId} ${state}`;
+      const hasSingleFill = filledChoice && (state === 'neutral' || (state === 'invalid' && name === 'checkbox'));
+      const validationColor = { valid: validColor, invalid: invalidColor }[state];
+      const checkUnfocused = async ({ border, outline }, interaction) => {
+        assert.equal(outline.style, 'none', `${label} has no focus outline ${interaction}`);
+        if (hasSingleFill) {
+          assert.equal(border, 'rgba(0, 0, 0, 0)', `${label} shows a single colored fill ${interaction}`);
+          const [edgeContrast, markContrast] = await readContrasts(page, [
+            [paintSelector, 'backgroundColor', '#visual-root', 'backgroundColor'],
+            [markSelector, markColor, paintSelector, 'backgroundColor'],
+          ]);
+          assert(edgeContrast >= 3, `${label} ${interaction} edge contrast is ${edgeContrast.toFixed(2)}:1`);
+          assert(markContrast >= 3, `${label} ${interaction} selection mark contrast is ${markContrast.toFixed(2)}:1`);
+        } else if (validationColor) {
+          assert.equal(border, validationColor, `${label} keeps its validation border ${interaction}`);
+        }
+      };
+
+      const rest = await readPaint();
+      await checkUnfocused(rest, 'at rest');
+      await paint.hover();
+      const hovered = await readPaint();
+      await checkUnfocused(hovered, 'on hover');
+      if (filledChoice && state !== 'neutral') {
+        assert.notEqual(hovered.colors.fill, rest.colors.fill, `${label} reacts to hover`);
+      }
+
+      await page.mouse.move(0, 0);
+      await page.keyboard.press(tabKey);
+      assert(
+        await focus.evaluate((element) => element.matches(':focus-visible')),
+        `${label} receives focus by ${tabKey}`,
+      );
+      const checkFocused = async (unfocused, interaction) => {
+        const { border, borderWidth, outline, colors, shadow } = await readPaint();
+        assert.deepEqual(
+          outline,
+          { style: 'solid', width: '1px', offset: '2px', color: focusColor },
+          `${label} ${interaction}`,
+        );
+        assert.equal(border, unfocused.border, `${label} keeps its border color ${interaction}`);
+        assert.equal(borderWidth, unfocused.borderWidth, `${label} keeps its border width ${interaction}`);
+        assert.equal(shadow, unfocused.shadow, `${label} uses the outline alone ${interaction}`);
+        assert.deepEqual(colors, unfocused.colors, `${label} keeps its fill and mark ${interaction}`);
+        const [surfaceContrast] = await readContrasts(page, [
+          [paintSelector, 'outlineColor', '#visual-root', 'backgroundColor'],
+        ]);
+        assert(
+          surfaceContrast >= 3,
+          `${label} ${interaction} focus contrast against the surface is ${surfaceContrast.toFixed(2)}:1`,
+        );
+        if (filledChoice) {
+          const [markContrast] = await readContrasts(page, [
+            [markSelector, markColor, paintSelector, 'backgroundColor'],
+          ]);
+          assert(markContrast >= 3, `${label} ${interaction} selection mark contrast is ${markContrast.toFixed(2)}:1`);
+          caseTest.diagnostic(
+            `${label} ${interaction} focus contrast against the surface visible in the gap: ${surfaceContrast.toFixed(2)}:1`,
+          );
+        }
+      };
+      await checkFocused(rest, 'on focus');
+      await paint.hover();
+      await checkFocused(hovered, 'on focus and hover');
+
+      if (filledChoice) {
+        await focus.blur();
         await page.mouse.down();
         try {
-          assert.notEqual(
-            (await readChoiceColors()).fill,
-            hovered.fill,
-            `${caseId} ${state} distinguishes a held press`,
-          );
-          assert.equal(await readBorder(), color, `${caseId} ${state} keeps its validation border when pressed`);
+          const pressed = await readPaint();
+          await checkUnfocused(pressed, 'when pressed');
+          if (state !== 'neutral') {
+            assert.notEqual(pressed.colors.fill, hovered.colors.fill, `${label} distinguishes a held press`);
+          }
         } finally {
           await page.mouse.move(0, 0);
           await page.mouse.up();
@@ -426,23 +454,26 @@ test(`packaged form and navigation states in ${browserName}`, async (t) => {
         }
 
         await openCase(page, platform, theme, 'select-clearable');
+        await page.mouse.move(0, 0);
         const select = page.locator('.cm-select');
         const readSelectOutline = () =>
           select.evaluate((element) => {
-            const { outlineStyle, outlineWidth, outlineOffset, outlineColor, borderTopColor } =
+            const { outlineStyle, outlineWidth, outlineOffset, outlineColor, borderTopColor, backgroundColor } =
               getComputedStyle(element);
-            return { outlineStyle, outlineWidth, outlineOffset, outlineColor, borderTopColor };
+            return { outlineStyle, outlineWidth, outlineOffset, outlineColor, borderTopColor, backgroundColor };
           });
         const listbox = page.getByRole('listbox');
         const option = listbox.getByRole('option').first();
+        const selectRest = await readSelectOutline();
         await select.click();
         await listbox.waitFor();
         await page.mouse.move(0, 0);
         const selectOutline = await readSelectOutline();
         assert.equal(selectOutline.outlineStyle, 'solid');
-        assert.equal(selectOutline.outlineWidth, '2px');
-        assert.equal(selectOutline.outlineOffset, '0px');
-        assert.equal(selectOutline.outlineColor, selectOutline.borderTopColor);
+        assert.equal(selectOutline.outlineWidth, '1px');
+        assert.equal(selectOutline.outlineOffset, '2px');
+        assert.equal(selectOutline.borderTopColor, selectRest.borderTopColor, 'opening preserves the Select border');
+        assert.equal(selectOutline.backgroundColor, selectRest.backgroundColor, 'opening preserves the Select fill');
 
         await listbox.click({ position: { x: 20, y: 2 } });
         assert(await listbox.isVisible(), 'clicking the listbox padding keeps it open');
@@ -452,7 +483,13 @@ test(`packaged form and navigation states in ${browserName}`, async (t) => {
         assert.equal(await select.locator('.cm-select__value').textContent(), 'Daily');
 
         await openCase(page, platform, theme, 'select-clearable');
+        await page.mouse.move(0, 0);
         await page.keyboard.press(tabKey);
+        assert.deepEqual(
+          await readSelectOutline(),
+          selectOutline,
+          'pointer opening matches the Select keyboard outline',
+        );
         await page.keyboard.press('Space');
         await listbox.locator('[role="option"]:focus-visible').waitFor();
         assert.deepEqual(await readSelectOutline(), selectOutline, 'keyboard opening uses the same Select outline');
@@ -477,6 +514,7 @@ test(`packaged form and navigation states in ${browserName}`, async (t) => {
             const style = getComputedStyle(element);
             return {
               border: style.borderTopColor,
+              fill: style.backgroundColor,
               outline: style.outlineStyle,
               color: style.outlineColor,
               width: style.outlineWidth,
@@ -499,9 +537,10 @@ test(`packaged form and navigation states in ${browserName}`, async (t) => {
         await page.mouse.move(0, 0);
         const expanded = await readTrigger();
         assert.equal(expanded.outline, 'solid', 'the open field keeps its outline after the pointer leaves');
-        assert.equal(expanded.width, '2px');
-        assert.equal(expanded.offset, '0px');
-        assert.equal(expanded.color, expanded.border);
+        assert.equal(expanded.width, '1px');
+        assert.equal(expanded.offset, '2px');
+        assert.equal(expanded.border, neutralTrigger.border, 'opening preserves the DatePicker border');
+        assert.equal(expanded.fill, neutralTrigger.fill, 'opening preserves the DatePicker fill');
 
         await calendar.locator('.cm-date-picker__navigation:enabled').first().click();
         assert(await calendar.isVisible(), 'the calendar stays open after navigating to another month');
@@ -550,6 +589,14 @@ test(`packaged form and navigation states in ${browserName}`, async (t) => {
 
         for (const [caseId, controls] of focusCases) {
           await openCase(page, platform, theme, caseId);
+          const canvasText = await page.locator('#visual-root').evaluate((element) => {
+            const sample = document.createElement('span');
+            sample.style.color = 'CanvasText';
+            element.append(sample);
+            const { color } = getComputedStyle(sample);
+            sample.remove();
+            return color;
+          });
           await page.keyboard.press('Tab');
           for (const [focusSelector, paintSelector = focusSelector] of controls) {
             const control = page.locator(focusSelector).first();
@@ -564,9 +611,14 @@ test(`packaged form and navigation states in ${browserName}`, async (t) => {
               return {
                 style: style.outlineStyle,
                 width: Number.parseFloat(style.outlineWidth),
+                color: style.outlineColor,
               };
             });
-            assert.deepEqual(outline, { style: 'solid', width: 2 }, `${paintSelector} has a 2px forced-colors outline`);
+            assert.deepEqual(
+              outline,
+              { style: 'solid', width: 1, color: canvasText },
+              `${paintSelector} has a 1px CanvasText outline`,
+            );
             const [contrast] = await readContrasts(page, [
               [paintSelector, 'outlineColor', '#visual-root', 'backgroundColor'],
             ]);

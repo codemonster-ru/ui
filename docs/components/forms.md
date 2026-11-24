@@ -14,8 +14,10 @@ Each component style is also available from the `field.css`, `input.css`, `texta
 Set `data-cm-valid="true"` on a control after successful application validation, and clear it when
 that result expires. In Vue, bind the attribute on the component. In Vanilla, put it on the input,
 textarea, or the Select or DatePicker trigger. Invalid state declared by the Vue `invalid` prop or
-the Vanilla `aria-invalid="true"` attribute takes precedence. The focus outline meets the control
-border and uses the validation color when either state applies.
+the Vanilla `aria-invalid="true"` attribute takes precedence. Keyboard focus adds a 1px outline
+with a 2px gap. The outline follows the validation color, with `--cm-color-focus-ring` for
+neutral controls. The control keeps its border, fill, and selection mark for the current
+validation and pointer state.
 
 ## Field API
 

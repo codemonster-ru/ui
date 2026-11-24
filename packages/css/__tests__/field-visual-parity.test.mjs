@@ -20,14 +20,14 @@ test('preserves the reference Input state matrix and adornment geometry', async 
   const input = await readComponent('input');
 
   assert.match(input, /border: var\(--cm-border-width\) solid var\(--cm-color-border-interactive\);/u);
-  assert.match(input, /\.cm-input__action:focus-visible \{[^}]*box-shadow:/u);
+  assert.match(input, /\.cm-input__action:focus-visible \{[^}]*outline:/u);
   assert.match(input, /\.cm-input:read-only:where\(:not\(:disabled\)\)::placeholder/u);
   assert.match(input, /\.cm-input-wrap:has\(\.cm-input__leading\) \.cm-input/u);
   assert.match(input, /padding-inline-start: 2\.125rem;/u);
   assert.match(input, /\.cm-input__action:has\(\+ \.cm-input__action:not\(\[hidden\]\)\)/u);
 });
 
-test('shares a flush, validation-colored focus outline across interactive fields', async () => {
+test('shares an offset focus outline that follows form validation', async () => {
   const validation = await readFile(new URL('../src/primitives/form-validation.css', import.meta.url), 'utf8');
   for (const name of ['input', 'textarea', 'select', 'date-picker']) {
     const css = await readComponent(name);
@@ -35,9 +35,15 @@ test('shares a flush, validation-colored focus outline across interactive fields
     assert.ok(validation.includes(`.cm-${name}:is(.cm-${name}--invalid, [aria-invalid='true']):enabled`));
   }
   assert.match(validation, /:is\(\.cm-input, \.cm-textarea, \.cm-select, \.cm-date-picker\):enabled:focus-visible/u);
-  assert.match(validation, /border-color: var\(--cm-form-focus-color\);/u);
-  assert.match(validation, /outline: var\(--cm-focus-ring-width\) solid var\(--cm-form-focus-color\);/u);
-  assert.match(validation, /outline-offset: 0;/u);
+  assert.match(
+    validation,
+    /--cm-form-focus-color: color-mix\(\s*in oklab,\s*var\(--cm-form-validation-color\),\s*var\(--cm-status-focus-tint, transparent 0%\)\s*\);/u,
+  );
+  assert.match(
+    validation,
+    /outline: var\(--cm-focus-ring-width\) solid\s+var\(--cm-forced-focus-outline-color, var\(--cm-form-focus-color, var\(--cm-color-focus-ring\)\)\);/u,
+  );
+  assert.match(validation, /outline-offset: var\(--cm-border-width-thick\);/u);
   assert.match(validation, /\[data-cm-valid='true'\]:enabled/u);
   assert.match(validation, /--cm-form-validation-color: var\(--cm-color-status-success-border\);/u);
   assert.match(validation, /--cm-form-validation-color: var\(--cm-color-status-danger-border\);/u);

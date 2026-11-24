@@ -113,9 +113,8 @@
 
 .cm-command-palette__close:focus-visible,
 .cm-command-palette__input:focus-visible {
-  border-color: var(--cm-color-border-focus);
-  outline: var(--cm-focus-ring-width) solid var(--cm-forced-focus-outline-color, transparent);
-  box-shadow: 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
+  outline: var(--cm-focus-ring-width) solid var(--cm-forced-focus-outline-color, var(--cm-color-focus-ring));
+  outline-offset: var(--cm-border-width-thick);
 }
 
 .cm-command-palette__list {
@@ -163,9 +162,8 @@
 }
 
 .cm-command-palette__option:focus-visible {
-  border-color: var(--cm-color-border-focus);
-  outline: var(--cm-focus-ring-width) solid var(--cm-forced-focus-outline-color, transparent);
-  box-shadow: 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
+  outline: var(--cm-focus-ring-width) solid var(--cm-forced-focus-outline-color, var(--cm-color-focus-ring));
+  outline-offset: calc(-1 * var(--cm-focus-ring-width));
 }
 
 .cm-command-palette__option:hover:not([aria-disabled='true']) {

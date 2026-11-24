@@ -163,8 +163,8 @@
 }
 
 .cm-date-picker__clear:focus-visible {
-  outline: var(--cm-focus-ring-width) solid var(--cm-forced-focus-outline-color, transparent);
-  box-shadow: 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
+  outline: var(--cm-focus-ring-width) solid var(--cm-forced-focus-outline-color, var(--cm-color-focus-ring));
+  outline-offset: var(--cm-border-width-thick);
 }
 
 .cm-date-picker__clear[hidden],
@@ -376,12 +376,6 @@
   pointer-events: none;
 }
 
-/* Leave room for the focused day's ring on the joined edge. */
-:is(.cm-date-picker__day--in-range, .cm-date-picker__day--range-end):focus-visible::before {
-  inset-inline-end: calc(100% + var(--cm-border-width) + var(--cm-focus-ring-width));
-  inline-size: max(0px, var(--cm-date-picker-column-gap) - var(--cm-focus-ring-width));
-}
-
 .cm-date-picker__day--selected {
   border-color: var(--cm-color-interactive-primary-border);
   background: var(--cm-color-background-surface-selected);
@@ -400,15 +394,18 @@
 
   &:focus-visible {
     z-index: 1;
-    border-color: var(--cm-color-focus-ring);
-    outline: var(--cm-focus-ring-width) solid var(--cm-forced-focus-outline-color, transparent);
-    box-shadow: 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
+    outline: var(--cm-focus-ring-width) solid var(--cm-forced-focus-outline-color, var(--cm-color-focus-ring));
+    outline-offset: var(--cm-border-width-thick);
   }
 
   &:disabled {
     color: var(--cm-color-text-disabled);
     cursor: not-allowed;
   }
+}
+
+.cm-date-picker__day:focus-visible {
+  outline-offset: calc(-1 * var(--cm-focus-ring-width));
 }
 
 .cm-date-picker__day--selected:active:enabled {

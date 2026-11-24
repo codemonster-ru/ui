@@ -35,15 +35,9 @@
 }
 
 .cm-link:focus-visible {
-  border-color: var(--cm-color-border-focus);
   border-radius: var(--cm-radius-control);
-  outline: var(--cm-focus-ring-width) solid var(--cm-forced-focus-outline-color, transparent);
-  box-shadow: 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
-}
-
-.cm-link--underline-always:focus-visible,
-.cm-link--underline-hover:focus-visible {
-  text-decoration: none;
+  outline: var(--cm-focus-ring-width) solid var(--cm-color-focus-ring);
+  outline-offset: var(--cm-border-width-thick);
 }
 
 .cm-link--muted {
@@ -52,7 +46,6 @@
 
 @media (forced-colors: active) {
   .cm-link:focus-visible {
-    border-color: Highlight;
     outline-color: CanvasText;
   }
 }

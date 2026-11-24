@@ -17,15 +17,15 @@
 .cm-checkbox > .cm-checkbox__input:enabled:focus-visible + .cm-checkbox__control,
 .cm-radio > .cm-radio__input:enabled:focus-visible + .cm-radio__control,
 .cm-switch > .cm-switch__input:enabled:focus-visible + .cm-switch__control {
-  --cm-form-focus-color: var(
-    --cm-forced-focus-outline-color,
-    var(--cm-form-validation-color, var(--cm-color-focus-ring))
+  --cm-form-focus-color: color-mix(
+    in oklab,
+    var(--cm-form-validation-color),
+    var(--cm-status-focus-tint, transparent 0%)
   );
 
-  border-color: var(--cm-form-focus-color);
-  outline: var(--cm-focus-ring-width) solid var(--cm-form-focus-color);
-  outline-offset: 0;
-  transition-property: background-color, box-shadow, color, transform;
+  outline: var(--cm-focus-ring-width) solid
+    var(--cm-forced-focus-outline-color, var(--cm-form-focus-color, var(--cm-color-focus-ring)));
+  outline-offset: var(--cm-border-width-thick);
 }
 
 :is(.cm-input, .cm-textarea, .cm-select, .cm-date-picker)[data-cm-valid='true']:enabled,
@@ -36,7 +36,7 @@
   --cm-form-validation-fill: var(--cm-color-status-success-subtle-background);
   --cm-form-validation-ink: var(--cm-color-status-success-subtle-foreground);
 
-  border-color: var(--cm-form-focus-color, var(--cm-form-validation-color));
+  border-color: var(--cm-form-validation-color);
 }
 
 .cm-input:is(.cm-input--invalid, [aria-invalid='true']):enabled,
@@ -56,9 +56,9 @@
   --cm-form-validation-fill: var(--cm-color-status-danger-subtle-background);
   --cm-form-validation-ink: var(--cm-color-status-danger-subtle-foreground);
 
-  border-color: var(--cm-form-focus-color, var(--cm-form-validation-color));
+  border-color: var(--cm-form-validation-color);
 
   @media (forced-colors: active) {
-    border-color: var(--cm-form-focus-color, Mark);
+    border-color: Mark;
   }
 }

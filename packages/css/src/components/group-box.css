@@ -34,9 +34,11 @@
 
 .cm-group-box--collapsible > .cm-group-box__legend {
   /* Let the button use the fieldset padding while keeping its focus ring inside. */
+  --cm-group-box-focus-clearance: calc(var(--cm-focus-ring-width) + var(--cm-border-width-thick));
+
   inline-size: max-content;
-  max-inline-size: calc(100% + (var(--cm-space-4) - var(--cm-focus-ring-width)) * 2);
-  margin-inline-start: calc(var(--cm-focus-ring-width) - var(--cm-space-4));
+  max-inline-size: calc(100% + (var(--cm-space-4) - var(--cm-group-box-focus-clearance)) * 2);
+  margin-inline-start: calc(var(--cm-group-box-focus-clearance) - var(--cm-space-4));
   padding-inline: 0;
 }
 

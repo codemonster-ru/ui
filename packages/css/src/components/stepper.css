@@ -148,7 +148,8 @@
 }
 
 .cm-stepper__trigger:focus-visible .cm-stepper__marker {
-  box-shadow: 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
+  outline: var(--cm-focus-ring-width) solid var(--cm-color-focus-ring);
+  outline-offset: var(--cm-border-width-thick);
 }
 
 .cm-stepper--vertical .cm-stepper__list {
@@ -275,6 +276,6 @@
 
 @media (forced-colors: active) {
   .cm-stepper__trigger:focus-visible .cm-stepper__marker {
-    outline: var(--cm-focus-ring-width) solid CanvasText;
+    outline-color: CanvasText;
   }
 }
