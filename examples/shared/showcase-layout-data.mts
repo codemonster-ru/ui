@@ -1,3 +1,4 @@
+import { checkCircle, database, fileText, user } from '@codemonster-ru/ui-icons';
 import { cmBreakpoints } from '@codemonster-ru/ui-tokens';
 
 export const regionControls = [
@@ -84,10 +85,10 @@ export const rows = [
   { id: '7', product: 'Desk microphone', sku: 'MC-8073', warehouse: 'North', available: 12, status: 'Available' },
 ].map(({ id, ...cells }) => ({ id: `product-${id}`, cells }));
 export const steps = [
-  { value: 'license', label: 'License' },
-  { value: 'database', label: 'Database' },
-  { value: 'admin', label: 'Admin' },
-  { value: 'finish', label: 'Finish' },
+  { value: 'license', label: 'License', leadingIcon: fileText },
+  { value: 'database', label: 'Database', leadingIcon: database },
+  { value: 'admin', label: 'Admin', leadingIcon: user },
+  { value: 'finish', label: 'Finish', leadingIcon: checkCircle },
 ];
 export const initialSetupStep = 'database';
 
