@@ -1194,15 +1194,19 @@ async function checkWarehouse(page, base, adapter) {
   const scrolled = await frame.locator('.cm-admin-shell__topbar').evaluate((bar) => {
     const scrollport = document.scrollingElement;
     scrollport.scrollTop = scrollport.scrollHeight;
+    const edge = getComputedStyle(bar, '::after');
     const position = {
       scrollTop: scrollport.scrollTop,
       topbarTop: bar.getBoundingClientRect().top,
+      roundedEdge:
+        Number.parseFloat(edge.borderStartStartRadius) > 0 && Number.parseFloat(edge.borderBlockStartWidth) > 0,
     };
     scrollport.scrollTop = 0;
     return position;
   });
   assert(scrolled.scrollTop > 0, `${adapter}: the warehouse preview scrolls vertically`);
   assert.equal(scrolled.topbarTop, 0, `${adapter}: the topbar stays visible during preview scrolling`);
+  assert(scrolled.roundedEdge, `${adapter}: the rounded edge belongs to the sticky topbar`);
 
   const pagination = frame.getByRole('navigation', { name: 'Table pagination' });
   const currentPage = pagination.locator('[aria-current="page"]');
