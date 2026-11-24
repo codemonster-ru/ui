@@ -1222,6 +1222,8 @@ async function checkSetupLayout(page, base) {
   const frame = preview.contentFrame();
   const panel = frame.locator('.cm-setup-layout__panel');
   await panel.waitFor();
+  const steps = frame.getByRole('navigation', { name: 'Installation steps' });
+  const progress = frame.getByRole('progressbar', { name: 'Setup progress' });
   for (const [name, width, display] of [
     ['min · 320 px', 320, 'flex'],
     ['lg · 1024 px', 1024, 'grid'],
@@ -1229,6 +1231,8 @@ async function checkSetupLayout(page, base) {
     await example.getByRole('radio', { name }).press('Space');
     await expectPreviewWidth(preview, width);
     assert.equal(await panel.evaluate((element) => getComputedStyle(element).display), display);
+    await steps.waitFor({ state: display === 'grid' ? 'visible' : 'hidden' });
+    await progress.waitFor({ state: display === 'grid' ? 'hidden' : 'visible' });
   }
   await example.getByRole('radio', { name: 'Fit' }).press('Space');
   const database = frame.getByRole('textbox', { name: 'Database name' });

@@ -233,6 +233,7 @@ function setMode(value: string) {
   </CmAdminShell>
   <CmSetupLayout
     v-else-if="slug === 'setup-layout'"
+    class="layout-example__setup"
     :title="steps.find(({ value }) => value === step)?.label"
     description="Configure the CMS environment before the first administrator account is created."
     aside-position="left"
@@ -240,22 +241,25 @@ function setMode(value: string) {
     @back="moveStep(-1)"
   >
     <template #brand>
-      <div class="layout-example__setup-brand">
-        <CmInline :wrap="false"
-          ><img :src="annabelLogo" alt="" width="24" height="24" /><strong>Annabel</strong></CmInline
-        >
+      <CmStack class="layout-example__setup-brand">
+        <CmInline :wrap="false">
+          <img :src="annabelLogo" alt="" width="32" height="32" />
+          <strong>Annabel</strong>
+        </CmInline>
         <div class="layout-example__setup-progress" data-setup-progress>
           <span>Step {{ stepIndex + 1 }} of {{ steps.length }}</span>
-          <CmProgressBar :value="stepIndex + 1" :max="steps.length" label="Setup progress" />
+          <CmProgressBar :value="stepIndex + 1" :max="steps.length" label="Setup progress" height="0.25rem" />
         </div>
-      </div>
+      </CmStack>
     </template>
-    <template #aside><CmNavMenu v-model:value="step" :items="steps" aria-label="Installation steps" /></template>
+    <template #aside>
+      <CmNavMenu v-model:value="step" :items="steps" variant="pills" aria-label="Installation steps" />
+    </template>
     <div v-if="staticPreview || step === 'license'" data-preview-step="license" :hidden="step !== 'license'">
       <CmCheckbox v-model="acceptedLicense" label="Accept terms" />
     </div>
     <CmStack v-if="staticPreview || step === 'database'" data-preview-step="database" :hidden="step !== 'database'">
-      <div class="layout-example__field-row">
+      <div class="layout-example__field-row layout-example__field-row--host">
         <CmField
           v-slot="{ controlId, describedBy }"
           control-id="setup-preview-host"
