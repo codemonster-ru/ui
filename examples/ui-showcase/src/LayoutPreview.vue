@@ -5,7 +5,6 @@ import { CmFieldset, CmRadio } from '@codemonster-ru/ui-vue';
 import { layoutPreviewChoices, type LayoutExampleSlug } from '../../shared/showcase-layout-data.mts';
 
 const { slug, title } = defineProps<{ slug: LayoutExampleSlug; title: string }>();
-const choices = layoutPreviewChoices(slug);
 const development = import.meta.env.DEV;
 const selection = ref('fit');
 </script>
@@ -13,7 +12,7 @@ const selection = ref('fit');
 <template>
   <CmFieldset :id="`${slug}-preview-width`" label="Width" class="layout-preview__sizes">
     <CmRadio
-      v-for="{ value, label } in choices"
+      v-for="{ value, label } in layoutPreviewChoices"
       :key="value"
       :name="slug + '-width'"
       :value="value"

@@ -562,15 +562,20 @@
 }
 
 .layout-preview__viewport {
+  box-sizing: border-box;
+  inline-size: 100%;
   min-inline-size: 0;
   overflow-x: auto;
+  border: var(--cm-border-width) solid var(--cm-color-border-default);
+  border-radius: var(--cm-radius-surface);
+  background: var(--cm-color-background-surface-elevated);
 }
 
 .layout-preview__frame {
   display: block;
   block-size: 36rem;
   border: 0;
-  border-radius: var(--cm-radius-surface);
+  margin-inline: auto;
 }
 
 .layout-preview__frame[data-fit] {

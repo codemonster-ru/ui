@@ -28,11 +28,11 @@ export const layoutExamples = [
 
 export type LayoutExampleSlug = (typeof layoutExamples)[number]['slug'];
 
-export function layoutPreviewChoices(slug: LayoutExampleSlug) {
-  const widths: number[] = [320, cmBreakpoints.lg];
-  if (slug === 'app-shell' || slug === 'document-layout') widths.push(cmBreakpoints.xl);
-  return [{ value: 'fit', label: 'Fit' }, ...widths.map((width) => ({ value: String(width), label: `${width} px` }))];
-}
+export const layoutPreviewChoices = [
+  { value: 'fit', label: 'Fit' },
+  { value: '320', label: 'min · 320 px' },
+  ...Object.entries(cmBreakpoints).map(([name, width]) => ({ value: String(width), label: `${name} · ${width} px` })),
+];
 
 export const dashboardStats = [
   { label: 'Published', value: '24' },
