@@ -1128,6 +1128,35 @@ async function checkLayoutViewport(page, base, adapter) {
     await example.getByRole('radio', { name: 'Fit' }).press('Space');
     await expectPreviewWidth(frame, await frame.evaluate((element) => element.parentElement.clientWidth));
   }
+
+  const admin = page.locator('#demo-admin-layout');
+  const frame = admin.locator('iframe.layout-preview__frame');
+  await admin.getByRole('radio', { name: 'xl · 1280 px', exact: true }).press('Space');
+  await expectPreviewWidth(frame, 1280);
+  const preview = frame.contentFrame();
+  const navigation = preview.getByRole('navigation', { name: 'Admin navigation' });
+  await navigation.waitFor();
+  assert.equal(await navigation.locator('[aria-current="page"]').textContent(), 'Warehouse availability');
+  const panels = await preview.locator('.cm-admin-layout__content .cm-card:has(h2)').evaluateAll((cards) =>
+    cards.map((card) => {
+      const { top, bottom, width } = card.getBoundingClientRect();
+      return { top, bottom, width };
+    }),
+  );
+  assert.equal(panels.length, 2);
+  assert(panels[1].top > panels[0].bottom && panels[1].width === panels[0].width, `${adapter}: stacked admin panels`);
+  await preview.getByRole('button', { name: 'Collapse sidebar' }).click();
+  await preview.getByRole('button', { name: 'Expand sidebar' }).waitFor();
+
+  await admin.getByRole('radio', { name: 'min · 320 px' }).press('Space');
+  await expectPreviewWidth(frame, 320);
+  const mobileToggle = preview.getByRole('button', { name: 'Open navigation' });
+  await mobileToggle.waitFor();
+  assert.equal(await preview.locator('.cm-admin-layout__header').getByRole('button').count(), 1);
+  await mobileToggle.click();
+  await navigation.waitFor();
+  await preview.getByRole('button', { name: 'Close navigation' }).press('Escape');
+  await mobileToggle.waitFor();
   await checkViewport(page, `${adapter} layouts`);
 }
 
