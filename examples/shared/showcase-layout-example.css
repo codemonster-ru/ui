@@ -17,18 +17,15 @@
 .layout-example__metrics {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--cm-space-3);
   margin: 0;
-  border: var(--cm-border-width) solid var(--cm-color-border-default);
-  border-radius: var(--cm-radius-surface);
-  background: var(--cm-color-background-surface);
 }
 
 .layout-example__metrics > div {
   padding: var(--cm-space-4);
-}
-
-.layout-example__metrics > div + div {
-  border-inline-start: var(--cm-border-width) solid var(--cm-color-border-default);
+  border: var(--cm-border-width) solid var(--cm-color-border-default);
+  border-radius: var(--cm-radius-surface);
+  background: var(--cm-color-background-surface);
 }
 
 .layout-example__metrics dt {
