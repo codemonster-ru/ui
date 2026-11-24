@@ -97,7 +97,6 @@ const firstModalExamples: Record<string, string[]> = {
 // These fixtures exercise markup or repeat a difference already shown by another example.
 const contractOnlyCases = new Set([
   'accordion-one-open',
-  'admin-layout-collapsed',
   'button-icon-slots',
   'button-link',
   'button-link-disabled',
@@ -130,20 +129,6 @@ const icon = (icon: string): DemoNode => component('icon', { icon });
 
 const supplemental: Record<string, Partial<ShowcaseCase>[]> = {
   avatar: [{ id: 'avatar-slot', props: { image: null, label: null }, slots: { default: icon('user') } }],
-  'auth-layout': [
-    {
-      id: 'auth-layout-embedded',
-      props: { as: 'div', fillViewport: false, centered: false, surface: false },
-      slots: { title: 'Sign in', description: 'Use your workspace credentials.' },
-    },
-  ],
-  'error-layout': [
-    {
-      id: 'error-layout-embedded',
-      props: { as: 'div', fillViewport: false, centered: false, surface: false },
-      slots: { code: '404', title: 'Page unavailable', description: 'Select another page.' },
-    },
-  ],
   'content-area': [{ id: 'content-area-unpadded', props: { as: 'section', padded: false } }],
   checkbox: [{ id: 'checkbox-default--invalid-indeterminate', props: { invalid: true, indeterminate: true } }],
   dropdown: [{ id: 'dropdown-disabled', props: { disabled: true, open: false } }],
@@ -309,21 +294,6 @@ function adaptContracts(source: ShowcaseCase[]) {
             ],
             activeId: 'demo-input',
             scrollOffset: 64,
-          },
-        };
-      case 'app-shell-collapsible':
-        return {
-          ...fixture,
-          slots: {
-            ...fixture.slots,
-            header: component(
-              'button',
-              { 'data-cm-sidebar-toggle': '', 'aria-expanded': 'true' },
-              {
-                default: 'Toggle sidebar',
-              },
-            ),
-            sidebar: 'Navigation',
           },
         };
       case 'card-default':
@@ -515,8 +485,6 @@ function adaptContracts(source: ShowcaseCase[]) {
       case 'section-default':
       case 'section-surface':
         return { ...fixture, slots: { default: 'Section content' } };
-      case 'setup-layout-default':
-        return { ...fixture, slots: { default: 'Workspace name' } };
       case 'stack-default':
         return {
           ...fixture,
@@ -735,16 +703,13 @@ const caseLabels: Record<string, string> = {
   'command-palette-loading': 'Loading',
   'command-palette-external-results': 'External results',
   'command-palette-rich-content': 'Rich content',
-  'app-shell-collapsible': 'Collapsible sidebar',
   'aside-area-default': 'Default',
   'aside-area-default--appearance-plain': 'Plain',
-  'auth-layout-embedded': 'Embedded',
   'container-default--size-md': 'md',
   'container-default--size-lg': 'lg',
   'container-fluid': 'Fluid',
   'content-area-default': 'Padded',
   'content-area-unpadded': 'Unpadded',
-  'error-layout-embedded': 'Embedded',
   'footer-area-default': 'Footer',
   'grid-default': 'Auto-fit',
   'header-area-default': 'Header',
@@ -752,7 +717,6 @@ const caseLabels: Record<string, string> = {
   'inline-nowrap': 'No wrap',
   'section-default': 'Plain',
   'section-surface': 'Surface',
-  'setup-layout-default--asidePosition-right': 'Aside right',
   'sidebar-area-default': 'Default',
   'sidebar-area-default--appearance-plain': 'Plain',
   'stack-default': 'Vertical',
@@ -927,6 +891,8 @@ export function showcaseComponentCases(
   source: ShowcaseCase[],
   manifest: ComponentManifest,
 ): ShowcaseExample[] {
+  // Application layouts have complete, responsive previews.
+  if (layoutPreviewSlugs.has(slug)) return [];
   const fixtures = adaptContracts(source.filter(({ id }) => !contractOnlyCases.has(id)));
   const cases = (slug === 'data-table' ? fixtures.map(adaptDataTableCase) : fixtures).sort((a, b) =>
     a.id === `${slug}-default` ? -1 : b.id === `${slug}-default` ? 1 : a.id.localeCompare(b.id),
@@ -975,9 +941,7 @@ export function showcaseComponentCases(
         continue;
       const props: Record<string, unknown> = { [prop]: showcaseVariantValue(value) };
       if (prop === 'loadingVariant') props.loading = true;
-      const slots = slug === 'setup-layout' ? { aside: 'Workspace details' } : undefined;
-      if (slug === 'setup-layout') props.fillViewport = false;
-      added.push(extendCase(fixture, { id: `${fixture.id}--${label.replaceAll(' ', '-')}`, props, slots }));
+      added.push(extendCase(fixture, { id: `${fixture.id}--${label.replaceAll(' ', '-')}`, props }));
     }
   }
   for (const fixture of supplemental[slug] ?? []) added.push(extendCase(base, fixture));
@@ -1098,7 +1062,6 @@ export function showcaseComponentCases(
     };
     examples.sort((a, b) => rank(a) - rank(b));
   }
-  if (layoutPreviewSlugs.has(slug)) return examples.filter(({ id }) => id !== `${slug}-default`);
   if (slug === 'container') {
     const variants = ['container-default--size-md', 'container-default--size-lg', 'container-fluid'];
     return variants.map((id) => examples.find((example) => example.id === id)!);

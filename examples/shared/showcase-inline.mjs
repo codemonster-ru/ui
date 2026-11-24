@@ -1,18 +1,5 @@
-const layoutShells = new Set([
-  'admin-layout',
-  'admin-shell',
-  'app-shell',
-  'auth-layout',
-  'document-layout',
-  'error-layout',
-  'setup-layout',
-]);
 export const modalExamples = new Set(['dialog', 'drawer', 'command-palette']);
 export const skeletonLoadDelay = 900;
-
-export function showcaseDemoClass(slug) {
-  return layoutShells.has(slug) ? 'showcase-demo showcase-demo--layout' : 'showcase-demo';
-}
 
 export function showcaseExamplePrefix(id) {
   return `showcase-${id.toLowerCase().replace(/[^a-z0-9]+/gu, '-')}`;

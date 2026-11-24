@@ -456,14 +456,6 @@
   z-index: 3;
 }
 
-/* Give the component's fixed and sticky regions the bounds of this example. */
-.showcase-demo--layout {
-  block-size: 30rem;
-  overflow: auto;
-  padding: 0;
-  contain: layout;
-}
-
 .showcase-component-list {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: start;
