@@ -142,20 +142,20 @@ function setMode(value: string) {
     <template #subheader><strong>Subheader</strong></template>
     <template #content-subheader><strong>Content subheader</strong></template>
     <template #sidebar>
-      <CmStack
-        ><strong>Sidebar</strong>
-        <p v-for="n in 18" :key="n">Navigation item {{ n }}</p></CmStack
-      >
+      <CmStack class="layout-example__region layout-example__sidebar">
+        <strong>Sidebar</strong>
+        <p v-for="n in 18" :key="n">Navigation item {{ n }}</p>
+      </CmStack>
     </template>
-    <CmStack>
+    <CmStack class="layout-example__region">
       <strong>Content</strong>
       <p v-for="n in 26" :key="n">Content section {{ n }}</p>
     </CmStack>
     <template #aside>
-      <CmStack
-        ><strong>Aside</strong>
-        <p v-for="n in 16" :key="n">Related item {{ n }}</p></CmStack
-      >
+      <CmStack class="layout-example__region">
+        <strong>Aside</strong>
+        <p v-for="n in 16" :key="n">Related item {{ n }}</p>
+      </CmStack>
     </template>
     <template #footer><strong>Footer</strong></template>
   </component>

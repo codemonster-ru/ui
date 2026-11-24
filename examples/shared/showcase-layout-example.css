@@ -81,9 +81,18 @@
   font-variant-numeric: tabular-nums;
 }
 
+.layout-example__region p {
+  margin: 0;
+  color: var(--cm-color-text-secondary);
+}
+
 @media (width < 64rem) {
   .layout-example__activity {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .layout-example__sidebar p:nth-of-type(n + 3) {
+    display: none;
   }
 }
 

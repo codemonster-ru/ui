@@ -1109,6 +1109,11 @@ async function checkLayoutViewport(page, base, adapter) {
     assert(centerOffset <= 1, `${adapter}: ${slug} centers a narrow layout in the preview`);
     await aside.waitFor({ state: 'hidden' });
     assert((await sidebar.boundingBox()).y < (await main.boundingBox()).y, `${slug}: sidebar stacks above content`);
+    assert(
+      await main.evaluate((element) => element.getBoundingClientRect().top < window.innerHeight),
+      `${adapter}: ${slug} shows the main region in the compact preview`,
+    );
+
     await example.getByRole('radio', { name: 'lg · 1024 px' }).press('Space');
     await expectPreviewWidth(frame, 1024);
     await sidebar.waitFor({ state: 'visible' });
