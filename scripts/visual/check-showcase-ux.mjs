@@ -1092,11 +1092,10 @@ async function checkLayoutViewport(page, base, adapter) {
 
 async function checkWarehouse(page, base, adapter) {
   await page.goto(url(base, 'layouts/'));
-  const layoutNav = page.getByRole('navigation', { name: 'Layout examples', exact: true });
-  await layoutNav.getByRole('link', { name: 'Admin Shell', exact: true }).press('Enter');
-  assert.equal(new URL(page.url()).hash, '#demo-admin-shell');
+  await page.getByRole('heading', { level: 1, name: 'Layouts', exact: true }).waitFor();
+  assert.equal(await page.locator('main .showcase-intro, main .showcase-section-navigation').count(), 0);
   const example = page.locator('#demo-admin-shell');
-  await example.and(page.locator(':focus')).waitFor();
+  await example.waitFor();
   assert.equal(await example.locator(':scope > header > .showcase-component-title').textContent(), 'Admin Shell');
   const preview = example.locator('iframe.layout-preview__frame');
   await preview.scrollIntoViewIfNeeded();
@@ -1796,7 +1795,6 @@ async function checkAdapter([adapter, base]) {
           if (name === 'core' || name === 'core-alias') {
             assert.equal(await page.locator('main .showcase-intro, #component-catalog, #showcase-projects').count(), 0);
             await page.getByRole('heading', { level: 1, name: 'Core', exact: true }).waitFor({ state: 'attached' });
-            assert.equal(await page.locator('main .showcase-section-navigation').count(), 0);
             assert.equal(await page.getByRole('heading', { name: 'Component states', exact: true }).count(), 0);
             await page.getByRole('heading', { level: 2, name: 'Theme', exact: true }).waitFor();
           }
