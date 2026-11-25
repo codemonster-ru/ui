@@ -64,8 +64,35 @@
   background: color-mix(in srgb, var(--cm-color-background-surface) 65%, var(--cm-color-background-surface-hover) 35%);
 }
 
-.cm-table--column-dividers :where(th, td) + :where(th, td) {
+.cm-table--column-dividers:not(:where(:has(> :is(thead, tbody, tfoot) > tr > [rowspan]:not([rowspan='1']))))
+  :where(th, td) + :where(th, td) {
   border-inline-start: var(--cm-border-width) solid var(--cm-color-border-divider);
+}
+
+/* Native column spacing follows the grid even when adjacent cells belong to different rows. */
+.cm-table--column-dividers:where(:has(> :is(thead, tbody, tfoot) > tr > [rowspan]:not([rowspan='1']))) {
+  --cm-table-divider-color: var(--cm-color-border-divider);
+
+  border-spacing: var(--cm-border-width) 0;
+  background-image: linear-gradient(var(--cm-table-divider-color), var(--cm-table-divider-color));
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: calc(100% - 2 * var(--cm-border-width)) 100%;
+
+  & > :where(caption),
+  & > :where(tbody, tfoot) > tr > :where(th, td) {
+    background-color: var(--cm-color-background-surface);
+  }
+
+  @media (forced-colors: active) {
+    --cm-table-divider-color: CanvasText;
+
+    forced-color-adjust: none;
+
+    & > :where(caption, thead, tbody, tfoot) {
+      forced-color-adjust: auto;
+    }
+  }
 }
 
 .cm-table--sticky-header .cm-table__head th {
