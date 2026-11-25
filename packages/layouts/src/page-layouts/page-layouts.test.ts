@@ -34,6 +34,46 @@ describe('static page layouts', () => {
     expect(html).not.toContain('cm-auth-layout__description');
   });
 
+  it('supports authentication slot overrides and a plain section without viewport centering', () => {
+    const wrapper = mount(CmAuthLayout, {
+      props: {
+        as: 'section',
+        title: 'Prop title',
+        description: 'Prop description',
+        fillViewport: false,
+        centered: false,
+        surface: false,
+      },
+      slots: {
+        brand: 'Acme',
+        title: 'Create account',
+        description: 'Start your workspace.',
+        default: 'Registration form',
+        footer: () => h('a', { href: '/sign-in' }, 'Already have an account?'),
+      },
+    });
+
+    expect((wrapper.element as HTMLElement).tagName).toBe('SECTION');
+    expect(wrapper.classes()).not.toContain('cm-page-layout--fill-viewport');
+    expect(wrapper.classes()).not.toContain('cm-page-layout--centered');
+    expect(wrapper.get('.cm-auth-layout__panel').classes()).not.toContain('cm-page-layout__panel--surface');
+    expect(wrapper.get('.cm-auth-layout__brand').text()).toBe('Acme');
+    expect(wrapper.get('h1').text()).toBe('Create account');
+    expect(wrapper.get('.cm-auth-layout__description').text()).toBe('Start your workspace.');
+    expect(wrapper.get('.cm-auth-layout__body').text()).toBe('Registration form');
+    expect(wrapper.get('footer a').attributes('href')).toBe('/sign-in');
+  });
+
+  it('omits optional authentication regions and uses the default layout modifiers', () => {
+    const wrapper = mount(CmAuthLayout, { slots: { default: 'Sign-in form' } });
+
+    expect(wrapper.classes()).toContain('cm-page-layout--fill-viewport');
+    expect(wrapper.classes()).toContain('cm-page-layout--centered');
+    expect(wrapper.get('.cm-auth-layout__panel').classes()).toContain('cm-page-layout__panel--surface');
+    expect(wrapper.find('header, footer').exists()).toBe(false);
+    expect(wrapper.get('.cm-auth-layout__body').text()).toBe('Sign-in form');
+  });
+
   it('renders a numeric zero in the error code, prefers slots, and supports an unstyled section', () => {
     const wrapper = mount(CmErrorLayout, {
       props: { code: 0, title: 'Prop title', centered: false, fillViewport: false, surface: false },
