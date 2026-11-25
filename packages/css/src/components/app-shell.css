@@ -129,6 +129,14 @@
   z-index: calc(var(--cm-z-index-sticky, 10) - 2);
 }
 
+.cm-app-shell--header-sticky
+  > .cm-app-shell__body
+  > .cm-app-shell__content.cm-app-shell__region--plain
+  > .cm-app-shell__content-subheader {
+  /* Match the shell surface and cover text scrolling underneath. */
+  background-color: var(--cm-color-background-surface-subtle);
+}
+
 .cm-app-shell__footer {
   padding: var(--cm-space-4) var(--cm-app-shell-frame-inset);
   border-block-start: var(--cm-border-width) solid var(--cm-color-border-default);
