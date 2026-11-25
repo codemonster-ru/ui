@@ -1,65 +1,100 @@
-/*
- * A reading frame. Like the application shell, it sticks against published custom properties rather
- * than anything it measures itself, so the page is correct before a controller narrows them.
- */
 .cm-document-layout {
+  --cm-document-layout-padding: var(--cm-space-4);
+  --cm-document-layout-side-offset: 0px;
+  --cm-sticky-header-offset: 0px;
+  --cm-sticky-subheader-offset: 0px;
+  --cm-sticky-top-offset: calc(var(--cm-sticky-header-offset) + var(--cm-sticky-subheader-offset));
+
   display: flex;
   flex-direction: column;
+  inline-size: 100%;
+  max-inline-size: var(--cm-breakpoint-2xl);
   margin-inline: auto;
-  max-inline-size: var(--cm-breakpoint-2xl, 80rem);
-  min-block-size: 100vh;
+  min-block-size: var(--cm-document-layout-viewport-height, 100dvb);
+  background: var(--cm-color-background-surface-subtle);
 }
 
-/* A framed page, once there's room to see the frame -- borderless below that would only be a sliver
-   of border on either side, not an actual margin. */
-@media (width > 48rem) {
+@media (width >= 48em) {
   .cm-document-layout {
-    border-inline: var(--cm-border-width) solid var(--cm-color-border-subtle);
+    --cm-document-layout-gutters: calc(var(--cm-document-layout-padding) * 4);
+
+    inline-size: calc(100% - var(--cm-document-layout-gutters));
+    max-inline-size: calc(var(--cm-breakpoint-2xl) - var(--cm-document-layout-gutters));
+    border-inline: var(--cm-border-width) solid var(--cm-color-border-default);
   }
-}
-
-.cm-document-layout__header {
-  position: sticky;
-  inset-block-start: 0;
-  z-index: var(--cm-z-index-sticky, 10);
-  padding: var(--cm-space-2) var(--cm-space-3);
-  border-block-end: var(--cm-border-width) solid var(--cm-color-border-subtle);
-  background: var(--cm-color-background-canvas);
-}
-
-.cm-document-layout__subheader {
-  position: sticky;
-  inset-block-start: var(--cm-sticky-header-offset, 0);
-  z-index: var(--cm-z-index-sticky, 10);
-  padding: var(--cm-space-2) var(--cm-space-3);
-  background: var(--cm-color-background-canvas);
 }
 
 .cm-document-layout--fit-content {
   min-block-size: auto;
 }
 
-.cm-document-layout--header-static > :is(.cm-document-layout__header, .cm-document-layout__subheader) {
-  position: relative;
-  inset-block-start: auto;
+.cm-document-layout:not(.cm-document-layout--header-static) {
+  --cm-document-layout-side-offset: var(--cm-sticky-top-offset);
 }
 
-.cm-document-layout--edge-notches > :is(.cm-document-layout__header, .cm-document-layout__footer) {
-  position: relative;
+.cm-document-layout:has(> .cm-document-layout__header:not([hidden])) {
+  --cm-sticky-header-offset: var(--cm-layout-header-height);
 }
 
-.cm-document-layout--edge-notches:not(.cm-document-layout--header-static) > .cm-document-layout__header {
+.cm-document-layout:has(> .cm-document-layout__subheader:not([hidden])) {
+  --cm-sticky-subheader-offset: var(--cm-layout-subheader-height);
+}
+
+.cm-document-layout__header,
+.cm-document-layout__subheader,
+.cm-document-layout__footer,
+.cm-document-layout__content-subheader {
+  display: flex;
+  align-items: center;
+  gap: var(--cm-document-layout-padding);
+  padding-inline: var(--cm-document-layout-padding);
+  background: var(--cm-color-background-surface);
+}
+
+.cm-document-layout__header,
+.cm-document-layout__footer {
+  position: relative;
+  padding-block: var(--cm-space-3);
+}
+
+.cm-document-layout__header {
+  min-block-size: var(--cm-layout-header-height);
+  border-block-end: var(--cm-border-width) solid var(--cm-color-border-default);
+  z-index: 1;
+}
+
+.cm-document-layout__subheader,
+.cm-document-layout__content-subheader {
+  min-block-size: var(--cm-layout-subheader-height);
+  padding-block: calc(var(--cm-space-3) / 2);
+  border-block-end: var(--cm-border-width) solid var(--cm-color-border-default);
+}
+
+.cm-document-layout__footer {
+  border-block-start: var(--cm-border-width) solid var(--cm-color-border-default);
+}
+
+.cm-document-layout:not(.cm-document-layout--header-static) > .cm-document-layout__header {
   position: sticky;
+  inset-block-start: 0;
+  z-index: var(--cm-z-index-sticky);
+}
+
+.cm-document-layout:not(.cm-document-layout--header-static) > .cm-document-layout__subheader {
+  position: sticky;
+  inset-block-start: var(--cm-sticky-header-offset);
+  z-index: calc(var(--cm-z-index-sticky) - 1);
 }
 
 .cm-document-layout--edge-notches > :is(.cm-document-layout__header, .cm-document-layout__footer)::before,
 .cm-document-layout--edge-notches > :is(.cm-document-layout__header, .cm-document-layout__footer)::after {
   position: absolute;
-  inline-size: var(--cm-space-2);
-  block-size: var(--cm-space-3);
+  inline-size: 7px;
+  block-size: 10px;
   background: var(--cm-color-border-default);
   pointer-events: none;
   content: '';
+  z-index: 1;
 }
 
 .cm-document-layout--edge-notches > :is(.cm-document-layout__header, .cm-document-layout__footer)::before {
@@ -72,104 +107,133 @@
   clip-path: polygon(100% 0, 0 50%, 100% 100%);
 }
 
+.cm-document-layout--edge-notches > :is(.cm-document-layout__header, .cm-document-layout__footer):dir(rtl)::before,
+.cm-document-layout--edge-notches > :is(.cm-document-layout__header, .cm-document-layout__footer):dir(rtl)::after {
+  transform: scaleX(-1);
+}
+
 .cm-document-layout--edge-notches > .cm-document-layout__header::before,
 .cm-document-layout--edge-notches > .cm-document-layout__header::after {
-  inset-block-end: calc(var(--cm-space-3) / -2);
+  inset-block-end: -5.5px;
 }
 
 .cm-document-layout--edge-notches > .cm-document-layout__footer::before,
 .cm-document-layout--edge-notches > .cm-document-layout__footer::after {
-  inset-block-start: calc(var(--cm-space-3) / -2);
+  inset-block-start: -5.5px;
 }
 
 .cm-document-layout__content {
+  --cm-document-layout-sidebar-track: ;
+  --cm-document-layout-aside-track: ;
+
   display: grid;
-  flex: 1;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--cm-space-6);
-  align-items: start;
+  flex: 1 1 auto;
+  grid-template-columns: var(--cm-document-layout-sidebar-track) minmax(0, 1fr) var(--cm-document-layout-aside-track);
+  min-inline-size: 0;
+  min-block-size: 0;
 }
 
-.cm-document-layout--sidebar-content .cm-document-layout__content {
-  grid-template-columns: minmax(0, 15rem) minmax(0, 1fr);
-}
-
-.cm-document-layout--sidebar-content-aside .cm-document-layout__content {
-  grid-template-columns: minmax(0, 15rem) minmax(0, 1fr) minmax(0, 15rem);
+.cm-document-layout__sidebar,
+.cm-document-layout__aside,
+.cm-document-layout__main {
+  min-inline-size: 0;
+  background: var(--cm-color-background-surface);
 }
 
 .cm-document-layout__sidebar,
 .cm-document-layout__aside {
-  position: sticky;
-  inset-block-start: var(--cm-sticky-top-offset, 0);
-  max-block-size: calc(100dvb - var(--cm-sticky-top-offset, 0));
-  overflow-y: auto;
-  min-inline-size: 0;
-  padding: var(--cm-space-3);
-  background: var(--cm-color-background-surface);
+  display: none;
 }
 
 .cm-document-layout__sidebar {
-  border-inline-end: var(--cm-border-width) solid var(--cm-color-border-subtle);
+  border-inline-end: var(--cm-border-width) solid var(--cm-color-border-default);
 }
 
 .cm-document-layout__aside {
-  border-inline-start: var(--cm-border-width) solid var(--cm-color-border-subtle);
+  border-inline-start: var(--cm-border-width) solid var(--cm-color-border-default);
 }
 
 .cm-document-layout__main {
-  min-inline-size: 0;
-  padding: var(--cm-space-3);
+  padding: var(--cm-document-layout-padding);
 }
 
-.cm-document-layout--sidebar-static .cm-document-layout__sidebar,
-.cm-document-layout--aside-static .cm-document-layout__aside {
-  position: static;
-  max-block-size: none;
-  overflow-y: visible;
+.cm-document-layout__main:has(> .cm-document-layout__main-body) {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
+
+  &:has(> .cm-document-layout__content-subheader:not([hidden])) {
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+}
+
+.cm-document-layout__main-body {
+  min-inline-size: 0;
+  min-block-size: 0;
 }
 
 .cm-document-layout__content-subheader {
-  display: flex;
-  align-items: center;
-  gap: var(--cm-space-2);
-  margin: calc(-1 * var(--cm-space-3)) calc(-1 * var(--cm-space-3)) var(--cm-space-3);
-  padding: var(--cm-space-2) var(--cm-space-3);
-  border-block-end: var(--cm-border-width) solid var(--cm-color-border-subtle);
-  background: var(--cm-color-background-canvas);
+  margin-block: calc(-1 * var(--cm-document-layout-padding)) var(--cm-document-layout-padding);
+  margin-inline: calc(-1 * var(--cm-document-layout-padding));
 }
 
-.cm-document-layout:not(.cm-document-layout--header-static) .cm-document-layout__content-subheader {
-  position: sticky;
-  inset-block-start: var(--cm-sticky-top-offset, 0);
-  z-index: 1;
-}
-
-.cm-document-layout__footer {
-  padding: var(--cm-space-2) var(--cm-space-3);
-  border-block-start: var(--cm-border-width) solid var(--cm-color-border-subtle);
-}
-
-@media (width < 80em) {
-  .cm-document-layout--sidebar-content-aside .cm-document-layout__content {
-    grid-template-columns: minmax(0, 15rem) minmax(0, 1fr);
+.cm-document-layout:not(.cm-document-layout--header-static) > .cm-document-layout__content > .cm-document-layout__main {
+  &:has(> .cm-document-layout__content-subheader:not([hidden])) {
+    padding-block-start: 0;
   }
 
-  .cm-document-layout--sidebar-content-aside .cm-document-layout__aside {
-    display: none;
+  > .cm-document-layout__content-subheader {
+    position: sticky;
+    inset-block-start: var(--cm-document-layout-side-offset);
+    margin-block-start: 0;
+    z-index: calc(var(--cm-z-index-sticky) - 2);
   }
 }
 
-@media (width < 64em) {
-  .cm-document-layout--sidebar-content .cm-document-layout__content,
-  .cm-document-layout--sidebar-content-aside .cm-document-layout__content {
-    grid-template-columns: minmax(0, 1fr);
+@media (width >= 64em) {
+  .cm-document-layout__content:has(> .cm-document-layout__sidebar:not([hidden])) {
+    --cm-document-layout-sidebar-track: minmax(0, 18rem);
   }
 
-  .cm-document-layout__sidebar,
+  .cm-document-layout__sidebar {
+    display: block;
+  }
+}
+
+@media (width >= 80em) {
+  .cm-document-layout__content:has(> .cm-document-layout__aside:not([hidden])) {
+    --cm-document-layout-aside-track: minmax(0, 20rem);
+  }
+
   .cm-document-layout__aside {
-    position: static;
-    max-block-size: none;
-    overflow-y: visible;
+    display: block;
   }
+}
+
+/* Existing HTML without the inner region keeps its padding and can still scroll. */
+.cm-document-layout__sidebar:not(:has(> .cm-document-layout__sidebar-inner)),
+.cm-document-layout__aside:not(:has(> .cm-document-layout__aside-inner)),
+.cm-document-layout__sidebar-inner,
+.cm-document-layout__aside-inner {
+  padding: var(--cm-document-layout-padding);
+}
+
+.cm-document-layout:not(.cm-document-layout--sidebar-static)
+  > .cm-document-layout__content
+  > .cm-document-layout__sidebar:not(:has(> .cm-document-layout__sidebar-inner)),
+.cm-document-layout:not(.cm-document-layout--aside-static)
+  > .cm-document-layout__content
+  > .cm-document-layout__aside:not(:has(> .cm-document-layout__aside-inner)),
+.cm-document-layout:not(.cm-document-layout--sidebar-static)
+  > .cm-document-layout__content
+  > .cm-document-layout__sidebar
+  > .cm-document-layout__sidebar-inner,
+.cm-document-layout:not(.cm-document-layout--aside-static)
+  > .cm-document-layout__content
+  > .cm-document-layout__aside
+  > .cm-document-layout__aside-inner {
+  position: sticky;
+  align-self: start;
+  inset-block-start: var(--cm-document-layout-side-offset);
+  max-block-size: calc(var(--cm-document-layout-viewport-height, 100dvb) - var(--cm-document-layout-side-offset));
+  overflow: auto;
 }

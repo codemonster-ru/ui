@@ -1,17 +1,8 @@
 <script setup lang="ts">
-import {
-  Comment,
-  Fragment,
-  Text,
-  computed,
-  getCurrentInstance,
-  isVNode,
-  useAttrs,
-  useSlots,
-  useTemplateRef,
-} from 'vue';
+import { computed, getCurrentInstance, useAttrs, useSlots, useTemplateRef } from 'vue';
 
 import { shouldEnterAdvance } from '@codemonster-ru/ui-runtime/core';
+import { hasLayoutSlotContent } from '../has-layout-slot-content';
 import type { CmSetupLayoutProps } from './setup-layout.types';
 import { useLayoutOwnership } from '../use-layout-ownership';
 
@@ -40,17 +31,8 @@ const classes = computed(() => [
   attrs.class,
 ]);
 
-function hasContent(node: unknown): boolean {
-  if (Array.isArray(node)) return node.some(hasContent);
-  if (typeof node === 'string') return node.trim().length > 0;
-  if (typeof node === 'number') return true;
-  if (!isVNode(node) || node.type === Comment) return false;
-  if (node.type === Text || node.type === Fragment) return hasContent(node.children);
-  return true;
-}
-
 function hasSlotContent(name: string): boolean {
-  return hasContent(slots[name]?.());
+  return hasLayoutSlotContent(slots[name]);
 }
 
 function emitNavigation(name: 'next' | 'back', event: KeyboardEvent): void {
