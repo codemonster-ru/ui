@@ -11,7 +11,11 @@ import { createServer } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import { renderShowcaseTypography } from '../../examples/shared/showcase-typography.mts';
 import { parseFragment, serialize } from 'parse5';
-import { layoutExamples, layoutPreviewChoices } from '../../examples/shared/showcase-layout-data.mts';
+import {
+  initialAppShellLayout,
+  layoutExamples,
+  layoutPreviewChoices,
+} from '../../examples/shared/showcase-layout-data.mts';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { collectComponentCases } from '../contracts/component-cases.mjs';
@@ -120,7 +124,6 @@ async function renderLayoutExample(slug, renderView) {
       classes.value = classes.value.replace(`cm-${slug}--sidebar-content-aside`, `cm-${slug}--${initialLayout}`);
       for (const key of ['sidebar', 'aside']) {
         hide(findElement(shell, (node) => hasClass(node, `cm-${slug}__${key}`)));
-        hide(findElement(fragment, (node) => attr(node, 'data-region-control')?.value === key).parentNode);
       }
     }
   }
@@ -236,6 +239,10 @@ async function writeShowcase(contractsDirectory, output, renderView) {
               const frame = page(title, `<div data-layout-example="${slug}">${content}</div>`, 'layout-example.js', {
                 styles: [packageStylesheet, './showcase-layout-example.css'],
               });
+              const controls =
+                slug === 'app-shell'
+                  ? await renderView('LayoutRegionControls', { slug, layout: initialAppShellLayout, options: [] })
+                  : null;
               return renderExamples(slug, 'h3', () => [
                 h(CmFieldset, { id: `${slug}-preview-width`, label: 'Width', class: 'layout-preview__sizes' }, () =>
                   layoutPreviewChoices.map(({ value, label }) =>
@@ -249,6 +256,7 @@ async function writeShowcase(contractsDirectory, output, renderView) {
                     }),
                   ),
                 ),
+                controls && createStaticVNode(serialize(controls), controls.childNodes.length),
                 h(
                   'div',
                   {
@@ -263,6 +271,8 @@ async function writeShowcase(contractsDirectory, output, renderView) {
                       title: `${title} preview`,
                       loading: 'lazy',
                       'data-fit': '',
+                      'data-app-shell-layout': controls ? initialAppShellLayout : undefined,
+                      'data-app-shell-options': controls ? '' : undefined,
                       srcdoc: frame,
                     }),
                   ],

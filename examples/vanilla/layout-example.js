@@ -1,6 +1,6 @@
 import { followShowcaseFrameTheme } from './showcase-theme.js';
 import { createRuntime } from './runtime.js';
-import { fitLayoutPreview, mountWarehousePagination } from './showcase-layout-recipes.js';
+import { fitLayoutPreview, followAppShellPreview, mountWarehousePagination } from './showcase-layout-recipes.js';
 import { selectShowcaseNavItem } from './showcase-inline.mjs';
 
 const root = document.querySelector('[data-layout-example]');
@@ -71,34 +71,45 @@ if (shell) {
   const prefix = 'cm-' + slug;
   const modes = ['content', 'sidebar-content', 'sidebar-content-aside'];
   const parts = ['sidebar', 'aside'];
-  const control = (key) => root.querySelector(`[data-region-control="${key}"]`);
   const region = (key) => shell.querySelector(`.${prefix}__${key}`);
 
   function setLayout(value) {
     shell.classList.remove(...modes.map((mode) => `${prefix}--${mode}`));
     shell.classList.add(`${prefix}--${value}`);
     for (const [index, key] of parts.entries()) {
-      const shown = modes.indexOf(value) > index;
-      control(key).closest('label').hidden = !shown;
-      region(key).hidden = !shown;
+      region(key).hidden = modes.indexOf(value) <= index;
     }
   }
 
-  root.addEventListener('cm:tabs-value-change', ({ detail: { value } }) => setLayout(value));
-  root.addEventListener('change', ({ target }) => {
-    const key = target.dataset.regionControl;
-    if (key === 'subheader' || key === 'content-subheader') region(key).hidden = !target.checked;
+  function setOption(key, checked) {
+    if (key === 'subheader' || key === 'content-subheader') region(key).hidden = !checked;
     if (key === 'header' || parts.includes(key)) {
-      shell.classList.toggle(`${prefix}--${key}-static`, !target.checked);
-      if (slug === 'app-shell' && key === 'header')
-        shell.classList.toggle('cm-app-shell--header-sticky', target.checked);
+      shell.classList.toggle(`${prefix}--${key}-static`, !checked);
+      if (slug === 'app-shell' && key === 'header') shell.classList.toggle('cm-app-shell--header-sticky', checked);
     }
-    if (key === 'notches') shell.classList.toggle('cm-document-layout--edge-notches', target.checked);
+    if (key === 'notches') shell.classList.toggle('cm-document-layout--edge-notches', checked);
     if (key === 'plain') {
       for (const name of ['sidebar', 'content', 'aside'])
-        region(name).classList.toggle('cm-app-shell__region--plain', target.checked);
+        region(name).classList.toggle('cm-app-shell__region--plain', checked);
     }
-  });
+  }
+
+  if (slug === 'app-shell') {
+    const options = ['plain', 'subheader', 'content-subheader', 'header', ...parts];
+    followAppShellPreview((layout, selected) => {
+      setLayout(layout);
+      for (const option of options) setOption(option, selected.includes(option));
+    });
+  } else {
+    root.addEventListener('cm:tabs-value-change', ({ detail: { value } }) => {
+      setLayout(value);
+      for (const key of parts) {
+        const option = root.querySelector(`[data-region-control="${key}"]`).closest('[data-region-option]');
+        option.hidden = region(key).hidden;
+      }
+    });
+    root.addEventListener('change', ({ target }) => setOption(target.dataset.regionControl, target.checked));
+  }
 }
 
 if (setup) {
