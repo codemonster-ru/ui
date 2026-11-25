@@ -1,8 +1,8 @@
 .cm-container {
   inline-size: 100%;
-  max-inline-size: var(--cm-breakpoint-xl);
+  max-inline-size: var(--cm-container-max-width, 80rem);
   margin-inline: auto;
-  padding-inline: var(--cm-space-4);
+  padding-inline: var(--cm-container-padding, var(--cm-space-4));
 }
 
 .cm-container--md {

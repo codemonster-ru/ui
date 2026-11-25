@@ -1967,6 +1967,20 @@ async function checkInlineExamples(page, base, adapter) {
     );
     assert.deepEqual(narrowCards, [], `${adapter}: wide examples take a full row on ${route}`);
     if (route === 'layouts/') {
+      const containerGeometry = (id) =>
+        exampleDemo(page, id)
+          .locator('.cm-container')
+          .evaluate((container) => {
+            const { x, width, right } = container.getBoundingClientRect();
+            const frame = container.parentElement.getBoundingClientRect();
+            return { width, available: frame.width, start: x - frame.x, end: frame.right - right };
+          });
+      const centered = await containerGeometry('container-default');
+      assert(centered.width < centered.available, `${adapter}: Container shows its width constraint`);
+      assert(Math.abs(centered.start - centered.end) < 1, `${adapter}: Container is centered`);
+      const fluid = await containerGeometry('container-fluid');
+      assert.equal(fluid.width, fluid.available, `${adapter}: Fluid Container fills the available width`);
+
       const buttonRows = async (id) => {
         const tops = await exampleDemo(page, id)
           .getByRole('button')
@@ -1974,11 +1988,36 @@ async function checkInlineExamples(page, base, adapter) {
         return new Set(tops).size;
       };
       assert((await buttonRows('inline-default')) > 1, `${adapter}: Inline wraps at the constrained width`);
+      assert.equal(
+        await exampleDemo(page, 'inline-nowrap')
+          .locator('.cm-inline')
+          .evaluate((inline) => getComputedStyle(inline).flexWrap),
+        'nowrap',
+        `${adapter}: Inline disables wrapping`,
+      );
       assert.equal(await buttonRows('inline-nowrap'), 1, `${adapter}: Inline preserves one row with wrap disabled`);
-      const gridRows = await exampleDemo(page, 'grid-default')
-        .locator('.cm-grid > .cm-panel')
-        .evaluateAll((panels) => new Set(panels.map((panel) => panel.getBoundingClientRect().top)).size);
-      assert.equal(gridRows, page.viewportSize().width < 400 ? 3 : 1, `${adapter}: Grid reflows its panels`);
+      const grid = await exampleDemo(page, 'grid-default')
+        .locator('.cm-grid')
+        .evaluate((grid) => {
+          const items = [...grid.children];
+          const positions = items.map((item) => item.getBoundingClientRect());
+          return {
+            items: items.length,
+            rows: new Set(positions.map(({ top }) => top)).size,
+            fits: positions.every(({ right }) => right <= grid.getBoundingClientRect().right + 1),
+          };
+        });
+      assert.equal(grid.items, 4, `${adapter}: Grid shows four panels`);
+      assert(grid.fits, `${adapter}: Grid fits its panels inside the preview`);
+      assert(page.viewportSize().width < 400 ? grid.rows === 4 : grid.rows < 4, `${adapter}: Grid reflows its panels`);
+
+      const stack = exampleDemo(page, 'stack-article').locator('article.cm-stack');
+      await stack.waitFor();
+      assert.equal(
+        await stack.locator(':scope > .cm-section--surface').count(),
+        3,
+        `${adapter}: Stack composes surfaces`,
+      );
     }
     if (route === 'core/') {
       const links = page.locator('#demo-link .showcase-variant .cm-link');

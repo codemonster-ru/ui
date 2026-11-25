@@ -40,9 +40,9 @@ Use the canonical HTML for [container](../../contracts/container/contract.md), [
 
 ## Contracts and semantics
 
-- Container defaults to `div`; choose `main` or `section` only when that landmark is correct. Its
-  optional `size` is `md`, `lg`, `xl`, or `2xl`. `fluid` removes the maximum inline-size and takes
-  precedence over `size`.
+- Container defaults to `div` with an `80rem` maximum inline size. Choose `main` or `section` when
+  it matches the document structure. The optional `md`, `lg`, `xl`, and `2xl` sizes follow the
+  matching breakpoint tokens. `fluid` removes the maximum inline size and takes precedence over `size`.
 - Stack creates vertical flow. It can render `div`, `section`, `ul`, or `ol`.
 - Inline creates wrapping horizontal flow with centered cross-axis alignment. It can render `div`,
   `nav`, or `ul`; set `wrap` to false only when overflow is handled by the composed content.
@@ -57,6 +57,20 @@ Use the canonical HTML for [container](../../contracts/container/contract.md), [
 Layout primitives do not add accessible names or repair document hierarchy. Give `nav` landmarks
 an accessible name when more than one is present, keep heading levels meaningful, and use list
 elements only when their children are valid list items.
+
+## CSS customization
+
+Set these custom properties on a primitive or an ancestor in Vue or Vanilla.
+
+| Custom property            | Effect                                                      | Default                    |
+| -------------------------- | ----------------------------------------------------------- | -------------------------- |
+| `--cm-container-max-width` | Maximum inline size of Container with no size modifier      | `80rem`                    |
+| `--cm-container-padding`   | Container's inline gutter                                   | `var(--cm-space-4)`        |
+| `--cm-grid-min-item-width` | Grid item minimum, capped at the available width            | `16rem`                    |
+| `--cm-layout-gap`          | Space between items in Grid, Inline, Stack, and Header Area | `var(--cm-space-4)`        |
+| `--cm-section-padding`     | Section content inset                                       | `var(--cm-space-4)`        |
+| `--cm-section-radius`      | Section surface corner radius                               | `var(--cm-radius-surface)` |
+| `--cm-section-shadow`      | Section surface shadow                                      | `var(--cm-shadow-none)`    |
 
 ## Application shell boundary
 

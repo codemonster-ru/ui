@@ -496,6 +496,11 @@
   overflow-x: auto;
 }
 
+:is(#demo-container, #demo-section) .showcase-demo {
+  border-radius: var(--cm-radius-surface);
+  background: var(--cm-color-background-canvas);
+}
+
 @media (width >= 48rem) {
   #demo-inline .showcase-variants {
     grid-template-columns: repeat(2, minmax(0, 1fr));
