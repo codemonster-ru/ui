@@ -315,6 +315,7 @@ function setMode(value: string) {
     :title="steps.find(({ value }) => value === step)?.label"
     description="Configure the CMS environment before the first administrator account is created."
     aside-position="left"
+    :fill-viewport="false"
     @next="advanceSetup"
     @back="moveStep(-1)"
   >

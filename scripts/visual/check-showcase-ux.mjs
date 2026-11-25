@@ -1413,11 +1413,35 @@ async function checkSetupLayout(page, base) {
   const progress = frame.getByRole('progressbar', { name: 'Setup progress' });
   for (const [name, width, display] of [
     ['min · 320 px', 320, 'flex'],
+    ['xs · 480 px', 480, 'flex'],
+    ['md · 768 px', 768, 'grid'],
     ['lg · 1024 px', 1024, 'grid'],
   ]) {
     await example.getByRole('radio', { name }).press('Space');
     await expectPreviewWidth(preview, width);
-    assert.equal(await panel.evaluate((element) => getComputedStyle(element).display), display);
+    const layout = await panel.evaluate((element) => {
+      const bounds = (region) => element.querySelector(`.cm-setup-layout__${region}`).getBoundingClientRect();
+      const style = getComputedStyle(element);
+      return {
+        display: style.display,
+        border: parseFloat(style.borderTopWidth),
+        radius: parseFloat(style.borderTopLeftRadius),
+        brand: bounds('brand').toJSON(),
+        aside: bounds('aside').toJSON(),
+        header: bounds('header').toJSON(),
+        main: bounds('main').toJSON(),
+      };
+    });
+    assert.equal(layout.display, display, `Setup Layout columns at ${width} px`);
+    assert.equal(layout.border, width < 480 ? 0 : 1, `Setup Layout border at ${width} px`);
+    assert.equal(layout.radius > 0, width >= 480, `Setup Layout corners at ${width} px`);
+    if (display === 'grid') {
+      assert.equal(layout.aside.width, 256, 'The steps use a 16 rem column');
+      assert.equal(layout.brand.left, layout.aside.left, 'The brand shares the steps column');
+      assert(layout.brand.bottom <= layout.aside.top, 'The brand sits above the steps');
+      assert.equal(layout.header.left, layout.main.left, 'The heading and form share the content column');
+      assert(layout.aside.right <= layout.header.left, 'The steps sit beside the form');
+    }
     await steps.waitFor({ state: display === 'grid' ? 'visible' : 'hidden' });
     await progress.waitFor({ state: display === 'grid' ? 'hidden' : 'visible' });
   }
@@ -2091,12 +2115,12 @@ async function checkAdapter([adapter, base]) {
           await checkInitialExampleLayout(page, base, adapter);
           await checkConfirmDialogExamples(page, base, adapter);
         }
+        if (width === 1440) await checkSetupLayout(page, base);
         if ((width <= 360 || width === 1440) && theme === 'dark') await checkNavigation(page, base, adapter, width);
         if (width === 1440 && theme === 'dark') {
           await checkLayoutViewport(page, base, adapter);
           await checkWarehouse(page, base, adapter);
           await checkAuthForm(page, base, adapter);
-          await checkSetupLayout(page, base);
           await checkLayoutReload(page, base);
           await checkIconSearch(page, base);
           await checkThemePreference(page, base);
