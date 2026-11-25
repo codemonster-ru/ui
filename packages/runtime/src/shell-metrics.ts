@@ -3,8 +3,8 @@ import { observeAdminShellFocus } from './admin-shell-focus.js';
 import { cmStickyOffsetProperties, shellStickyOffsets } from './core/shell.js';
 import type { CmController, CmControllerFactory } from './runtime.js';
 
-const headerSelector = '[data-cm-sticky-header]';
-const subheaderSelector = '[data-cm-sticky-subheader]';
+const headerSelector = ':scope > [data-cm-sticky-header]';
+const subheaderSelector = ':scope > [data-cm-sticky-subheader]';
 
 /**
  * Replaces a shell's declared sticky offsets with measured ones.
@@ -41,7 +41,7 @@ export class CmShellMetricsController implements CmController {
     if (view && typeof view.ResizeObserver === 'function') {
       this.#observer = new view.ResizeObserver(() => this.#apply());
       for (const region of this.#regions) {
-        if (region) this.#observer.observe(region);
+        if (region) this.#observer.observe(region, { box: 'border-box' });
       }
     }
 
@@ -77,7 +77,7 @@ export class CmShellMetricsController implements CmController {
     const view = this.#root.ownerDocument.defaultView;
     if (!view || !(this.#root instanceof view.HTMLElement)) return;
 
-    const [header, subheader] = this.#regions;
+    const [header, subheader] = this.#regions.map((region) => (region?.hidden ? null : region));
     const offsets = shellStickyOffsets({
       hasHeader: header !== null,
       hasSubheader: subheader !== null,
