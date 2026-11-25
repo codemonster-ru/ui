@@ -17,6 +17,24 @@ export const shellTabs = [
   { value: 'sidebar-content-aside', label: 'With aside', content: '' },
 ] as const;
 
+export type ShellLayout = (typeof shellTabs)[number]['value'];
+export const initialAppShellLayout: ShellLayout = 'content';
+
+export const appShellRegionSamples = {
+  sidebar: {
+    label: 'Sidebar block',
+    copy: 'Use this long fixture to validate sticky side column behavior, scrollbar appearance and stable top offsets while scrolling.',
+  },
+  content: {
+    label: 'Content paragraph',
+    copy: 'This is intentionally verbose demo text for stress-testing long scroll areas under sticky header and subheader combinations.',
+  },
+  aside: {
+    label: 'Aside note',
+    copy: 'Auxiliary column content is repeated to guarantee overflow and make sticky alignment regressions immediately visible.',
+  },
+};
+
 export const layoutExamples = [
   { slug: 'admin-shell', title: 'Admin Shell' },
   { slug: 'admin-layout', title: 'Admin Layout' },

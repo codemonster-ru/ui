@@ -285,7 +285,8 @@
 }
 
 @media (width < 64rem) {
-  .layout-example__sidebar p:nth-of-type(n + 3) {
+  .layout-example__sidebar p:nth-of-type(n + 3),
+  .cm-app-shell .layout-example__sidebar p:nth-of-type(n + 2) {
     display: none;
   }
 }
