@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "document-layout-default",
-  "description": "Every region present.",
+  "description": "Header, subheader, both side columns, body and footer.",
   "props": { "layout": "sidebar-content-aside" },
   "slots": {
     "header": "Guide",

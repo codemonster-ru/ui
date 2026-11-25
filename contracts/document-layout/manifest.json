@@ -7,9 +7,17 @@
     "layout": {
       "type": "enum",
       "required": false,
-      "default": "sidebar-content-aside",
+      "default": "content",
       "values": ["content", "sidebar-content", "sidebar-content-aside"]
-    }
+    },
+    "as": { "type": "string", "required": false, "default": "div" },
+    "fillViewport": { "type": "boolean", "required": false, "default": false },
+    "edgeNotches": { "type": "boolean", "required": false, "default": false },
+    "showSubheader": { "type": "boolean", "required": false, "default": true },
+    "showContentSubheader": { "type": "boolean", "required": false, "default": true },
+    "stickyHeader": { "type": "boolean", "required": false, "default": false },
+    "stickySidebar": { "type": "boolean", "required": false, "default": false },
+    "stickyAside": { "type": "boolean", "required": false, "default": false }
   },
   "slots": {
     "default": {

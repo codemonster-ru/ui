@@ -199,9 +199,14 @@ Register both controllers, since the root names both: `app-shell` collapses the 
 
 `CmDocumentLayout` is the reading counterpart: header, subheader, chapter sidebar, body, a
 contextual aside, and footer. It has no state of its own, so it names only `shell-metrics`.
-`layout` defaults to `content`. Set `layout="sidebar-content-aside"` to show both side regions.
-The `content-subheader` slot appears above the body. Set `edge-notches` to decorate the edges of
-the header and footer.
+`layout` defaults to `content`. Use `sidebar-content` for chapter navigation at `lg` and wider, or
+`sidebar-content-aside` to also show a contextual aside at `xl` and wider. Both side slots are optional,
+and the main column uses any space they leave free.
+
+The `subheader` slot appears below the header, and `content-subheader` appears above the body. Set
+`sticky-header` to pin the three bars in order while scrolling. Use `sticky-sidebar` and
+`sticky-aside` to let the side regions stick and scroll independently. Set `edge-notches` to decorate
+the edges of the header and footer, and `fill-viewport` to extend a short document to the viewport height.
 
 ```vue
 <script setup lang="ts">
@@ -217,6 +222,12 @@ import { CmDocumentLayout } from '@codemonster-ru/ui-layouts';
   </CmDocumentLayout>
 </template>
 ```
+
+Vanilla markup uses the same [DocumentLayout HTML contract](../../contracts/document-layout/cases/default.html).
+Place side content inside the `__sidebar-inner` and `__aside-inner` elements so the columns span the
+article while their contents can scroll. Remove a region's `--header-static`, `--sidebar-static`, or
+`--aside-static` modifier to make it sticky. Set `--cm-document-layout-viewport-height` when an enclosing
+scroll area needs a smaller height for its sticky regions.
 
 ## SetupLayout
 

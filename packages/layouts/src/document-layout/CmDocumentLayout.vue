@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, useAttrs, useSlots, useTemplateRef } from 'vue';
 
+import { hasLayoutSlotContent } from '../has-layout-slot-content';
 import { cmDocumentLayoutVariants, type CmDocumentLayoutProps } from './document-layout.types';
 import { useShellStickyOffsets } from '../use-shell-sticky-offsets';
 import { useLayoutOwnership } from '../use-layout-ownership';
@@ -18,8 +19,6 @@ const slots = useSlots();
 const layout = computed(() => (cmDocumentLayoutVariants.includes(props.layout) ? props.layout : 'content'));
 const hasHeader = computed(() => Boolean(slots.header));
 const hasSubheader = computed(() => props.showSubheader && hasHeader.value && Boolean(slots.subheader));
-const hasSidebar = computed(() => layout.value !== 'content' && Boolean(slots.sidebar));
-const hasAside = computed(() => layout.value === 'sidebar-content-aside' && Boolean(slots.aside));
 
 const header = useTemplateRef<HTMLElement>('header');
 useLayoutOwnership(useTemplateRef<HTMLElement>('root'));
@@ -57,7 +56,9 @@ const stickyOffsets = useShellStickyOffsets(
       <slot name="subheader" />
     </div>
     <main class="cm-document-layout__content">
-      <aside v-if="hasSidebar" class="cm-document-layout__sidebar"><slot name="sidebar" /></aside>
+      <aside v-if="layout !== 'content' && hasLayoutSlotContent(slots.sidebar)" class="cm-document-layout__sidebar">
+        <div class="cm-document-layout__sidebar-inner"><slot name="sidebar" /></div>
+      </aside>
       <section class="cm-document-layout__main">
         <div
           v-if="showContentSubheader && slots['content-subheader'] && slots.default"
@@ -65,9 +66,14 @@ const stickyOffsets = useShellStickyOffsets(
         >
           <slot name="content-subheader" />
         </div>
-        <slot />
+        <div class="cm-document-layout__main-body"><slot /></div>
       </section>
-      <aside v-if="hasAside" class="cm-document-layout__aside"><slot name="aside" /></aside>
+      <aside
+        v-if="layout === 'sidebar-content-aside' && hasLayoutSlotContent(slots.aside)"
+        class="cm-document-layout__aside"
+      >
+        <div class="cm-document-layout__aside-inner"><slot name="aside" /></div>
+      </aside>
     </main>
     <footer v-if="slots.footer" class="cm-document-layout__footer"><slot name="footer" /></footer>
   </component>

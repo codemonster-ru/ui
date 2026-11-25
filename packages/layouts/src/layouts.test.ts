@@ -107,6 +107,27 @@ describe('Vue layouts', () => {
     expect(html).not.toContain('Hidden sidebar');
   });
 
+  it('updates DocumentLayout side regions when their slot content changes', async () => {
+    const showSidebar = ref(false);
+    const wrapper = mount(CmDocumentLayout, {
+      props: { layout: 'sidebar-content-aside' },
+      slots: {
+        sidebar: () => h(Fragment, [' ', showSidebar.value ? h('nav', 'Chapters') : createCommentVNode()]),
+        aside: () => 'On this page',
+        default: () => 'Body',
+      },
+    });
+
+    expect(wrapper.find('.cm-document-layout__sidebar').exists()).toBe(false);
+    expect(wrapper.get('.cm-document-layout__aside-inner').text()).toBe('On this page');
+    showSidebar.value = true;
+    await nextTick();
+    expect(wrapper.get('.cm-document-layout__sidebar-inner').text()).toBe('Chapters');
+    showSidebar.value = false;
+    await nextTick();
+    expect(wrapper.find('.cm-document-layout__sidebar').exists()).toBe(false);
+  });
+
   it('accepts the historical AdminShell header-actions slot', () => {
     const wrapper = mount(CmAdminShell, { props: { fillViewport: false }, slots: { 'header-actions': 'Save' } });
     expect(wrapper.get('.cm-admin-shell__header-actions').text()).toBe('Save');
