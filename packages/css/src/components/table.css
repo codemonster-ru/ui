@@ -65,7 +65,8 @@
 }
 
 .cm-table--column-dividers:not(:where(:has(> :is(thead, tbody, tfoot) > tr > [rowspan]:not([rowspan='1']))))
-  :where(th, td) + :where(th, td) {
+  :where(th, td)
+  + :where(th, td) {
   border-inline-start: var(--cm-border-width) solid var(--cm-color-border-divider);
 }
 
