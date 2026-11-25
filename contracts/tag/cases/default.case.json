@@ -1,7 +1,0 @@
-{
-  "schemaVersion": 1,
-  "id": "tag-default",
-  "description": "Neutral outlined tag.",
-  "props": {},
-  "slots": { "default": "Design" }
-}

@@ -2,7 +2,7 @@
 import { computed, useAttrs, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
-import type { CmBadgeTone } from './badge.types';
+import type { CmBadgeTone, CmBadgeVariant } from './badge.types';
 
 defineOptions({ inheritAttrs: false });
 const tones: readonly CmBadgeTone[] = [
@@ -23,11 +23,21 @@ const props = defineProps({
     validator: (value: string) =>
       ['neutral', 'primary', 'success', 'info', 'warning', 'warn', 'help', 'danger', 'contrast'].includes(value),
   },
+  variant: {
+    type: String as PropType<CmBadgeVariant>,
+    default: 'filled',
+    validator: (value: string) => value === 'filled' || value === 'outline',
+  },
 });
 const attrs = useAttrs();
 const tone = computed(() => (props.tone === 'warn' ? 'warning' : tones.includes(props.tone) ? props.tone : 'neutral'));
 const classes = computed(() =>
-  mergeCmClasses('cm-badge', tone.value === 'neutral' ? undefined : `cm-badge--${tone.value}`, attrs.class),
+  mergeCmClasses(
+    'cm-badge',
+    props.variant === 'outline' ? 'cm-badge--outline' : undefined,
+    tone.value === 'neutral' ? undefined : `cm-badge--${tone.value}`,
+    attrs.class,
+  ),
 );
 const rootAttrs = () => omitCmOwnedAttrs(attrs, ['class']);
 </script>

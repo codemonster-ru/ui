@@ -5,12 +5,11 @@ import test from 'node:test';
 import { renderToString } from '@vue/server-renderer';
 import { createSSRApp, createStaticVNode, h } from 'vue';
 import { compareSignificantDom } from '../../../scripts/contracts/significant-dom.mjs';
-import { CmFormLayout, CmPageHeader, CmPanel, CmSkeletonGate } from '../dist/index.js';
+import { CmFormLayout, CmPageHeader, CmSkeletonGate } from '../dist/index.js';
 
 const components = {
   'form-layout': CmFormLayout,
   'page-header': CmPageHeader,
-  panel: CmPanel,
   'skeleton-gate': CmSkeletonGate,
 };
 

@@ -12,8 +12,8 @@ import {
   CmIcon,
   CmIconButton,
   CmLink,
-  CmPanel,
   CmRadio,
+  CmSection,
   CmSkeleton,
 } from '@codemonster-ru/ui-vue';
 import { moon, sun } from '@codemonster-ru/ui-icons';
@@ -231,10 +231,16 @@ async function writeShowcase(contractsDirectory, output, renderView) {
   };
   const renderGroup = (id, title, children) =>
     renderMarkup(() =>
-      h(CmPanel, { id, class: 'showcase-group', 'aria-labelledby': `group-${id}`, tabindex: -1 }, () => [
-        h('h2', { id: `group-${id}`, class: 'showcase-group-label' }, title),
-        h(CmGrid, { class: 'showcase-component-list' }, () => createStaticVNode(children.join('\n'), children.length)),
-      ]),
+      h(
+        CmSection,
+        { id, surface: true, class: 'showcase-group', 'aria-labelledby': `group-${id}`, tabindex: -1 },
+        () => [
+          h('h2', { id: `group-${id}`, class: 'showcase-group-label' }, title),
+          h(CmGrid, { class: 'showcase-component-list' }, () =>
+            createStaticVNode(children.join('\n'), children.length),
+          ),
+        ],
+      ),
     );
   const sections = new Map(
     await Promise.all(

@@ -496,6 +496,7 @@ for (const [slug, approved] of [
     'badge',
     [
       'cm-badge',
+      'cm-badge--outline',
       'cm-badge--primary',
       'cm-badge--success',
       'cm-badge--info',

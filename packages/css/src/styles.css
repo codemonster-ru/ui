@@ -39,7 +39,6 @@
 @import './components/nav-menu.css';
 @import './components/page-header.css';
 @import './components/page-layouts.css';
-@import './components/panel.css';
 @import './components/popover.css';
 @import './components/progress-bar.css';
 @import './components/progress-spinner.css';
@@ -53,7 +52,6 @@
 @import './components/stepper.css';
 @import './components/switch.css';
 @import './components/table.css';
-@import './components/tag.css';
 @import './components/textarea.css';
 @import './components/theme-switch.css';
 @import './components/table-of-contents.css';

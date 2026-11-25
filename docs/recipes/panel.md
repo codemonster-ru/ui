@@ -1,8 +1,7 @@
-# Panel recipe
+# Migrate from Panel
 
-`VfPanel` is structural and does not require a permanent wrapper API. Use `CmCard` for a bounded
-surface with header, body, and optional footer regions. Use `CmSection` for an inset page section
-whose heading hierarchy and content remain application-owned.
+Use `CmCard` for a bounded surface with header, body, and optional footer regions. Use `CmSection`
+for an inset page section whose heading hierarchy and content remain application-owned.
 
 ## Vue
 
@@ -36,12 +35,13 @@ outline. Prefer the header slot when the application must select another heading
 the heading with actions. Card supplies the bounded surface; Section supplies inset only unless
 `surface` is set.
 
-VueForge's `subtle` flag was a theme-specific visual variant, not behavior. Choose Card or Section
-from the information hierarchy. If a product needs an additional tinted surface, add an
-application class using public `--cm-*` tokens after design review rather than introducing a
-cross-platform boolean with no semantic meaning.
+For a transparent surface like `Panel` with `subtle`, use Section. If you need the original
+border, use a surfaced Section with a transparent background set in application CSS. Check
+heading size, text color, and spacing when migrating to Card, which adds a body wrapper and
+applies its own typography.
 
 ## Vanilla HTML
 
-Compose the same layout using the canonical markup for [card](../../contracts/card/contract.md).
-Load styles and initialize interactive components as described in the [Vanilla guide](../vanilla.md).
+Compose the same layout using the canonical markup for [Card](../../contracts/card/contract.md) or
+[Section](../../contracts/section/contract.md). If you import styles per component, use
+`@codemonster-ru/ui-css/card.css` or `@codemonster-ru/ui-css/section.css` for the replacement.

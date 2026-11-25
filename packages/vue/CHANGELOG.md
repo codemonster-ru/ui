@@ -6,6 +6,10 @@ All notable changes to this package will be documented in this file.
 
 Ship the stable Vue components and historical entry points. Skeleton keeps its DOM element when its minimum height changes.
 
+Use `CmBadge variant="outline"` in place of `CmTag`, and use `CmCard` or `CmSection` in place of
+`CmPanel`. The Tag and Panel components, their historical aliases, and their historical subpaths
+were removed.
+
 ## 2.0.0-rc.2
 
 Update dependency and peer ranges for the coordinated CodeMonster UI 2.0 release candidate.

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CmGrid, CmPanel } from '@codemonster-ru/ui-vue';
+import { CmGrid, CmSection } from '@codemonster-ru/ui-vue';
 import groups from '../../shared/showcase-groups.json';
 import { layoutExamples } from '../../shared/showcase-layout-data.mts';
 import LayoutPreview from './LayoutPreview.vue';
@@ -12,24 +12,36 @@ const regions = layoutSlugs.filter((slug) => slug.endsWith('-area'));
 </script>
 
 <template>
-  <CmPanel id="layout-shells" class="showcase-group" aria-labelledby="group-layout-shells" tabindex="-1">
+  <CmSection id="layout-shells" surface class="showcase-group" aria-labelledby="group-layout-shells" tabindex="-1">
     <h2 id="group-layout-shells" class="showcase-group-label">Application shells</h2>
     <CmGrid class="showcase-component-list">
       <ContractExamples v-for="{ slug, title } in layoutExamples" :key="slug" :slug="slug">
         <LayoutPreview :slug="slug" :title="title" />
       </ContractExamples>
     </CmGrid>
-  </CmPanel>
-  <CmPanel id="layout-primitives" class="showcase-group" aria-labelledby="group-layout-primitives" tabindex="-1">
+  </CmSection>
+  <CmSection
+    id="layout-primitives"
+    surface
+    class="showcase-group"
+    aria-labelledby="group-layout-primitives"
+    tabindex="-1"
+  >
     <h2 id="group-layout-primitives" class="showcase-group-label">Layout primitives</h2>
     <CmGrid class="showcase-component-list">
       <ContractExamples v-for="slug in primitives" :key="slug" :slug="slug" />
     </CmGrid>
-  </CmPanel>
-  <CmPanel id="layout-components" class="showcase-group" aria-labelledby="group-layout-components" tabindex="-1">
+  </CmSection>
+  <CmSection
+    id="layout-components"
+    surface
+    class="showcase-group"
+    aria-labelledby="group-layout-components"
+    tabindex="-1"
+  >
     <h2 id="group-layout-components" class="showcase-group-label">Layout regions</h2>
     <CmGrid class="showcase-component-list">
       <ContractExamples v-for="slug in regions" :key="slug" :slug="slug" />
     </CmGrid>
-  </CmPanel>
+  </CmSection>
 </template>

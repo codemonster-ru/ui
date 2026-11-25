@@ -102,7 +102,7 @@ for (const invalidFieldset of catalog.querySelectorAll(
 
 const confirmationExamples = catalog.querySelector('#demo-confirm-dialog');
 if (confirmationExamples) {
-  const status = confirmationExamples.querySelector('[data-confirm-result] .cm-tag');
+  const status = confirmationExamples.querySelector('[data-confirm-result] .cm-badge');
   for (const example of confirmationExamples.querySelectorAll('[data-showcase-example]')) {
     const launcher = example.querySelector('[data-showcase-open]');
     const dialog = example.querySelector('dialog');

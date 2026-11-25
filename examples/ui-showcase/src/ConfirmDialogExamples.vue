@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { nextTick, reactive, ref } from 'vue';
-import { CmButton, CmConfirmDialog, CmInline, CmStack, CmTag } from '@codemonster-ru/ui-vue';
+import { CmBadge, CmButton, CmConfirmDialog, CmInline, CmStack } from '@codemonster-ru/ui-vue';
 
 type DialogProps = InstanceType<typeof CmConfirmDialog>['$props'];
 interface Scenario {
@@ -106,7 +106,7 @@ async function finishLoading(id: string, event: MouseEvent) {
       </div>
     </CmInline>
     <CmInline role="status" data-confirm-result>
-      <CmTag v-if="staticPreview || lastResult" v-show="lastResult">{{ lastResult }}</CmTag>
+      <CmBadge v-if="staticPreview || lastResult" v-show="lastResult" variant="outline">{{ lastResult }}</CmBadge>
     </CmInline>
   </CmStack>
 </template>

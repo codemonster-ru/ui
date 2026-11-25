@@ -453,7 +453,6 @@ async function checkCorePopupLayers(page, adapter) {
 async function checkSurfaceExamples(page, adapter) {
   for (const [slug, expected] of [
     ['card', ['Default', 'Compact', 'Header & footer']],
-    ['panel', ['Default', 'Subtle']],
     ['group-box', ['Collapsible', 'Static', 'Toggle disabled']],
   ]) {
     assert.deepEqual(await page.locator(`#demo-${slug} .showcase-variant-title`).allTextContents(), expected);
@@ -472,15 +471,6 @@ async function checkSurfaceExamples(page, adapter) {
     `${adapter}: Compact reduces spacing`,
   );
   await exampleDemo(page, 'card-regions').locator('.cm-card__footer').getByText('Ready', { exact: true }).waitFor();
-
-  const background = (id) =>
-    exampleDemo(page, id)
-      .locator('.cm-panel')
-      .evaluate((item) => getComputedStyle(item).backgroundColor);
-  const panelBackground = await background('panel-default');
-  const backdrop = await exampleDemo(page, 'panel-subtle').evaluate((item) => getComputedStyle(item).backgroundColor);
-  assert.equal(await background('panel-subtle'), 'rgba(0, 0, 0, 0)');
-  assert.notEqual(panelBackground, backdrop, `${adapter}: Subtle reveals a different backdrop`);
 
   const group = exampleDemo(page, 'group-box-default');
   const toggle = group.getByRole('button', { name: 'Invoice details' });
@@ -523,10 +513,27 @@ async function checkSurfaceExamples(page, adapter) {
 
 async function checkFeedbackExamples(page, adapter) {
   const palette = ['Neutral', 'Primary', 'Success', 'Info', 'Warning', 'Help', 'Danger', 'Contrast'];
-  for (const slug of ['alert', 'badge', 'tag']) {
+  for (const slug of ['alert', 'badge']) {
     const headings = await page.locator(`#demo-${slug} .showcase-variant-title`).allTextContents();
-    assert.deepEqual(headings, palette, `${adapter}: one sample per ${slug} tone`);
+    assert.deepEqual(headings, slug === 'badge' ? [...palette, 'Outline'] : palette, `${adapter}: ${slug} examples`);
   }
+  const labelAppearance = (item) =>
+    item.evaluate((element) => {
+      const style = getComputedStyle(element);
+      return {
+        background: style.backgroundColor,
+        border: style.borderColor,
+        color: style.color,
+        padding: Number.parseFloat(style.paddingInlineStart),
+      };
+    });
+  const outline = await labelAppearance(exampleDemo(page, 'badge-outline').locator('.cm-badge--outline'));
+  const filled = await labelAppearance(exampleDemo(page, 'badge-default--primary').locator('.cm-badge'));
+  assert.equal(outline.background, 'rgba(0, 0, 0, 0)', `${adapter}: outlined Badge has a transparent background`);
+  assert.notEqual(outline.background, filled.background, `${adapter}: filled Badge has a distinct background`);
+  assert.equal(outline.border, filled.border, `${adapter}: the Badge tone controls both borders`);
+  assert.equal(outline.color, filled.color, `${adapter}: the Badge tone controls both text colors`);
+  assert(outline.padding > filled.padding, `${adapter}: outlined Badge has wider inline padding`);
   const progress = page.locator('#demo-progress-bar .showcase-variant-title');
   assert.deepEqual(await progress.allTextContents(), [...palette, 'Indeterminate', 'Moving stripes', 'Static stripes']);
   const bar = (id) => exampleDemo(page, id).locator('.cm-progress-bar__value');
@@ -2018,9 +2025,7 @@ async function checkInlineExamples(page, base, adapter) {
     assert.deepEqual(visibleSlugs, slugs, `${adapter}: ordered component sections on ${route}`);
     const ungrouped = await page
       .locator('[data-showcase-component]')
-      .evaluateAll((panels) =>
-        panels.filter((panel) => !panel.closest('.cm-panel.showcase-group')).map(({ id }) => id),
-      );
+      .evaluateAll((panels) => panels.filter((panel) => !panel.closest('section.showcase-group')).map(({ id }) => id));
     assert.deepEqual(ungrouped, [], `${adapter}: component examples belong to a group surface on ${route}`);
 
     const wrapped = await page.locator('.showcase-group .showcase-variants > *').evaluateAll(
@@ -2263,7 +2268,7 @@ async function checkConfirmDialogExamples(page, base, adapter) {
   await open('footer');
   await dialog.getByRole('button', { name: 'Go back' }).click();
   await result.getByText('Custom footer · Cancelled', { exact: true }).waitFor();
-  assert.equal(await page.locator('#demo-confirm-dialog .cm-tag').count(), 1);
+  assert.equal(await result.locator('.cm-badge--outline').count(), 1);
 }
 
 async function checkColors(page, adapter) {

@@ -1,21 +1,16 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { CmBadge, CmTag } from '@codemonster-ru/ui-vue';
-import { VfBadge, VfProgressSpinner, VfTag } from '@codemonster-ru/ui-vue/historical';
+import { CmBadge } from '@codemonster-ru/ui-vue';
+import { VfBadge, VfProgressSpinner } from '@codemonster-ru/ui-vue/historical';
 import { renderToString } from '@vue/server-renderer';
 import { JSDOM } from 'jsdom';
 import { h } from 'vue';
 
-test('historical Badge and Tag use the same implementations and warning classes', async () => {
+test('historical Badge uses the same implementation and warning class', async () => {
   assert.equal(VfBadge, CmBadge);
-  assert.equal(VfTag, CmTag);
   assert.equal(
     await renderToString(h(VfBadge, { tone: 'warn', class: 'custom' }, () => 'Pending review')),
     await renderToString(h(CmBadge, { tone: 'warning', class: 'custom' }, () => 'Pending review')),
-  );
-  assert.equal(
-    await renderToString(h(VfTag, { tone: 'warn' }, () => 'Review')),
-    await renderToString(h(CmTag, { tone: 'warning' }, () => 'Review')),
   );
 });
 

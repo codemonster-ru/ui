@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { renderToString } from '@vue/server-renderer';
 import { createSSRApp, h } from 'vue';
 import { compareSignificantDom } from '../../../scripts/contracts/significant-dom.mjs';
-import { CmAlert, CmAvatar, CmBadge, CmDivider, CmSkeleton, CmTag } from '../dist/index.js';
+import { CmAlert, CmAvatar, CmBadge, CmDivider, CmSkeleton } from '../dist/index.js';
 
 const packageDirectory = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const components = {
@@ -15,7 +15,6 @@ const components = {
   badge: CmBadge,
   divider: CmDivider,
   skeleton: CmSkeleton,
-  tag: CmTag,
 };
 
 for (const [slug, component] of Object.entries(components)) {

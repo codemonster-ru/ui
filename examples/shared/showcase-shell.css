@@ -189,6 +189,8 @@
   min-inline-size: 0;
   gap: var(--cm-space-4);
   margin-block-end: var(--cm-space-4);
+  color: var(--cm-color-text-primary);
+  line-height: var(--cm-text-body-line-height);
   scroll-margin-block-start: var(--cm-space-4);
 }
 
@@ -267,7 +269,7 @@
   gap: var(--cm-space-4);
 }
 
-:is(#demo-avatar, #demo-badge, #demo-tag, #demo-progress-spinner) {
+:is(#demo-avatar, #demo-badge, #demo-progress-spinner) {
   --showcase-variant-width: 8rem;
 }
 
@@ -400,12 +402,6 @@
   display: flow-root;
   min-inline-size: 0;
   overflow-wrap: anywhere;
-}
-
-[data-showcase-component='panel'] .showcase-demo {
-  padding: var(--cm-space-2);
-  border-radius: var(--cm-radius-surface);
-  background: var(--cm-color-background-canvas);
 }
 
 /* Leave room for nested menus and labels beside step markers. */

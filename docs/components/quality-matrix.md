@@ -68,7 +68,7 @@ Use the [component reference](./index.md) for framework examples and canonical H
 | [`CmAlert`](../../contracts/alert/manifest.json) | `ui-vue` | default | — | 2 / 0 |
 | [`CmAvatar`](../../contracts/avatar/manifest.json) | `ui-vue` | default | — | 2 / 0 |
 | [`CmBadge`](../../contracts/badge/manifest.json) | `ui-vue` | default | — | 3 / 0 |
-| [`CmTag`](../../contracts/tag/manifest.json) | `ui-vue` | default | — | 3 / 0 |
+| `CmTag` (removed in 2.0) | `ui-vue` | default | — | 3 / 0 |
 | [`CmDivider`](../../contracts/divider/manifest.json) | `ui-vue` | default | — | 2 / 0 |
 | [`CmSkeleton`](../../contracts/skeleton/manifest.json) | `ui-vue` | default, animated | — | 2 / 0 |
 | [`CmSkeletonGate`](../../contracts/skeleton-gate/manifest.json) | `ui-vue` | loading, ready | — | 2 / 0 |
@@ -94,7 +94,7 @@ Use the [component reference](./index.md) for framework examples and canonical H
 | [`CmStack`](../../contracts/stack/manifest.json) | `ui-vue` | default | — | 1 / 0 |
 | [`CmCard`](../../contracts/card/manifest.json) | `ui-vue` | default, compact | — | 5 / 0 |
 | [`CmGroupBox`](../../contracts/group-box/manifest.json) | `ui-vue` | default, collapsed, disabled | group-box | 1 / 1 |
-| [`CmPanel`](../../contracts/panel/manifest.json) | `ui-vue` | default, subtle | — | 2 / 0 |
+| `CmPanel` (removed in 2.0) | `ui-vue` | default, subtle | — | 2 / 0 |
 | [`CmPageHeader`](../../contracts/page-header/manifest.json) | `ui-vue` | default | — | 1 / 0 |
 
 ## Application shells and pages

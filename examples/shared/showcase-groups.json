@@ -17,12 +17,12 @@
   {
     "id": "surfaces",
     "title": "Surface Components",
-    "components": ["card", "panel", "divider", "fieldset", "group-box", "table", "data-table"]
+    "components": ["card", "divider", "fieldset", "group-box", "table", "data-table"]
   },
   {
     "id": "feedback",
     "title": "Feedback",
-    "components": ["alert", "badge", "tag", "progress-bar", "progress-spinner", "avatar", "skeleton", "skeleton-gate"]
+    "components": ["alert", "badge", "progress-bar", "progress-spinner", "avatar", "skeleton", "skeleton-gate"]
   },
   {
     "id": "forms",
