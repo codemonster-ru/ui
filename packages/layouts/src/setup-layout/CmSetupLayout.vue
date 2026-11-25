@@ -1,5 +1,15 @@
 <script setup lang="ts">
-import { computed, getCurrentInstance, useAttrs, useSlots, useTemplateRef } from 'vue';
+import {
+  Comment,
+  Fragment,
+  Text,
+  computed,
+  getCurrentInstance,
+  isVNode,
+  useAttrs,
+  useSlots,
+  useTemplateRef,
+} from 'vue';
 
 import { shouldEnterAdvance } from '@codemonster-ru/ui-runtime/core';
 import type { CmSetupLayoutProps } from './setup-layout.types';
@@ -29,9 +39,19 @@ const classes = computed(() => [
   !props.surface && 'cm-setup-layout--plain',
   attrs.class,
 ]);
-const hasTitle = computed(() => Boolean(slots.title || props.title));
-const hasDescription = computed(() => Boolean(slots.description || props.description));
-const hasHeader = computed(() => hasTitle.value || hasDescription.value);
+
+function hasContent(node: unknown): boolean {
+  if (Array.isArray(node)) return node.some(hasContent);
+  if (typeof node === 'string') return node.trim().length > 0;
+  if (typeof node === 'number') return true;
+  if (!isVNode(node) || node.type === Comment) return false;
+  if (node.type === Text || node.type === Fragment) return hasContent(node.children);
+  return true;
+}
+
+function hasSlotContent(name: string): boolean {
+  return hasContent(slots[name]?.());
+}
 
 function emitNavigation(name: 'next' | 'back', event: KeyboardEvent): void {
   const listener = name === 'next' ? 'onNext' : 'onBack';
@@ -84,24 +104,27 @@ function onKeydown(event: KeyboardEvent): void {
     @keydown="onKeydown"
   >
     <div class="cm-setup-layout__panel">
-      <div v-if="$slots.brand" class="cm-setup-layout__brand"><slot name="brand" /></div>
-      <div v-if="$slots.toolbar" class="cm-setup-layout__toolbar"><slot name="toolbar" /></div>
-      <aside v-if="$slots.aside" class="cm-setup-layout__aside"><slot name="aside" /></aside>
-      <header v-if="hasHeader" class="cm-setup-layout__header">
+      <div v-if="hasSlotContent('brand')" class="cm-setup-layout__brand"><slot name="brand" /></div>
+      <div v-if="hasSlotContent('toolbar')" class="cm-setup-layout__toolbar"><slot name="toolbar" /></div>
+      <aside v-if="hasSlotContent('aside')" class="cm-setup-layout__aside"><slot name="aside" /></aside>
+      <header
+        v-if="props.title || props.description || hasSlotContent('title') || hasSlotContent('description')"
+        class="cm-setup-layout__header"
+      >
         <div class="cm-setup-layout__heading">
-          <h1 v-if="hasTitle" class="cm-setup-layout__title">
+          <h1 v-if="props.title || hasSlotContent('title')" class="cm-setup-layout__title">
             <slot name="title">{{ props.title }}</slot>
           </h1>
-          <p v-if="hasDescription" class="cm-setup-layout__description">
+          <p v-if="props.description || hasSlotContent('description')" class="cm-setup-layout__description">
             <slot name="description">{{ props.description }}</slot>
           </p>
         </div>
       </header>
       <section class="cm-setup-layout__main">
         <div class="cm-setup-layout__body"><slot /></div>
-        <div v-if="$slots.actions" class="cm-setup-layout__actions"><slot name="actions" /></div>
+        <div v-if="hasSlotContent('actions')" class="cm-setup-layout__actions"><slot name="actions" /></div>
       </section>
     </div>
-    <footer v-if="$slots.footer" class="cm-setup-layout__footer"><slot name="footer" /></footer>
+    <footer v-if="hasSlotContent('footer')" class="cm-setup-layout__footer"><slot name="footer" /></footer>
   </component>
 </template>
