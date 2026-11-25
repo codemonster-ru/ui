@@ -1086,15 +1086,18 @@ async function checkLayoutViewport(page, base, adapter) {
     await tab.waitFor();
     const previewDocument = await (await frame.elementHandle()).contentFrame();
     await previewDocument.waitForLoadState('load');
-    assert.equal(await tab.getAttribute('aria-selected'), 'true');
+    const content = preview.getByRole('tab', { name: 'Content', exact: true });
+    const appShell = slug === 'app-shell';
+    assert.equal(await (appShell ? content : tab).getAttribute('aria-selected'), 'true');
     const sidebar = preview.locator(`.cm-${slug}__sidebar`);
-    await preview.getByRole('tab', { name: 'Content', exact: true }).click();
+    if (!appShell) await content.click();
     await sidebar.waitFor({ state: 'hidden' });
-    const main = preview.locator(slug === 'app-shell' ? '.cm-app-shell__content' : '.cm-document-layout__main');
+    const main = preview.locator(appShell ? '.cm-app-shell__content' : '.cm-document-layout__main');
     assert(
       await main.evaluate((element) => Math.abs(element.offsetWidth - element.parentElement.clientWidth) <= 1),
       `${adapter}: ${slug} uses the full width in Content mode`,
     );
+    if (appShell) await main.getByText(/^Content paragraph 1\./u).waitFor();
     await tab.click();
     const aside = preview.locator(`.cm-${slug}__aside:not([hidden])`);
     await aside.waitFor({ state: 'attached' });

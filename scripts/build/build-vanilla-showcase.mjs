@@ -114,6 +114,15 @@ async function renderLayoutExample(slug, renderView) {
     for (const key of ['subheader', 'content-subheader']) {
       hide(findElement(shell, (node) => hasClass(node, `cm-${slug}__${key}`)));
     }
+    const initialLayout = attr(shell, 'data-preview-shell').value;
+    if (initialLayout === 'content') {
+      const classes = attr(shell, 'class');
+      classes.value = classes.value.replace(`cm-${slug}--sidebar-content-aside`, `cm-${slug}--${initialLayout}`);
+      for (const key of ['sidebar', 'aside']) {
+        hide(findElement(shell, (node) => hasClass(node, `cm-${slug}__${key}`)));
+        hide(findElement(fragment, (node) => attr(node, 'data-region-control')?.value === key).parentNode);
+      }
+    }
   }
 
   if (slug === 'admin-shell') {

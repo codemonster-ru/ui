@@ -5,12 +5,15 @@ import { cmBreakpoints } from '@codemonster-ru/ui-tokens';
 import annabelLogoAsset from '../../shared/annabel-logo-icon.svg';
 import {
   adminShellRows,
+  appShellRegionSamples,
   columns,
   dashboardActivity,
   dashboardStats,
+  initialAppShellLayout,
   type LayoutExampleSlug,
   regionControls,
   shellTabs,
+  type ShellLayout,
   steps,
   warehouseNavigation,
   warehouseTableCaption,
@@ -56,10 +59,19 @@ const logo = staticPreview ? './vueforge-logo-icon.svg' : logoAsset;
 const corePath = staticPreview ? './core/' : '/core/';
 const submitted = ref(false);
 
-type ShellLayout = (typeof shellTabs)[number]['value'];
-const mode = ref<ShellLayout>('sidebar-content-aside');
+const mode = ref<ShellLayout>(slug === 'app-shell' ? initialAppShellLayout : 'sidebar-content-aside');
 const makeRegionFlags = () => Object.fromEntries(regionControls.map(({ key }) => [key, false]));
 const flags = ref({ 'app-shell': makeRegionFlags(), 'document-layout': makeRegionFlags() });
+const documentRegionLabels = { sidebar: 'Navigation item', content: 'Content section', aside: 'Related item' };
+
+function regionItemText(region: keyof typeof appShellRegionSamples, number: number) {
+  if (slug === 'app-shell') {
+    const { label, copy } = appShellRegionSamples[region];
+    return `${label} ${number}. ${copy}`;
+  }
+  return `${documentRegionLabels[region]} ${number}`;
+}
+
 const adminNav = ref('warehouse-availability');
 const currentYear = new Date().getUTCFullYear();
 const warehouseBranches = ref<readonly string[]>(['commerce']);
@@ -142,8 +154,8 @@ function setMode(value: string) {
             v-if="
               (key !== 'notches' || slug === 'document-layout') &&
               (key !== 'plain' || slug === 'app-shell') &&
-              (key !== 'sidebar' || mode !== 'content') &&
-              (key !== 'aside' || mode === 'sidebar-content-aside')
+              (staticPreview || key !== 'sidebar' || mode !== 'content') &&
+              (staticPreview || key !== 'aside' || mode === 'sidebar-content-aside')
             "
             v-model="flags[slug][key]"
             :label="label"
@@ -156,10 +168,10 @@ function setMode(value: string) {
   <component
     :is="slug === 'app-shell' ? CmAppShell : CmDocumentLayout"
     v-if="slug === 'app-shell' || slug === 'document-layout'"
-    :layout="mode"
+    :layout="staticPreview ? 'sidebar-content-aside' : mode"
     :show-subheader="staticPreview || flags[slug].subheader"
     :show-content-subheader="staticPreview || flags[slug]['content-subheader']"
-    :data-preview-shell="staticPreview ? '' : undefined"
+    :data-preview-shell="staticPreview ? mode : undefined"
     :sticky-header="flags[slug].header"
     :sticky-sidebar="flags[slug].sidebar"
     :sticky-aside="flags[slug].aside"
@@ -179,17 +191,17 @@ function setMode(value: string) {
     <template #sidebar>
       <CmStack class="layout-example__region layout-example__sidebar">
         <strong>Sidebar</strong>
-        <p v-for="n in 18" :key="n">Navigation item {{ n }}</p>
+        <p v-for="n in 18" :key="n">{{ regionItemText('sidebar', n) }}</p>
       </CmStack>
     </template>
     <CmStack class="layout-example__region">
       <strong>Content</strong>
-      <p v-for="n in 26" :key="n">Content section {{ n }}</p>
+      <p v-for="n in 26" :key="n">{{ regionItemText('content', n) }}</p>
     </CmStack>
     <template #aside>
       <CmStack class="layout-example__region">
         <strong>Aside</strong>
-        <p v-for="n in 16" :key="n">Related item {{ n }}</p>
+        <p v-for="n in 16" :key="n">{{ regionItemText('aside', n) }}</p>
       </CmStack>
     </template>
     <template #footer><strong>Footer</strong></template>
