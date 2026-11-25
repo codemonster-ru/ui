@@ -5,13 +5,18 @@
   color: var(--cm-color-text-primary);
 }
 
+:is(.cm-auth-layout, .cm-auth-layout .cm-page-layout__container, .cm-auth-layout__panel),
+:is(.cm-error-layout, .cm-error-layout .cm-page-layout__container, .cm-error-layout__panel) {
+  box-sizing: border-box;
+}
+
 .cm-auth-layout {
-  padding-block: var(--cm-space-4);
-  background: var(--cm-color-background-surface-subtle);
+  padding-block: var(--cm-auth-layout-padding-block, var(--cm-space-4));
+  background: var(--cm-auth-layout-background, var(--cm-color-background-surface-subtle));
 }
 
 .cm-error-layout {
-  padding-block: var(--cm-space-8);
+  padding-block: var(--cm-error-layout-padding-block, var(--cm-space-12));
 }
 
 .cm-page-layout--fill-viewport {
@@ -41,25 +46,28 @@
 }
 
 .cm-auth-layout__panel {
-  gap: var(--cm-space-6);
-  max-inline-size: 28rem;
+  gap: var(--cm-auth-layout-panel-gap, var(--cm-space-6));
+  max-inline-size: var(--cm-auth-layout-panel-width, 28rem);
 }
 
-.cm-page-layout__panel--surface {
-  padding: var(--cm-space-8);
-  border-radius: var(--cm-radius-surface);
-  box-shadow: var(--cm-shadow-none);
+.cm-page-layout__panel--surface:where(.cm-error-layout__panel) {
+  padding: var(--cm-error-layout-panel-padding, calc(var(--cm-space-6) * 1.5));
+  border-radius: var(--cm-error-layout-panel-radius, var(--cm-radius-surface));
+  box-shadow: var(--cm-error-layout-panel-shadow, var(--cm-shadow-none));
 }
 
 .cm-auth-layout__panel.cm-page-layout__panel--surface {
-  border: var(--cm-border-width) solid var(--cm-color-border-default);
-  background: var(--cm-color-background-surface);
+  padding: var(--cm-auth-layout-panel-padding, calc(var(--cm-space-6) * 1.5));
+  border: var(--cm-auth-layout-panel-border, var(--cm-border-width) solid var(--cm-color-border-default));
+  border-radius: var(--cm-auth-layout-panel-radius, var(--cm-radius-surface));
+  background: var(--cm-auth-layout-panel-background, var(--cm-color-background-surface));
+  box-shadow: var(--cm-auth-layout-panel-shadow, var(--cm-shadow-none));
 }
 
 .cm-auth-layout__header {
   display: flex;
   flex-direction: column;
-  gap: var(--cm-space-2);
+  gap: var(--cm-auth-layout-header-gap, var(--cm-space-2));
   text-align: center;
 }
 
@@ -74,21 +82,36 @@
 
 :is(.cm-auth-layout__title, .cm-error-layout__title) {
   margin: 0;
-  line-height: 1.2;
 }
 
 .cm-auth-layout__title {
-  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-size: var(--cm-auth-layout-title-font-size, clamp(1.5rem, 3vw, 2rem));
+  font-weight: inherit;
+  line-height: var(--cm-auth-layout-title-line-height, 1.2);
 }
 
 .cm-error-layout__title {
-  font-size: clamp(1.375rem, 3vw, 2rem);
+  font-size: var(--cm-error-layout-title-font-size, clamp(1.375rem, 3vw, 2rem));
+  font-weight: inherit;
+  line-height: var(--cm-error-layout-title-line-height, 1.2);
 }
 
-:is(.cm-auth-layout__description, .cm-auth-layout__footer, .cm-error-layout__description) {
+.cm-auth-layout__description {
   margin: 0;
-  color: var(--cm-color-text-secondary);
-  line-height: 1.5;
+  color: var(--cm-auth-layout-description-color, var(--cm-color-text-muted));
+  line-height: var(--cm-auth-layout-description-line-height, 1.5);
+}
+
+.cm-auth-layout__footer {
+  margin: 0;
+  color: var(--cm-auth-layout-footer-color, var(--cm-color-text-muted));
+  line-height: var(--cm-auth-layout-footer-line-height, 1.5);
+}
+
+.cm-error-layout__description {
+  margin: 0;
+  color: var(--cm-error-layout-description-color, var(--cm-color-text-muted));
+  line-height: var(--cm-error-layout-description-line-height, 1.5);
 }
 
 .cm-auth-layout__footer,
@@ -98,10 +121,10 @@
 
 .cm-error-layout__code {
   margin: 0;
-  font-size: clamp(2.25rem, 8vw, 5.5rem);
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: -0.04em;
+  font-size: var(--cm-error-layout-code-font-size, clamp(2.25rem, 8vw, 5.5rem));
+  font-weight: var(--cm-error-layout-code-font-weight, var(--cm-font-weight-bold));
+  line-height: var(--cm-error-layout-code-line-height, 1);
+  letter-spacing: var(--cm-error-layout-code-letter-spacing, -0.04em);
 }
 
 .cm-error-layout__actions {
@@ -124,8 +147,9 @@
   }
 
   .cm-auth-layout__panel.cm-page-layout__panel--surface {
-    padding: var(--cm-space-6);
+    padding: var(--cm-auth-layout-panel-padding-compact, var(--cm-space-6));
     border: 0;
     border-radius: 0;
+    box-shadow: none;
   }
 }

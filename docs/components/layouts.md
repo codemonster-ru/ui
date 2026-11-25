@@ -85,6 +85,31 @@ or [Error page HTML](../../contracts/error-layout/cases/default.html). Load `sty
 `page-layouts.css` from `@codemonster-ru/ui-css` with the shared tokens. The layout itself requires
 no JavaScript.
 
+To theme Auth Layout in Vue or Vanilla, set the component's CSS custom properties on the
+layout or a containing element. The panel defaults to a maximum width of 28rem and an
+inset of 2.25rem. Below 30rem, it uses a 1.5rem inset and removes its border, radius, and shadow.
+
+| Region        | Custom properties                                                                                                                        |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Layout        | `--cm-auth-layout-background`, `--cm-auth-layout-padding-block`                                                                          |
+| Panel         | `--cm-auth-layout-panel-width`, `--cm-auth-layout-panel-gap`, `--cm-auth-layout-panel-padding`, `--cm-auth-layout-panel-padding-compact` |
+| Panel surface | `--cm-auth-layout-panel-background`, `--cm-auth-layout-panel-border`, `--cm-auth-layout-panel-radius`, `--cm-auth-layout-panel-shadow`   |
+| Header        | `--cm-auth-layout-header-gap`                                                                                                            |
+| Title         | `--cm-auth-layout-title-font-size`, `--cm-auth-layout-title-line-height`                                                                 |
+| Description   | `--cm-auth-layout-description-color`, `--cm-auth-layout-description-line-height`                                                         |
+| Footer        | `--cm-auth-layout-footer-color`, `--cm-auth-layout-footer-line-height`                                                                   |
+
+Error Layout uses a 3rem block inset and a 2.25rem panel inset with `surface` enabled. Its
+custom properties work on the layout or a containing element in Vue and Vanilla.
+
+| Region      | Custom properties                                                                                                                                       |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Layout      | `--cm-error-layout-padding-block`                                                                                                                       |
+| Panel       | `--cm-error-layout-panel-padding`, `--cm-error-layout-panel-radius`, `--cm-error-layout-panel-shadow`                                                   |
+| Code        | `--cm-error-layout-code-font-size`, `--cm-error-layout-code-font-weight`, `--cm-error-layout-code-line-height`, `--cm-error-layout-code-letter-spacing` |
+| Title       | `--cm-error-layout-title-font-size`, `--cm-error-layout-title-line-height`                                                                              |
+| Description | `--cm-error-layout-description-color`, `--cm-error-layout-description-line-height`                                                                      |
+
 ## Standalone shell regions
 
 Each region renders a semantic HTML element, forwards standard attributes, renders a default
