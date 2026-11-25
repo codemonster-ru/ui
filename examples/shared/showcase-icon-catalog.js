@@ -21,6 +21,7 @@ export function filterIcons({ target }) {
       }
     }
     group.querySelector('[data-icon-empty]').hidden = matched;
+    group.querySelector('[data-icon-table]').hidden = !matched;
   }
 
   const count = catalog.querySelector('[data-icon-count]');
@@ -31,7 +32,7 @@ export function filterIcons({ target }) {
 export async function copyIcon({ target }) {
   const button = target instanceof Element ? target.closest('[data-copy-icon]') : null;
   if (!button) return;
-  const { iconName } = button.dataset;
+  const { iconName } = button.closest('[data-icon-name]').dataset;
   const status = button.closest('#icon-catalog').querySelector('[data-icon-copy-status]');
 
   try {

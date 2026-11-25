@@ -267,10 +267,6 @@
   gap: var(--cm-space-4);
 }
 
-[data-showcase-component='icon'] {
-  --showcase-variant-width: 10rem;
-}
-
 :is(#demo-avatar, #demo-badge, #demo-tag, #demo-progress-spinner) {
   --showcase-variant-width: 8rem;
 }
