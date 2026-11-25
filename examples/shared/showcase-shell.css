@@ -559,7 +559,9 @@
 }
 
 .layout-preview__viewport {
+  position: relative;
   box-sizing: border-box;
+  container-type: inline-size;
   inline-size: 100%;
   min-inline-size: 0;
   overflow-x: auto;
@@ -579,21 +581,95 @@
   inline-size: 100%;
 }
 
+.layout-preview__placeholder {
+  display: none;
+}
+
+@media (scripting: enabled) {
+  .layout-preview__frame:not([data-preview-ready]) {
+    visibility: hidden;
+  }
+
+  .layout-preview__frame:not([data-preview-ready]) + .layout-preview__placeholder {
+    position: absolute;
+    inset: 0;
+    display: block;
+    pointer-events: none;
+  }
+}
+
 #demo-admin-shell .layout-preview__frame {
   max-block-size: 36rem;
 }
 
+/* Reserve space for the initial Fit examples while their intrinsic heights are unknown. */
+#demo-setup-layout .layout-preview__frame {
+  block-size: 32rem;
+}
+
+#demo-auth-layout .layout-preview__frame {
+  block-size: 29.5rem;
+}
+
 #demo-error-layout .layout-preview__frame {
-  block-size: 24rem;
+  block-size: clamp(23rem, 18rem + 9cqi, 25.25rem);
+}
+
+@container (width < 64rem) {
+  #demo-setup-layout .layout-preview__frame {
+    block-size: 33.5rem;
+  }
+}
+
+@container (width < 48rem) {
+  #demo-setup-layout .layout-preview__frame {
+    block-size: 37.5rem;
+  }
+}
+
+@container (width < 40rem) {
+  #demo-setup-layout .layout-preview__frame {
+    block-size: 48rem;
+  }
+}
+
+@container (width < 30rem) {
+  #demo-setup-layout .layout-preview__frame {
+    block-size: 43.5rem;
+  }
+
+  #demo-auth-layout .layout-preview__frame {
+    block-size: 26rem;
+  }
+}
+
+@container (width < 21.5rem) {
+  #demo-setup-layout .layout-preview__frame {
+    block-size: 45rem;
+  }
+
+  #demo-auth-layout .layout-preview__frame {
+    block-size: 30.5rem;
+  }
+
+  #demo-error-layout .layout-preview__frame {
+    block-size: 24rem;
+  }
+}
+
+@container (width < 17rem) {
+  #demo-setup-layout .layout-preview__frame {
+    block-size: 47.5rem;
+  }
+
+  #demo-error-layout .layout-preview__frame {
+    block-size: 27.5rem;
+  }
 }
 
 @media (width >= 64rem) {
   #demo-admin-layout .layout-preview__frame {
     block-size: 45.5rem;
-  }
-
-  #demo-auth-layout .layout-preview__frame {
-    block-size: 33rem;
   }
 }
 

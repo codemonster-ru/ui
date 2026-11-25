@@ -12,15 +12,15 @@ export const regionControls = [
 ] as const;
 
 export const shellTabs = [
-  { value: 'content', label: 'Content', content: '' },
-  { value: 'sidebar-content', label: 'With sidebar', content: '' },
-  { value: 'sidebar-content-aside', label: 'With aside', content: '' },
+  { value: 'content', label: 'Content' },
+  { value: 'sidebar-content', label: 'With sidebar' },
+  { value: 'sidebar-content-aside', label: 'With aside' },
 ] as const;
 
 export type ShellLayout = (typeof shellTabs)[number]['value'];
-export const initialAppShellLayout: ShellLayout = 'content';
+export const initialShellLayout: ShellLayout = 'content';
 
-export const appShellRegionSamples = {
+export const shellRegionSamples = {
   sidebar: {
     label: 'Sidebar block',
     copy: 'Use this long fixture to validate sticky side column behavior, scrollbar appearance and stable top offsets while scrolling.',

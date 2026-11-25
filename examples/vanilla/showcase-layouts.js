@@ -1,4 +1,4 @@
-import { fitAppShellPreviewForLayout } from './showcase-layout-recipes.js';
+import { fitShellPreviewForLayout } from './showcase-layout-recipes.js';
 
 export function mountLayoutPreviews(catalog) {
   for (const section of catalog.querySelectorAll('[data-layout-preview]')) {
@@ -10,21 +10,21 @@ export function mountLayoutPreviews(catalog) {
         if (width === 'fit') frame.removeAttribute('width');
         else frame.width = width;
       } else if (target.hasAttribute('data-region-control')) {
-        frame.dataset.appShellOptions = [...section.querySelectorAll('[data-region-control]:checked')]
+        frame.dataset.shellPreviewOptions = [...section.querySelectorAll('[data-region-control]:checked')]
           .map((input) => input.dataset.regionControl)
           .join(' ');
       }
     });
 
-    if (frame.hasAttribute('data-app-shell-layout')) {
+    if (frame.hasAttribute('data-shell-preview-layout')) {
       const option = (key) => section.querySelector(`[data-region-control="${key}"]`).closest('[data-region-option]');
       const sidebar = option('sidebar');
       const aside = option('aside');
       section.addEventListener('cm:tabs-value-change', ({ detail: { value } }) => {
-        frame.dataset.appShellLayout = value;
+        frame.dataset.shellPreviewLayout = value;
         sidebar.hidden = value === 'content';
         aside.hidden = value !== 'sidebar-content-aside';
-        fitAppShellPreviewForLayout(frame, value, (width) => {
+        fitShellPreviewForLayout(frame, value, (width) => {
           section.querySelector(`[data-preview-width="${width}"]`)?.click();
         });
       });

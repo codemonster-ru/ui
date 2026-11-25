@@ -21,26 +21,55 @@ export function mountLayoutRecipes(root) {
 }
 
 /** @param {Element | null} content */
-export function fitLayoutPreview(content) {
+export async function revealLayoutPreview(content) {
   const frame = window.frameElement;
-  if (!content || !frame?.matches('iframe.layout-preview__frame')) return;
+  if (!frame?.matches('iframe.layout-preview__frame')) return;
 
-  const observer = new ResizeObserver(() => {
-    const height = Math.ceil(content.getBoundingClientRect().height);
-    if (height > 0 && frame.style.blockSize !== `${height}px`) {
-      frame.style.blockSize = `${height}px`;
+  // Trigger layout so fonts used by the preview are included in the first measurement.
+  document.body.getBoundingClientRect();
+  await document.fonts.ready;
+
+  if (content) {
+    function fit() {
+      const height = Math.ceil(content.getBoundingClientRect().height);
+      if (height > 0 && frame.style.blockSize !== `${height}px`) {
+        frame.style.blockSize = `${height}px`;
+      }
     }
-  });
-  observer.observe(content, { box: 'border-box' });
+
+    fit();
+    new ResizeObserver(fit).observe(content, { box: 'border-box' });
+  }
+  frame.setAttribute('data-preview-ready', '');
 }
 
-const revealAppShellAsideAttribute = 'data-app-shell-reveal-aside';
+/** @param {HTMLFormElement | null} form */
+export function enableAuthPreview(form) {
+  const layout = form?.closest('.cm-auth-layout');
+  if (!form || !layout) return;
+
+  function enable() {
+    form.inert = false;
+    observer.disconnect();
+    layout.removeEventListener('focusin', enable);
+  }
+
+  // A lazy iframe can load below the fold. Expose the fields once the form is in view
+  // or keyboard navigation enters the preview through its sign-up link.
+  const observer = new IntersectionObserver(([entry]) => {
+    if (entry.isIntersecting) enable();
+  });
+  layout.addEventListener('focusin', enable);
+  observer.observe(form);
+}
+
+const revealAsideAttribute = 'data-shell-preview-reveal-aside';
 
 /** @param {HTMLIFrameElement} frame
  * @param {string} layout
  * @param {(width: string) => void} selectWidth
  */
-export function fitAppShellPreviewForLayout(frame, layout, selectWidth) {
+export function fitShellPreviewForLayout(frame, layout, selectWidth) {
   const viewport = frame.parentElement;
   if (!viewport) return;
 
@@ -56,27 +85,29 @@ export function fitAppShellPreviewForLayout(frame, layout, selectWidth) {
 
   selectWidth(String(xl));
   const lg = Number.parseInt(styles.getPropertyValue('--cm-breakpoint-lg'), 10);
-  if (viewport.clientWidth < lg) frame.setAttribute(revealAppShellAsideAttribute, String(xl));
+  if (viewport.clientWidth < lg) frame.setAttribute(revealAsideAttribute, String(xl));
 }
 
-/** @param {(layout: string, options: string[]) => void} update */
-export function followAppShellPreview(update) {
+/** @param {'app-shell' | 'document-layout'} slug
+ * @param {(layout: string, options: string[]) => void} update
+ */
+export function followShellPreview(slug, update) {
   const frame = window.frameElement;
-  const attributeFilter = ['data-app-shell-layout', 'data-app-shell-options'];
-  if (!frame?.hasAttribute('data-app-shell-layout')) return;
+  const attributeFilter = ['data-shell-preview-layout', 'data-shell-preview-options'];
+  if (!frame?.hasAttribute('data-shell-preview-layout')) return;
 
   const revealAside = () => {
-    const width = frame.getAttribute(revealAppShellAsideAttribute);
+    const width = frame.getAttribute(revealAsideAttribute);
     if (!width) return;
-    frame.removeAttribute(revealAppShellAsideAttribute);
+    frame.removeAttribute(revealAsideAttribute);
     if (
-      frame.getAttribute('data-app-shell-layout') !== 'sidebar-content-aside' ||
+      frame.getAttribute('data-shell-preview-layout') !== 'sidebar-content-aside' ||
       frame.getAttribute('width') !== width
     )
       return;
 
     const viewport = frame.parentElement;
-    const aside = document.querySelector('.cm-app-shell__aside');
+    const aside = document.querySelector(`.cm-${slug}__aside`);
     if (!viewport || !aside?.getClientRects().length) return;
     const asideStart = frame.getBoundingClientRect().left + aside.getBoundingClientRect().left;
     const viewportStart = viewport.getBoundingClientRect().left + viewport.clientLeft;
@@ -84,11 +115,11 @@ export function followAppShellPreview(update) {
   };
 
   const sync = () => {
-    const layout = frame.getAttribute('data-app-shell-layout');
-    const options = frame.getAttribute('data-app-shell-options');
+    const layout = frame.getAttribute('data-shell-preview-layout');
+    const options = frame.getAttribute('data-shell-preview-options');
     if (layout) update(layout, options ? options.split(' ') : []);
     // Align from the parent even when the preview itself is below the visible page.
-    if (frame.hasAttribute(revealAppShellAsideAttribute)) {
+    if (frame.hasAttribute(revealAsideAttribute)) {
       frame.ownerDocument.defaultView?.requestAnimationFrame(revealAside);
     }
   };

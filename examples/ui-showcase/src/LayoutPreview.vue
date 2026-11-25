@@ -1,27 +1,29 @@
 <script setup lang="ts">
 import { vDevPreview } from './dev-previews';
 import { ref, useTemplateRef } from 'vue';
-import { CmFieldset, CmRadio } from '@codemonster-ru/ui-vue';
+import { CmFieldset, CmRadio, CmSkeleton } from '@codemonster-ru/ui-vue';
 import {
-  initialAppShellLayout,
+  initialShellLayout,
   layoutPreviewChoices,
   type LayoutExampleSlug,
   type ShellLayout,
 } from '../../shared/showcase-layout-data.mts';
-import { fitAppShellPreviewForLayout } from '../../shared/showcase-layout-recipes.js';
+import { fitShellPreviewForLayout } from '../../shared/showcase-layout-recipes.js';
 import LayoutRegionControls from './LayoutRegionControls.vue';
 
 const { slug, title } = defineProps<{ slug: LayoutExampleSlug; title: string }>();
-const development = import.meta.env.DEV;
+const eager = slug === 'admin-shell';
+const deferInDev = import.meta.env.DEV && !eager;
+const source = '/layout-example.html?layout=' + slug;
 const selection = ref('fit');
-const layout = ref<ShellLayout>(initialAppShellLayout);
+const layout = ref<ShellLayout>(initialShellLayout);
 const options = ref<string[]>([]);
 const frame = useTemplateRef<HTMLIFrameElement>('frame');
 
 function setLayout(value: ShellLayout) {
   layout.value = value;
   if (frame.value) {
-    fitAppShellPreviewForLayout(frame.value, value, (width) => (selection.value = width));
+    fitShellPreviewForLayout(frame.value, value, (width) => (selection.value = width));
   }
 }
 </script>
@@ -39,7 +41,7 @@ function setLayout(value: ShellLayout) {
     />
   </CmFieldset>
   <LayoutRegionControls
-    v-if="slug === 'app-shell'"
+    v-if="slug === 'app-shell' || slug === 'document-layout'"
     v-model:options="options"
     :layout="layout"
     :slug="slug"
@@ -48,15 +50,18 @@ function setLayout(value: ShellLayout) {
   <div class="layout-preview__viewport" role="region" :aria-label="title + ' preview viewport'" tabindex="0">
     <iframe
       ref="frame"
-      v-dev-preview="development ? '/layout-example.html?layout=' + slug : undefined"
+      v-dev-preview="deferInDev ? source : undefined"
       class="layout-preview__frame"
-      :src="development ? undefined : '/layout-example.html?layout=' + slug"
+      :src="deferInDev ? undefined : source"
       :title="title + ' preview'"
       :data-fit="selection === 'fit' ? '' : undefined"
-      :data-app-shell-layout="slug === 'app-shell' ? layout : undefined"
-      :data-app-shell-options="slug === 'app-shell' ? options.join(' ') : undefined"
+      :data-shell-preview-layout="slug === 'app-shell' || slug === 'document-layout' ? layout : undefined"
+      :data-shell-preview-options="slug === 'app-shell' || slug === 'document-layout' ? options.join(' ') : undefined"
       :width="selection === 'fit' ? undefined : selection"
-      :loading="development ? undefined : 'lazy'"
+      :loading="eager ? 'eager' : deferInDev ? undefined : 'lazy'"
     />
+    <div class="layout-preview__placeholder" role="status" aria-label="Loading preview">
+      <CmSkeleton />
+    </div>
   </div>
 </template>

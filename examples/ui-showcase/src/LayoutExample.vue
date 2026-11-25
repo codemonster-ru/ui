@@ -5,20 +5,20 @@ import { cmBreakpoints } from '@codemonster-ru/ui-tokens';
 import annabelLogoAsset from '../../shared/annabel-logo-icon.svg';
 import {
   adminShellRows,
-  appShellRegionSamples,
   columns,
   dashboardActivity,
   dashboardStats,
-  initialAppShellLayout,
+  initialShellLayout,
   type LayoutExampleSlug,
   shellTabs,
+  shellRegionSamples,
   type ShellLayout,
   steps,
   warehouseNavigation,
   warehouseTableCaption,
   initialSetupStep,
 } from '../../shared/showcase-layout-data.mts';
-import { followAppShellPreview } from '../../shared/showcase-layout-recipes.js';
+import { followShellPreview } from '../../shared/showcase-layout-recipes.js';
 import {
   CmAdminLayout,
   CmAdminShell,
@@ -31,7 +31,6 @@ import {
 import {
   CmAvatar,
   CmCheckbox,
-  CmContainer,
   CmDrawer,
   CmField,
   CmGrid,
@@ -50,7 +49,6 @@ import {
 import { VfDataTable } from '@codemonster-ru/ui-vue/historical';
 import logoAsset from '../../shared/vueforge-logo-icon.svg';
 import { vScrollableTable } from './scrollable-table';
-import LayoutRegionControls from './LayoutRegionControls.vue';
 
 const { slug, staticPreview } = defineProps<{ slug: LayoutExampleSlug; staticPreview?: boolean }>();
 const annabelLogo = staticPreview ? './annabel-logo-icon.svg' : annabelLogoAsset;
@@ -58,17 +56,13 @@ const logo = staticPreview ? './vueforge-logo-icon.svg' : logoAsset;
 const corePath = staticPreview ? './core/' : '/core/';
 const submitted = ref(false);
 
-const mode = ref<ShellLayout>(slug === 'app-shell' ? initialAppShellLayout : 'sidebar-content-aside');
+const mode = ref<ShellLayout>(initialShellLayout);
 const options = ref<string[]>([]);
 const appearance = computed(() => (options.value.includes('plain') ? 'plain' : 'default'));
-const documentRegionLabels = { sidebar: 'Navigation item', content: 'Content section', aside: 'Related item' };
 
-function regionItemText(region: keyof typeof appShellRegionSamples, number: number) {
-  if (slug === 'app-shell') {
-    const { label, copy } = appShellRegionSamples[region];
-    return `${label} ${number}. ${copy}`;
-  }
-  return `${documentRegionLabels[region]} ${number}`;
+function regionItemText(region: keyof typeof shellRegionSamples, number: number) {
+  const { label, copy } = shellRegionSamples[region];
+  return `${label} ${number}. ${copy}`;
 }
 
 const adminNav = ref('warehouse-availability');
@@ -106,8 +100,8 @@ function openWarehouseNavigation(event: MouseEvent) {
 }
 
 onMounted(() => {
-  if (slug === 'app-shell') {
-    followAppShellPreview((layout, enabled) => {
+  if (slug === 'app-shell' || slug === 'document-layout') {
+    followShellPreview(slug, (layout, enabled) => {
       const tab = shellTabs.find(({ value }) => value === layout);
       if (tab) mode.value = tab.value;
       options.value = enabled;
@@ -141,9 +135,6 @@ function moveStep(offset: number) {
 </script>
 
 <template>
-  <CmContainer v-if="slug === 'document-layout'">
-    <LayoutRegionControls v-model:layout="mode" v-model:options="options" :slug="slug" />
-  </CmContainer>
   <component
     :is="slug === 'app-shell' ? CmAppShell : CmDocumentLayout"
     v-if="slug === 'app-shell' || slug === 'document-layout'"
@@ -154,6 +145,7 @@ function moveStep(offset: number) {
     :sticky-header="options.includes('header')"
     :sticky-sidebar="options.includes('sidebar')"
     :sticky-aside="options.includes('aside')"
+    :class="{ 'layout-example__document--plain-columns': slug === 'document-layout' && appearance === 'plain' }"
     v-bind="
       slug === 'app-shell'
         ? { contentAppearance: appearance, sidebarAppearance: appearance, asideAppearance: appearance }
@@ -388,36 +380,40 @@ function moveStep(offset: number) {
   </CmSetupLayout>
   <CmErrorLayout
     v-else-if="slug === 'error-layout'"
+    class="layout-example__error"
     :code="404"
     title="Page not found"
     description="The page you requested does not exist or has been moved."
+    :fill-viewport="false"
   >
     <template #actions>
       <CmButton :href="corePath" target="_parent">Go to home page</CmButton>
     </template>
   </CmErrorLayout>
-  <CmAuthLayout v-else title="Sign in">
+  <CmAuthLayout v-else title="Sign in" :fill-viewport="false">
     <template #brand><img :src="logo" width="36" height="36" alt="VueForge" /></template>
     <template #description>
       Don't have an account? <CmLink :href="corePath" target="_parent" underline="none">Click here to sign up</CmLink>
     </template>
-    <CmStack as="form" data-layout-auth @submit.prevent="submitted = true">
-      <CmField v-slot="{ controlId }" control-id="sign-in-email" label="Email" required>
-        <CmInput :id="controlId" type="email" autocomplete="email" required />
-      </CmField>
-      <CmField v-slot="{ controlId }" control-id="sign-in-password" label="Password" required>
-        <CmInput :id="controlId" type="password" autocomplete="current-password" password-reveal required />
-      </CmField>
-      <CmInline class="layout-example__sign-in-options">
-        <CmCheckbox label="Remember me" /><CmLink :href="corePath" target="_parent" underline="none"
-          >Forgot password?</CmLink
-        >
-      </CmInline>
+    <CmStack as="form" data-layout-auth autocomplete="off" inert @submit.prevent="submitted = true">
+      <CmInput id="sign-in-email" type="email" aria-label="Email" placeholder="Email" required />
+      <CmInput
+        id="sign-in-password"
+        type="password"
+        aria-label="Password"
+        placeholder="Password"
+        password-reveal
+        required
+      />
+      <div class="layout-example__sign-in-options">
+        <CmCheckbox label="Remember me" class="layout-example__sign-in-remember" />
+        <CmLink :href="corePath" target="_parent" underline="none">Forgot password?</CmLink>
+      </div>
       <CmButton type="submit">Sign in</CmButton>
       <CmTag v-if="staticPreview || submitted" data-auth-result :hidden="!submitted" role="status">
         Sign-in preview submitted.
       </CmTag>
+      <p class="layout-example__sign-in-copyright">© 2026 VueForge. <span>All rights reserved.</span></p>
     </CmStack>
-    <template #footer><small>© 2026 VueForge. All rights reserved.</small></template>
   </CmAuthLayout>
 </template>

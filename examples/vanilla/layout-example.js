@@ -1,6 +1,11 @@
 import { followShowcaseFrameTheme } from './showcase-theme.js';
 import { createRuntime } from './runtime.js';
-import { fitLayoutPreview, followAppShellPreview, mountWarehousePagination } from './showcase-layout-recipes.js';
+import {
+  enableAuthPreview,
+  followShellPreview,
+  mountWarehousePagination,
+  revealLayoutPreview,
+} from './showcase-layout-recipes.js';
 import { selectShowcaseNavItem } from './showcase-inline.mjs';
 
 const root = document.querySelector('[data-layout-example]');
@@ -12,7 +17,6 @@ const form = root.querySelector('[data-layout-auth]');
 followShowcaseFrameTheme(() => {});
 createRuntime().start(root);
 mountWarehousePagination(root);
-fitLayoutPreview(setup ?? root.querySelector('.layout-example__warehouse'));
 
 root.addEventListener('click', ({ target }) => {
   if (!setup) selectShowcaseNavItem(target.closest('[data-cm-nav-menu-value]'));
@@ -88,28 +92,21 @@ if (shell) {
       if (slug === 'app-shell' && key === 'header') shell.classList.toggle('cm-app-shell--header-sticky', checked);
     }
     if (key === 'notches') shell.classList.toggle('cm-document-layout--edge-notches', checked);
-    if (key === 'plain') {
+    if (key === 'plain' && slug === 'document-layout') {
+      shell.classList.toggle('layout-example__document--plain-columns', checked);
+    }
+    if (key === 'plain' && slug === 'app-shell') {
       for (const name of ['sidebar', 'content', 'aside'])
         region(name).classList.toggle('cm-app-shell__region--plain', checked);
     }
   }
 
-  if (slug === 'app-shell') {
-    const options = ['plain', 'subheader', 'content-subheader', 'header', ...parts];
-    followAppShellPreview((layout, selected) => {
-      setLayout(layout);
-      for (const option of options) setOption(option, selected.includes(option));
-    });
-  } else {
-    root.addEventListener('cm:tabs-value-change', ({ detail: { value } }) => {
-      setLayout(value);
-      for (const key of parts) {
-        const option = root.querySelector(`[data-region-control="${key}"]`).closest('[data-region-option]');
-        option.hidden = region(key).hidden;
-      }
-    });
-    root.addEventListener('change', ({ target }) => setOption(target.dataset.regionControl, target.checked));
-  }
+  const options = ['plain', 'subheader', 'content-subheader', 'header', ...parts];
+  if (slug === 'document-layout') options.push('notches');
+  followShellPreview(slug, (layout, selected) => {
+    setLayout(layout);
+    for (const option of options) setOption(option, selected.includes(option));
+  });
 }
 
 if (setup) {
@@ -152,9 +149,12 @@ if (setup) {
 }
 
 if (form) {
+  enableAuthPreview(form);
   form.addEventListener('submit', (event) => {
     event.preventDefault();
     const output = form.querySelector('[data-auth-result]');
     output.hidden = false;
   });
 }
+
+void revealLayoutPreview(setup ?? root.querySelector('.layout-example__warehouse, .cm-auth-layout, .cm-error-layout'));
