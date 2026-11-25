@@ -306,7 +306,7 @@ async function writeShowcase(contractsDirectory, output, renderView) {
           ]);
           return [id, `<div class="layout-guide">${shellGroup}${primitiveGroup}${regionGroup}</div>`];
         }
-        if (id === 'icons') return [id, serialize(await renderView('IconsShowcase'))];
+        if (id === 'icons') return [id, serialize(await renderView('IconsShowcase', { staticPreview: undefined }))];
         const typeSamples = id === 'actions' ? typography : '';
         const samples = await Promise.all(slugs.map((slug) => renderExamples(slug)));
         if (id === 'modals') samples.push(serialize(await renderView('ConfirmDialogExamples')));

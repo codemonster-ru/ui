@@ -1656,24 +1656,37 @@ async function checkSetupLayout(page, base) {
 
 async function checkIconSearch(page, base) {
   await page.goto(url(base, 'icons/'));
-  const catalog = page.locator('#icon-catalog');
-  const styles = catalog.locator('[data-icon-styles] [role="img"]');
-  await styles.first().waitFor();
-  assert.equal(await styles.count(), 8, 'Both families and all four weights are compared once');
-  const weights = await catalog
-    .locator('[data-icon-styles] .cm-icon--classic:not(.cm-icon--solid)')
-    .evaluateAll((items) => items.map((icon) => getComputedStyle(icon).strokeWidth));
-  assert.deepEqual(weights, ['2px', '1.5px', '1px'], 'Outline weights change the rendered stroke');
+  const catalog = page.getByRole('region', { name: 'Icons', exact: true });
+  await catalog.waitFor();
+  assert.equal(await catalog.getByRole('heading', { name: 'Icons', exact: true }).count(), 0);
+  assert.equal(await catalog.locator('#demo-icon').count(), 0, 'The icon demo panel is absent');
 
-  const sizes = await catalog
-    .locator('[data-icon-sizes] .cm-icon')
-    .evaluateAll((items) => items.map((icon) => icon.getBoundingClientRect().width));
-  assert.deepEqual(sizes, [16, 24, 32, 48]);
-
-  const entries = catalog.locator('[data-icon-group] [data-icon-name]');
+  const entries = catalog.locator('[data-icon-group] tr[data-icon-name]');
   const names = await entries.evaluateAll((items) => items.map((item) => item.dataset.iconName));
-  assert(names.length > 0 && new Set(names).size === names.length, 'Each catalog name has one entry');
-  assert.equal(await entries.locator('.cm-icon').count(), names.length, 'Each name has one glyph in the catalog');
+  assert(names.length > 0 && new Set(names).size === names.length, 'Each catalog name has one row');
+  assert.equal(await entries.locator('[data-copy-icon]').count(), names.length, 'Each name has one copy button');
+  const system = catalog.getByRole('region', { name: 'System icon comparison' });
+  assert.deepEqual(await system.locator('thead tr:first-child th').allTextContents(), ['Icon', 'Classic', 'Duotone']);
+  const dividers = await system.locator('table').evaluate((table) => {
+    const gap = (first, second) => {
+      const a = first.getBoundingClientRect();
+      const b = second.getBoundingClientRect();
+      return getComputedStyle(table).direction === 'rtl' ? a.left - b.right : b.left - a.right;
+    };
+    const [families, variants] = table.tHead.rows;
+    const [icon, classic] = families.cells;
+    const [name, firstGlyph] = table.tBodies[0].rows[0].cells;
+    return [gap(icon, classic), gap(icon, variants.cells[0]), gap(name, firstGlyph)];
+  });
+  assert(dividers[0] > 0, 'The Icon header has a column divider');
+  assert.deepEqual(dividers, Array(3).fill(dividers[0]), 'The divider continues below the row-spanning Icon header');
+  const glyphBackground = await system.locator('tbody tr:first-child td').first().evaluate(
+    (cell) => getComputedStyle(cell).backgroundColor,
+  );
+  assert.notEqual(glyphBackground, 'rgba(0, 0, 0, 0)', 'Only the gaps show the divider color');
+  const brands = catalog.getByRole('region', { name: 'Brands icon comparison' });
+  assert.equal(await brands.locator('[data-icon-name="github"] td .cm-icon--classic.cm-icon--solid').count(), 1);
+  assert.equal(await brands.locator('[data-icon-name="github"] td').count(), 1);
 
   const search = catalog.getByRole('searchbox', { name: 'Search icons' });
   await search.fill('no matching icon name');
@@ -1682,10 +1695,22 @@ async function checkIconSearch(page, base) {
     .getByText(/^0 of /u)
     .waitFor();
   await catalog.getByText('No brand icons match.').waitFor();
+  assert.equal(await catalog.locator('[data-icon-table]:visible').count(), 0, 'Empty results hide both tables');
   await search.fill('left arrow');
-  const arrow = catalog.locator('[data-icon-group] [data-icon-name="arrowLeft"]:visible');
-  await arrow.and(catalog.getByRole('button', { name: 'Copy arrowLeft', exact: true })).waitFor();
-  assert.equal(await arrow.count(), 1, 'Keyword search finds one preview for arrowLeft');
+  const arrow = system.locator('tr[data-icon-name="arrowLeft"]');
+  await arrow.getByRole('button', { name: 'Copy arrowLeft', exact: true }).waitFor();
+  const forms = await arrow.locator('td .cm-icon').evaluateAll((glyphs) =>
+    glyphs.map((glyph) => [...glyph.classList].filter((name) => name.startsWith('cm-icon--')).sort().join('/')),
+  );
+  assert.deepEqual(
+    forms,
+    ['classic', 'duotone'].flatMap((family) =>
+      ['solid', 'regular', 'light', 'thin'].map((variant) =>
+        [`cm-icon--${family}`, `cm-icon--${variant}`].sort().join('/'),
+      ),
+    ),
+    'Search preserves all eight authored forms of arrowLeft',
+  );
   await search.fill('');
   await catalog.getByText('No brand icons match.').waitFor({ state: 'hidden' });
 }
