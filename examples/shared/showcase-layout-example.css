@@ -15,12 +15,41 @@
   line-height: inherit;
 }
 
+.layout-example__error {
+  background: var(--cm-color-background-surface);
+}
+
 .layout-example__sign-in-options {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: var(--cm-space-2) var(--cm-space-4);
+  gap: var(--cm-space-4);
+}
+
+.layout-example__sign-in-remember,
+.layout-example__sign-in-copyright {
+  color: var(--cm-color-text-muted);
+}
+
+.layout-example__sign-in-copyright {
+  line-height: 1.5;
+  text-align: center;
+}
+
+@media (width <= 20rem) {
+  .layout-example__sign-in-options {
+    flex-direction: column;
+  }
+
+  .layout-example__sign-in-options .cm-link {
+    align-self: center;
+    text-align: center;
+  }
+
+  .layout-example__sign-in-copyright span {
+    display: block;
+  }
 }
 
 .layout-example__admin .cm-admin-layout__content {
@@ -272,6 +301,29 @@
   color: var(--cm-color-text-secondary);
 }
 
+/* Keep wheel and touch scrolling inside the preview when it reaches either end. */
+html:has(.cm-document-layout) {
+  overscroll-behavior-y: contain;
+}
+
+.layout-example__document--plain-columns :is(.cm-document-layout__sidebar, .cm-document-layout__aside) {
+  border-inline-width: 0;
+  background: transparent;
+}
+
+.layout-example__document--plain-columns :is(.cm-document-layout__main, .cm-document-layout__content-subheader) {
+  background: transparent;
+}
+
+.layout-example__document--plain-columns .cm-document-layout__content-subheader {
+  border-block-end: 0;
+}
+
+.layout-example__document--plain-columns:not(.cm-document-layout--header-static)
+  .cm-document-layout__content-subheader {
+  background: var(--cm-color-background-surface-subtle);
+}
+
 @media (width >= 48rem) {
   .layout-example__setup-progress {
     display: none;
@@ -285,7 +337,6 @@
 }
 
 @media (width < 64rem) {
-  .layout-example__sidebar p:nth-of-type(n + 3),
   .cm-app-shell .layout-example__sidebar p:nth-of-type(n + 2) {
     display: none;
   }

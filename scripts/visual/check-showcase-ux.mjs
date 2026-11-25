@@ -10,6 +10,9 @@ import { layoutExamples } from '../../examples/shared/showcase-layout-data.mts';
 import { normalizeSignificantDom } from '../contracts/significant-dom.mjs';
 import { collectComponentManifests } from '../contracts/component-manifests.mjs';
 import { collectComponentCases } from '../contracts/component-cases.mjs';
+import { checkDocumentLayout } from './check-document-layout.mjs';
+import { checkErrorLayout } from './check-error-layout.mjs';
+import { checkLayoutPreviewFirstPaint } from './check-layout-preview-first-paint.mjs';
 
 const require = createRequire(import.meta.url);
 const browserName = process.env.SHOWCASE_BROWSER || 'chromium';
@@ -136,6 +139,7 @@ async function checkDevelopmentPreviews(base) {
   page.on('pageerror', (error) => errors.push(error.message));
   try {
     await checkInitialExampleLayout(page, base, 'Vue dev');
+    await checkLayoutPreviewFirstPaint(page, base, 'Vue dev');
 
     await page.goto(url(base, 'layouts/'), { waitUntil: 'domcontentloaded' });
     const shell = page.locator('#demo-app-shell');
@@ -1080,123 +1084,7 @@ async function checkLayoutViewport(page, base, adapter) {
     assert.equal(geometry.width, geometry.availableWidth, `${adapter}: ${slug} preview fills its section`);
     assert(geometry.borderWidth > 0 && geometry.radius > 0, `${adapter}: ${slug} has a visible rounded preview border`);
   }
-  for (const slug of ['app-shell', 'document-layout']) {
-    const example = page.locator(`#demo-${slug}`);
-    const frame = example.locator('iframe.layout-preview__frame');
-    await frame.scrollIntoViewIfNeeded();
-    const preview = frame.contentFrame();
-    const appShell = slug === 'app-shell';
-    const controls = appShell ? example : preview;
-    const tab = controls.getByRole('tab', { name: 'With aside' });
-    await tab.waitFor();
-    const previewDocument = await (await frame.elementHandle()).contentFrame();
-    await previewDocument.waitForLoadState('load');
-    const contentTab = controls.getByRole('tab', { name: 'Content', exact: true });
-    assert.equal(await (appShell ? contentTab : tab).getAttribute('aria-selected'), 'true');
-    const sidebar = preview.locator(`.cm-${slug}__sidebar`);
-    if (!appShell) await contentTab.click();
-    await sidebar.waitFor({ state: 'hidden' });
-    const main = preview.locator(appShell ? '.cm-app-shell__content' : '.cm-document-layout__main');
-    assert(
-      await main.evaluate((element) => Math.abs(element.offsetWidth - element.parentElement.clientWidth) <= 1),
-      `${adapter}: ${slug} uses the full width in Content mode`,
-    );
-    let frameTimeOrigin;
-    if (appShell) {
-      await main.getByText(/^Content paragraph 1\./u).waitFor();
-      frameTimeOrigin = await previewDocument.evaluate(() => performance.timeOrigin);
-      const viewport = await example.locator('.layout-preview__viewport').boundingBox();
-      const tabs = await example.getByRole('tab').all();
-      const switches = await example.getByRole('switch').all();
-      assert.equal(tabs.length, 3, `${adapter}: App Shell has three layout modes above the preview`);
-      assert.equal(switches.length, 4, `${adapter}: App Shell shows the Content options above the preview`);
-      for (const option of [...tabs, ...switches]) {
-        const box = await option.boundingBox();
-        assert(box && box.y + box.height <= viewport.y + 1, `${adapter}: App Shell controls are above the preview`);
-      }
-      assert.equal(await preview.getByRole('tab', { includeHidden: true }).count(), 0);
-      assert.equal(await preview.getByRole('switch', { includeHidden: true }).count(), 0);
-    }
-    await tab.click();
-    const aside = preview.locator(`.cm-${slug}__aside:not([hidden])`);
-    if (appShell) {
-      await expectVisibleAppShellAside(frame, adapter);
-      assert.equal(
-        await frame.evaluate((element) => element.parentElement.scrollLeft),
-        0,
-        `${adapter}: desktop preview keeps the start of the App Shell in view`,
-      );
-    } else await aside.waitFor({ state: 'attached' });
-
-    await example.getByRole('radio', { name: 'min · 320 px' }).press('Space');
-    await expectPreviewWidth(frame, 320);
-    const centerOffset = await frame.evaluate((element) => {
-      const preview = element.getBoundingClientRect();
-      const viewport = element.parentElement.getBoundingClientRect();
-      return Math.abs(preview.left + preview.width / 2 - (viewport.left + viewport.width / 2));
-    });
-    assert(centerOffset <= 1, `${adapter}: ${slug} centers a narrow layout in the preview`);
-    await aside.waitFor({ state: 'hidden' });
-    assert((await sidebar.boundingBox()).y < (await main.boundingBox()).y, `${slug}: sidebar stacks above content`);
-    assert(
-      await main.evaluate((element) => element.getBoundingClientRect().top < window.innerHeight),
-      `${adapter}: ${slug} shows the main region in the compact preview`,
-    );
-    if (appShell) {
-      await contentTab.click();
-      await sidebar.waitFor({ state: 'hidden' });
-      await tab.click();
-      await sidebar.waitFor({ state: 'visible' });
-      await expectPreviewWidth(frame, 320);
-      assert.equal(await aside.isVisible(), false, `${adapter}: selected compact width stays in effect in With aside`);
-    }
-
-    await example.getByRole('radio', { name: 'lg · 1024 px' }).press('Space');
-    await expectPreviewWidth(frame, 1024);
-    await sidebar.waitFor({ state: 'visible' });
-    await aside.waitFor({ state: 'hidden' });
-    assert((await sidebar.boundingBox()).x < (await main.boundingBox()).x, `${slug}: sidebar becomes a column`);
-
-    await example.getByRole('radio', { name: 'xl · 1280 px', exact: true }).press('Space');
-    await expectPreviewWidth(frame, 1280);
-    await aside.waitFor({ state: 'visible' });
-    assert.equal(await tab.getAttribute('aria-selected'), 'true', `${adapter}: resizing preserves layout selection`);
-
-    if (appShell) {
-      await example.getByRole('radio', { name: '2xl · 1536 px' }).press('Space');
-      await expectPreviewWidth(frame, 1536);
-      await checkAppShellRegions(preview, example, adapter);
-    }
-
-    const fit = example.getByRole('radio', { name: 'Fit', exact: true });
-    if (appShell) {
-      const pageSize = page.viewportSize();
-      try {
-        for (const width of [768, 360, 320]) {
-          await page.setViewportSize({ ...pageSize, width });
-          await contentTab.click();
-          await sidebar.waitFor({ state: 'hidden' });
-          await fit.press('Space');
-          await expectPreviewWidth(frame, await frame.evaluate((element) => element.parentElement.clientWidth));
-          assert(await fit.isChecked(), `${adapter}: App Shell starts in Fit at ${width} px`);
-          await tab.click();
-          await expectVisibleAppShellAside(frame, `${adapter} at ${width} px`);
-          await checkViewport(page, `${adapter} With aside at ${width} px`);
-        }
-      } finally {
-        await page.setViewportSize(pageSize);
-      }
-    }
-    await fit.press('Space');
-    await expectPreviewWidth(frame, await frame.evaluate((element) => element.parentElement.clientWidth));
-    if (appShell) {
-      assert.equal(
-        await previewDocument.evaluate(() => performance.timeOrigin),
-        frameTimeOrigin,
-        `${adapter}: changing App Shell settings keeps the preview document`,
-      );
-    }
-  }
+  await checkAppShellViewport(page, adapter);
 
   const admin = page.locator('#demo-admin-layout');
   const frame = admin.locator('iframe.layout-preview__frame');
@@ -1234,6 +1122,108 @@ async function checkLayoutViewport(page, base, adapter) {
   await mobileToggle.waitFor();
   assert(await mobileToggle.evaluate((toggle) => document.activeElement === toggle));
   await checkViewport(page, `${adapter} layouts`);
+}
+
+async function checkAppShellViewport(page, adapter) {
+  const example = page.locator('#demo-app-shell');
+  const frame = example.locator('iframe.layout-preview__frame');
+  await frame.scrollIntoViewIfNeeded();
+  const preview = frame.contentFrame();
+  const tab = example.getByRole('tab', { name: 'With aside' });
+  await tab.waitFor();
+  const previewDocument = await (await frame.elementHandle()).contentFrame();
+  await previewDocument.waitForLoadState('load');
+  const contentTab = example.getByRole('tab', { name: 'Content', exact: true });
+  assert.equal(await contentTab.getAttribute('aria-selected'), 'true');
+  const sidebar = preview.locator('.cm-app-shell__sidebar');
+  await sidebar.waitFor({ state: 'hidden' });
+  const main = preview.locator('.cm-app-shell__content');
+  assert(
+    await main.evaluate((element) => Math.abs(element.offsetWidth - element.parentElement.clientWidth) <= 1),
+    `${adapter}: App Shell uses the full width in Content mode`,
+  );
+  await main.getByText(/^Content paragraph 1\./u).waitFor();
+  const frameTimeOrigin = await previewDocument.evaluate(() => performance.timeOrigin);
+  const viewport = await example.locator('.layout-preview__viewport').boundingBox();
+  const tabs = await example.getByRole('tab').all();
+  const switches = await example.getByRole('switch').all();
+  assert.equal(tabs.length, 3, `${adapter}: App Shell has three layout modes above the preview`);
+  assert.equal(switches.length, 4, `${adapter}: App Shell shows the Content options above the preview`);
+  for (const option of [...tabs, ...switches]) {
+    const box = await option.boundingBox();
+    assert(box && box.y + box.height <= viewport.y + 1, `${adapter}: App Shell controls are above the preview`);
+  }
+  assert.equal(await preview.getByRole('tab', { includeHidden: true }).count(), 0);
+  assert.equal(await preview.getByRole('switch', { includeHidden: true }).count(), 0);
+  await tab.click();
+  const aside = preview.locator('.cm-app-shell__aside:not([hidden])');
+  await expectVisibleAppShellAside(frame, adapter);
+  assert.equal(
+    await frame.evaluate((element) => element.parentElement.scrollLeft),
+    0,
+    `${adapter}: desktop preview keeps the start of the App Shell in view`,
+  );
+
+  await example.getByRole('radio', { name: 'min · 320 px' }).press('Space');
+  await expectPreviewWidth(frame, 320);
+  const centerOffset = await frame.evaluate((element) => {
+    const preview = element.getBoundingClientRect();
+    const viewport = element.parentElement.getBoundingClientRect();
+    return Math.abs(preview.left + preview.width / 2 - (viewport.left + viewport.width / 2));
+  });
+  assert(centerOffset <= 1, `${adapter}: App Shell centers a narrow layout in the preview`);
+  await aside.waitFor({ state: 'hidden' });
+  assert((await sidebar.boundingBox()).y < (await main.boundingBox()).y, 'App Shell sidebar stacks above content');
+  assert(
+    await main.evaluate((element) => element.getBoundingClientRect().top < window.innerHeight),
+    `${adapter}: App Shell shows the main region in the compact preview`,
+  );
+  await contentTab.click();
+  await sidebar.waitFor({ state: 'hidden' });
+  await tab.click();
+  await sidebar.waitFor({ state: 'visible' });
+  await expectPreviewWidth(frame, 320);
+  assert.equal(await aside.isVisible(), false, `${adapter}: selected compact width stays in effect in With aside`);
+
+  await example.getByRole('radio', { name: 'lg · 1024 px' }).press('Space');
+  await expectPreviewWidth(frame, 1024);
+  await sidebar.waitFor({ state: 'visible' });
+  await aside.waitFor({ state: 'hidden' });
+  assert((await sidebar.boundingBox()).x < (await main.boundingBox()).x, 'App Shell sidebar becomes a column');
+
+  await example.getByRole('radio', { name: 'xl · 1280 px', exact: true }).press('Space');
+  await expectPreviewWidth(frame, 1280);
+  await aside.waitFor({ state: 'visible' });
+  assert.equal(await tab.getAttribute('aria-selected'), 'true', `${adapter}: resizing preserves layout selection`);
+
+  await example.getByRole('radio', { name: '2xl · 1536 px' }).press('Space');
+  await expectPreviewWidth(frame, 1536);
+  await checkAppShellRegions(preview, example, adapter);
+
+  const fit = example.getByRole('radio', { name: 'Fit', exact: true });
+  const pageSize = page.viewportSize();
+  try {
+    for (const width of [768, 360, 320]) {
+      await page.setViewportSize({ ...pageSize, width });
+      await contentTab.click();
+      await sidebar.waitFor({ state: 'hidden' });
+      await fit.press('Space');
+      await expectPreviewWidth(frame, await frame.evaluate((element) => element.parentElement.clientWidth));
+      assert(await fit.isChecked(), `${adapter}: App Shell starts in Fit at ${width} px`);
+      await tab.click();
+      await expectVisibleAppShellAside(frame, `${adapter} at ${width} px`);
+      await checkViewport(page, `${adapter} With aside at ${width} px`);
+    }
+  } finally {
+    await page.setViewportSize(pageSize);
+  }
+  await fit.press('Space');
+  await expectPreviewWidth(frame, await frame.evaluate((element) => element.parentElement.clientWidth));
+  assert.equal(
+    await previewDocument.evaluate(() => performance.timeOrigin),
+    frameTimeOrigin,
+    `${adapter}: changing App Shell settings keeps the preview document`,
+  );
 }
 
 async function expectVisibleAppShellAside(frame, adapter) {
@@ -1701,12 +1691,78 @@ async function checkIconSearch(page, base) {
 }
 
 async function checkAuthForm(page, base, adapter) {
-  await page.goto(url(base, 'layouts/#demo-auth-layout'), { waitUntil: 'domcontentloaded' });
-  const frame = page.locator('#demo-auth-layout iframe.layout-preview__frame');
-  await frame.scrollIntoViewIfNeeded();
-  const example = frame.contentFrame();
-  const email = example.getByRole('textbox', { name: 'Email' });
-  const submit = example.getByRole('button', { name: 'Sign in' });
+  await page.goto(url(base, 'layouts/'), { waitUntil: 'domcontentloaded' });
+  const section = page.locator('#demo-auth-layout');
+  const preview = section.locator('iframe.layout-preview__frame');
+  const frame = preview.contentFrame();
+  const email = frame.locator('#sign-in-email');
+  await preview.evaluate((element) => {
+    window.scrollBy({ top: element.getBoundingClientRect().top - innerHeight + 32, behavior: 'instant' });
+  });
+  await email.waitFor({ state: 'attached' });
+  const focusAttempt = await email.evaluate((input) => {
+    const top = parent.scrollY;
+    input.focus();
+    return { focused: input === document.activeElement, pageMoved: parent.scrollY !== top };
+  });
+  assert.deepEqual(
+    focusAttempt,
+    { focused: false, pageMoved: false },
+    `${adapter}: a newly loaded Auth preview cannot take focus and scroll the page`,
+  );
+
+  await preview.scrollIntoViewIfNeeded();
+  const layout = frame.locator('.cm-auth-layout');
+  const form = frame.locator('[data-layout-auth]:not([inert])');
+  await form.waitFor();
+  for (const [name, width, padding] of [
+    ['min · 320 px', 320, 24],
+    ['xs · 480 px', 480, 36],
+    ['md · 768 px', 768, 36],
+  ]) {
+    await section.getByRole('radio', { name }).press('Space');
+    await expectPreviewWidth(preview, width);
+    const geometry = await layout.evaluate(async (root) => {
+      const contentHeight = () => Math.ceil(root.getBoundingClientRect().height);
+      for (let attempt = 0; attempt < 20 && innerHeight !== contentHeight(); attempt++) {
+        await new Promise(requestAnimationFrame);
+      }
+      const panel = root.querySelector('.cm-auth-layout__panel');
+      const options = root.querySelector('.layout-example__sign-in-options');
+      const copyright = root.querySelector('.layout-example__sign-in-copyright span');
+      const { paddingInlineStart, borderTopWidth } = getComputedStyle(panel);
+      const center = (element) => {
+        const { left, width } = element.getBoundingClientRect();
+        return left + width / 2;
+      };
+      return {
+        panelWidth: panel.offsetWidth,
+        padding: parseFloat(paddingInlineStart),
+        border: parseFloat(borderTopWidth),
+        direction: getComputedStyle(options).flexDirection,
+        centered: [...options.children].every((item) => Math.abs(center(item) - center(options)) < 1),
+        rights: getComputedStyle(copyright).display,
+        fits: innerHeight === contentHeight() && document.documentElement.scrollWidth === innerWidth,
+      };
+    });
+    const compact = width === 320;
+    assert.deepEqual(
+      geometry,
+      {
+        panelWidth: compact ? 320 : 448,
+        padding,
+        border: compact ? 0 : 1,
+        direction: compact ? 'column' : 'row',
+        centered: compact,
+        rights: compact ? 'block' : 'inline',
+        fits: true,
+      },
+      `${adapter}: Auth Layout at ${width} px`,
+    );
+  }
+  await frame.getByRole('link', { name: 'Click here to sign up' }).press('Tab');
+  assert(await email.evaluate((input) => input === document.activeElement), `${adapter}: Tab enters the form`);
+  const submit = form.getByRole('button', { name: 'Sign in' });
   await submit.click();
   assert(
     await email.evaluate((input) => input.validity.valueMissing && input === document.activeElement),
@@ -1714,13 +1770,22 @@ async function checkAuthForm(page, base, adapter) {
   );
 
   await email.fill('not-an-email');
-  await example.getByLabel(/^Password\b/u).fill('preview-password');
+  const password = form.getByLabel('Password', { exact: true });
+  await password.fill('preview-password');
   await submit.click();
   assert(await email.evaluate((input) => input.validity.typeMismatch), `${adapter}: invalid email is rejected`);
 
+  await form.getByRole('button', { name: 'Show password' }).click();
+  assert.equal(await password.getAttribute('type'), 'text');
+  await form.getByRole('button', { name: 'Hide password' }).click();
+  assert.equal(await password.getAttribute('type'), 'password');
+  assert.equal(await password.inputValue(), 'preview-password');
+  const remember = form.getByRole('checkbox', { name: 'Remember me' });
+  await remember.press('Space');
+  assert(await remember.isChecked(), `${adapter}: Remember me toggles with Space`);
   await email.fill('preview@example.test');
-  await submit.click();
-  await example.getByText('Sign-in preview submitted.', { exact: true }).waitFor();
+  await email.press('Enter');
+  await form.getByRole('status').getByText('Sign-in preview submitted.', { exact: true }).waitFor();
 }
 
 async function checkThemePreference(page, base) {
@@ -2259,11 +2324,6 @@ async function checkPageParity() {
               await page.locator('[data-contrast-foreground]').first().filter({ hasText: /:1$/u }).waitFor();
           }),
         );
-        assert.deepEqual(
-          await captureShowcaseContent(vue.locator('#showcase-main')),
-          await captureShowcaseContent(vanilla.locator('#showcase-main')),
-          `${name}: matching content and initial controls at ${width} px in ${theme}`,
-        );
         if (name === 'layouts') {
           for (const { slug } of layoutExamples) {
             const capture = async (page) => {
@@ -2276,6 +2336,11 @@ async function checkPageParity() {
             assert.deepEqual(await capture(vue), await capture(vanilla), `${slug}: matching preview at ${width} px`);
           }
         }
+        assert.deepEqual(
+          await captureShowcaseContent(vue.locator('#showcase-main')),
+          await captureShowcaseContent(vanilla.locator('#showcase-main')),
+          `${name}: matching content and initial controls at ${width} px in ${theme}`,
+        );
       }
     } finally {
       await Promise.all([vue.close(), vanilla.close()]);
@@ -2330,7 +2395,10 @@ async function checkAdapter([adapter, base]) {
           await checkViewport(page, `${adapter} ${name} ${width} ${theme}`);
           visited++;
           const file = `${name}--${width}--${theme}`;
-          if (representative.has(file)) await screenshot(page, `${adapter}--${file}`);
+          if (output && representative.has(file)) {
+            if (name === 'layouts') await page.locator('#demo-admin-shell iframe[data-preview-ready]').waitFor();
+            await screenshot(page, `${adapter}--${file}`);
+          }
           if (
             (name === 'core' || name === 'layouts' || name === 'colors') &&
             ((width === 360 && theme === 'dark') || (width === 1440 && theme === 'light'))
@@ -2360,12 +2428,19 @@ async function checkAdapter([adapter, base]) {
           await checkInitialExampleLayout(page, base, adapter);
           await checkConfirmDialogExamples(page, base, adapter);
         }
-        if (width === 1440) await checkSetupLayout(page, base);
+        if ((width === 390 && theme === 'dark') || (width === 1440 && theme === 'light')) {
+          await checkLayoutPreviewFirstPaint(page, base, adapter);
+        }
+        if (width === 1440) {
+          await checkSetupLayout(page, base);
+          await checkDocumentLayout(page, base, adapter, theme);
+          await checkAuthForm(page, base, adapter);
+          await checkErrorLayout(page, base, adapter, theme);
+        }
         if ((width <= 360 || width === 1440) && theme === 'dark') await checkNavigation(page, base, adapter, width);
         if (width === 1440 && theme === 'dark') {
           await checkLayoutViewport(page, base, adapter);
           await checkWarehouse(page, base, adapter);
-          await checkAuthForm(page, base, adapter);
           await checkLayoutReload(page, base);
           await checkIconSearch(page, base);
           await checkThemePreference(page, base);

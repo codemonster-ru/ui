@@ -5,14 +5,24 @@ import { showcaseComponentCases, showcasePanelExamples } from '../../examples/sh
 import { renderShowcasePanel } from '../../examples/shared/showcase-render.mts';
 import { renderToString } from 'vue/server-renderer';
 import { createSSRApp, createStaticVNode, h } from 'vue';
-import { CmBadge, CmFieldset, CmGrid, CmIcon, CmIconButton, CmLink, CmPanel, CmRadio } from '@codemonster-ru/ui-vue';
+import {
+  CmBadge,
+  CmFieldset,
+  CmGrid,
+  CmIcon,
+  CmIconButton,
+  CmLink,
+  CmPanel,
+  CmRadio,
+  CmSkeleton,
+} from '@codemonster-ru/ui-vue';
 import { moon, sun } from '@codemonster-ru/ui-icons';
 import { createServer } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import { renderShowcaseTypography } from '../../examples/shared/showcase-typography.mts';
 import { parseFragment, serialize } from 'parse5';
 import {
-  initialAppShellLayout,
+  initialShellLayout,
   layoutExamples,
   layoutPreviewChoices,
 } from '../../examples/shared/showcase-layout-data.mts';
@@ -240,8 +250,8 @@ async function writeShowcase(contractsDirectory, output, renderView) {
                 styles: [packageStylesheet, './showcase-layout-example.css'],
               });
               const controls =
-                slug === 'app-shell'
-                  ? await renderView('LayoutRegionControls', { slug, layout: initialAppShellLayout, options: [] })
+                slug === 'app-shell' || slug === 'document-layout'
+                  ? await renderView('LayoutRegionControls', { slug, layout: initialShellLayout, options: [] })
                   : null;
               return renderExamples(slug, 'h3', () => [
                 h(CmFieldset, { id: `${slug}-preview-width`, label: 'Width', class: 'layout-preview__sizes' }, () =>
@@ -269,12 +279,17 @@ async function writeShowcase(contractsDirectory, output, renderView) {
                     h('iframe', {
                       class: 'layout-preview__frame',
                       title: `${title} preview`,
-                      loading: 'lazy',
+                      loading: slug === 'admin-shell' ? 'eager' : 'lazy',
                       'data-fit': '',
-                      'data-app-shell-layout': controls ? initialAppShellLayout : undefined,
-                      'data-app-shell-options': controls ? '' : undefined,
+                      'data-shell-preview-layout': controls ? initialShellLayout : undefined,
+                      'data-shell-preview-options': controls ? '' : undefined,
                       srcdoc: frame,
                     }),
+                    h(
+                      'div',
+                      { class: 'layout-preview__placeholder', role: 'status', 'aria-label': 'Loading preview' },
+                      [h(CmSkeleton)],
+                    ),
                   ],
                 ),
               ]);

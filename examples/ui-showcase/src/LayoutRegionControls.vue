@@ -7,10 +7,7 @@ defineOptions({ inheritAttrs: false });
 const { slug } = defineProps<{ slug: 'app-shell' | 'document-layout' }>();
 const layout = defineModel<ShellLayout>('layout', { required: true });
 const options = defineModel<string[]>('options', { required: true });
-const previewTabs = shellTabs.map(({ label, value }) => ({ label, value }));
-const controls = computed(() =>
-  regionControls.filter(({ key }) => (slug === 'app-shell' ? key !== 'notches' : key !== 'plain')),
-);
+const controls = computed(() => regionControls.filter(({ key }) => slug === 'document-layout' || key !== 'notches'));
 
 function setLayout(value: string) {
   const tab = shellTabs.find((item) => item.value === value);
@@ -27,7 +24,7 @@ function setOption(key: string, checked: boolean) {
     <CmTabs
       :id="slug + '-regions'"
       :model-value="layout"
-      :items="slug === 'app-shell' ? previewTabs : shellTabs"
+      :items="shellTabs"
       scroll-controls
       @update:model-value="setLayout"
     />
