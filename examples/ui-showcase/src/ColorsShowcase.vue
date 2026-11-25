@@ -35,11 +35,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="color-system">
-    <header class="showcase-intro color-system__intro">
-      <h1>Colors</h1>
-    </header>
-
+  <section class="color-system" aria-label="Colors">
     <CmPanel class="showcase-group" aria-labelledby="primitive-scales">
       <h2 id="primitive-scales" class="showcase-component-title">Palette</h2>
 
@@ -141,5 +137,5 @@ onMounted(() => {
         </tr>
       </CmTable>
     </CmPanel>
-  </div>
+  </section>
 </template>

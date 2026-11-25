@@ -4,14 +4,6 @@
   min-inline-size: 0;
 }
 
-.color-system > .color-system__intro {
-  padding-block-end: 0;
-}
-
-.color-system__intro h1 {
-  margin: 0;
-}
-
 .color-system .showcase-group {
   margin-block-end: 0;
 }
