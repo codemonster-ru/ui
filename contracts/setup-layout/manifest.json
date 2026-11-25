@@ -6,7 +6,7 @@
   "props": {
     "title": { "type": "nullable", "required": false, "default": null },
     "description": { "type": "nullable", "required": false, "default": null },
-    "asidePosition": { "type": "enum", "required": false, "default": "right", "values": ["left", "right"] },
+    "asidePosition": { "type": "enum", "required": false, "default": "left", "values": ["left", "right"] },
     "keyboardNavigation": { "type": "boolean", "required": false, "default": true }
   },
   "slots": {
