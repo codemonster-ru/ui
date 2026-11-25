@@ -1,6 +1,6 @@
 import { renderToString } from '@vue/server-renderer';
 import { mount } from '@vue/test-utils';
-import { h, nextTick } from 'vue';
+import { Fragment, createCommentVNode, h, nextTick, ref } from 'vue';
 import { describe, expect, it, vi } from 'vitest';
 
 import CmAdminLayout from './admin-layout/CmAdminLayout.vue';
@@ -134,5 +134,26 @@ describe('Vue layouts', () => {
     expect(onNext).toHaveBeenCalledTimes(1);
     expect(multiLineEnter.defaultPrevented).toBe(false);
     expect(wrapper.classes()).toContain('cm-setup-layout--aside-left');
+  });
+
+  it('renders SetupLayout regions only when their slots have content', async () => {
+    const showAside = ref(false);
+    const wrapper = mount(CmSetupLayout, {
+      props: { title: 'Database' },
+      slots: {
+        aside: () => h(Fragment, [' ', showAside.value ? h('nav', 'Installation steps') : createCommentVNode()]),
+        actions: () => [],
+      },
+    });
+
+    expect(wrapper.get('h1').text()).toBe('Database');
+    expect(wrapper.find('.cm-setup-layout__actions').exists()).toBe(false);
+    expect(wrapper.find('aside').exists()).toBe(false);
+    showAside.value = true;
+    await nextTick();
+    expect(wrapper.get('aside').text()).toBe('Installation steps');
+    showAside.value = false;
+    await nextTick();
+    expect(wrapper.find('aside').exists()).toBe(false);
   });
 });
