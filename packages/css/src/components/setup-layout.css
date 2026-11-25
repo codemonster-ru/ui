@@ -1,127 +1,176 @@
-/* A centred panel for one step of a workflow. */
 .cm-setup-layout {
+  --cm-setup-layout-gutter: var(--cm-space-4);
+  --cm-setup-layout-panel-padding: calc(var(--cm-space-6) * 1.5);
+
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--cm-space-4);
+  justify-content: center;
   min-block-size: 100dvb;
-  padding: var(--cm-space-4) var(--cm-space-3);
-}
-
-.cm-setup-layout__panel {
-  display: flex;
-  flex-direction: column;
-  gap: var(--cm-space-3);
-  inline-size: 100%;
-  max-inline-size: 32rem;
-  padding: var(--cm-space-4);
-  border: var(--cm-border-width) solid var(--cm-color-border-default);
-  border-radius: var(--cm-radius-surface);
-  background: var(--cm-color-background-surface);
+  padding: var(--cm-setup-layout-gutter);
+  background: var(--cm-color-background-surface-subtle);
+  color: var(--cm-color-text-primary);
 }
 
 .cm-setup-layout--fit-content {
   min-block-size: auto;
 }
 
-.cm-setup-layout--plain .cm-setup-layout__panel {
-  border-color: transparent;
-  background: transparent;
+:is(.cm-setup-layout__panel, .cm-setup-layout__footer) {
+  inline-size: 100%;
+  max-inline-size: calc(var(--cm-breakpoint-lg) - 2 * var(--cm-setup-layout-gutter));
+}
+
+.cm-setup-layout__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cm-space-4);
+}
+
+.cm-setup-layout:not(.cm-setup-layout--plain) > .cm-setup-layout__panel {
+  padding: var(--cm-setup-layout-panel-padding);
+  border: var(--cm-border-width) solid var(--cm-color-border-default);
+  border-radius: var(--cm-radius-surface);
+  background: var(--cm-color-background-surface);
+}
+
+.cm-setup-layout__brand,
+.cm-setup-layout__toolbar {
+  display: flex;
+}
+
+.cm-setup-layout__toolbar {
+  justify-content: flex-end;
 }
 
 .cm-setup-layout__heading {
   display: flex;
   flex-direction: column;
-  gap: var(--cm-space-1);
+  gap: var(--cm-space-2);
 }
 
 .cm-setup-layout__title {
   margin: 0;
-  font-size: var(--cm-font-size-xl);
-  line-height: var(--cm-line-height-tight);
+  font-size: 1.1875rem;
+  font-weight: var(--cm-font-weight-semibold);
+  line-height: 1.35;
+}
+
+:is(.cm-setup-layout__description, .cm-setup-layout__aside, .cm-setup-layout__footer) {
+  color: var(--cm-color-text-muted);
+  line-height: var(--cm-line-height-normal);
 }
 
 .cm-setup-layout__description {
   margin: 0;
-  color: var(--cm-color-text-secondary);
 }
 
 .cm-setup-layout__main {
   display: flex;
   flex-direction: column;
-  gap: var(--cm-space-3);
+  gap: var(--cm-space-6);
 }
 
 .cm-setup-layout__actions {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
-  gap: var(--cm-space-2);
+  margin-block-start: auto;
+  gap: var(--cm-space-4);
 }
 
-.cm-setup-layout--aside-left .cm-setup-layout__aside {
-  order: -1;
+.cm-setup-layout__aside {
+  order: 1;
 }
 
-/*
- * An aside stacks above the form by default -- the same single centered card either way. Once
- * there's room, a wizard with an aside (an illustration, a summary) earns a second column instead:
- * the two sit side by side, divided by one border, rather than one queued above the other.
- */
-@media (width > 48rem) {
-  .cm-setup-layout:has(.cm-setup-layout__aside) .cm-setup-layout__panel {
+.cm-setup-layout__footer {
+  text-align: center;
+}
+
+@media (width < 30rem) {
+  .cm-setup-layout {
+    --cm-setup-layout-gutter: 0px;
+    --cm-setup-layout-panel-padding: var(--cm-space-4);
+  }
+
+  .cm-setup-layout:not(.cm-setup-layout--plain) > .cm-setup-layout__panel {
+    border: 0;
+    border-radius: 0;
+  }
+}
+
+@media (width >= 48rem) {
+  .cm-setup-layout > .cm-setup-layout__panel:has(> .cm-setup-layout__aside:not([hidden])) {
+    --cm-setup-layout-aside-width: 16rem;
+
+    position: relative;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 18rem;
-    grid-template-areas:
-      'brand aside'
-      'toolbar aside'
-      'header aside'
-      'main aside';
-    align-items: start;
+    grid-template-columns: [content] minmax(0, 1fr) [aside] var(--cm-setup-layout-aside-width);
+    grid-template-rows: auto auto 1fr;
     gap: 0;
-    max-inline-size: 56rem;
     padding: 0;
-    overflow: hidden;
   }
 
-  .cm-setup-layout--aside-left:has(.cm-setup-layout__aside) .cm-setup-layout__panel {
-    grid-template-columns: 18rem minmax(0, 1fr);
-    grid-template-areas:
-      'aside brand'
-      'aside toolbar'
-      'aside header'
-      'aside main';
+  .cm-setup-layout--aside-left > .cm-setup-layout__panel:has(> .cm-setup-layout__aside:not([hidden])) {
+    grid-template-columns: [aside] var(--cm-setup-layout-aside-width) [content] minmax(0, 1fr);
   }
 
-  .cm-setup-layout:has(.cm-setup-layout__aside) .cm-setup-layout__brand {
-    grid-area: brand;
-    padding: var(--cm-space-4) var(--cm-space-4) 0;
+  .cm-setup-layout__panel:has(> .cm-setup-layout__aside:not([hidden]))::before {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: var(--cm-setup-layout-aside-width);
+    inline-size: var(--cm-border-width);
+    background: color-mix(in srgb, var(--cm-color-border-default) 70%, transparent);
+    content: '';
+    pointer-events: none;
   }
 
-  .cm-setup-layout:has(.cm-setup-layout__aside) .cm-setup-layout__toolbar {
-    grid-area: toolbar;
-    padding: var(--cm-space-3) var(--cm-space-4) 0;
+  .cm-setup-layout--aside-left > .cm-setup-layout__panel:has(> .cm-setup-layout__aside:not([hidden]))::before {
+    inset-inline: var(--cm-setup-layout-aside-width) auto;
   }
 
-  .cm-setup-layout:has(.cm-setup-layout__aside) .cm-setup-layout__header {
-    grid-area: header;
-    padding: var(--cm-space-4) var(--cm-space-4) 0;
+  .cm-setup-layout__panel:has(> .cm-setup-layout__aside:not([hidden])) > * {
+    min-inline-size: 0;
+    padding-inline: var(--cm-setup-layout-panel-padding);
+    padding-block-start: var(--cm-setup-layout-panel-padding);
   }
 
-  .cm-setup-layout:has(.cm-setup-layout__aside) .cm-setup-layout__main {
-    grid-area: main;
-    padding: var(--cm-space-4);
+  .cm-setup-layout__panel:has(> .cm-setup-layout__aside:not([hidden]))
+    > :is(.cm-setup-layout__main, .cm-setup-layout__aside) {
+    padding-block-end: var(--cm-setup-layout-panel-padding);
   }
 
-  .cm-setup-layout:has(.cm-setup-layout__aside) .cm-setup-layout__aside {
-    grid-area: aside;
-    align-self: stretch;
-    padding: var(--cm-space-4);
-    border-inline-start: var(--cm-border-width) solid var(--cm-color-border-default);
+  /* Brand shares the aside column, while toolbar sits above the form. */
+  .cm-setup-layout__brand {
+    grid-area: 2 / aside;
   }
 
-  .cm-setup-layout--aside-left:has(.cm-setup-layout__aside) .cm-setup-layout__aside {
-    order: 0;
-    border-inline-start: 0;
-    border-inline-end: var(--cm-border-width) solid var(--cm-color-border-default);
+  .cm-setup-layout__toolbar {
+    grid-area: 1 / content;
+  }
+
+  .cm-setup-layout__header {
+    grid-area: 2 / content;
+  }
+
+  .cm-setup-layout__main {
+    grid-area: 3 / content;
+  }
+
+  .cm-setup-layout__aside {
+    grid-area: 1 / aside / -1;
+  }
+
+  .cm-setup-layout__panel:has(> .cm-setup-layout__brand:not([hidden])) > .cm-setup-layout__aside {
+    grid-row-start: 3;
+  }
+
+  .cm-setup-layout__panel:has(> .cm-setup-layout__toolbar:not([hidden])) > .cm-setup-layout__brand {
+    grid-row-start: 1;
+  }
+
+  .cm-setup-layout__panel:has(> .cm-setup-layout__brand:not([hidden])):has(> .cm-setup-layout__toolbar:not([hidden]))
+    > .cm-setup-layout__aside {
+    grid-row-start: 2;
   }
 }

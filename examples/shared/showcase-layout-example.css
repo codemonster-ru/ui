@@ -88,6 +88,10 @@
   font-variant-numeric: tabular-nums;
 }
 
+.layout-example__setup-brand {
+  inline-size: 100%;
+}
+
 .layout-example__setup-brand strong {
   font-size: var(--cm-font-size-xl);
 }
@@ -268,25 +272,13 @@
   color: var(--cm-color-text-secondary);
 }
 
-@media (width > 48rem) {
-  .layout-example__setup.cm-setup-layout--aside-left:has(.cm-setup-layout__aside) .cm-setup-layout__panel {
-    grid-template-columns: 16rem minmax(0, 1fr);
-    grid-template-areas:
-      'brand header'
-      'aside main';
-  }
-
-  .layout-example__setup .cm-setup-layout__brand {
-    align-self: stretch;
-    border-inline-end: var(--cm-border-width) solid var(--cm-color-border-default);
-  }
-
+@media (width >= 48rem) {
   .layout-example__setup-progress {
     display: none;
   }
 }
 
-@media (width <= 48rem) {
+@media (width < 48rem) {
   .layout-example__setup .cm-setup-layout__aside {
     display: none;
   }
