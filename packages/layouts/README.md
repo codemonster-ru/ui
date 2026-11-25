@@ -2,7 +2,8 @@
 
 Page layouts for CodeMonster UI, rendered by the Vue adapter.
 
-Current version: `@codemonster-ru/ui-layouts@2.0.0-rc.2` — unpublished internal release candidate.
+This guide covers version `2.0.0`. See the [2.0 release notes](../../docs/codemonster-ui-2.0-release-notes.md)
+for release status and matching package versions.
 
 ## Requirements
 

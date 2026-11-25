@@ -1,5 +1,8 @@
 # CodeMonster UI 2.0 release decisions
 
+This record describes the original PR #29 preparation. Start current release verification from
+the [readiness report](FINAL_READINESS.md#restart).
+
 ## Preparation base
 
 Use the integration branch from [PR 27](https://github.com/codemonster-ru/ui/pull/27)

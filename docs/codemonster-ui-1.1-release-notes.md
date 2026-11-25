@@ -1,9 +1,10 @@
 # CodeMonster UI 1.1 release notes
 
 CodeMonster UI 1.1 completes the portable Vue and Annabel Razor component cohort, closes the
-reviewed VueForge migration gaps, and validates both adapters against the same contracts. Existing
-VueForge packages remain available: Icons, CodeBlock, and Playground continue as separately
-maintained products, while application shells and product policy stay application-owned.
+reviewed VueForge migration gaps, and validates both adapters against the same contracts. Icons,
+CodeBlock, and Playground remain available through the
+[sunset VueForge project](https://github.com/codemonster-ru/vueforge). Application shells and
+product policy stay application-owned.
 
 ## Release cohort
 
@@ -42,7 +43,8 @@ The optional utility stylesheet remains a separate package:
 npm install @codemonster-ru/ui-utilities@^1.0.1
 ```
 
-Install the Annabel Razor adapter, including its integrity-checked token and component CSS assets:
+Install the [Annabel Razor adapter](https://github.com/codemonster-ru/ui-razor), including its
+integrity-checked token and component CSS assets:
 
 ```bash
 composer require codemonster-ru/ui-razor:^1.1.0

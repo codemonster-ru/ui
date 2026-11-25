@@ -68,4 +68,4 @@ result needs an observable reader announcement. Native Windows evidence needs a 
 Match the final product SHA to its verification logs. Use that revision for any hosted rerun.
 Resolve remaining native acceptance using the short scenario above. Then apply the
 [release checklist](../release-checklist.md) and retain exact revised evidence. The
-[PR #29 release handoff](../release/FINAL_READINESS.md) retains the earlier candidate record.
+[PR #29 release handoff](../release/FINAL_READINESS.md#original-pr-29-handoff) retains the earlier candidate record.
