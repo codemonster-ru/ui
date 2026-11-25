@@ -141,9 +141,11 @@ async function checkDevelopmentPreviews(base) {
     const shell = page.locator('#demo-app-shell');
     const preview = shell.locator('iframe.layout-preview__frame');
     await preview.scrollIntoViewIfNeeded();
-    await preview.contentFrame().getByRole('tab', { name: 'With aside' }).waitFor();
+    await preview.contentFrame().locator('.cm-app-shell__content').waitFor();
+    await shell.getByRole('tab', { name: 'With aside' }).click();
     await shell.getByRole('radio', { name: 'min · 320 px' }).press('Space');
     await expectPreviewWidth(preview, 320);
+    await preview.contentFrame().locator('.cm-app-shell__sidebar').waitFor();
     await checkLayoutReload(page, base);
     assert.deepEqual(errors, [], 'Vue dev preview network/runtime errors');
     console.log('Vue dev: initial inline examples, scrolling, and resizable layout preview passed');
@@ -1082,22 +1084,38 @@ async function checkLayoutViewport(page, base, adapter) {
     const frame = example.locator('iframe.layout-preview__frame');
     await frame.scrollIntoViewIfNeeded();
     const preview = frame.contentFrame();
-    const tab = preview.getByRole('tab', { name: 'With aside' });
+    const appShell = slug === 'app-shell';
+    const controls = appShell ? example : preview;
+    const tab = controls.getByRole('tab', { name: 'With aside' });
     await tab.waitFor();
     const previewDocument = await (await frame.elementHandle()).contentFrame();
     await previewDocument.waitForLoadState('load');
-    const content = preview.getByRole('tab', { name: 'Content', exact: true });
-    const appShell = slug === 'app-shell';
-    assert.equal(await (appShell ? content : tab).getAttribute('aria-selected'), 'true');
+    const contentTab = controls.getByRole('tab', { name: 'Content', exact: true });
+    assert.equal(await (appShell ? contentTab : tab).getAttribute('aria-selected'), 'true');
     const sidebar = preview.locator(`.cm-${slug}__sidebar`);
-    if (!appShell) await content.click();
+    if (!appShell) await contentTab.click();
     await sidebar.waitFor({ state: 'hidden' });
     const main = preview.locator(appShell ? '.cm-app-shell__content' : '.cm-document-layout__main');
     assert(
       await main.evaluate((element) => Math.abs(element.offsetWidth - element.parentElement.clientWidth) <= 1),
       `${adapter}: ${slug} uses the full width in Content mode`,
     );
-    if (appShell) await main.getByText(/^Content paragraph 1\./u).waitFor();
+    let frameTimeOrigin;
+    if (appShell) {
+      await main.getByText(/^Content paragraph 1\./u).waitFor();
+      frameTimeOrigin = await previewDocument.evaluate(() => performance.timeOrigin);
+      const viewport = await example.locator('.layout-preview__viewport').boundingBox();
+      const tabs = await example.getByRole('tab').all();
+      const switches = await example.getByRole('switch').all();
+      assert.equal(tabs.length, 3, `${adapter}: App Shell has three layout modes above the preview`);
+      assert.equal(switches.length, 4, `${adapter}: App Shell shows the Content options above the preview`);
+      for (const option of [...tabs, ...switches]) {
+        const box = await option.boundingBox();
+        assert(box && box.y + box.height <= viewport.y + 1, `${adapter}: App Shell controls are above the preview`);
+      }
+      assert.equal(await preview.getByRole('tab', { includeHidden: true }).count(), 0);
+      assert.equal(await preview.getByRole('switch', { includeHidden: true }).count(), 0);
+    }
     await tab.click();
     const aside = preview.locator(`.cm-${slug}__aside:not([hidden])`);
     await aside.waitFor({ state: 'attached' });
@@ -1116,7 +1134,6 @@ async function checkLayoutViewport(page, base, adapter) {
       await main.evaluate((element) => element.getBoundingClientRect().top < window.innerHeight),
       `${adapter}: ${slug} shows the main region in the compact preview`,
     );
-
     await example.getByRole('radio', { name: 'lg · 1024 px' }).press('Space');
     await expectPreviewWidth(frame, 1024);
     await sidebar.waitFor({ state: 'visible' });
@@ -1128,8 +1145,21 @@ async function checkLayoutViewport(page, base, adapter) {
     await aside.waitFor({ state: 'visible' });
     assert.equal(await tab.getAttribute('aria-selected'), 'true', `${adapter}: resizing preserves layout selection`);
 
+    if (appShell) {
+      await example.getByRole('radio', { name: '2xl · 1536 px' }).press('Space');
+      await expectPreviewWidth(frame, 1536);
+      await checkAppShellRegions(preview, example, adapter);
+    }
+
     await example.getByRole('radio', { name: 'Fit' }).press('Space');
     await expectPreviewWidth(frame, await frame.evaluate((element) => element.parentElement.clientWidth));
+    if (appShell) {
+      assert.equal(
+        await previewDocument.evaluate(() => performance.timeOrigin),
+        frameTimeOrigin,
+        `${adapter}: changing App Shell settings keeps the preview document`,
+      );
+    }
   }
 
   const admin = page.locator('#demo-admin-layout');
@@ -1168,6 +1198,81 @@ async function checkLayoutViewport(page, base, adapter) {
   await mobileToggle.waitFor();
   assert(await mobileToggle.evaluate((toggle) => document.activeElement === toggle));
   await checkViewport(page, `${adapter} layouts`);
+}
+
+async function checkAppShellRegions(preview, example, adapter) {
+  const shell = preview.locator('.cm-app-shell');
+  const toggle = (name) => example.getByRole('switch', { name, exact: true }).press('Space');
+  const dimensions = () =>
+    shell.evaluate((element) => {
+      const region = (name) => element.querySelector(`.cm-app-shell__${name}:not([hidden])`);
+      const box = (name) => region(name)?.getBoundingClientRect().toJSON();
+      const background = (name) => getComputedStyle(region(name)).backgroundColor;
+      const root = element.getBoundingClientRect();
+      const body = box('body');
+      return {
+        body,
+        header: box('header'),
+        subheader: box('subheader'),
+        content: box('content'),
+        contentSubheader: box('content-subheader'),
+        sidebar: box('sidebar'),
+        aside: box('aside'),
+        centering: Math.abs(body.left - root.left - (root.right - body.right)),
+        contentBackground: background('content'),
+        headerBackground: background('header'),
+      };
+    });
+  const align = (actual, expected, label) =>
+    assert(Math.abs(actual - expected) <= 1, `${adapter}: ${label} (${actual} vs ${expected})`);
+
+  const normal = await dimensions();
+  assert.equal(normal.body.width, 1280, `${adapter}: App Shell body caps its width`);
+  align(normal.centering, 0, 'App Shell body stays centered');
+  assert.equal(normal.sidebar.width, 288, `${adapter}: App Shell sidebar width`);
+  assert.equal(normal.aside.width, 320, `${adapter}: App Shell aside width`);
+  align(normal.content.left, normal.sidebar.right, 'App Shell sidebar abuts content');
+  align(normal.aside.left, normal.content.right, 'App Shell aside abuts content');
+  align(normal.content.bottom, normal.aside.bottom, 'App Shell surfaces extend through the row');
+  assert.equal(normal.contentBackground, normal.headerBackground, `${adapter}: App Shell content has a surface`);
+  const plainContent = shell.locator('.cm-app-shell__content.cm-app-shell__region--plain');
+  await toggle('Plain columns');
+  await plainContent.waitFor();
+  await toggle('Plain columns');
+  await plainContent.waitFor({ state: 'detached' });
+
+  const scroll = () =>
+    shell.evaluate(async (element) => {
+      window.scrollTo(0, window.scrollY + element.getBoundingClientRect().top + 250);
+      await new Promise(requestAnimationFrame);
+      await new Promise(requestAnimationFrame);
+    });
+  await toggle('Content subheader');
+  await toggle('Sticky header');
+  await toggle('Sticky sidebar');
+  await toggle('Sticky aside');
+  await scroll();
+  const withoutSubheader = await dimensions();
+  align(withoutSubheader.header.top, 0, 'App Shell header sticks');
+  align(withoutSubheader.contentSubheader.top, withoutSubheader.header.bottom, 'content subheader clears header');
+  align(withoutSubheader.sidebar.top, withoutSubheader.header.bottom, 'sidebar clears visible header only');
+  align(withoutSubheader.aside.top, withoutSubheader.header.bottom, 'aside clears visible header only');
+  align(withoutSubheader.contentSubheader.width, withoutSubheader.content.width, 'content subheader spans its column');
+
+  await toggle('Subheader');
+  await scroll();
+  const withSubheader = await dimensions();
+  align(withSubheader.subheader.top, withSubheader.header.bottom, 'subheader clears header');
+  align(withSubheader.contentSubheader.top, withSubheader.subheader.bottom, 'content subheader clears both bars');
+  align(withSubheader.sidebar.top, withSubheader.subheader.bottom, 'sidebar clears both bars');
+  align(withSubheader.aside.top, withSubheader.subheader.bottom, 'aside clears both bars');
+
+  await toggle('Sticky header');
+  await scroll();
+  const staticHeader = await dimensions();
+  assert(staticHeader.contentSubheader.bottom < 0, `${adapter}: content subheader follows a static header`);
+  align(staticHeader.sidebar.top, 0, 'sidebar sticks at the top with a static header');
+  align(staticHeader.aside.top, 0, 'aside sticks at the top with a static header');
 }
 
 async function checkWarehouse(page, base, adapter) {

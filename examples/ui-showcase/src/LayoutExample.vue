@@ -11,7 +11,6 @@ import {
   dashboardStats,
   initialAppShellLayout,
   type LayoutExampleSlug,
-  regionControls,
   shellTabs,
   type ShellLayout,
   steps,
@@ -19,6 +18,7 @@ import {
   warehouseTableCaption,
   initialSetupStep,
 } from '../../shared/showcase-layout-data.mts';
+import { followAppShellPreview } from '../../shared/showcase-layout-recipes.js';
 import {
   CmAdminLayout,
   CmAdminShell,
@@ -38,7 +38,6 @@ import {
   CmIcon,
   CmIconButton,
   CmProgressBar,
-  CmSwitch,
   CmButton,
   CmCard,
   CmInput,
@@ -46,12 +45,12 @@ import {
   CmLink,
   CmNavMenu,
   CmStack,
-  CmTabs,
   CmTag,
 } from '@codemonster-ru/ui-vue';
 import { VfDataTable } from '@codemonster-ru/ui-vue/historical';
 import logoAsset from '../../shared/vueforge-logo-icon.svg';
 import { vScrollableTable } from './scrollable-table';
+import LayoutRegionControls from './LayoutRegionControls.vue';
 
 const { slug, staticPreview } = defineProps<{ slug: LayoutExampleSlug; staticPreview?: boolean }>();
 const annabelLogo = staticPreview ? './annabel-logo-icon.svg' : annabelLogoAsset;
@@ -60,8 +59,8 @@ const corePath = staticPreview ? './core/' : '/core/';
 const submitted = ref(false);
 
 const mode = ref<ShellLayout>(slug === 'app-shell' ? initialAppShellLayout : 'sidebar-content-aside');
-const makeRegionFlags = () => Object.fromEntries(regionControls.map(({ key }) => [key, false]));
-const flags = ref({ 'app-shell': makeRegionFlags(), 'document-layout': makeRegionFlags() });
+const options = ref<string[]>([]);
+const appearance = computed(() => (options.value.includes('plain') ? 'plain' : 'default'));
 const documentRegionLabels = { sidebar: 'Navigation item', content: 'Content section', aside: 'Related item' };
 
 function regionItemText(region: keyof typeof appShellRegionSamples, number: number) {
@@ -107,6 +106,13 @@ function openWarehouseNavigation(event: MouseEvent) {
 }
 
 onMounted(() => {
+  if (slug === 'app-shell') {
+    followAppShellPreview((layout, enabled) => {
+      const tab = shellTabs.find(({ value }) => value === layout);
+      if (tab) mode.value = tab.value;
+      options.value = enabled;
+    });
+  }
   if (slug !== 'admin-shell') return;
   warehouseMobileQuery = window.matchMedia(`(width < ${cmBreakpoints.lg}px)`);
   syncWarehouseNavigation(warehouseMobileQuery);
@@ -132,57 +138,26 @@ function moveStep(offset: number) {
   const index = steps.findIndex(({ value }) => value === step.value);
   step.value = steps[Math.min(steps.length - 1, Math.max(0, index + offset))].value;
 }
-function setMode(value: string) {
-  const match = shellTabs.find((layout) => layout.value === value);
-  if (match) mode.value = match.value;
-}
 </script>
 
 <template>
-  <CmContainer v-if="slug === 'app-shell' || slug === 'document-layout'">
-    <CmStack>
-      <CmTabs
-        :id="slug + '-regions'"
-        :model-value="mode"
-        :items="shellTabs"
-        scroll-controls
-        @update:model-value="setMode"
-      />
-      <CmInline>
-        <template v-for="{ key, label } in regionControls" :key="key">
-          <CmSwitch
-            v-if="
-              (key !== 'notches' || slug === 'document-layout') &&
-              (key !== 'plain' || slug === 'app-shell') &&
-              (staticPreview || key !== 'sidebar' || mode !== 'content') &&
-              (staticPreview || key !== 'aside' || mode === 'sidebar-content-aside')
-            "
-            v-model="flags[slug][key]"
-            :label="label"
-            :data-region-control="staticPreview ? key : undefined"
-          />
-        </template>
-      </CmInline>
-    </CmStack>
+  <CmContainer v-if="slug === 'document-layout'">
+    <LayoutRegionControls v-model:layout="mode" v-model:options="options" :slug="slug" />
   </CmContainer>
   <component
     :is="slug === 'app-shell' ? CmAppShell : CmDocumentLayout"
     v-if="slug === 'app-shell' || slug === 'document-layout'"
     :layout="staticPreview ? 'sidebar-content-aside' : mode"
-    :show-subheader="staticPreview || flags[slug].subheader"
-    :show-content-subheader="staticPreview || flags[slug]['content-subheader']"
+    :show-subheader="staticPreview || options.includes('subheader')"
+    :show-content-subheader="staticPreview || options.includes('content-subheader')"
     :data-preview-shell="staticPreview ? mode : undefined"
-    :sticky-header="flags[slug].header"
-    :sticky-sidebar="flags[slug].sidebar"
-    :sticky-aside="flags[slug].aside"
+    :sticky-header="options.includes('header')"
+    :sticky-sidebar="options.includes('sidebar')"
+    :sticky-aside="options.includes('aside')"
     v-bind="
       slug === 'app-shell'
-        ? {
-            contentAppearance: flags[slug].plain ? 'plain' : 'default',
-            sidebarAppearance: flags[slug].plain ? 'plain' : 'default',
-            asideAppearance: flags[slug].plain ? 'plain' : 'default',
-          }
-        : { edgeNotches: flags[slug].notches }
+        ? { contentAppearance: appearance, sidebarAppearance: appearance, asideAppearance: appearance }
+        : { edgeNotches: options.includes('notches') }
     "
   >
     <template #header><strong>Header</strong></template>

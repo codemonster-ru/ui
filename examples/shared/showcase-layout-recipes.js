@@ -34,6 +34,29 @@ export function fitLayoutPreview(content) {
   observer.observe(content, { box: 'border-box' });
 }
 
+/** @param {(layout: string, options: string[]) => void} update */
+export function followAppShellPreview(update) {
+  const frame = window.frameElement;
+  const attributeFilter = ['data-app-shell-layout', 'data-app-shell-options'];
+  if (!frame?.hasAttribute('data-app-shell-layout')) return;
+
+  const sync = () => {
+    const layout = frame.getAttribute('data-app-shell-layout');
+    const options = frame.getAttribute('data-app-shell-options');
+    if (layout) update(layout, options ? options.split(' ') : []);
+  };
+  const observer = new MutationObserver(sync);
+  const observe = () => {
+    sync();
+    observer.observe(frame, { attributes: true, attributeFilter });
+  };
+  observe();
+  window.addEventListener('pagehide', () => observer.disconnect());
+  window.addEventListener('pageshow', (event) => {
+    if (event.persisted) observe();
+  });
+}
+
 /** @param {HTMLElement} root */
 export function mountWarehousePagination(root) {
   const table = root.querySelector('#showcase-warehouse');
