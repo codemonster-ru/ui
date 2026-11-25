@@ -34,16 +34,63 @@ export function fitLayoutPreview(content) {
   observer.observe(content, { box: 'border-box' });
 }
 
+const revealAppShellAsideAttribute = 'data-app-shell-reveal-aside';
+
+/** @param {HTMLIFrameElement} frame
+ * @param {string} layout
+ * @param {(width: string) => void} selectWidth
+ */
+export function fitAppShellPreviewForLayout(frame, layout, selectWidth) {
+  const viewport = frame.parentElement;
+  if (!viewport) return;
+
+  if (layout !== 'sidebar-content-aside') {
+    viewport.scrollLeft = 0;
+    return;
+  }
+  if (!frame.hasAttribute('data-fit')) return;
+
+  const styles = getComputedStyle(frame);
+  const xl = Number.parseInt(styles.getPropertyValue('--cm-breakpoint-xl'), 10);
+  if (!Number.isFinite(xl) || frame.clientWidth >= xl) return;
+
+  selectWidth(String(xl));
+  const lg = Number.parseInt(styles.getPropertyValue('--cm-breakpoint-lg'), 10);
+  if (viewport.clientWidth < lg) frame.setAttribute(revealAppShellAsideAttribute, String(xl));
+}
+
 /** @param {(layout: string, options: string[]) => void} update */
 export function followAppShellPreview(update) {
   const frame = window.frameElement;
   const attributeFilter = ['data-app-shell-layout', 'data-app-shell-options'];
   if (!frame?.hasAttribute('data-app-shell-layout')) return;
 
+  const revealAside = () => {
+    const width = frame.getAttribute(revealAppShellAsideAttribute);
+    if (!width) return;
+    frame.removeAttribute(revealAppShellAsideAttribute);
+    if (
+      frame.getAttribute('data-app-shell-layout') !== 'sidebar-content-aside' ||
+      frame.getAttribute('width') !== width
+    )
+      return;
+
+    const viewport = frame.parentElement;
+    const aside = document.querySelector('.cm-app-shell__aside');
+    if (!viewport || !aside?.getClientRects().length) return;
+    const asideStart = frame.getBoundingClientRect().left + aside.getBoundingClientRect().left;
+    const viewportStart = viewport.getBoundingClientRect().left + viewport.clientLeft;
+    viewport.scrollBy({ left: asideStart - viewportStart, behavior: 'instant' });
+  };
+
   const sync = () => {
     const layout = frame.getAttribute('data-app-shell-layout');
     const options = frame.getAttribute('data-app-shell-options');
     if (layout) update(layout, options ? options.split(' ') : []);
+    // Align from the parent even when the preview itself is below the visible page.
+    if (frame.hasAttribute(revealAppShellAsideAttribute)) {
+      frame.ownerDocument.defaultView?.requestAnimationFrame(revealAside);
+    }
   };
   const observer = new MutationObserver(sync);
   const observe = () => {

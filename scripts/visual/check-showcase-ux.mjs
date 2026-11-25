@@ -143,6 +143,7 @@ async function checkDevelopmentPreviews(base) {
     await preview.scrollIntoViewIfNeeded();
     await preview.contentFrame().locator('.cm-app-shell__content').waitFor();
     await shell.getByRole('tab', { name: 'With aside' }).click();
+    await expectVisibleAppShellAside(preview, 'Vue dev');
     await shell.getByRole('radio', { name: 'min · 320 px' }).press('Space');
     await expectPreviewWidth(preview, 320);
     await preview.contentFrame().locator('.cm-app-shell__sidebar').waitFor();
@@ -1118,7 +1119,14 @@ async function checkLayoutViewport(page, base, adapter) {
     }
     await tab.click();
     const aside = preview.locator(`.cm-${slug}__aside:not([hidden])`);
-    await aside.waitFor({ state: 'attached' });
+    if (appShell) {
+      await expectVisibleAppShellAside(frame, adapter);
+      assert.equal(
+        await frame.evaluate((element) => element.parentElement.scrollLeft),
+        0,
+        `${adapter}: desktop preview keeps the start of the App Shell in view`,
+      );
+    } else await aside.waitFor({ state: 'attached' });
 
     await example.getByRole('radio', { name: 'min · 320 px' }).press('Space');
     await expectPreviewWidth(frame, 320);
@@ -1134,6 +1142,15 @@ async function checkLayoutViewport(page, base, adapter) {
       await main.evaluate((element) => element.getBoundingClientRect().top < window.innerHeight),
       `${adapter}: ${slug} shows the main region in the compact preview`,
     );
+    if (appShell) {
+      await contentTab.click();
+      await sidebar.waitFor({ state: 'hidden' });
+      await tab.click();
+      await sidebar.waitFor({ state: 'visible' });
+      await expectPreviewWidth(frame, 320);
+      assert.equal(await aside.isVisible(), false, `${adapter}: selected compact width stays in effect in With aside`);
+    }
+
     await example.getByRole('radio', { name: 'lg · 1024 px' }).press('Space');
     await expectPreviewWidth(frame, 1024);
     await sidebar.waitFor({ state: 'visible' });
@@ -1151,7 +1168,26 @@ async function checkLayoutViewport(page, base, adapter) {
       await checkAppShellRegions(preview, example, adapter);
     }
 
-    await example.getByRole('radio', { name: 'Fit' }).press('Space');
+    const fit = example.getByRole('radio', { name: 'Fit', exact: true });
+    if (appShell) {
+      const pageSize = page.viewportSize();
+      try {
+        for (const width of [768, 360, 320]) {
+          await page.setViewportSize({ ...pageSize, width });
+          await contentTab.click();
+          await sidebar.waitFor({ state: 'hidden' });
+          await fit.press('Space');
+          await expectPreviewWidth(frame, await frame.evaluate((element) => element.parentElement.clientWidth));
+          assert(await fit.isChecked(), `${adapter}: App Shell starts in Fit at ${width} px`);
+          await tab.click();
+          await expectVisibleAppShellAside(frame, `${adapter} at ${width} px`);
+          await checkViewport(page, `${adapter} With aside at ${width} px`);
+        }
+      } finally {
+        await page.setViewportSize(pageSize);
+      }
+    }
+    await fit.press('Space');
     await expectPreviewWidth(frame, await frame.evaluate((element) => element.parentElement.clientWidth));
     if (appShell) {
       assert.equal(
@@ -1198,6 +1234,33 @@ async function checkLayoutViewport(page, base, adapter) {
   await mobileToggle.waitFor();
   assert(await mobileToggle.evaluate((toggle) => document.activeElement === toggle));
   await checkViewport(page, `${adapter} layouts`);
+}
+
+async function expectVisibleAppShellAside(frame, adapter) {
+  await frame.contentFrame().locator('.cm-app-shell__aside').waitFor({ state: 'visible', timeout: 5000 });
+  const headingFits = await frame.evaluate(async (element) => {
+    const heading = element.contentDocument.querySelector('.cm-app-shell__aside strong');
+    const range = element.contentDocument.createRange();
+    range.selectNodeContents(heading);
+    const viewport = element.parentElement;
+    for (let attempt = 0; attempt < 30; attempt++) {
+      const outer = element.getBoundingClientRect();
+      const headingBox = range.getBoundingClientRect();
+      const scale = outer.width / element.contentWindow.innerWidth;
+      const clipStart = viewport.getBoundingClientRect().left + viewport.clientLeft;
+      const clipEnd = clipStart + viewport.clientWidth;
+      if (
+        headingBox.width > 0 &&
+        outer.left + headingBox.left * scale >= clipStart - 1 &&
+        outer.left + headingBox.right * scale <= clipEnd + 1
+      ) {
+        return true;
+      }
+      await new Promise(requestAnimationFrame);
+    }
+    return false;
+  });
+  assert(headingFits, `${adapter}: With aside reveals its heading inside the preview without changing the width first`);
 }
 
 async function checkAppShellRegions(preview, example, adapter) {
