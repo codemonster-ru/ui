@@ -6,9 +6,9 @@ Component: `Container`
 
 ## Purpose and semantics
 
-Container centers content, applies responsive inline gutters, and limits readable page width. Its
-finite `element` choices are `div`, `main`, and `section`; the default is `div`. Consumers must not
-use more than one `main` landmark in a document and must name a `section` when its context requires
+Container centers content, applies responsive inline gutters, and limits readable page width to
+`80rem` by default. Its finite `element` choices are `div`, `main`, and `section`, with `div` as the
+default. Use at most one `main` landmark in a document and name a `section` when its context requires
 an accessible name.
 
 `size` is null or `md`, `lg`, `xl`, or `2xl`. It adds the matching stable modifier. `fluid` removes

@@ -101,6 +101,19 @@ slot, and accepts `as` to change its root when needed for the page's landmark st
 Use `@codemonster-ru/ui-css/layout-areas.css` for these regions when you do not already load the
 full stylesheet. The corresponding historical `Vf*` names also resolve in `ui-layouts`.
 
+Place the regions directly inside a grid with matching `grid-template-areas` names
+`header`, `sidebar`, `content`, `aside`, and `footer`. Set `grid-area` on a region if the grid uses
+a different name or auto-placement. The sidebar scrolls when constrained by the grid. The aside
+lets its contents overflow into the surrounding scroll container. Plain side regions have a
+transparent surface and remove their inline divider.
+
+The header uses `--cm-layout-header-height` (4rem by default) including its block padding
+and border. Increase that height when the header contains taller or wrapping controls.
+Set `--cm-layout-header-padding-block`, `--cm-layout-header-background`, and
+`--cm-layout-header-border` to customize it. The sidebar and aside interiors and the padded
+content region use `--cm-layout-area-padding-block` and `--cm-layout-area-padding-inline`.
+The footer uses only the block padding property. Both properties default to 1rem.
+
 ## Responsive utilities
 
 `useBreakpoint('md')` tracks a min-width query. Pass `{ direction: 'max' }` for the complementary

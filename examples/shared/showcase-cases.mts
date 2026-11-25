@@ -130,6 +130,7 @@ const icon = (icon: string): DemoNode => component('icon', { icon });
 const supplemental: Record<string, Partial<ShowcaseCase>[]> = {
   avatar: [{ id: 'avatar-slot', props: { image: null, label: null }, slots: { default: icon('user') } }],
   'content-area': [{ id: 'content-area-unpadded', props: { as: 'section', padded: false } }],
+  stack: [{ id: 'stack-article', props: { as: 'article' } }],
   checkbox: [{ id: 'checkbox-default--invalid-indeterminate', props: { invalid: true, indeterminate: true } }],
   dropdown: [{ id: 'dropdown-disabled', props: { disabled: true, open: false } }],
   fieldset: [{ id: 'fieldset-invalid', props: { invalid: true, error: 'Select at least one notification option.' } }],
@@ -465,17 +466,25 @@ function adaptContracts(source: ShowcaseCase[]) {
         };
       case 'container-default':
       case 'container-fluid':
-        return { ...fixture, slots: { default: component('panel', {}, { default: 'Content' }) } };
+        return {
+          ...fixture,
+          attributes: { style: '--cm-container-max-width: min(80%, 32rem)' },
+          slots: { default: component('panel', {}, { default: 'Page content' }) },
+        };
       case 'grid-default':
         return {
           ...fixture,
-          slots: { default: ['One', 'Two', 'Three'].map((label) => component('panel', {}, { default: label })) },
+          slots: {
+            default: ['Overview', 'Activity', 'Reports', 'Settings'].map((label) =>
+              component('panel', {}, { default: label }),
+            ),
+          },
         };
       case 'inline-default':
       case 'inline-nowrap':
         return {
           ...fixture,
-          attributes: { style: 'inline-size: min(100%, 14rem)' },
+          attributes: fixture.id === 'inline-default' ? { style: 'max-inline-size: 14rem' } : undefined,
           slots: {
             default: ['Save', 'Duplicate', 'Archive'].map((label) =>
               component('button', { variant: 'secondary' }, { default: label }),
@@ -488,7 +497,11 @@ function adaptContracts(source: ShowcaseCase[]) {
       case 'stack-default':
         return {
           ...fixture,
-          slots: { default: ['First', 'Second'].map((label) => component('tag', {}, { default: label })) },
+          slots: {
+            default: ['Overview', 'Details', 'Related notes'].map((label) =>
+              component('section', { as: 'div', surface: true }, { default: label }),
+            ),
+          },
         };
       case 'panel-default':
       case 'panel-subtle':
@@ -705,6 +718,7 @@ const caseLabels: Record<string, string> = {
   'command-palette-rich-content': 'Rich content',
   'aside-area-default': 'Default',
   'aside-area-default--appearance-plain': 'Plain',
+  'container-default': 'Custom max width',
   'container-default--size-md': 'md',
   'container-default--size-lg': 'lg',
   'container-fluid': 'Fluid',
@@ -720,6 +734,7 @@ const caseLabels: Record<string, string> = {
   'sidebar-area-default': 'Default',
   'sidebar-area-default--appearance-plain': 'Plain',
   'stack-default': 'Vertical',
+  'stack-article': 'Article',
   'data-table-empty': 'emptyText',
   'data-table-expansion': 'Row details',
   'data-table-interactive': 'Row selection',
@@ -1063,7 +1078,12 @@ export function showcaseComponentCases(
     examples.sort((a, b) => rank(a) - rank(b));
   }
   if (slug === 'container') {
-    const variants = ['container-default--size-md', 'container-default--size-lg', 'container-fluid'];
+    const variants = [
+      'container-default',
+      'container-default--size-md',
+      'container-default--size-lg',
+      'container-fluid',
+    ];
     return variants.map((id) => examples.find((example) => example.id === id)!);
   }
   if (!isButton) return examples;

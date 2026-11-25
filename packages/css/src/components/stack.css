@@ -3,5 +3,5 @@
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
-  gap: var(--cm-space-4);
+  gap: var(--cm-layout-gap, var(--cm-space-4));
 }
