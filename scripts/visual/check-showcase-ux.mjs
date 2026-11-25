@@ -1210,6 +1210,8 @@ async function checkAppShellRegions(preview, example, adapter) {
       const background = (name) => getComputedStyle(region(name)).backgroundColor;
       const root = element.getBoundingClientRect();
       const body = box('body');
+      const contentSubheader = region('content-subheader');
+      const subheaderStyle = contentSubheader && getComputedStyle(contentSubheader);
       return {
         body,
         header: box('header'),
@@ -1219,7 +1221,10 @@ async function checkAppShellRegions(preview, example, adapter) {
         sidebar: box('sidebar'),
         aside: box('aside'),
         centering: Math.abs(body.left - root.left - (root.right - body.right)),
+        shellBackground: getComputedStyle(element).backgroundColor,
         contentBackground: background('content'),
+        contentSubheaderBackground: subheaderStyle?.backgroundColor,
+        contentSubheaderBorder: subheaderStyle?.borderBlockEndWidth,
         headerBackground: background('header'),
       };
     });
@@ -1236,10 +1241,16 @@ async function checkAppShellRegions(preview, example, adapter) {
   align(normal.content.bottom, normal.aside.bottom, 'App Shell surfaces extend through the row');
   assert.equal(normal.contentBackground, normal.headerBackground, `${adapter}: App Shell content has a surface`);
   const plainContent = shell.locator('.cm-app-shell__content.cm-app-shell__region--plain');
+  await toggle('Content subheader');
   await toggle('Plain columns');
   await plainContent.waitFor();
-  await toggle('Plain columns');
-  await plainContent.waitFor({ state: 'detached' });
+  const plain = await dimensions();
+  assert.equal(
+    plain.contentSubheaderBackground,
+    'rgba(0, 0, 0, 0)',
+    `${adapter}: static plain subheader is transparent`,
+  );
+  assert.equal(plain.contentSubheaderBorder, '0px', `${adapter}: plain subheader has no divider`);
 
   const scroll = () =>
     shell.evaluate(async (element) => {
@@ -1247,7 +1258,6 @@ async function checkAppShellRegions(preview, example, adapter) {
       await new Promise(requestAnimationFrame);
       await new Promise(requestAnimationFrame);
     });
-  await toggle('Content subheader');
   await toggle('Sticky header');
   await toggle('Sticky sidebar');
   await toggle('Sticky aside');
@@ -1258,6 +1268,12 @@ async function checkAppShellRegions(preview, example, adapter) {
   align(withoutSubheader.sidebar.top, withoutSubheader.header.bottom, 'sidebar clears visible header only');
   align(withoutSubheader.aside.top, withoutSubheader.header.bottom, 'aside clears visible header only');
   align(withoutSubheader.contentSubheader.width, withoutSubheader.content.width, 'content subheader spans its column');
+  assert.equal(
+    withoutSubheader.contentSubheaderBackground,
+    withoutSubheader.shellBackground,
+    `${adapter}: sticky plain subheader covers scrolling text with the shell background`,
+  );
+  assert.equal(withoutSubheader.contentSubheaderBorder, '0px', `${adapter}: sticky plain subheader has no divider`);
 
   await toggle('Subheader');
   await scroll();
@@ -1271,8 +1287,11 @@ async function checkAppShellRegions(preview, example, adapter) {
   await scroll();
   const staticHeader = await dimensions();
   assert(staticHeader.contentSubheader.bottom < 0, `${adapter}: content subheader follows a static header`);
+  assert.equal(staticHeader.contentSubheaderBackground, plain.contentSubheaderBackground);
   align(staticHeader.sidebar.top, 0, 'sidebar sticks at the top with a static header');
   align(staticHeader.aside.top, 0, 'aside sticks at the top with a static header');
+  await toggle('Plain columns');
+  await plainContent.waitFor({ state: 'detached' });
 }
 
 async function checkWarehouse(page, base, adapter) {
