@@ -35,6 +35,8 @@ const chrome = spawn(
     '--headless',
     '--no-first-run',
     '--no-default-browser-check',
+    // Partial redraws can rasterize the same rounded focus outline differently.
+    ...(behavior ? [] : ['--disable-partial-raster']),
     '--remote-debugging-port=0',
     `--user-data-dir=${profile}`,
     'about:blank',
