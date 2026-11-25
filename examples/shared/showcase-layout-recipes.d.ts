@@ -1,3 +1,3 @@
 export function mountLayoutRecipes(root: HTMLElement): () => void;
-export function fitWarehousePreview(root: HTMLElement | Document): void;
+export function fitLayoutPreview(content: Element | null): void;
 export function mountWarehousePagination(root: HTMLElement): void;
