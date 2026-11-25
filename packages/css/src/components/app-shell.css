@@ -4,117 +4,134 @@
  * measures, so the frame is correct with scripting disabled.
  */
 .cm-app-shell {
+  --cm-app-shell-frame-inset: max(var(--cm-space-4), calc((100% - var(--cm-breakpoint-xl)) / 2 + var(--cm-space-4)));
+
   display: flex;
   flex-direction: column;
+  min-inline-size: 0;
   min-block-size: 100vh;
-  background: var(--cm-color-background-canvas);
+  background: var(--cm-color-background-surface-subtle);
 }
 
-.cm-app-shell__header {
-  padding: var(--cm-space-2) var(--cm-space-3);
-  border-block-end: var(--cm-border-width) solid var(--cm-color-border-subtle);
+.cm-app-shell__header,
+.cm-app-shell__subheader {
+  display: grid;
+  align-content: center;
+  padding-inline: var(--cm-app-shell-frame-inset);
+  border-block-end: var(--cm-border-width) solid var(--cm-color-border-default);
   background: var(--cm-color-background-surface);
 }
 
-.cm-app-shell--header-sticky .cm-app-shell__header {
+.cm-app-shell__header {
+  min-block-size: var(--cm-layout-header-height);
+  padding-block: var(--cm-space-3);
+}
+
+.cm-app-shell--header-sticky > .cm-app-shell__header {
   position: sticky;
   inset-block-start: 0;
   z-index: var(--cm-z-index-sticky, 10);
 }
 
 .cm-app-shell__subheader {
+  min-block-size: var(--cm-layout-subheader-height);
+  padding-block: calc(var(--cm-space-3) / 2);
+}
+
+.cm-app-shell--header-sticky > .cm-app-shell__subheader {
   position: sticky;
   inset-block-start: var(--cm-sticky-header-offset, 0);
-  z-index: var(--cm-z-index-sticky, 10);
-  padding: var(--cm-space-2) var(--cm-space-3);
-  border-block-end: var(--cm-border-width) solid var(--cm-color-border-subtle);
-  background: var(--cm-color-background-surface-subtle);
+  z-index: calc(var(--cm-z-index-sticky, 10) - 1);
 }
 
 .cm-app-shell--fit-content {
   min-block-size: auto;
 }
 
-.cm-app-shell--header-static > .cm-app-shell__subheader {
-  position: static;
-}
-
 .cm-app-shell__body {
-  --cm-app-shell-sidebar-width: 16rem;
+  --cm-app-shell-sidebar-width: 18rem;
+  --cm-app-shell-side-offset: 0px;
   --cm-app-shell-sidebar-track: ;
   --cm-app-shell-aside-track: ;
 
   display: grid;
   flex: 1;
+  inline-size: 100%;
+  max-inline-size: var(--cm-breakpoint-xl);
+  margin-inline: auto;
   grid-template-columns: var(--cm-app-shell-sidebar-track) minmax(0, 1fr) var(--cm-app-shell-aside-track);
-  gap: var(--cm-space-4);
-  align-items: start;
+}
+
+.cm-app-shell--header-sticky > .cm-app-shell__body {
+  --cm-app-shell-side-offset: var(--cm-sticky-top-offset, 0px);
 }
 
 .cm-app-shell[data-cm-sidebar-collapsed='true'] > .cm-app-shell__body {
-  --cm-app-shell-sidebar-width: 4.75rem;
+  --cm-app-shell-sidebar-width: 4.5rem;
 }
 
 .cm-app-shell__sidebar,
 .cm-app-shell__aside {
-  position: sticky;
-  inset-block-start: var(--cm-sticky-top-offset, 0);
-
-  /* Sticky alone still lets a sidebar taller than the viewport push past its bottom edge; the cap
-     plus its own scrollbar are what let it stick without doing that. */
-  max-block-size: calc(100dvb - var(--cm-sticky-top-offset, 0));
-  overflow-y: auto;
   min-inline-size: 0;
-  padding: var(--cm-space-3);
+  padding: var(--cm-space-4);
   background: var(--cm-color-background-surface);
 }
 
 .cm-app-shell__sidebar {
-  border-inline-end: var(--cm-border-width) solid var(--cm-color-border-subtle);
+  border-inline-end: var(--cm-border-width) solid var(--cm-color-border-default);
 }
 
 .cm-app-shell__aside {
-  border-inline-start: var(--cm-border-width) solid var(--cm-color-border-subtle);
+  border-inline-start: var(--cm-border-width) solid var(--cm-color-border-default);
 }
 
 .cm-app-shell__content {
-  min-inline-size: 0;
-  padding: var(--cm-space-3);
-}
+  --cm-app-shell-content-padding: var(--cm-space-4);
 
-.cm-app-shell--sidebar-static .cm-app-shell__sidebar,
-.cm-app-shell--aside-static .cm-app-shell__aside {
-  position: static;
-  max-block-size: none;
-  overflow-y: visible;
+  min-inline-size: 0;
+  padding: var(--cm-app-shell-content-padding);
+  background: var(--cm-color-background-surface);
 }
 
 .cm-app-shell__region--plain {
-  border-color: transparent;
+  border-inline-width: 0;
   background: transparent;
 }
 
 .cm-app-shell__content--unpadded {
-  padding: 0;
+  --cm-app-shell-content-padding: 0px;
+}
+
+.cm-app-shell__content:has(> .cm-app-shell__content-subheader:not([hidden])) {
+  padding-block-start: 0;
 }
 
 .cm-app-shell__content-subheader {
   display: flex;
   align-items: center;
   gap: var(--cm-space-2);
-  padding: var(--cm-space-2) var(--cm-space-3);
-  border-block-end: var(--cm-border-width) solid var(--cm-color-border-subtle);
-  background: var(--cm-color-background-surface-subtle);
+  min-block-size: var(--cm-layout-subheader-height);
+  margin-block-end: var(--cm-app-shell-content-padding);
+  margin-inline: calc(-1 * var(--cm-app-shell-content-padding));
+  padding: calc(var(--cm-space-3) / 2) var(--cm-space-4);
+  border-block-end: var(--cm-border-width) solid var(--cm-color-border-default);
+  background: var(--cm-color-background-surface);
 }
 
 .cm-app-shell__region--plain > .cm-app-shell__content-subheader {
-  border-color: transparent;
+  border-block-end: 0;
   background: transparent;
 }
 
+.cm-app-shell--header-sticky > .cm-app-shell__body > .cm-app-shell__content > .cm-app-shell__content-subheader {
+  position: sticky;
+  inset-block-start: var(--cm-sticky-top-offset, 0);
+  z-index: calc(var(--cm-z-index-sticky, 10) - 2);
+}
+
 .cm-app-shell__footer {
-  padding: var(--cm-space-2) var(--cm-space-3);
-  border-block-start: var(--cm-border-width) solid var(--cm-color-border-subtle);
+  padding: var(--cm-space-4) var(--cm-app-shell-frame-inset);
+  border-block-start: var(--cm-border-width) solid var(--cm-color-border-default);
   background: var(--cm-color-background-surface);
 }
 
@@ -126,11 +143,20 @@
   .cm-app-shell__body:has(> .cm-app-shell__sidebar:not([hidden])) {
     --cm-app-shell-sidebar-track: minmax(0, var(--cm-app-shell-sidebar-width));
   }
+
+  .cm-app-shell:not(.cm-app-shell--sidebar-static) > .cm-app-shell__body > .cm-app-shell__sidebar,
+  .cm-app-shell:not(.cm-app-shell--aside-static) > .cm-app-shell__body > .cm-app-shell__aside {
+    position: sticky;
+    align-self: start;
+    inset-block-start: var(--cm-app-shell-side-offset);
+    max-block-size: calc(100dvb - var(--cm-app-shell-side-offset));
+    overflow-y: auto;
+  }
 }
 
 @media (width >= 80em) {
   .cm-app-shell__body:has(> .cm-app-shell__aside:not([hidden])) {
-    --cm-app-shell-aside-track: minmax(0, 18rem);
+    --cm-app-shell-aside-track: minmax(0, 20rem);
   }
 }
 
@@ -141,10 +167,7 @@
 }
 
 @media (width < 64em) {
-  .cm-app-shell__sidebar,
-  .cm-app-shell__aside {
-    position: static;
-    max-block-size: none;
-    overflow-y: visible;
+  .cm-app-shell__body:has(> .cm-app-shell__sidebar:not([hidden])) {
+    grid-template-rows: auto 1fr;
   }
 }

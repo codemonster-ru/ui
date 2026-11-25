@@ -149,8 +149,9 @@ Use `:fill-viewport="false"` to size the frame to its content. Both `header-acti
 selects which regions exist — `content`, `sidebar-content`, or `sidebar-content-aside`.
 
 Use `sticky-header`, `sticky-sidebar`, and `sticky-aside` to opt into sticky placement.
-`sticky-header` measures the rendered header and subheader in the browser. The server render uses
-the declared `--cm-layout-header-height` and `--cm-layout-subheader-height` tokens.
+`sticky-header` pins the header, subheader, and content subheader in order. The browser measures
+the rendered header and subheader. The server render uses the declared `--cm-layout-header-height`
+and `--cm-layout-subheader-height` tokens.
 
 The default and `sidebar` slots receive `isSidebarCollapsed`, `collapseSidebar`, `expandSidebar`,
 and `toggleSidebarCollapsed`. Vue and Vanilla also accept a button marked `data-cm-sidebar-toggle`.
