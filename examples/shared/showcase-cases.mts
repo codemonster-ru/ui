@@ -42,7 +42,7 @@ export interface ShowcaseExample extends ShowcaseCase {
 
 const layoutPreviewSlugs = new Set<string>(layoutExamples.map(({ slug }) => slug));
 const modalSlugs = new Set(['dialog', 'drawer', 'command-palette']);
-const feedbackPalettes = new Set(['alert', 'badge', 'tag', 'progress-bar', 'progress-spinner']);
+const feedbackPalettes = new Set(['alert', 'badge', 'progress-bar', 'progress-spinner']);
 const alertExamples: Record<string, { icon: string; title: string; text: string }> = {
   neutral: { icon: 'bell', title: 'Project update', text: 'The weekly summary is ready to view.' },
   primary: { icon: 'star', title: 'Featured update', text: 'Explore the new project overview.' },
@@ -178,10 +178,6 @@ function adaptContracts(source: ShowcaseCase[]) {
       case 'badge-warning':
       case 'badge-danger':
         return { ...fixture, slots: { default: 'Status' } };
-      case 'tag-default':
-      case 'tag-primary':
-      case 'tag-warning':
-        return { ...fixture, slots: { default: 'Design' } };
       case 'skeleton-default':
         return { ...fixture, props: { minHeight: '2.5rem' } };
       case 'skeleton-gate-ready': {
@@ -311,7 +307,7 @@ function adaptContracts(source: ShowcaseCase[]) {
           slots: {
             header: '<h3 class="cm-card__title">Project</h3>',
             default: 'Project summary',
-            footer: component('tag', { tone: 'success' }, { default: 'Ready' }),
+            footer: component('badge', { tone: 'success', variant: 'outline' }, { default: 'Ready' }),
           },
         };
       case 'command-palette-default':
@@ -332,7 +328,7 @@ function adaptContracts(source: ShowcaseCase[]) {
           ...fixture,
           slots: {
             ...fixture.slots,
-            actions: component('tag', {}, { default: 'Draft' }),
+            actions: component('badge', { variant: 'outline' }, { default: 'Draft' }),
             default: component('input', { 'aria-label': 'Release title', modelValue: 'June release' }),
             footer: 'Review the changes before publishing.',
           },
@@ -353,7 +349,7 @@ function adaptContracts(source: ShowcaseCase[]) {
           props: { ...fixture.props, dismissible: true },
           slots: {
             ...fixture.slots,
-            actions: component('tag', {}, { default: 'Draft' }),
+            actions: component('badge', { variant: 'outline' }, { default: 'Draft' }),
             default: component('input', { 'aria-label': 'Workspace name', modelValue: 'Studio' }),
             footer: 'Changes apply after publishing.',
           },
@@ -469,14 +465,14 @@ function adaptContracts(source: ShowcaseCase[]) {
         return {
           ...fixture,
           attributes: { style: '--cm-container-max-width: min(80%, 32rem)' },
-          slots: { default: component('panel', {}, { default: 'Page content' }) },
+          slots: { default: component('section', { surface: true }, { default: 'Page content' }) },
         };
       case 'grid-default':
         return {
           ...fixture,
           slots: {
             default: ['Overview', 'Activity', 'Reports', 'Settings'].map((label) =>
-              component('panel', {}, { default: label }),
+              component('section', { surface: true }, { default: label }),
             ),
           },
         };
@@ -502,13 +498,6 @@ function adaptContracts(source: ShowcaseCase[]) {
               component('section', { as: 'div', surface: true }, { default: label }),
             ),
           },
-        };
-      case 'panel-default':
-      case 'panel-subtle':
-        return {
-          ...fixture,
-          props: { ...fixture.props, title: 'Activity' },
-          slots: { default: 'Nothing to review yet.' },
         };
       case 'popover-default':
         return {
@@ -702,6 +691,7 @@ const caseLabels: Record<string, string> = {
   'avatar-label--md': 'md',
   'avatar-label--lg': 'lg',
   'avatar-slot': 'Icon',
+  'badge-outline': 'Outline',
   'breadcrumbs-default': 'Default',
   'breadcrumbs-disabled': 'Disabled link',
   'card-default': 'Default',
@@ -804,8 +794,6 @@ const caseLabels: Record<string, string> = {
   'nav-menu-default--expandMode-single': 'Single branch',
   'page-header-default': 'Title and action',
   'page-header-slots': 'With breadcrumbs',
-  'panel-default': 'Default',
-  'panel-subtle': 'Subtle',
   'popover-default': 'Bottom start',
   'popover-default--placement-top': 'Top',
   'popover-default--placement-bottom-end': 'Bottom end',
@@ -896,7 +884,7 @@ function describeVariant(
 }
 
 function showcasePropValue(slug: string, prop: string, value: unknown) {
-  if (prop === 'tone' && (slug === 'badge' || slug === 'tag') && value === 'warn') return 'warning';
+  if (prop === 'tone' && slug === 'badge' && value === 'warn') return 'warning';
   if (slug === 'stepper' && prop === 'contentPosition' && (value === 'below' || value === 'end')) return 'bottom';
   return value;
 }
@@ -949,9 +937,12 @@ export function showcaseComponentCases(
   for (const fixture of cases) {
     for (const { prop, value, label } of showcaseCaseVariants(slug, fixture.id.slice(slug.length + 1))) {
       if (
-        ['alert', 'badge', 'tag'].includes(slug) &&
+        ['alert', 'badge'].includes(slug) &&
         prop === 'tone' &&
-        cases.some((entry) => showcasePropValue(slug, prop, entry.props.tone) === value)
+        cases.some(
+          (entry) =>
+            entry.props.variant === fixture.props.variant && showcasePropValue(slug, prop, entry.props.tone) === value,
+        )
       )
         continue;
       const props: Record<string, unknown> = { [prop]: showcaseVariantValue(value) };

@@ -1,7 +1,0 @@
-{
-  "schemaVersion": 1,
-  "id": "tag-primary",
-  "description": "Toned tag carrying its tone modifier.",
-  "props": { "tone": "primary" },
-  "slots": { "default": "Platform" }
-}

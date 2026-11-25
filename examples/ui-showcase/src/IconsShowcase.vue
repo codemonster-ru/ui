@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue';
 import * as icons from '@codemonster-ru/ui-icons';
 import { iconCatalog, iconNames, type IconName } from '@codemonster-ru/ui-icons/catalog';
-import { CmButton, CmField, CmIcon, CmInput, CmPanel, CmTable } from '@codemonster-ru/ui-vue';
+import { CmButton, CmField, CmIcon, CmInput, CmSection, CmTable } from '@codemonster-ru/ui-vue';
 import { iconCountLabel } from '../../shared/showcase-icon-catalog.js';
 import { vScrollableTable } from './scrollable-table';
 
@@ -68,9 +68,10 @@ async function copyIconName(name: IconName) {
       </p>
     </div>
 
-    <CmPanel
+    <CmSection
       v-for="{ id, label, empty, names, families } in filteredGroups"
       :key="id"
+      surface
       class="showcase-group"
       :aria-labelledby="id"
       data-icon-group
@@ -144,7 +145,7 @@ async function copyIconName(name: IconName) {
         </tr>
       </CmTable>
       <p data-icon-empty :hidden="names.length > 0" class="catalog-empty">{{ empty }}</p>
-    </CmPanel>
+    </CmSection>
   </section>
 </template>
 

@@ -30,6 +30,7 @@ import {
 } from '@codemonster-ru/ui-layouts';
 import {
   CmAvatar,
+  CmBadge,
   CmCheckbox,
   CmDrawer,
   CmField,
@@ -44,7 +45,6 @@ import {
   CmLink,
   CmNavMenu,
   CmStack,
-  CmTag,
 } from '@codemonster-ru/ui-vue';
 import { VfDataTable } from '@codemonster-ru/ui-vue/historical';
 import logoAsset from '../../shared/vueforge-logo-icon.svg';
@@ -368,9 +368,9 @@ function moveStep(offset: number) {
     <p v-if="staticPreview || step === 'finish'" data-preview-step="finish" :hidden="step !== 'finish'">
       {{ database.name }} on {{ database.host }}:{{ database.port }}
     </p>
-    <CmTag v-if="staticPreview || completed" data-setup-complete :hidden="!completed" role="status">
+    <CmBadge v-if="staticPreview || completed" variant="outline" data-setup-complete :hidden="!completed" role="status">
       Setup preview completed.
-    </CmTag>
+    </CmBadge>
     <template #actions>
       <CmButton data-preview-back variant="secondary" :disabled="step === 'license'" @click="moveStep(-1)"
         >Back</CmButton
@@ -410,9 +410,9 @@ function moveStep(offset: number) {
         <CmLink :href="corePath" target="_parent" underline="none">Forgot password?</CmLink>
       </div>
       <CmButton type="submit">Sign in</CmButton>
-      <CmTag v-if="staticPreview || submitted" data-auth-result :hidden="!submitted" role="status">
+      <CmBadge v-if="staticPreview || submitted" variant="outline" data-auth-result :hidden="!submitted" role="status">
         Sign-in preview submitted.
-      </CmTag>
+      </CmBadge>
       <p class="layout-example__sign-in-copyright">© 2026 VueForge. <span>All rights reserved.</span></p>
     </CmStack>
   </CmAuthLayout>

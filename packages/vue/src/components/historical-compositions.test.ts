@@ -10,7 +10,6 @@ import {
   VfFormLayout,
   VfGroupBox,
   VfPageHeader,
-  VfPanel,
   VfSkeletonGate,
   createAsyncWithSkeleton,
 } from '../index';
@@ -72,18 +71,6 @@ describe('historical form and surface compositions', () => {
       rel: 'noopener noreferrer',
     });
     expect(wrapper.get('.cm-breadcrumbs__separator').text()).toBe('0');
-  });
-
-  it('renders an optional panel heading and accepts a custom header', async () => {
-    const panel = mount(VfPanel, { props: { title: 'Status' }, slots: { default: 'Operational' } });
-    expect(panel.get('header h3').text()).toBe('Status');
-    expect(panel.text()).toContain('Operational');
-    await panel.setProps({ subtle: true, title: undefined });
-    expect(panel.classes()).toContain('cm-panel--subtle');
-    expect(panel.find('header').exists()).toBe(false);
-
-    const titled = mount(VfPanel, { slots: { header: '<h2>Run history</h2>' } });
-    expect(titled.get('header > h2').text()).toBe('Run history');
   });
 });
 

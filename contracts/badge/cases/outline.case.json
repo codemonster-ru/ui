@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "badge-outline",
+  "description": "An outlined badge with a primary tone.",
+  "props": { "tone": "primary", "variant": "outline" },
+  "slots": { "default": "Design" }
+}

@@ -39,7 +39,6 @@ test('publishes the Vue component adapter entries', async () => {
     'CmMenuBar',
     'CmNavMenu',
     'CmPageHeader',
-    'CmPanel',
     'CmPopover',
     'CmProgressBar',
     'CmProgressSpinner',
@@ -54,7 +53,6 @@ test('publishes the Vue component adapter entries', async () => {
     'CmTable',
     'CmTableOfContents',
     'CmTabs',
-    'CmTag',
     'CmTextarea',
     'CmThemeProvider',
     'CmThemeSwitch',
@@ -69,7 +67,6 @@ test('publishes the Vue component adapter entries', async () => {
     'VfGroupBox',
     'VfLink',
     'VfPageHeader',
-    'VfPanel',
     'VfProgressBar',
     'VfSkeleton',
     'VfSkeletonGate',
@@ -128,7 +125,6 @@ test('publishes the opt-in historical icon and Vue components', async () => {
     'VfSelect',
     'VfSwitch',
     'VfTableOfContents',
-    'VfTag',
     'VfTextarea',
     'VueForgeCore',
     'VueIconify',
@@ -194,6 +190,12 @@ test('publishes the opt-in historical icon and Vue components', async () => {
   assert.match(contents, /data-cm-toc-scroll-offset="64"/u);
   assert.match(contents, /href="#intro" aria-current="location">Intro/u);
   assert.match(contents, /href="\/appendix">Appendix/u);
+});
+
+test('omits the removed Tag and Panel historical component entries', async () => {
+  for (const slug of ['tag', 'panel']) {
+    await assert.rejects(import(`@codemonster-ru/ui-vue/historical/${slug}`), { code: 'ERR_MODULE_NOT_FOUND' });
+  }
 });
 
 test('installs the published historical plugin on independent server-rendered apps', async () => {

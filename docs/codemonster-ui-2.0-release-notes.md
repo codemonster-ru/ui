@@ -31,6 +31,8 @@ Vue and Layouts require Vue `^3.5.0`. For Node consumers, including SSR, use Nod
   subpaths with automatic CSS in browser builds and CSS-free entries for server rendering.
 - Classic and Duotone icon geometry and catalog metadata through the framework-independent Icons
   package.
+- Badge has an [outline variant](./components/display.md#props-and-states) for category labels in Vue
+  and Vanilla HTML.
 
 ## Changed
 
@@ -51,6 +53,12 @@ Vue and Layouts require Vue `^3.5.0`. For Node consumers, including SSR, use Nod
 - Dialog and Drawer descriptions describe how to open the previews and remain accurate when open.
 - DatePicker weekday labels, adjacent dates and time labels use higher-contrast text. Calendar
   indicators distinguish today, selected dates and selected ranges in both adapters.
+
+## Removed
+
+- Tag and Panel, including their historical Vue imports and the `tag.css` and `panel.css` entries.
+  Use [outlined Badge](./components/display.md#migrating-from-tag) for labels and
+  [Card or Section](./recipes/panel.md) for grouped content.
 
 ## Migration
 

@@ -31,16 +31,6 @@ In HTML use a `header.cm-page-header`. If needed, put breadcrumb navigation in
 Select the heading level according to the document outline.
 [Header with a page action](../../contracts/page-header/cases/default.html)
 
-## Panel
-
-`CmPanel` (also `VfPanel`) renders a section with default slot content and an optional `title` rendered as an
-`h3`. The `header` slot can supply a different heading level or header content. The `subtle`
-flag makes the surface transparent.
-
-In HTML use `section.cm-panel` and add `cm-panel--subtle` for a transparent surface.
-Add a `header` containing a heading with the `cm-panel__title` class when needed.
-[Default HTML](../../contracts/panel/cases/default.html) · [Subtle HTML](../../contracts/panel/cases/subtle.html)
-
 ## Group box
 
 `CmGroupBox` (also `VfGroupBox`) groups content in a native fieldset with an optional

@@ -48,7 +48,6 @@ test('publishes only the approved CSS subpath exports', async () => {
     './nav-menu.css': './dist/components/nav-menu.css',
     './page-header.css': './dist/components/page-header.css',
     './page-layouts.css': './dist/components/page-layouts.css',
-    './panel.css': './dist/components/panel.css',
     './popover.css': './dist/components/popover.css',
     './progress-bar.css': './dist/components/progress-bar.css',
     './progress-spinner.css': './dist/components/progress-spinner.css',
@@ -66,7 +65,6 @@ test('publishes only the approved CSS subpath exports', async () => {
     './theme-switch.css': './dist/components/theme-switch.css',
     './table-of-contents.css': './dist/components/table-of-contents.css',
     './tabs.css': './dist/components/tabs.css',
-    './tag.css': './dist/components/tag.css',
     './tooltip.css': './dist/components/tooltip.css',
     './styles.css': './dist/styles.css',
   });

@@ -1,5 +1,5 @@
 import { cmTypographyTokens } from '@codemonster-ru/ui-tokens';
-import { CmDivider, CmGrid, CmLink, CmPanel, CmStack } from '@codemonster-ru/ui-vue';
+import { CmDivider, CmGrid, CmLink, CmSection, CmStack } from '@codemonster-ru/ui-vue';
 import { h, type CSSProperties, type VNode } from 'vue';
 
 const text = 'Aa Zz 012345';
@@ -100,11 +100,18 @@ function renderSamples(path: string) {
 
 export function renderShowcaseTypography(path = '') {
   return h(
-    CmPanel,
-    { id: 'typography', class: 'showcase-group', 'aria-labelledby': 'showcase-typography-title', tabindex: -1 },
+    CmSection,
     {
-      header: () => h('h2', { id: 'showcase-typography-title', class: 'showcase-component-title' }, 'Typography'),
-      default: () => [h(CmDivider, { 'aria-hidden': 'true' }), renderSamples(path)],
+      id: 'typography',
+      surface: true,
+      class: 'showcase-group',
+      'aria-labelledby': 'showcase-typography-title',
+      tabindex: -1,
     },
+    () => [
+      h('header', [h('h2', { id: 'showcase-typography-title', class: 'showcase-component-title' }, 'Typography')]),
+      h(CmDivider, { 'aria-hidden': 'true' }),
+      renderSamples(path),
+    ],
   );
 }

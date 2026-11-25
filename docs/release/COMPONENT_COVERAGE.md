@@ -2,7 +2,7 @@
 
 The public catalog below reconciles the canonical manifests with the Vue and Layouts root
 exports. Vanilla uses each linked canonical contract and opts into the matching runtime
-controller where the contract specifies one. The inventory has 62 components, 181 canonical cases
+controller where the contract specifies one. The inventory has 60 components, 178 canonical cases
 and 72 scripted behavior scenarios. A dash means the contract has no dedicated scenario under
 `contracts/<component>/behavior`.
 
@@ -22,7 +22,7 @@ canonical fixtures. [Prior product coverage](../verification/product-quality.md#
 | [AsideArea](../../contracts/aside-area/contract.md) | `ui-layouts` | 1 | — |
 | [AuthLayout](../../contracts/auth-layout/contract.md) | `ui-layouts` | 1 | — |
 | [Avatar](../../contracts/avatar/contract.md) | `ui-vue` | 2 | — |
-| [Badge](../../contracts/badge/contract.md) | `ui-vue` | 3 | — |
+| [Badge](../../contracts/badge/contract.md) | `ui-vue` | 4 | — |
 | [Breadcrumbs](../../contracts/breadcrumbs/contract.md) | `ui-vue` | 2 | — |
 | [Button](../../contracts/button/contract.md) | `ui-vue` | 11 | — |
 | [Card](../../contracts/card/contract.md) | `ui-vue` | 5 | — |
@@ -55,7 +55,6 @@ canonical fixtures. [Prior product coverage](../verification/product-quality.md#
 | [MenuBar](../../contracts/menu-bar/contract.md) | `ui-vue` | 4 | 4 |
 | [NavMenu](../../contracts/nav-menu/contract.md) | `ui-vue` | 4 | 3 |
 | [PageHeader](../../contracts/page-header/contract.md) | `ui-vue` | 1 | — |
-| [Panel](../../contracts/panel/contract.md) | `ui-vue` | 2 | — |
 | [Popover](../../contracts/popover/contract.md) | `ui-vue` | 4 | 4 |
 | [ProgressBar](../../contracts/progress-bar/contract.md) | `ui-vue` | 3 | — |
 | [ProgressSpinner](../../contracts/progress-spinner/contract.md) | `ui-vue` | 3 | — |
@@ -72,7 +71,6 @@ canonical fixtures. [Prior product coverage](../verification/product-quality.md#
 | [Table](../../contracts/table/contract.md) | `ui-vue` | 2 | — |
 | [TableOfContents](../../contracts/table-of-contents/manifest.json) | `ui-vue` | 2 | 1 |
 | [Tabs](../../contracts/tabs/contract.md) | `ui-vue` | 5 | 2 |
-| [Tag](../../contracts/tag/manifest.json) | `ui-vue` | 3 | — |
 | [Textarea](../../contracts/textarea/contract.md) | `ui-vue` | 3 | 2 |
 | [ThemeSwitch](../../contracts/theme-switch/manifest.json) | `ui-vue` | 1 | 1 |
 | [Tooltip](../../contracts/tooltip/contract.md) | `ui-vue` | 4 | 3 |

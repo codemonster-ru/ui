@@ -11,7 +11,7 @@ test('generates exact Vite aliases for each historical component subpath', async
   );
   const { default: aliases } = await import('data:text/javascript,' + encodeURIComponent(source));
   const matching = (path) => aliases.filter(({ find }) => find.test(path));
-  assert.equal(aliases.length, 63);
+  assert.equal(aliases.length, 61);
   for (const { find, replacement } of aliases) {
     const legacy = find.source.slice(1, -1).replaceAll('\\/', '/');
     assert.equal(matching(legacy).length, 1);
@@ -26,6 +26,8 @@ test('generates exact Vite aliases for each historical component subpath', async
     '@codemonster-ru/vueforge-core/theme',
     '@codemonster-ru/vueforge-core/button.css',
     '@codemonster-ru/vueforge-core/button/private',
+    '@codemonster-ru/vueforge-core/panel',
+    '@codemonster-ru/vueforge-core/tag',
     '@codemonster-ru/vueforge-layouts/container-extra',
   ]) {
     assert.deepEqual(matching(path), [], path);

@@ -83,7 +83,7 @@ export function showcaseCaseVariants(componentSlug: string, basename: string) {
     return [...sizes.map((size) => ({ label: size, prop: 'size', value: size })), ...options];
   }
   if (
-    (['badge', 'tag', 'alert'].includes(componentSlug) && basename === 'default') ||
+    (['badge', 'alert'].includes(componentSlug) && basename === 'default') ||
     (componentSlug === 'progress-bar' && basename === 'determinate')
   ) {
     return tones.map((tone) => ({ label: tone, prop: 'tone', value: tone }));

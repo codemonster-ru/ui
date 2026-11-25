@@ -7,7 +7,7 @@ import { renderShowcaseTypography } from '../../shared/showcase-typography.mts';
 import { defineAsyncComponent, type Component } from 'vue';
 import { moon, sun } from '@codemonster-ru/ui-icons';
 import LayoutShowcase from './LayoutShowcase.vue';
-import { CmBadge, CmGrid, CmIcon, CmIconButton, CmLink, CmPanel, useCmTheme } from '@codemonster-ru/ui-vue';
+import { CmBadge, CmGrid, CmIcon, CmIconButton, CmLink, CmSection, useCmTheme } from '@codemonster-ru/ui-vue';
 import { coreShowcaseGroups, renderShowcaseNavigation } from '../../shared/showcase-navigation.mts';
 import { revealShowcaseLink } from '../../shared/showcase-navigation.js';
 
@@ -49,13 +49,13 @@ const { resolvedTheme, toggleTheme } = useCmTheme();
     <template v-if="currentPage === 'core'">
       <template v-for="{ id, title, components } in coreShowcaseGroups" :key="id">
         <Typography v-if="id === 'actions'" />
-        <CmPanel :id="id" class="showcase-group" :aria-labelledby="`group-${id}`" tabindex="-1">
+        <CmSection :id="id" surface class="showcase-group" :aria-labelledby="`group-${id}`" tabindex="-1">
           <h2 :id="`group-${id}`" class="showcase-group-label">{{ title }}</h2>
           <CmGrid class="showcase-component-list">
             <ContractExamples v-for="slug in components" :key="slug" :slug="slug" />
             <ConfirmDialogExamples v-if="id === 'modals'" />
           </CmGrid>
-        </CmPanel>
+        </CmSection>
       </template>
     </template>
     <ColorsShowcase v-else-if="currentPage === 'colors'" />

@@ -44,9 +44,12 @@ attributes. [Canonical HTML catalog](../contracts/README.md).
 
 ### Component subpaths
 
-Add `historical/` before the old component slug when changing package names. This covers the
-45 Core component subpaths, `async`, and all 17 Layouts component subpaths at `d9879116`.
-Vue keeps the named exports. Layouts keeps the default and named exports.
+Add `historical/` before the old component slug when changing package names. This covers 43 Core
+component subpaths, `async`, and all 17 Layouts component subpaths at `d9879116`. Vue keeps the
+named exports for these paths. Layouts keeps the default and named exports.
+
+Replace Tag with [outlined Badge](./components/display.md#migrating-from-tag) and Panel with
+[Card or Section](./recipes/panel.md).
 
 ```ts
 import { VfButton } from '@codemonster-ru/ui-vue/historical/button';

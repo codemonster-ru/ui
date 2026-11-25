@@ -7,7 +7,7 @@ export type { CmAlertProps, CmAlertTone } from './components/alert/alert.types';
 export { default as CmAvatar } from './components/avatar/CmAvatar.vue';
 export type { CmAvatarProps, CmAvatarShape, CmAvatarSize } from './components/avatar/avatar.types';
 export { default as CmBadge } from './components/badge/CmBadge.vue';
-export type { CmBadgeProps, CmBadgeTone } from './components/badge/badge.types';
+export type { CmBadgeProps, CmBadgeTone, CmBadgeVariant } from './components/badge/badge.types';
 export { default as CmBreadcrumbs } from './components/breadcrumbs/CmBreadcrumbs.vue';
 export type { CmBreadcrumbItem, CmBreadcrumbsProps } from './components/breadcrumbs/breadcrumbs.types';
 export { default as CmButton } from './components/button/CmButton.vue';
@@ -140,8 +140,6 @@ export type {
   CmPageHeaderHeadingLevel,
   CmPageHeaderHeadingLevel as VfPageHeaderHeadingLevel,
 } from './components/page-header/page-header.types';
-export { default as CmPanel } from './components/panel/CmPanel.vue';
-export { default as VfPanel } from './components/panel/CmPanel.vue';
 export { default as CmPopover } from './components/popover/CmPopover.vue';
 export type { CmPopoverPlacement, CmPopoverProps } from './components/popover/popover.types';
 export { default as CmProgressBar } from './components/progress-bar/CmProgressBar.vue';
@@ -182,8 +180,6 @@ export { default as CmSwitch } from './components/switch/CmSwitch.vue';
 export type { CmSwitchProps, CmSwitchSize, CmSwitchThumbContrast } from './components/switch/switch.types';
 export { default as CmTable, default as VfTable } from './components/table/CmTable.vue';
 export type { CmTableDensity, CmTableProps } from './components/table/table.types';
-export { default as CmTag } from './components/tag/CmTag.vue';
-export type { CmTagProps, CmTagTone } from './components/tag/tag.types';
 export { default as CmThemeProvider } from './components/theme-provider/CmThemeProvider.vue';
 export { default as VfThemeProvider } from './components/theme-provider/VfThemeProvider.vue';
 export { useCmTheme, useCmTheme as useTheme } from './components/theme-provider/use-theme';

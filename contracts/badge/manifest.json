@@ -2,18 +2,24 @@
   "schemaVersion": 1,
   "name": "Badge",
   "slug": "badge",
-  "description": "A compact inline text label for status or categorization.",
+  "description": "A compact inline label for status or categorization, with filled and outlined variants.",
   "props": {
     "tone": {
       "type": "enum",
       "required": false,
       "default": "neutral",
       "values": ["neutral", "primary", "success", "info", "warning", "warn", "help", "danger", "contrast"]
+    },
+    "variant": {
+      "type": "enum",
+      "required": false,
+      "default": "filled",
+      "values": ["filled", "outline"]
     }
   },
   "slots": {
     "default": { "required": true, "description": "Visible badge text or trusted inline content." }
   },
   "events": {},
-  "states": ["default"]
+  "states": ["default", "outline"]
 }

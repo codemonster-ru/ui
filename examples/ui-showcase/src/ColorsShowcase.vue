@@ -9,7 +9,7 @@ import {
   CmIcon,
   CmInline,
   CmInput,
-  CmPanel,
+  CmSection,
   CmStack,
   CmTable,
 } from '@codemonster-ru/ui-vue';
@@ -27,7 +27,7 @@ const statusTones = [
 ] as const;
 
 const modes = ['light', 'dark'] as const;
-const table = ref<InstanceType<typeof CmPanel> | null>(null);
+const table = ref<InstanceType<typeof CmSection> | null>(null);
 onMounted(() => {
   const element: unknown = table.value?.$el;
   if (element instanceof HTMLElement) fillContrastTable(element);
@@ -36,7 +36,7 @@ onMounted(() => {
 
 <template>
   <section class="color-system" aria-label="Colors">
-    <CmPanel class="showcase-group" aria-labelledby="primitive-scales">
+    <CmSection surface class="showcase-group" aria-labelledby="primitive-scales">
       <h2 id="primitive-scales" class="showcase-component-title">Palette</h2>
 
       <CmStack class="color-system__families">
@@ -54,21 +54,22 @@ onMounted(() => {
           </div>
         </CmStack>
       </CmStack>
-    </CmPanel>
+    </CmSection>
 
-    <CmPanel class="showcase-group" aria-labelledby="theme-pairings">
+    <CmSection surface class="showcase-group" aria-labelledby="theme-pairings">
       <h2 id="theme-pairings" class="showcase-component-title">Themes</h2>
       <CmGrid class="color-system__theme-grid">
         <CmStack v-for="mode in modes" :key="mode" class="color-system__theme" :data-cm-theme="mode">
           <h3 class="showcase-variant-title">{{ mode }}</h3>
 
           <CmGrid class="color-system__samples">
-            <CmPanel
+            <CmSection
               v-for="{ label, background, foreground } in surfaceSamples"
               :key="background"
+              surface
               class="color-system__sample"
               :style="{ backgroundColor: `var(--cm-color-${background})`, color: `var(--cm-color-${foreground})` }"
-              >{{ label }}</CmPanel
+              >{{ label }}</CmSection
             >
           </CmGrid>
 
@@ -100,9 +101,9 @@ onMounted(() => {
             </CmAlert>
           </CmGrid>
 
-          <CmPanel class="color-system__backdrop">
-            <CmPanel class="color-system__elevated">Elevated</CmPanel>
-          </CmPanel>
+          <CmSection surface class="color-system__backdrop">
+            <CmSection surface class="color-system__elevated">Elevated</CmSection>
+          </CmSection>
 
           <pre
             class="color-system__syntax"
@@ -112,9 +113,9 @@ onMounted(() => {
 <span class="color-system__comment">// Theme preview</span></code></pre>
         </CmStack>
       </CmGrid>
-    </CmPanel>
+    </CmSection>
 
-    <CmPanel ref="table" class="showcase-group" aria-labelledby="contrast-matrix">
+    <CmSection ref="table" surface class="showcase-group" aria-labelledby="contrast-matrix">
       <h2 id="contrast-matrix" class="showcase-component-title">Contrast</h2>
 
       <CmTable v-scrollable-table="'Contrast ratios'" density="compact">
@@ -136,6 +137,6 @@ onMounted(() => {
           </td>
         </tr>
       </CmTable>
-    </CmPanel>
+    </CmSection>
   </section>
 </template>

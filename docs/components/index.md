@@ -69,7 +69,6 @@ See the [component quality matrix](./quality-matrix.md) for declared states and 
 | Alert | [Guide](./display.md#props-and-states) | [Contract](../../contracts/alert/contract.md) |
 | Avatar | [Guide](./display.md#props-and-states) | [Contract](../../contracts/avatar/contract.md) |
 | Badge | [Guide](./display.md#props-and-states) | [Contract](../../contracts/badge/contract.md) |
-| Tag | [Guide](./display.md#props-and-states) | [HTML](../../contracts/tag/cases/default.html) |
 | Divider | [Guide](./display.md#props-and-states) | [Contract](../../contracts/divider/contract.md) |
 | Skeleton | [Guide](./display.md#props-and-states) | [Contract](../../contracts/skeleton/contract.md) |
 | SkeletonGate | [Guide](./compositions.md#skeleton-gate) | [Contract](../../contracts/skeleton-gate/contract.md) |
@@ -95,7 +94,6 @@ See the [component quality matrix](./quality-matrix.md) for declared states and 
 | Stack | [Guide](./layout-primitives.md) | [Contract](../../contracts/stack/contract.md) |
 | Card | [Guide](./card.md) | [Contract](../../contracts/card/contract.md) |
 | GroupBox | [Guide](./compositions.md#group-box) | [Contract](../../contracts/group-box/contract.md) |
-| Panel | [Guide](./compositions.md#panel) | [Contract](../../contracts/panel/contract.md) |
 | PageHeader | [Guide](./compositions.md#page-header) | [Contract](../../contracts/page-header/contract.md) |
 
 ## Application shells and pages
