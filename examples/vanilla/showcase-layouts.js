@@ -1,3 +1,5 @@
+import { fitAppShellPreviewForLayout } from './showcase-layout-recipes.js';
+
 export function mountLayoutPreviews(catalog) {
   for (const section of catalog.querySelectorAll('[data-layout-preview]')) {
     const frame = section.querySelector('.layout-preview__frame');
@@ -22,6 +24,9 @@ export function mountLayoutPreviews(catalog) {
         frame.dataset.appShellLayout = value;
         sidebar.hidden = value === 'content';
         aside.hidden = value !== 'sidebar-content-aside';
+        fitAppShellPreviewForLayout(frame, value, (width) => {
+          section.querySelector(`[data-preview-width="${width}"]`)?.click();
+        });
       });
     }
   }
