@@ -45,7 +45,7 @@ const { resolvedTheme, toggleTheme } = useCmTheme();
     :class="{ 'showcase-layouts': currentPage === 'layouts' }"
     tabindex="-1"
   >
-    <h1 v-if="currentPage === 'core' || currentPage === 'layouts'" class="showcase-page-heading">{{ page.label }}</h1>
+    <h1 class="showcase-page-heading">{{ page.label }}</h1>
     <template v-if="currentPage === 'core'">
       <template v-for="{ id, title, components } in coreShowcaseGroups" :key="id">
         <Typography v-if="id === 'actions'" />
