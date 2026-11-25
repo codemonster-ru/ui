@@ -55,9 +55,9 @@ test('preserves the reference Button geometry and shared variant states', () => 
   assert.match(css, /line-height: var\(--cm-control-line-height\);/);
   assert.match(
     css,
-    /\.cm-button:focus-visible \{[^}]*outline: var\(--cm-focus-ring-width\) solid var\(--cm-button-focus-color, var\(--cm-color-focus-ring\)\);\s*outline-offset: var\(--cm-border-width-thick\);/u,
+    /\.cm-button:focus-visible\s*\{[^}]*outline: var\(--cm-focus-ring-width\) solid var\(--cm-button-focus-color, var\(--cm-color-focus-ring\)\);\s*outline-offset: var\(--cm-border-width-thick\);/u,
   );
-  assert.match(css, /\.cm-button--danger \{[^}]*--cm-button-status-color: var\(--cm-color-status-danger-border\);/u);
+  assert.match(css, /\.cm-button--danger\s*\{[^}]*--cm-button-status-color: var\(--cm-color-status-danger-border\);/u);
   assert.match(css, /\.cm-button--secondary:active[\s\S]*border-color: var\(--cm-color-border-strong\);/);
   assert.match(css, /\.cm-button--ghost[\s\S]*color: var\(--cm-color-text-primary\);/);
 });

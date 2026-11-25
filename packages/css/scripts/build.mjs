@@ -17,11 +17,12 @@ for (const file of readdirSync(distDirectory, { recursive: true })) {
   stylesheet.walkComments((comment) => {
     if (!/^!|@(?:license|preserve)\b|\bcopyright\b/iu.test(comment.text)) comment.remove();
   });
-  // Compact formatting between nodes without touching selectors or declaration values.
-  const compact = (whitespace, separator = '\n') => whitespace.replace(/\n+[ \t]*$/u, separator);
+  // Compact whitespace around CSS nodes without touching selectors, parameters, or values.
+  stylesheet.raws.after = '';
   stylesheet.walk((node) => {
-    if (node.raws.before) node.raws.before = compact(node.raws.before, node.type === 'decl' ? '' : '\n');
-    if (node.raws.after) node.raws.after = compact(node.raws.after, '');
+    if (node.raws.before?.trim() === '') node.raws.before = '';
+    if (node.raws.after?.trim() === '') node.raws.after = '';
+    if (node.nodes && node.raws.between?.trim() === '') node.raws.between = '';
   });
   const output = stylesheet.toString();
   if (output !== source) writeFileSync(path, output);

@@ -7,7 +7,7 @@ const controlCss = await readFile(new URL('../dist/primitives/control.css', impo
 const surfaceCss = await readFile(new URL('../dist/primitives/surface.css', import.meta.url), 'utf8');
 
 test('ships token-backed control geometry and sizes', () => {
-  assert.match(controlCss, /\.cm-control \{/);
+  assert.match(controlCss, /\.cm-control\s*\{/);
   assert.match(controlCss, /min-block-size: var\(--cm-control-height-md\);/);
   assert.match(controlCss, /\.cm-control--sm[\s\S]*--cm-control-height-sm/);
   assert.match(controlCss, /\.cm-control--lg[\s\S]*--cm-control-height-lg/);
@@ -23,7 +23,7 @@ test('keeps native and aria disabled control states visually aligned', () => {
 });
 
 test('ships token-backed surface elevation levels without layout ownership', () => {
-  assert.match(surfaceCss, /\.cm-surface \{/);
+  assert.match(surfaceCss, /\.cm-surface\s*\{/);
   assert.match(surfaceCss, /\.cm-surface--subtle/);
   assert.match(surfaceCss, /\.cm-surface--elevated[\s\S]*var\(--cm-shadow-surface\)/);
   assert.match(surfaceCss, /\.cm-surface--overlay[\s\S]*var\(--cm-shadow-overlay\)/);

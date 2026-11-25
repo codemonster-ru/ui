@@ -38,7 +38,7 @@ test('shows token-backed focus rings only for focus-visible', () => {
   );
   assert.match(focusCss, /outline-offset: var\(--cm-border-width-thick\);/);
   assert.match(focusCss, /:focus:not\([\s\S]*:focus-visible/);
-  assert.doesNotMatch(focusCss, /(^|,)\s*:focus\s*\{[^}]*outline:\s*none/m);
+  assert.doesNotMatch(focusCss, /(?:^|[,}])\s*:focus\s*\{[^}]*outline:\s*none/m);
   assert.doesNotMatch(focusCss, /--(?:vf|vueforge)-|\.vf-/);
 });
 
