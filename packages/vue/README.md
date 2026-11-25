@@ -2,7 +2,8 @@
 
 Vue 3 adapter for CodeMonster UI components.
 
-Current version: `@codemonster-ru/ui-vue@2.0.0-rc.2` — unpublished internal release candidate; the published line is `1.x`.
+This guide covers version `2.0.0`. See the [2.0 release notes](../../docs/codemonster-ui-2.0-release-notes.md)
+for release status and matching package versions.
 
 ## Requirements
 

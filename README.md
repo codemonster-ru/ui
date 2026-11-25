@@ -23,10 +23,11 @@ Vanilla examples in an application, follow the
 
 ## Preview locally
 
-![CodeMonster UI Core showcase with theme and typography examples](./docs/assets/reference-showcase.png)
+![Vue Core showcase showing the theme switch and typography examples](./docs/assets/reference-showcase.png)
 
-The Vue and Vanilla showcases open on **Core**. Use **Layouts** for complete forms, navigation,
-tables and dialogs in sample interfaces. Scroll through each showcase page to compare its examples and variants.
+The Vue and Vanilla showcases open on **Core** for interactive component examples. **Layouts** has
+resizable application previews, layout primitives, and regions. **Colors** shows the palette,
+themes, and contrast. **Icons** is a searchable catalog.
 
 From the repository root, run `npm ci` with the Node.js version in [`.nvmrc`](./.nvmrc).
 
@@ -43,15 +44,15 @@ describes component routes, layout examples and static hosting.
 
 The [2.0 checkout](./docs/codemonster-ui-2.0-release-notes.md) builds seven npm packages.
 
-| Package | Use |
-| --- | --- |
-| [`@codemonster-ru/ui-tokens`](./packages/tokens/README.md) | Themes, design tokens, and breakpoints |
-| [`@codemonster-ru/ui-css`](./packages/css/README.md) | Shared styles, fonts, and component CSS |
-| [`@codemonster-ru/ui-runtime`](./packages/runtime/README.md) | Vanilla controllers and shared behavior |
-| [`@codemonster-ru/ui-icons`](./packages/icons/README.md) | Framework-independent icon geometry |
-| [`@codemonster-ru/ui-vue`](./packages/vue/README.md) | Vue components |
-| [`@codemonster-ru/ui-layouts`](./packages/layouts/README.md) | Vue page layouts, shells, and regions |
-| [`@codemonster-ru/ui-utilities`](./packages/utilities/README.md) | Optional design-token-based utility CSS |
+| Package | npm (`latest`) | Use |
+| --- | --- | --- |
+| [`@codemonster-ru/ui-tokens`](./packages/tokens/README.md) | [![npm version for UI Tokens](https://img.shields.io/npm/v/@codemonster-ru/ui-tokens/latest)](https://www.npmjs.com/package/@codemonster-ru/ui-tokens) | Themes, design tokens, and breakpoints |
+| [`@codemonster-ru/ui-css`](./packages/css/README.md) | [![npm version for UI CSS](https://img.shields.io/npm/v/@codemonster-ru/ui-css/latest)](https://www.npmjs.com/package/@codemonster-ru/ui-css) | Shared styles, fonts, and component CSS |
+| [`@codemonster-ru/ui-runtime`](./packages/runtime/README.md) | [![npm version for UI Runtime](https://img.shields.io/npm/v/@codemonster-ru/ui-runtime/latest)](https://www.npmjs.com/package/@codemonster-ru/ui-runtime) | Vanilla controllers and shared behavior |
+| [`@codemonster-ru/ui-icons`](./packages/icons/README.md) | Unpublished | Framework-independent icon geometry |
+| [`@codemonster-ru/ui-vue`](./packages/vue/README.md) | [![npm version for UI Vue](https://img.shields.io/npm/v/@codemonster-ru/ui-vue/latest)](https://www.npmjs.com/package/@codemonster-ru/ui-vue) | Vue components |
+| [`@codemonster-ru/ui-layouts`](./packages/layouts/README.md) | Unpublished | Vue page layouts, shells, and regions |
+| [`@codemonster-ru/ui-utilities`](./packages/utilities/README.md) | [![npm version for UI Utilities](https://img.shields.io/npm/v/@codemonster-ru/ui-utilities/latest)](https://www.npmjs.com/package/@codemonster-ru/ui-utilities) | Optional design-token-based utility CSS |
 
 ## Documentation and architecture
 

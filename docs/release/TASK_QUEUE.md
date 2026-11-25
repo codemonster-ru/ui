@@ -11,8 +11,8 @@
 | REL-07 | P1 | BLOCKED | Complete native Safari and manual screen reader checks on both built adapters. | Run the RC.2 manual script with VoiceOver and NVDA; record speech, focus, platform and browser versions. | REL-06 |
 | REL-08 | P1 | BLOCKED | Verify default branch protections and Trusted Publishing readiness. | Inspect effective rules and per-package npm publisher configuration. | REL-01 |
 | REL-09 | P2 | IN_PROGRESS | Verify installation, API, theming, SSR, migration and release documentation. | Documentation lint, example typechecks and release preparation tests. | REL-04 |
-| REL-10 | P0 | BLOCKED | Obtain full hosted CI for the exact candidate and complete the final audit. | Match the dispatch head SHA and results to the reviewed release commit and artifact hashes. Manual and registry prerequisites remain open. | REL-02 through REL-09 |
-| REL-11 | P0 | BACKLOG | Secure owner approval for merge and publication, then verify the registry cohort. | Follow the release checklist and record each package's registry integrity and smoke results. | REL-10 |
+| REL-10 | P0 | BLOCKED | Obtain full hosted CI for the exact candidate and complete the final audit. | Match the CI run's head SHA and results to the reviewed release commit and artifact hashes. Manual and registry prerequisites remain open. | REL-02 through REL-09 |
+| REL-11 | P0 | BACKLOG | Secure owner approval for publication, then verify the registry cohort. | Follow the release checklist and record each package's registry integrity and smoke results. | REL-10 |
 
 ## Candidate fixes
 

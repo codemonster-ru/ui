@@ -39,11 +39,11 @@ Vanilla HTML for every shared component. Start with [Button](./components/button
 - [Use TypeScript with the public package entries](./integration.md#typescript).
 - [Load shared CSS](./css/getting-started.md) and [generated utilities](./css/utilities.md).
 - [Migrate an existing VueForge app](./migrate-from-vueforge.md).
+- [Replace Panel with Card or Section](./recipes/panel.md).
 
 ## Maintained recipes
 
-- [Confirm dialog](./recipes/confirm-dialog.md), [Group box](./recipes/group-box.md), and
-  [Panel](./recipes/panel.md).
+- [Confirm dialog](./recipes/confirm-dialog.md) and [Group box](./recipes/group-box.md).
 - [Form layout](./recipes/form-layout.md), [Page header](./recipes/page-header.md), and
   [Theme switch](./recipes/theme-switch.md).
 - [Auth layout](./recipes/auth-layout.md), [Error layout](./recipes/error-layout.md), and

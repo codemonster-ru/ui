@@ -2,12 +2,13 @@
 
 Generated token-backed utility CSS for CodeMonster UI.
 
-Current version: `@codemonster-ru/ui-utilities@2.0.0-rc.2` — unpublished internal release candidate; the published line is `1.x`.
+This guide covers version `2.0.0`. See the [2.0 release notes](../../docs/codemonster-ui-2.0-release-notes.md)
+for release status and matching package versions.
 
 ## Requirements
 
 - Node.js `^22.22.3`, `^24.15.0`, or `>=26.0.0` for package tooling.
-- `@codemonster-ru/ui-tokens@^2.0.0-rc.2` loaded before the generated utilities.
+- `@codemonster-ru/ui-tokens@^2.0.0` loaded before the generated utilities.
 
 ## Installation
 

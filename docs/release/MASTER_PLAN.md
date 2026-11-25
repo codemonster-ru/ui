@@ -4,9 +4,9 @@ Prepare the seven npm packages for an unpublished stable `2.0.0` candidate. Pres
 shared HTML, CSS and behavior contracts, progressive enhancement, and the Vue adapter API.
 Keep the Vue and Vanilla production showcases in the browser test scope.
 
-The tracked `main` baseline starts at `857c0e396077a7703a6b0b28c7c731fdb7f7befb`.
-Use the approved showcase integration from
-[PR 27](https://github.com/codemonster-ru/ui/pull/27) as the preparation branch base.
+At intake, `main` was at `857c0e396077a7703a6b0b28c7c731fdb7f7befb`. The preparation used the
+approved showcase integration from [PR #27](https://github.com/codemonster-ru/ui/pull/27).
+The [reference integration record](../verification/reference-integration.md) covers its consolidation into `main`.
 The [RC.2 report](../verification/codemonster-ui-2.0-rc.2.md) and
 [design approval](../verification/visual-excellence-design-review.md) retain the earlier results.
 
