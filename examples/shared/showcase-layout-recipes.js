@@ -20,19 +20,18 @@ export function mountLayoutRecipes(root) {
   return () => window.removeEventListener('resize', resize);
 }
 
-/** @param {HTMLElement | Document} root */
-export function fitWarehousePreview(root) {
-  const shell = root.querySelector('.layout-example__warehouse');
+/** @param {Element | null} content */
+export function fitLayoutPreview(content) {
   const frame = window.frameElement;
-  if (!shell || !frame?.matches('iframe.layout-preview__frame')) return;
+  if (!content || !frame?.matches('iframe.layout-preview__frame')) return;
 
   const observer = new ResizeObserver(() => {
-    const height = Math.ceil(shell.getBoundingClientRect().height);
+    const height = Math.ceil(content.getBoundingClientRect().height);
     if (height > 0 && frame.style.blockSize !== `${height}px`) {
       frame.style.blockSize = `${height}px`;
     }
   });
-  observer.observe(shell, { box: 'border-box' });
+  observer.observe(content, { box: 'border-box' });
 }
 
 /** @param {HTMLElement} root */

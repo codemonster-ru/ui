@@ -1411,6 +1411,19 @@ async function checkSetupLayout(page, base) {
   await panel.waitFor();
   const steps = frame.getByRole('navigation', { name: 'Installation steps' });
   const progress = frame.getByRole('progressbar', { name: 'Setup progress' });
+
+  async function expectPreviewHeight() {
+    const height = await panel.evaluate(async (element) => {
+      const content = element.parentElement;
+      const contentHeight = () => Math.ceil(content.getBoundingClientRect().height);
+      for (let attempt = 0; attempt < 20 && innerHeight !== contentHeight(); attempt++) {
+        await new Promise(requestAnimationFrame);
+      }
+      return { frame: innerHeight, content: contentHeight() };
+    });
+    assert.equal(height.frame, height.content, 'Setup Layout fits the step without inner vertical scrolling');
+  }
+
   for (const [name, width, display] of [
     ['min · 320 px', 320, 'flex'],
     ['xs · 480 px', 480, 'flex'],
@@ -1444,12 +1457,15 @@ async function checkSetupLayout(page, base) {
     }
     await steps.waitFor({ state: display === 'grid' ? 'visible' : 'hidden' });
     await progress.waitFor({ state: display === 'grid' ? 'hidden' : 'visible' });
+    await expectPreviewHeight();
   }
-  await example.getByRole('radio', { name: 'Fit' }).press('Space');
+  await example.getByRole('radio', { name: 'min · 320 px' }).press('Space');
+  await expectPreviewWidth(preview, 320);
   const database = frame.getByRole('textbox', { name: 'Database name' });
   await database.fill('demo_database');
   await database.press('Enter');
   await frame.getByRole('textbox', { name: 'Email' }).waitFor();
+  await expectPreviewHeight();
   await frame.getByRole('button', { name: 'Continue', exact: true }).click();
   await frame.getByText('demo_database on 127.0.0.1:3306', { exact: true }).waitFor();
   await frame.getByRole('button', { name: 'Finish', exact: true }).last().click();
