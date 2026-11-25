@@ -355,7 +355,7 @@ async function writeShowcase(contractsDirectory, output, renderView) {
           ]),
         ]),
         h('main', { id: 'showcase-main', class: 'showcase-content', tabindex: -1 }, [
-          current === 'core' || current === 'layouts' ? h('h1', { class: 'showcase-page-heading' }, label) : null,
+          h('h1', { class: 'showcase-page-heading' }, label),
           h('div', { class: ['showcase-catalog', current === 'core' && 'showcase-core'] }, [
             createStaticVNode(pages[current], 1),
           ]),

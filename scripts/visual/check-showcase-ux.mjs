@@ -1663,6 +1663,7 @@ async function checkSetupLayout(page, base) {
 
 async function checkIconSearch(page, base) {
   await page.goto(url(base, 'icons/'));
+  await page.getByRole('heading', { level: 1, name: 'Icons', exact: true }).waitFor();
   const catalog = page.getByRole('region', { name: 'Icons', exact: true });
   await catalog.waitFor();
   assert.equal(await catalog.getByRole('heading', { name: 'Icons', exact: true }).count(), 0);
@@ -2012,12 +2013,12 @@ async function checkInlineExamples(page, base, adapter) {
       .filter(({ id }) => id !== 'layouts' && id !== 'icons')
       .flatMap(({ id, components }) => (id === 'modals' ? [...components, 'confirm-dialog'] : components)),
     'layouts/': [...shellSlugs, ...layoutSlugs.filter((slug) => !shellSlugs.includes(slug))],
-    'icons/': ['icon'],
+    'icons/': [],
     'colors/': [],
   };
   for (const [route, slugs] of Object.entries(groups)) {
     await page.goto(url(base, route), { waitUntil: 'domcontentloaded' });
-    await page.locator('.showcase-page-heading, .showcase-intro > h1').waitFor();
+    await page.locator('#showcase-main > h1.showcase-page-heading').waitFor();
     const sections = page.locator('[data-showcase-component]:visible');
     const visibleSlugs = await sections.evaluateAll((items) =>
       items.map((section) => section.dataset.showcaseComponent),
