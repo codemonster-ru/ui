@@ -3,7 +3,12 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { URL } from 'node:url';
 import { JSDOM } from 'jsdom';
-import { CmRuntime, createCmAdminLayoutController, createCmAppShellController } from '../dist/index.js';
+import {
+  CmRuntime,
+  createCmAdminLayoutController,
+  createCmAppShellController,
+  createCmShellMetricsController,
+} from '../dist/index.js';
 
 function mount(context, markup) {
   const dom = new JSDOM(markup);
@@ -111,4 +116,46 @@ test('the canonical standalone AppShell still toggles through its authored contr
   toggle.click();
   assert.equal(shell.dataset.cmSidebarCollapsed, 'false');
   assert.equal(toggle.getAttribute('aria-expanded'), 'true');
+});
+
+test('shell measurements use visible direct regions and update when an observed region is revealed', (context) => {
+  const { window } = new JSDOM(`
+    <div id="shell">
+      <header data-cm-sticky-header></header>
+      <section><div data-cm-sticky-subheader></div></section>
+      <div data-cm-sticky-subheader hidden></div>
+    </div>`);
+  const shell = window.document.querySelector('#shell');
+  const header = shell.firstElementChild;
+  const subheader = shell.lastElementChild;
+  const observed = [];
+  let notifyResize;
+  window.ResizeObserver = class {
+    constructor(callback) {
+      notifyResize = callback;
+    }
+    observe(region) {
+      observed.push(region);
+    }
+    disconnect() {}
+  };
+  subheader.getBoundingClientRect = () => ({ height: 40 });
+  const controller = createCmShellMetricsController(shell);
+  context.after(() => {
+    controller.disconnect();
+    window.close();
+  });
+  controller.connect();
+
+  const offset = () => shell.style.getPropertyValue('--cm-sticky-top-offset');
+  assert.deepEqual(observed, [header, subheader]);
+  assert.equal(offset(), 'calc(var(--cm-layout-header-height) + 0px)');
+
+  subheader.hidden = false;
+  notifyResize();
+  assert.equal(offset(), 'calc(var(--cm-layout-header-height) + 40px)');
+
+  subheader.hidden = true;
+  notifyResize();
+  assert.equal(offset(), 'calc(var(--cm-layout-header-height) + 0px)');
 });

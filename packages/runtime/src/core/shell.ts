@@ -135,7 +135,7 @@ export const cmStickyOffsetProperties = Object.freeze({
  */
 export function shellStickyOffsets(regions: CmStickyRegions): Record<string, string> {
   const resolve = (present: boolean, measured: number | undefined, variable: string): string => {
-    if (!present) return '0';
+    if (!present) return '0px';
     return measured !== undefined && measured > 0 ? `${measured}px` : `var(${variable})`;
   };
 
