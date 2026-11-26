@@ -16,8 +16,8 @@ All package names in the table use the `@codemonster-ru` scope.
 | `vueforge-layouts@2.1.2`                                                                               | Use `ui-layouts` for shells, page layouts, semantic regions, and layout breakpoints. Component subpaths are available under `ui-layouts/historical/`. |
 | `vueforge-icons@3.2.0`                                                                                 | Use named geometry from `ui-icons` with `CmIcon`. Use `VueIconify` from `ui-vue/historical` for name strings and `ui-icons/catalog` for metadata.     |
 | `vueforge-theme@2.0.1`                                                                                 | Use the shared CSS and typed token APIs from `ui-tokens`. Vue providers and the Vanilla theme controller own preference state.                        |
-| `vueforge-codeblock@4.0.1`                                                                             | Use `ui-codeblock@1.0.0` and its `/view` and `/highlight` entries for Vue rendering and Shiki highlighting.                                             |
-| `vueforge-playground@3.0.1`, `vueforge-playground-core@2.1.0`, `vueforge-playground-vite-plugin@1.0.0` | Use `ui-playground@1.0.0` (`/ui`, `/runtime`), `ui-playground-core@1.0.0`, and `ui-playground-vite-plugin@1.0.0` for Vue previews and Vite integration. |
+| `vueforge-codeblock@4.0.1`                                                                             | Use `ui-codeblock@1.0.0` with `/view` for Vue rendering and `/highlight` for Shiki.                                                                   |
+| `vueforge-playground@3.0.1`, `vueforge-playground-core@2.1.0`, `vueforge-playground-vite-plugin@1.0.0` | Use `ui-playground@1.0.0` (`/ui`, `/runtime`), `ui-playground-core@1.0.0`, and `ui-playground-vite-plugin@1.0.0`.                                     |
 
 For root or aggregate imports, replace the old `vueforge-core/styles.css` and
 `vueforge-layouts/styles.css` imports with the shared stack in the application entry.
