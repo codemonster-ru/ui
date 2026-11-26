@@ -2,6 +2,11 @@
 
 All notable changes to this package will be documented in this file.
 
+## 2.0.1
+
+Generate the icon geometry from local SVG data. Document installation from npm and generation from
+a CodeMonster UI checkout.
+
 ## 2.0.0
 
 Ship the framework-independent icon geometry and catalog for CodeMonster UI 2.0.

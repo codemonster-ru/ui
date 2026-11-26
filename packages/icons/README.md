@@ -2,7 +2,7 @@
 
 Framework-independent icon geometry for CodeMonster UI.
 
-This guide covers version `2.0.0`. See the [2.0 release notes](../../docs/codemonster-ui-2.0-release-notes.md)
+This guide covers version `2.0.1`. See the [2.0 release notes](../../docs/codemonster-ui-2.0-release-notes.md)
 for release status and matching package versions.
 
 ## Requirements
@@ -14,12 +14,6 @@ for release status and matching package versions.
 
 This package owns the rendered geometry of 119 icons across two families and four variants, as data
 rather than as a rendering engine. Vue consumes the stored geometry directly. Vanilla templates can embed the corresponding SVG.
-
-That is the point. The VueForge renderer is 2,135 lines carrying per-icon masks, duotone exceptions,
-solid-body overrides and optical offsets. Reimplementing it in PHP would have meant two engines
-obliged to agree on 879 outputs, and an icon that renders slightly differently still renders — the
-drift would not announce itself. Precomputing removes the second engine instead of testing it. See
-[the decision](../../docs/architecture/icon-line-ownership.md).
 
 The package does not depend on Vue or another UI framework.
 
@@ -53,11 +47,18 @@ const backName = icons.arrowLeft;
 
 ## Installation
 
-For 2.0, [pack the Icons workspace and install its local archive](../../docs/getting-started.md#install-a-local-20-build).
+Install the Icons package from npm.
+
+```bash
+npm install @codemonster-ru/ui-icons@2.0.1
+```
 
 The Vue adapter takes the geometry as a prop, so install this alongside `@codemonster-ru/ui-vue`.
 
-## Generating
+## Generating from source
+
+Run this command from a [CodeMonster UI checkout](https://github.com/codemonster-ru/ui) after installing
+the workspace dependencies.
 
 ```bash
 npm run generate -w @codemonster-ru/ui-icons
