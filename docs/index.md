@@ -11,7 +11,7 @@ CSS, and component behavior, with support for server-rendered templates.
 
 ## Start here
 
-- [Install CodeMonster UI](./getting-started.md#choose-a-release)
+- [Install CodeMonster UI](./getting-started.md#install-from-npm)
 - [Vue quick start](./getting-started.md#vue-quick-start)
 - [Vanilla quick start](./vanilla.md#quick-start)
 

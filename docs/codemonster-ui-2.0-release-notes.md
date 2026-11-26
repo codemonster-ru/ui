@@ -1,23 +1,21 @@
 # CodeMonster UI 2.0 release notes
 
-Draft changelog for the unpublished stable `2.0.0` candidate. Install the seven local tarballs together using
-[Getting started](./getting-started.md#install-a-local-20-build). The stable registry installation
-is documented in the [1.1 release notes](./codemonster-ui-1.1-release-notes.md).
+CodeMonster UI 2.0 is available on npm. Follow the [installation commands](./getting-started.md#install-from-npm)
+for Vue, Vanilla with controllers, or CSS only.
 
 ## Package versions
 
-All seven packages are prepared at `2.0.0`. Use the tarballs from the same candidate build.
-The stable version publishes to `latest` after release acceptance and owner approval.
+These are the published versions in the 2.0 release line.
 
 | Package | Version | What ships |
 | --- | --- | --- |
 | `@codemonster-ru/ui-tokens` | `2.0.0` | Token data, theme CSS and shared breakpoints |
-| `@codemonster-ru/ui-icons` | `2.0.0` | Named icon geometry and catalog metadata |
+| `@codemonster-ru/ui-icons` | `2.0.1` | Named icon geometry and catalog metadata |
 | `@codemonster-ru/ui-runtime` | `2.0.0` | Vanilla controllers and shared behavior primitives |
 | `@codemonster-ru/ui-css` | `2.0.0` | Foundation, fonts, and full and component stylesheets |
 | `@codemonster-ru/ui-utilities` | `2.0.0` | Utility CSS with the matching token dependency |
 | `@codemonster-ru/ui-vue` | `2.0.0` | Vue components and opt-in historical entry points |
-| `@codemonster-ru/ui-layouts` | `2.0.0` | Vue layouts, regions and breakpoint composables |
+| `@codemonster-ru/ui-layouts` | `2.0.1` | Vue layouts, regions and breakpoint composables |
 
 Vue and Layouts require Vue `^3.5.0`. For Node consumers, including SSR, use Node `^22.22.3`,
 `^24.15.0`, or `>=26.0.0` where declared by the package.

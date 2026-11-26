@@ -114,4 +114,4 @@ and CommonJS resolve the server-safe JS entries without loading CSS. For existin
 subpaths, compatible browser builds can get component styles through the browser export
 condition. Check the release cohort and entry point before copying an import from an older app.
 
-[Release and installation](./getting-started.md#choose-a-release) · [CSS entries](./css/getting-started.md#public-entries) · [Migration guide](./migrate-from-vueforge.md)
+[Release and installation](./getting-started.md#install-from-npm) · [CSS entries](./css/getting-started.md#public-entries) · [Migration guide](./migrate-from-vueforge.md)

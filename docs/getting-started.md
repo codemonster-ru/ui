@@ -9,15 +9,47 @@ order: 2
 CodeMonster UI publishes one shared token and CSS layer, a Vue adapter,
 and an optional browser runtime for progressively enhanced server markup.
 
-## Choose a release
+## Install from npm
 
-The examples below target the [draft 2.0 cohort](./codemonster-ui-2.0-release-notes.md) in this
-checkout. Install matching packages from the local build to try them in an application.
-For a registry install of stable Vue, follow the [1.1 release notes](./codemonster-ui-1.1-release-notes.md).
+Install CodeMonster UI 2.0 in your application. See the [2.0 release notes](./codemonster-ui-2.0-release-notes.md)
+for the published package versions. Use Node `^22.22.3`, `^24.15.0`, or `>=26.0.0` for Node
+consumers, including Vue SSR.
+
+### Vue
+
+```bash
+npm install vue@^3.5.0 @codemonster-ru/ui-tokens@2.0.0 \
+  @codemonster-ru/ui-css@2.0.0 @codemonster-ru/ui-icons@2.0.1 @codemonster-ru/ui-vue@2.0.0
+```
+
+Add Layouts for page layouts and shells.
+
+```bash
+npm install @codemonster-ru/ui-layouts@2.0.1
+```
+
+### Vanilla with controllers
+
+```bash
+npm install @codemonster-ru/ui-tokens@2.0.0 @codemonster-ru/ui-css@2.0.0 \
+  @codemonster-ru/ui-runtime@2.0.0
+```
+
+If your application imports icon geometry, also install `@codemonster-ru/ui-icons@2.0.1`.
+
+### CSS only
+
+```bash
+npm install @codemonster-ru/ui-tokens@2.0.0 @codemonster-ru/ui-css@2.0.0
+```
+
+Add `@codemonster-ru/ui-utilities@2.0.0` when using its utility stylesheet. For an app with no
+package manager or JS bundler, follow the [standalone browser assets guide](./vanilla.md#browser-assets).
 
 ## Install a local 2.0 build
 
-From the repository root, with the Node version in [`.nvmrc`](../.nvmrc):
+To test changes from a source checkout, run these commands from the repository root with the
+Node version in [`.nvmrc`](../.nvmrc).
 
 ```bash
 npm ci
@@ -35,18 +67,6 @@ In your consumer project, using the same shell, install the resulting tarballs t
 ```bash
 npm install "$ui_tarballs"/*.tgz
 ```
-
-Use Node `^22.22.3`, `^24.15.0`, or `>=26.0.0` for Node consumers, including Vue SSR.
-Vue integrations require Vue `^3.5.0`. The package group depends on the integration:
-
-| Integration              | Workspaces to pack and install                                                 |
-| ------------------------ | ------------------------------------------------------------------------------ |
-| Vue                      | Tokens, CSS, Runtime, Icons, and Vue. Add Layouts for page layouts and shells. |
-| Vanilla with controllers | Tokens, CSS, and Runtime. Add Icons if you import icon geometry.               |
-| CSS only                 | Tokens and CSS.                                                                |
-
-Add Utilities when using its utility stylesheet. For an app with no package manager or JS
-bundler, follow the [standalone browser assets guide](./vanilla.md#browser-assets).
 
 ## Vue quick start
 
