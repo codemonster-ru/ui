@@ -10,14 +10,6 @@ import { isDocumentationScriptLanguage } from './documentation-fences.mjs';
 
 const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const ignoredDirectoryNames = new Set(['.git', '.npm-cache', 'build', 'coverage', 'dist', 'node_modules', 'vendor']);
-// These archived releases were verified separately for applications that rely on the old layout
-// plugin, presets, and entry points. Keep the exception scoped to the pinned install example.
-const archivedLayoutDependencies = new Set([
-  '@codemonster-ru/vueforge-core@2.4.0',
-  '@codemonster-ru/vueforge-layouts@2.1.2',
-  '@codemonster-ru/vueforge-icons@3.2.0',
-  '@codemonster-ru/vueforge-theme@2.0.1',
-]);
 const issues = [];
 
 function toPosix(filePath) {
@@ -342,11 +334,9 @@ function checkInstallSnippet(code, filePath, line) {
     const packages = match[1].split(/\s+/u).filter((token) => token && !token.startsWith('-'));
     for (const token of packages) {
       const packageName = token.match(/^(@codemonster-ru\/(?:ui|vueforge)-[a-z\d-]+)(?:@.+)?$/u)?.[1];
-      const verifiedArchive =
-        toRelative(filePath) === 'packages/layouts/README.md' && archivedLayoutDependencies.has(token);
       if ((token.startsWith('@codemonster-ru/ui-') || token.startsWith('@codemonster-ru/vueforge-')) && !packageName) {
         report(filePath, line, `contains an invalid CodeMonster install target ${JSON.stringify(token)}.`);
-      } else if (packageName && !publicPackages.has(packageName) && !verifiedArchive) {
+      } else if (packageName && !publicPackages.has(packageName)) {
         report(filePath, line, `installs unknown package ${JSON.stringify(packageName)}.`);
       }
     }

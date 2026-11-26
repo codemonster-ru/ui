@@ -12,8 +12,11 @@ for release status and matching package versions.
 
 ## Installation
 
-For 2.0, [pack and install the Layouts archive with the Vue package group](../../docs/getting-started.md#install-a-local-20-build)
-in your Vue 3.5 app.
+Install the Layouts package in your Vue 3.5 app.
+
+```bash
+npm install @codemonster-ru/ui-layouts@2.0.0 @codemonster-ru/ui-vue@2.0.0 @codemonster-ru/ui-tokens@2.0.0 @codemonster-ru/ui-css@2.0.0
+```
 
 ## Quick start
 
@@ -38,17 +41,9 @@ and component ref methods.
 See [layout line ownership](../../docs/architecture/layout-line-ownership.md) for what this package
 carries and where the historical compatibility boundaries are.
 
-Projects using `app.use(VueForgeLayouts)` or the VueForge layout preset API can keep those
-contracts by pinning the archived VueForge packages:
-
-```bash
-npm install --save-exact vue@3.5.45 @codemonster-ru/vueforge-core@2.4.0 @codemonster-ru/vueforge-layouts@2.1.2 @codemonster-ru/vueforge-icons@3.2.0 @codemonster-ru/vueforge-theme@2.0.1
-```
-
-Continue importing `@codemonster-ru/vueforge-core/styles.css` and
-`@codemonster-ru/vueforge-layouts/styles.css` in that application. The historical plugin and style
-imports use VueForge tokens. The CodeMonster component adapter uses `@codemonster-ru/ui-tokens`
-and `@codemonster-ru/ui-css`. See [compatibility verification](../../docs/verification/historical-vue-ecosystem.md).
+Replace `app.use(VueForgeLayouts)` with direct layout imports. Move its theme preference options to
+the Vue theme provider and its preset overrides to shared CSS tokens. Load `ui-tokens` and `ui-css`
+in the app entry when using aggregate imports. See the [migration guide](../../docs/migrate-from-vueforge.md#theme-presets-and-preference).
 
 ## License
 
