@@ -44,6 +44,6 @@ To also override the canvas when `system` resolves to dark, apply the same decla
 `:root:not([data-cm-theme='light'])` inside a `prefers-color-scheme: dark` media query.
 
 The plugin rejects a legacy `theme` option and points to the stylesheet migration. The current
-provider uses the shared theme configuration in the document. Applications that still need the
-VueForge preset engine can continue to use their archived `@codemonster-ru/vueforge-core` package.
+provider uses the shared theme configuration in the document. Recreate presets as scoped CSS
+overrides using the [theme migration guide](../migrate-from-vueforge.md#theme-presets-and-preference).
 Browser bundlers can load styles when importing [historical component subpaths](../migrate-from-vueforge.md#component-subpaths).
