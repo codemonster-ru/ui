@@ -12,18 +12,12 @@ for release status and matching package versions.
 
 ## Installation
 
-The 2.0 candidate in this checkout is consumed through workspace builds or local tarballs.
-From the repository root:
+Install from npm.
 
 ```bash
-npm ci
-npm run build
-npm run check:packed-consumers
+npm install vue@^3.5.0 @codemonster-ru/ui-tokens@2.0.0 \
+  @codemonster-ru/ui-css@2.0.0 @codemonster-ru/ui-icons@2.0.1 @codemonster-ru/ui-vue@2.0.0
 ```
-
-The packed check installs this candidate with npm, pnpm, and Yarn in fresh consumer projects.
-Install the matching tokens, CSS, runtime, icons, and Vue tarballs together when testing it in
-another project. Use the released `1.x` documentation for registry installations of that line.
 
 ## Quick start
 

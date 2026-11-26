@@ -12,7 +12,11 @@ for release status and matching package versions.
 
 ## Installation
 
-For 2.0, [pack and install the matching Tokens and Utilities archives](../../docs/getting-started.md#install-a-local-20-build).
+Install from npm.
+
+```bash
+npm install @codemonster-ru/ui-tokens@2.0.0 @codemonster-ru/ui-utilities@2.0.0
+```
 
 ```css
 @import '@codemonster-ru/ui-tokens/tokens.css';
