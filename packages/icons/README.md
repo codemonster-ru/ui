@@ -60,13 +60,13 @@ The Vue adapter takes the geometry as a prop, so install this alongside `@codemo
 ## Generating
 
 ```bash
-npm run generate -w @codemonster-ru/ui-icons -- /path/to/built/vueforge-icons <source-commit>
+npm run generate -w @codemonster-ru/ui-icons
 ```
 
-The generator reads a built `@codemonster-ru/vueforge-icons` package and renders every combination
-in Node. Pass the source commit for an unpacked archive. In a source checkout the generator can
-read the revision from Git. `src/generated/provenance.json` records the source version and revision.
-The CodeMonster sorting icons are authored in `src/sort-icons.ts` and live outside the generated directory.
+The generator reads the SVG bodies and viewBoxes in [`data/geometry.json`](./data/geometry.json).
+Edit that file to update the generated geometry, then regenerate `src/generated/`. The source file
+and `src/generated/provenance.json` record where the original geometry came from. The CodeMonster
+sorting icons are authored in `src/sort-icons.ts`.
 
 ## Shape
 
