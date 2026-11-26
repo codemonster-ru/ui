@@ -41,9 +41,9 @@ and component ref methods.
 See [layout line ownership](../../docs/architecture/layout-line-ownership.md) for what this package
 carries and where the historical compatibility boundaries are.
 
-Use direct layout imports, configure theme preferences with the Vue theme provider, and use shared CSS
-tokens for preset overrides. Load `ui-tokens` and `ui-css` in the app entry when using aggregate
-imports. See the [migration guide](../../docs/migrate-from-vueforge.md#theme-presets-and-preference).
+Replace `app.use(VueForgeLayouts)` with direct layout imports. Move its theme preference options to
+the Vue theme provider and its preset overrides to shared CSS tokens. Load `ui-tokens` and `ui-css`
+in the app entry when using aggregate imports. See the [migration guide](../../docs/migrate-from-vueforge.md#theme-presets-and-preference).
 
 ## License
 
