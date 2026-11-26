@@ -9,8 +9,9 @@ Icons move into the CodeMonster line as **precomputed SVG data plus a thin rende
 not as a ported rendering engine. `@codemonster-ru/ui-icons` publishes one module per icon holding
 its rendered bodies; the Vue and Annabel Razor adapters look one up and emit it.
 
-The generator that produces that data runs against the existing VueForge implementation, so the
-geometry has one source and no one redraws anything.
+The original VueForge renderings are stored in
+[`packages/icons/data/geometry.json`](../../packages/icons/data/geometry.json). The generator reads
+that local data and writes one TypeScript module per icon.
 
 ## Why not port the renderer
 
@@ -64,12 +65,10 @@ is the point of moving the difficulty into generation rather than into rendering
 ## Consequences
 
 - `@codemonster-ru/ui-icons` joins the package catalog with its own budget and release order.
-- `@codemonster-ru/vueforge-icons` is retained and untouched, as the rest of the VueForge line is.
-  This adds a CodeMonster icon set; it does not deprecate the VueForge one.
-- The generator is a build input, not a runtime dependency, and it pins the VueForge commit it read
-  so a regenerated set is reproducible.
-- Adding an icon means adding geometry to the source set and regenerating, which is the same shape
-  the VueForge package already has.
+- The geometry source records the archived package version and revision used for the original snapshot.
+- Regeneration reads the local data and is reproducible from a clean checkout.
+- To add a generated icon, add its rendered SVG forms to the geometry source, update the catalogue
+  metadata, and regenerate.
 
 ## What would change this decision
 
