@@ -7,14 +7,30 @@ with Vue 3 or server-rendered HTML. Both integrations share design tokens, style
 markup, and interaction rules. Vanilla pages can use CSS on its own and load the browser
 controllers when they need interactive behavior.
 
+[Get started](#get-started) · [Documentation](./docs/index.md) · [Packages](#packages)
+
 ## Get started
 
-Install CodeMonster UI 2 for Vue from npm.
+Install CodeMonster UI 2 from npm. See the [installation guide](./docs/getting-started.md#install-from-npm)
+for supported Node.js versions and package combinations.
+
+### Vue 3
 
 ```bash
 npm install vue@^3.5.0 @codemonster-ru/ui-tokens@^2.0.0 \
-  @codemonster-ru/ui-css@^2.0.0 @codemonster-ru/ui-vue@^2.0.0
+  @codemonster-ru/ui-css@^2.0.0 @codemonster-ru/ui-icons@^2.0.0 @codemonster-ru/ui-vue@^2.0.0
 ```
+
+Follow the [Vue quick start](./docs/getting-started.md#vue-quick-start) for styles and a first component.
+
+### Vanilla HTML
+
+```bash
+npm install @codemonster-ru/ui-tokens@^2.0.0 @codemonster-ru/ui-css@^2.0.0
+```
+
+Add `@codemonster-ru/ui-runtime@^2.0.0` for interactive controllers. The
+[Vanilla guide](./docs/vanilla.md#quick-start) shows markup and stylesheet imports.
 
 ## Preview locally
 
@@ -68,4 +84,4 @@ Use [GitHub Issues](https://github.com/codemonster-ru/ui/issues) for usage quest
 reproducible bugs. Follow the [contribution guide](./CONTRIBUTING.md) for changes or the
 [security policy](./SECURITY.md) to report a vulnerability privately.
 
-CodeMonster UI packages are available under the [MIT License](./LICENSE).
+Part of [CodeMonster](https://github.com/codemonster-ru). Licensed under the [MIT License](./LICENSE).

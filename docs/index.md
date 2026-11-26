@@ -15,7 +15,9 @@ CSS, and component behavior, with support for server-rendered templates.
 - [Vue quick start](./getting-started.md#vue-quick-start)
 - [Vanilla quick start](./vanilla.md#quick-start)
 
-Choose the [stable Vue 1.1 release](./codemonster-ui-1.1-release-notes.md) or use the [draft 2.0 packages](./codemonster-ui-2.0-release-notes.md) from this checkout. Both showcases can run locally from the repository. [Preview instructions](../README.md#preview-locally)
+CodeMonster UI 2.0 is available on npm. See the [2.0 release notes](./codemonster-ui-2.0-release-notes.md)
+for published versions and the [local preview instructions](../README.md#preview-locally)
+to run the Vue and Vanilla showcases.
 
 ## Components
 

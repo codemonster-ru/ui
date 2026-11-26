@@ -7,12 +7,10 @@ description: 'Serve CodeMonster UI assets directly from server templates'
 
 ## npm packages
 
-Use `@codemonster-ru/ui-tokens` and `@codemonster-ru/ui-css` for server-authored HTML. Install
-`@codemonster-ru/ui-runtime` as well if your markup uses interactive controllers. These
-examples use the v2 package exports. Until v2 is published, install the built workspace
-tarballs in your consumer application. Follow the [local build instructions](./getting-started.md#install-a-local-20-build)
-and pack only tokens, CSS, and runtime for a Vanilla integration. You can also
-[serve the standalone build](#browser-assets) and skip package installation in the consumer.
+Use `@codemonster-ru/ui-tokens` and `@codemonster-ru/ui-css` for server-authored HTML. Add
+`@codemonster-ru/ui-runtime` if your markup uses interactive controllers. See the
+[npm installation commands](./getting-started.md#install-from-npm) for both options.
+Applications serving files directly can [use the standalone browser assets](#browser-assets).
 
 ## Quick start
 
