@@ -9,17 +9,12 @@ controllers when they need interactive behavior.
 
 ## Get started
 
-Install the stable 1.1 Vue release from npm.
+Install CodeMonster UI 2 for Vue from npm.
 
 ```bash
-npm install vue@^3.5.0 @codemonster-ru/ui-tokens@^1.0.1 \
-  @codemonster-ru/ui-css@^1.1.0 @codemonster-ru/ui-vue@^1.1.0
+npm install vue@^3.5.0 @codemonster-ru/ui-tokens@^2.0.0 \
+  @codemonster-ru/ui-css@^2.0.0 @codemonster-ru/ui-vue@^2.0.0
 ```
-
-Follow the [1.1 release notes](./docs/codemonster-ui-1.1-release-notes.md) for the stable
-package cohort. This checkout builds the unpublished `2.0.0` candidate. To try its Vue or
-Vanilla examples in an application, follow the
-[local installation and quick starts](./docs/getting-started.md).
 
 ## Preview locally
 
@@ -42,16 +37,14 @@ describes component routes, layout examples and static hosting.
 
 ## Packages
 
-The [2.0 checkout](./docs/codemonster-ui-2.0-release-notes.md) builds seven npm packages.
-
 | Package | npm (`latest`) | Use |
 | --- | --- | --- |
 | [`@codemonster-ru/ui-tokens`](./packages/tokens/README.md) | [![npm version for UI Tokens](https://img.shields.io/npm/v/@codemonster-ru/ui-tokens/latest)](https://www.npmjs.com/package/@codemonster-ru/ui-tokens) | Themes, design tokens, and breakpoints |
 | [`@codemonster-ru/ui-css`](./packages/css/README.md) | [![npm version for UI CSS](https://img.shields.io/npm/v/@codemonster-ru/ui-css/latest)](https://www.npmjs.com/package/@codemonster-ru/ui-css) | Shared styles, fonts, and component CSS |
 | [`@codemonster-ru/ui-runtime`](./packages/runtime/README.md) | [![npm version for UI Runtime](https://img.shields.io/npm/v/@codemonster-ru/ui-runtime/latest)](https://www.npmjs.com/package/@codemonster-ru/ui-runtime) | Vanilla controllers and shared behavior |
-| [`@codemonster-ru/ui-icons`](./packages/icons/README.md) | Unpublished | Framework-independent icon geometry |
+| [`@codemonster-ru/ui-icons`](./packages/icons/README.md) | [![npm version for UI Icons](https://img.shields.io/npm/v/@codemonster-ru/ui-icons/latest)](https://www.npmjs.com/package/@codemonster-ru/ui-icons) | Framework-independent icon geometry |
 | [`@codemonster-ru/ui-vue`](./packages/vue/README.md) | [![npm version for UI Vue](https://img.shields.io/npm/v/@codemonster-ru/ui-vue/latest)](https://www.npmjs.com/package/@codemonster-ru/ui-vue) | Vue components |
-| [`@codemonster-ru/ui-layouts`](./packages/layouts/README.md) | Unpublished | Vue page layouts, shells, and regions |
+| [`@codemonster-ru/ui-layouts`](./packages/layouts/README.md) | [![npm version for UI Layouts](https://img.shields.io/npm/v/@codemonster-ru/ui-layouts/latest)](https://www.npmjs.com/package/@codemonster-ru/ui-layouts) | Vue page layouts, shells, and regions |
 | [`@codemonster-ru/ui-utilities`](./packages/utilities/README.md) | [![npm version for UI Utilities](https://img.shields.io/npm/v/@codemonster-ru/ui-utilities/latest)](https://www.npmjs.com/package/@codemonster-ru/ui-utilities) | Optional design-token-based utility CSS |
 
 ## Documentation and architecture
