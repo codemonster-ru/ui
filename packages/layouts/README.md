@@ -2,7 +2,7 @@
 
 Page layouts for CodeMonster UI, rendered by the Vue adapter.
 
-This guide covers version `2.0.0`. See the [2.0 release notes](../../docs/codemonster-ui-2.0-release-notes.md)
+This guide covers version `2.0.1`. See the [2.0 release notes](../../docs/codemonster-ui-2.0-release-notes.md)
 for release status and matching package versions.
 
 ## Requirements
@@ -15,7 +15,7 @@ for release status and matching package versions.
 Install the Layouts package in your Vue 3.5 app.
 
 ```bash
-npm install @codemonster-ru/ui-layouts@2.0.0 @codemonster-ru/ui-vue@2.0.0 @codemonster-ru/ui-tokens@2.0.0 @codemonster-ru/ui-css@2.0.0
+npm install @codemonster-ru/ui-layouts@2.0.1 @codemonster-ru/ui-vue@2.0.0 @codemonster-ru/ui-tokens@2.0.0 @codemonster-ru/ui-css@2.0.0
 ```
 
 ## Quick start
@@ -41,9 +41,9 @@ and component ref methods.
 See [layout line ownership](../../docs/architecture/layout-line-ownership.md) for what this package
 carries and where the historical compatibility boundaries are.
 
-Replace `app.use(VueForgeLayouts)` with direct layout imports. Move its theme preference options to
-the Vue theme provider and its preset overrides to shared CSS tokens. Load `ui-tokens` and `ui-css`
-in the app entry when using aggregate imports. See the [migration guide](../../docs/migrate-from-vueforge.md#theme-presets-and-preference).
+Use direct layout imports, configure theme preferences with the Vue theme provider, and use shared CSS
+tokens for preset overrides. Load `ui-tokens` and `ui-css` in the app entry when using aggregate
+imports. See the [migration guide](../../docs/migrate-from-vueforge.md#theme-presets-and-preference).
 
 ## License
 

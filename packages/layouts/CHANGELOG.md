@@ -2,6 +2,10 @@
 
 All notable changes to this package will be documented in this file.
 
+## 2.0.1
+
+Update the installation and migration instructions to use the published CodeMonster UI packages.
+
 ## 2.0.0
 
 Ship the stable layout catalog, shared breakpoints, and opt-in historical entries.
