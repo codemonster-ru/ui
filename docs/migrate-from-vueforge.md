@@ -1,11 +1,9 @@
 # Migrate from VueForge
 
-This guide starts from VueForge commit `d9879116` and targets the CodeMonster UI `2.0.0`
-workspace. Build and install matching workspace tarballs to try these examples in another app.
-[Build and verify a packed Vue consumer](../packages/vue/README.md#installation).
+This guide starts from VueForge commit `d9879116` and targets CodeMonster UI `2.0.0` and
+Devtools `1.0.0`. Install the matching versions from npm.
 
-Migrate one page or component group at a time. Keep the archived packages pinned for pages that
-still depend on their entries or theme engine. The restored Vue names cover specific contracts.
+Migrate one page or component group at a time. The restored Vue names cover specific contracts.
 Review the behavior and visual differences for each component you move. [Vue contract trace](./verification/historical-vue-core.md) · [Layout and icon trace](./verification/historical-vue-ecosystem.md).
 
 ## Package and stylesheet entries
@@ -18,8 +16,8 @@ All package names in the table use the `@codemonster-ru` scope.
 | `vueforge-layouts@2.1.2`                                                                               | Use `ui-layouts` for shells, page layouts, semantic regions, and layout breakpoints. Component subpaths are available under `ui-layouts/historical/`. |
 | `vueforge-icons@3.2.0`                                                                                 | Use named geometry from `ui-icons` with `CmIcon`. Use `VueIconify` from `ui-vue/historical` for name strings and `ui-icons/catalog` for metadata.     |
 | `vueforge-theme@2.0.1`                                                                                 | Use the shared CSS and typed token APIs from `ui-tokens`. Vue providers and the Vanilla theme controller own preference state.                        |
-| `vueforge-codeblock@4.0.1`                                                                             | Keep the archived Vue CodeBlock package for source highlighting. The Vanilla code block recipe presents authored code with optional copying.          |
-| `vueforge-playground@3.0.1`, `vueforge-playground-core@2.1.0`, `vueforge-playground-vite-plugin@1.0.0` | Keep the archived packages for Vue previews and Vite integration. The Vanilla playground previews authored HTML, CSS, and JavaScript.                 |
+| `vueforge-codeblock@4.0.1`                                                                             | Use `ui-codeblock@1.0.0` and its `/view` and `/highlight` entries for Vue rendering and Shiki highlighting.                                             |
+| `vueforge-playground@3.0.1`, `vueforge-playground-core@2.1.0`, `vueforge-playground-vite-plugin@1.0.0` | Use `ui-playground@1.0.0` (`/ui`, `/runtime`), `ui-playground-core@1.0.0`, and `ui-playground-vite-plugin@1.0.0` for Vue previews and Vite integration. |
 
 For root or aggregate imports, replace the old `vueforge-core/styles.css` and
 `vueforge-layouts/styles.css` imports with the shared stack in the application entry.
@@ -35,8 +33,8 @@ entries you use, such as `@codemonster-ru/ui-css/button.css`. The old layout bre
 maps to `@codemonster-ru/ui-tokens/breakpoints.css`. Node CommonJS applications can `require()`
 `ui-vue`, `ui-vue/historical`, and `ui-layouts` on the supported Node versions. These entries
 load the same server-safe modules as ESM imports. The engine requirement is newer than the old
-VueForge Node 18 requirement. The archived Icons, CodeBlock, and Playground entries retain their
-own package and stylesheet contracts. [Shared CSS entries](./css/getting-started.md#public-entries).
+VueForge Node 18 requirement. CodeBlock and Playground keep their dedicated styles and entry points.
+[Shared CSS entries](./css/getting-started.md#public-entries) · [CodeBlock on npm](https://www.npmjs.com/package/@codemonster-ru/ui-codeblock) · [Playground on npm](https://www.npmjs.com/package/@codemonster-ru/ui-playground).
 
 Update application selectors and overrides to the shared `.cm-*` and `--cm-*` names even when a Vue
 component still uses a `Vf*` name. Check the component's canonical HTML for selectors and state
@@ -156,15 +154,13 @@ to own the document theme. [Provider migration details](./components/forms.md#th
 Import `VueForgeCore` as a default or named export from `ui-vue/historical`, or call
 `createVueForgeCore()` to make a plugin instance. Install it to supply app-level `defaultTheme`,
 `themeStorageKey`, and `themeAttribute` defaults to `VfThemeProvider`. Explicit provider props take
-precedence. Move the old `theme` option to stylesheet overrides or keep the archived package for
-its runtime preset engine. [Theme plugin recipe](./recipes/vue-theme-plugin.md).
+precedence. Move the old `theme` option to stylesheet overrides. [Theme plugin recipe](./recipes/vue-theme-plugin.md).
 
 The current layout entry supports named imports and Node `require()`. Import the shared CSS and
 the layouts you render. Layout rendering needs no Vue plugin installation. If the old
 `app.use(VueForgeLayouts)` passed a theme mode, storage key, or resolved-theme attribute, pass
-those options to the current `VueForgeCore` plugin. For old layout preset overrides, move the
-values to shared CSS tokens or keep the archived layouts package with its preset configuration.
-[Archived layout consumer](../packages/layouts/README.md#documentation).
+those options to the current `VueForgeCore` plugin. Move old layout preset overrides to shared CSS
+tokens. [Layout migration](../packages/layouts/README.md#documentation).
 
 ## Standalone Vanilla pages
 
