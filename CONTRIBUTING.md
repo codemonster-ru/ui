@@ -30,3 +30,6 @@ explains how to run both integrations locally.
 
 Describe the problem, the change, and the checks you ran when opening a pull request. Release
 verification follows the [release checklist](./docs/release-checklist.md).
+
+Use a concise English commit subject in the imperative mood and sentence case.
+Follow the [CodeMonster commit style](https://github.com/codemonster-ru/.github/blob/main/COMMIT_STYLE.md).
