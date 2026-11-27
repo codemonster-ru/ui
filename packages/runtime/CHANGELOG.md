@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.1
+
+Publish this package from the rewritten UI history with fresh npm provenance.
+
 ## 2.0.0
 
 Ship the stable Vanilla controllers and shared behavior core.

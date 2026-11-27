@@ -2,7 +2,7 @@
 
 Generated token-backed utility CSS for CodeMonster UI.
 
-This guide covers version `2.0.0`. See the [2.0 release notes](../../docs/codemonster-ui-2.0-release-notes.md)
+This guide covers version `2.0.1`. See the [2.0 release notes](../../docs/codemonster-ui-2.0-release-notes.md)
 for release status and matching package versions.
 
 ## Requirements
@@ -15,7 +15,7 @@ for release status and matching package versions.
 Install from npm.
 
 ```bash
-npm install @codemonster-ru/ui-tokens@2.0.0 @codemonster-ru/ui-utilities@2.0.0
+npm install @codemonster-ru/ui-tokens@2.0.0 @codemonster-ru/ui-utilities@2.0.1
 ```
 
 ```css

@@ -2,6 +2,10 @@
 
 All notable changes to this package will be documented in this file.
 
+## 2.0.2
+
+Publish this package from the rewritten UI history with fresh npm provenance.
+
 ## 2.0.1
 
 Generate the icon geometry from local SVG data. Document installation from npm and generation from

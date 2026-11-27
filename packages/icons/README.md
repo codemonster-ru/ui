@@ -2,7 +2,7 @@
 
 Framework-independent icon geometry for CodeMonster UI.
 
-This guide covers version `2.0.1`. See the [2.0 release notes](../../docs/codemonster-ui-2.0-release-notes.md)
+This guide covers version `2.0.2`. See the [2.0 release notes](../../docs/codemonster-ui-2.0-release-notes.md)
 for release status and matching package versions.
 
 ## Requirements
@@ -50,7 +50,7 @@ const backName = icons.arrowLeft;
 Install the Icons package from npm.
 
 ```bash
-npm install @codemonster-ru/ui-icons@2.0.1
+npm install @codemonster-ru/ui-icons@2.0.2
 ```
 
 The Vue adapter takes the geometry as a prop, so install this alongside `@codemonster-ru/ui-vue`.
