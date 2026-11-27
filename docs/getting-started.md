@@ -18,32 +18,32 @@ consumers, including Vue SSR.
 ### Vue
 
 ```bash
-npm install vue@^3.5.0 @codemonster-ru/ui-tokens@2.0.0 \
-  @codemonster-ru/ui-css@2.0.0 @codemonster-ru/ui-icons@2.0.1 @codemonster-ru/ui-vue@2.0.0
+npm install vue@^3.5.0 @codemonster-ru/ui-tokens@2.0.2 \
+  @codemonster-ru/ui-css@2.0.2 @codemonster-ru/ui-icons@2.0.3 @codemonster-ru/ui-vue@2.0.2
 ```
 
 Add Layouts for page layouts and shells.
 
 ```bash
-npm install @codemonster-ru/ui-layouts@2.0.1
+npm install @codemonster-ru/ui-layouts@2.0.3
 ```
 
 ### Vanilla with controllers
 
 ```bash
-npm install @codemonster-ru/ui-tokens@2.0.0 @codemonster-ru/ui-css@2.0.0 \
-  @codemonster-ru/ui-runtime@2.0.0
+npm install @codemonster-ru/ui-tokens@2.0.2 @codemonster-ru/ui-css@2.0.2 \
+  @codemonster-ru/ui-runtime@2.0.2
 ```
 
-If your application imports icon geometry, also install `@codemonster-ru/ui-icons@2.0.1`.
+If your application imports icon geometry, also install `@codemonster-ru/ui-icons@2.0.3`.
 
 ### CSS only
 
 ```bash
-npm install @codemonster-ru/ui-tokens@2.0.0 @codemonster-ru/ui-css@2.0.0
+npm install @codemonster-ru/ui-tokens@2.0.2 @codemonster-ru/ui-css@2.0.2
 ```
 
-Add `@codemonster-ru/ui-utilities@2.0.0` when using its utility stylesheet. For an app with no
+Add `@codemonster-ru/ui-utilities@2.0.2` when using its utility stylesheet. For an app with no
 package manager or JS bundler, follow the [standalone browser assets guide](./vanilla.md#browser-assets).
 
 ## Install a local 2.0 build

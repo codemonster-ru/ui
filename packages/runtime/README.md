@@ -2,7 +2,7 @@
 
 Framework-independent progressive enhancement for canonical CodeMonster UI markup.
 
-This guide covers version `2.0.1`. See the [2.0 release notes](../../docs/codemonster-ui-2.0-release-notes.md)
+This guide covers version `2.0.2`. See the [2.0 release notes](../../docs/codemonster-ui-2.0-release-notes.md)
 for release status and matching package versions.
 
 The package provides controller registration, scoped discovery, lifecycle management,
@@ -22,7 +22,7 @@ HTML behavior.
 Install from npm.
 
 ```bash
-npm install @codemonster-ru/ui-tokens@2.0.0 @codemonster-ru/ui-css@2.0.0 @codemonster-ru/ui-runtime@2.0.1
+npm install @codemonster-ru/ui-tokens@2.0.2 @codemonster-ru/ui-css@2.0.0 @codemonster-ru/ui-runtime@2.0.2
 ```
 
 ## Quick start

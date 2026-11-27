@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/ui-layouts",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Page layouts for CodeMonster UI, rendered by the Vue adapter.",
   "type": "module",
   "license": "MIT",

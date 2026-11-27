@@ -2,7 +2,7 @@
 
 Page layouts for CodeMonster UI, rendered by the Vue adapter.
 
-This guide covers version `2.0.2`. See the [2.0 release notes](../../docs/codemonster-ui-2.0-release-notes.md)
+This guide covers version `2.0.3`. See the [2.0 release notes](../../docs/codemonster-ui-2.0-release-notes.md)
 for release status and matching package versions.
 
 ## Requirements
@@ -15,7 +15,7 @@ for release status and matching package versions.
 Install the Layouts package in your Vue 3.5 app.
 
 ```bash
-npm install @codemonster-ru/ui-layouts@2.0.2 @codemonster-ru/ui-vue@2.0.0 @codemonster-ru/ui-tokens@2.0.0 @codemonster-ru/ui-css@2.0.0
+npm install @codemonster-ru/ui-layouts@2.0.3 @codemonster-ru/ui-vue@2.0.2 @codemonster-ru/ui-tokens@2.0.2 @codemonster-ru/ui-css@2.0.2
 ```
 
 ## Quick start
